@@ -95,8 +95,8 @@ import FileRender from '@theme/components/ADempiere/FileRender/index.vue'
 import LoadingView from '@theme/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@theme/components/ADempiere/ModalDialog/index.vue'
-import TitleAndHelp from '@theme/components/ADempiere/TitleAndHelp/index.vue'
 import OptionsReport from '@theme/components/ADempiere/FileRender/Setup/optionsReportViwer.vue'
+import TitleAndHelp from '@theme/components/ADempiere/TitleAndHelp/index.vue'
 
 // utils and helper methods
 import { convertObjectToKeyValue } from '@/utils/ADempiere/valueFormat.js'
@@ -109,12 +109,12 @@ export default defineComponent({
   name: 'ReportViewer',
 
   components: {
+    ActionMenu,
     FileRender,
     LoadingView,
-    ActionMenu,
     ModalDialog,
-    TitleAndHelp,
-    OptionsReport
+    OptionsReport,
+    TitleAndHelp
   },
 
   setup(props, { root }) {
