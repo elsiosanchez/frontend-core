@@ -42,6 +42,13 @@ import * as filters from './filters' // global filters
 import * as globalMethods from '@/utils/ADempiere/globalMethods' // global methods
 
 import VueMarkdownEditor from '@kangc/v-md-editor'
+import enUS from '@kangc/v-md-editor/lib/lang/en-US'
+
+VueMarkdownEditor.lang.use('en-US', enUS)
+
+import esES from '@kangc/v-md-editor/lib/lang/es-ES'
+
+VueMarkdownEditor.lang.use('es-ES', esES)
 import '@kangc/v-md-editor/lib/style/base-editor.css'
 import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js'
 
