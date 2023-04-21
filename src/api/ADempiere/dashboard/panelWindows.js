@@ -67,6 +67,7 @@ export function ListWindowCharts({
 
 export function getWindowMetrics({
   id,
+  uuid,
   tableName,
   recordId,
   recordUuid,
@@ -77,6 +78,7 @@ export function getWindowMetrics({
     method: 'post',
     data: {
       id,
+      uuid,
       table_name: tableName,
       record_id: recordId,
       record_uuid: recordUuid,

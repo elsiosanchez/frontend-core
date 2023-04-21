@@ -94,6 +94,32 @@ export default {
                 isCollapsible: list.is_collapsible,
                 isOpenByDefault: list.is_open_by_default,
                 tableName,
+                quantityCard: 3,
+                attribute: {
+                  card: [
+                    {
+                      label: 'Bank Balance',
+                      value: 251.56,
+                      type: 'Quantity',
+                      isChar: false,
+                      symbol: 'USD'
+                    },
+                    {
+                      label: 'Expenses',
+                      value: 515,
+                      type: 'Currency',
+                      isChar: false,
+                      symbol: ''
+                    },
+                    {
+                      label: 'Income',
+                      value: 95.8,
+                      type: 'Statistic',
+                      isChar: true,
+                      symbol: '%'
+                    }
+                  ]
+                },
                 recordUuid,
                 actions: 'metrics'
               }
