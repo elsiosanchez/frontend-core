@@ -257,11 +257,15 @@ export default {
               message: response,
               showClose: true
             })
+            state.list.invoces = []
+            state.list.payments = []
             dispatch('findListPayment')
             dispatch('findListInvoices')
             resolve(response)
           })
           .catch(error => {
+            state.list.invoces = []
+            state.list.payments = []
             showMessage({
               type: 'error',
               message: error.message,
@@ -303,6 +307,11 @@ export default {
     },
     getProcess(state) {
       return state.process
+    },
+    getIsDisabledList(state) {
+      const payments = state.list.payments
+      const invoces = state.list.invoces
+      return isEmptyValue(payments) && isEmptyValue(invoces)
     }
   }
 }
