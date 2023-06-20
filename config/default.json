@@ -6,7 +6,7 @@
   "adempiere": {
     "api": {
       "url": "http://localhost:8085/api/adempiere/",
-      "timeout": 99999999
+      "timeout": 10000
     },
     "images": {
       "url": "http://localhost:8085/adempiere-api/img/"
