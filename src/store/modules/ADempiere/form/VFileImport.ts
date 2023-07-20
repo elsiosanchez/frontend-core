@@ -29,9 +29,9 @@ import { Message } from 'element-ui'
 
 const VFileImport = {
   attribute: {
-    charsets: String,
-    importFormats: String,
-    tablaId: Number,
+    charsets: String(''),
+    importFormats: String(''),
+    tablaId: Number(0),
     isProcess: Boolean(false),
     formatFields: Array([]),
     processDefinition: Object({}),
@@ -69,6 +69,10 @@ export default {
     }) {
       state[attribute][criteria] = value
     },
+    /**
+     * Set File
+     * @param {object} file - File
+     */
     setFile(state, file) {
       state.file = file
     },
@@ -80,6 +84,12 @@ export default {
     }
   },
   actions: {
+    /**
+     * Get List Import Formats
+     * @param id 
+     * @returns {Array} Return a List with the Importer Records
+     */
+
     importFormats({ commit }, {
       id
     }) {
@@ -102,25 +112,41 @@ export default {
           })
       })
     },
+
+    /**
+     * Find List Tables
+     * @returns {Array} Return a List with the Importer Records 
+     */
+
     findListTable({ commit }) {
-      getListImportTables()
-        .then(response => {
-          const { records } = response
-          commit('updateAttributeVFileImport', {
-            attribute: 'options',
-            criteria: 'listTables',
-            value: records
+      return new Promise(resolve => {
+        getListImportTables()
+          .then(response => {
+            const { records } = response
+            commit('updateAttributeVFileImport', {
+              attribute: 'options',
+              criteria: 'listTables',
+              value: records
+            })
+            resolve(records)
           })
-        })
-        .catch(error => {
-          console.warn(`Error getting Import Table: ${error.message}. Code: ${error.code}.`)
-          commit('updateAttributeVFileImport', {
-            attribute: 'options',
-            criteria: 'listTables',
-            value: []
+          .catch(error => {
+            console.warn(`Error getting Import Table: ${error.message}. Code: ${error.code}.`)
+            commit('updateAttributeVFileImport', {
+              attribute: 'options',
+              criteria: 'listTables',
+              value: []
+            })
+            resolve([])
           })
-        })
+      })
     },
+
+    /**
+     * Change Table
+     * @param {Number} id - Change Table ID 
+     */
+
     changeTable({ commit }, {
       id
     }) {
@@ -130,6 +156,13 @@ export default {
         value: id
       })
     },
+ 
+    /**
+     * List of Processes associated with the Table
+     * @param {String} TableName
+     * @returns {Array} List Process Associated
+     */
+
     listProcess({ commit }, {
       tableName
     }) {
@@ -158,6 +191,12 @@ export default {
           })
       })
     },
+
+    /**
+     * Save and Process Import
+     * @returns {string} Message
+     */
+
     saveRecords({ commit, getters }) {
       return new Promise(resolve => {
         const {
