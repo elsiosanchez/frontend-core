@@ -86,7 +86,7 @@ export default {
   actions: {
     /**
      * Get List Import Formats
-     * @param id 
+     * @param id
      * @returns {Array} Return a List with the Importer Records
      */
 
@@ -115,7 +115,7 @@ export default {
 
     /**
      * Find List Tables
-     * @returns {Array} Return a List with the Importer Records 
+     * @returns {Array} Return a List with the Importer Records
      */
 
     findListTable({ commit }) {
@@ -144,7 +144,7 @@ export default {
 
     /**
      * Change Table
-     * @param {Number} id - Change Table ID 
+     * @param {Number} id - Change Table ID
      */
 
     changeTable({ commit }, {
@@ -156,7 +156,7 @@ export default {
         value: id
       })
     },
- 
+
     /**
      * List of Processes associated with the Table
      * @param {String} TableName
