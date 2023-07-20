@@ -19,32 +19,37 @@
 // API Request Methods
 import {
   getImportFormats,
-  getListImportTables
+  getListImportTables,
+  listImportProcess,
+  saveRecordImport
 } from '@/api/ADempiere/form/VFileImport.js'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere'
+import { Message } from 'element-ui'
 
 const VFileImport = {
   attribute: {
-    charsets: '',
-    importFormats: '',
-    tablaId: 0,
-    isProcess: false,
-    formatFields: []
+    charsets: String,
+    importFormats: String,
+    tablaId: Number,
+    isProcess: Boolean(false),
+    formatFields: Array([]),
+    processDefinition: Object({}),
+    step: Number(1)
   },
   options: {
-    listCharsets: [],
-    listImportFormats: [],
-    listTables: []
+    listCharsets: Array([]),
+    listImportFormats: Array([]),
+    listTables: Array([]),
+    listProcess: Array([])
   },
   file: {
-    data: [],
-    header: [],
-    resource: {}
+    data: Array([]),
+    header: Array([]),
+    resource: Object({})
   },
-  infoFormat: {},
-  navigationLine: {}
+  infoFormat: Object({}),
+  navigationLine: Object({})
 }
 
 export default {
@@ -123,6 +128,73 @@ export default {
         attribute: 'attribute',
         criteria: 'tablaId',
         value: id
+      })
+    },
+    listProcess({ commit }, {
+      tableName
+    }) {
+      return new Promise(resolve => {
+        listImportProcess({
+          tableName
+        })
+          .then(response => {
+            const { records } = response
+            const list = records.map(list => {
+              return {
+                ...list,
+                ...list.values
+              }
+            })
+            commit('updateAttributeVFileImport', {
+              attribute: 'options',
+              criteria: 'listProcess',
+              value: list
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Error getting List Process Import: ${error.message}. Code: ${error.code}.`)
+            resolve([])
+          })
+      })
+    },
+    saveRecords({ commit, getters }) {
+      return new Promise(resolve => {
+        const {
+          charsets,
+          isProcess,
+          importFormats,
+          processDefinition
+        } = getters.getAttribute
+        const { id } = getters.getFile
+        const { containerUuid, fieldsList } = processDefinition
+        const parametersList = getters.getProcessParameters({
+          containerUuid,
+          fieldsList
+        })
+        saveRecordImport({
+          id,
+          isProcess,
+          parameters: parametersList,
+          processId: processDefinition.id,
+          charset: charsets,
+          importFormatId: importFormats
+        })
+          .then(response => {
+            const { message } = response
+            Message({
+              type: 'success',
+              message: message
+            })
+            resolve(true)
+          })
+          .catch(error => {
+            Message({
+              type: 'success',
+              message: error.message
+            })
+            resolve(true)
+          })
       })
     }
   },

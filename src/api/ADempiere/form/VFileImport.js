@@ -91,6 +91,7 @@ export function saveRecordImport({
   charset,
   isProcess,
   processId,
+  parameters,
   importFormatId
 }) {
   return request({
@@ -98,10 +99,26 @@ export function saveRecordImport({
     method: 'post',
     data: {
       charset,
+      parameters,
       resource_id: id,
       is_process: isProcess,
       process_id: processId,
       import_format_id: importFormatId
+    }
+  })
+    .then(response => {
+      return camelizeObjectKeys(response)
+    })
+}
+
+export function listImportProcess({
+  tableName
+}) {
+  return request({
+    url: '/form/addons/import-file-loader/list-import-processes',
+    method: 'get',
+    params: {
+      table_name: tableName
     }
   })
     .then(response => {
