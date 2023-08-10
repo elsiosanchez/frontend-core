@@ -879,7 +879,6 @@ export function validatePin({
 
 /**
  * list Warehouses
- * @param {string} posUuidd - POS UUID reference
  */
 export function listWarehouses({
   posUuid
@@ -898,7 +897,6 @@ export function listWarehouses({
 
 /**
  * list Document Types
- * @param {string} posUuidd - POS UUID reference
  */
 export function listDocumentTypes({
   posUuid
@@ -917,7 +915,6 @@ export function listDocumentTypes({
 
 /**
  * List Prices
- * @param {string} posUuidd - POS UUID reference
  */
 export function listPrices({
   posUuid
