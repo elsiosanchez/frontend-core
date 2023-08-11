@@ -25,7 +25,14 @@ import {
   // List Options Available for Point of Sales
   listPrices,
   listWarehouses,
-  listDocumentTypes
+  listDocumentTypes,
+  // Search Product
+  getProductPriceList,
+  // Create order from POS
+  getOrder,
+  createOrder,
+  createOrderLine,
+  listOrderLines
 } from '@/api/ADempiere/form/point-of-sales.js'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
@@ -50,7 +57,8 @@ const order = {
   uuid: String,
   id: Number,
   name: String,
-  list: Object([])
+  list: Object([]),
+  listLines: Object([])
 }
 
 const VPOS = {
@@ -104,7 +112,8 @@ const VPOS = {
   listPoint: Object([]),
   listPricesPoint: Object([]),
   listWarehouses: Object([]),
-  listDocumentTypes: Object([])
+  listDocumentTypes: Object([]),
+  listProduct: Object([])
 }
 
 export default {
@@ -122,6 +131,15 @@ export default {
     }) {
       state.point[attribute] = value
     },
+    /**
+     * Update Order
+     */
+    setUpdateOrderVPOS(state, {
+      attribute,
+      value
+    }) {
+      state.point.order[attribute] = value
+    },
     setPoint(state, point) {
       state.point = point
     },
@@ -136,6 +154,9 @@ export default {
     },
     setListDocumentTypes(state, list) {
       state.listDocumentTypes = list
+    },
+    setProductList(state, list) {
+      state.listProduct = list
     }
   },
   actions: {
@@ -264,6 +285,206 @@ export default {
           })
           .finally(() => {
             dispatch('searchPointList')
+          })
+      })
+    },
+    /**
+     * GET List product price
+     */
+    searchProductList({ commit, state }, searchValue) {
+      return new Promise(resolve => {
+        let businessPartnerUuid, priceListUuid, warehouseUuid, pageToken
+        const {
+          uuid,
+          warehouse,
+          priceList,
+          templateCustomer
+        } = state.point
+        if (!isEmptyValue(templateCustomer) && !isEmptyValue(uuid)) businessPartnerUuid = templateCustomer.uuid
+        if (!isEmptyValue(warehouse) && !isEmptyValue(warehouse.uuid)) warehouseUuid = warehouse.uuid
+        if (!isEmptyValue(priceList) && !isEmptyValue(priceList.uuid)) priceListUuid = priceList.uuid
+        getProductPriceList({
+          searchValue,
+          posUuid: uuid,
+          businessPartnerUuid,
+          priceListUuid,
+          warehouseUuid,
+          pageSize: 15,
+          pageToken
+        })
+          .then(responseProducList => {
+            const { productPricesList } = responseProducList
+            // console.log({ responseProducList })
+            commit('setProductList', productPricesList)
+            resolve(productPricesList)
+          })
+          .catch(error => {
+            console.warn(`Error getting Product Price List: ${error.message}. Code: ${error.code}.`)
+            Message({
+              type: 'error',
+              message: error.message
+            })
+            resolve([])
+          })
+      })
+    },
+    /**
+     * Get Order
+     * Crear Order From POS (New Order)
+     * Add New Line to Order (New Line)
+     * Update Order Lines (Update Line)
+     * List Order Lines (List Line)
+     */
+    getOrder({ commit, state }) {
+      const {
+        uuid,
+        order
+      } = state.point
+      return new Promise(resolve => {
+        getOrder(
+          order.uuid,
+          uuid
+        )
+          .then(responseOrder => {
+            commit('setUpdatePointVPOS', {
+              attribute: 'order',
+              value: responseOrder
+            })
+            resolve(resolve)
+          })
+          .catch(error => {
+            console.warn(`Error getting Get Order: ${error.message}. Code: ${error.code}.`)
+            Message({
+              type: 'error',
+              message: error.message
+            })
+            resolve({})
+          })
+      })
+    },
+    newOrder({ commit, state, dispatch }) {
+      return new Promise(resolve => {
+        const {
+          uuid,
+          priceList,
+          warehouse,
+          documentType,
+          templateCustomer,
+          salesRepresentative,
+          defaultCampaignUuid
+        } = state.point
+        createOrder({
+          posUuid: uuid,
+          customerUuid: templateCustomer.uuid,
+          documentTypeUuid: documentType.uuid,
+          salesRepresentativeUuid: salesRepresentative.uuid,
+          priceListUuid: priceList.uuid,
+          warehouseUuid: warehouse.uuid,
+          campaignUuid: defaultCampaignUuid
+        })
+          .then(responseNewOrder => {
+            console.log({ responseNewOrder })
+            commit('setUpdatePointVPOS', {
+              attribute: 'order',
+              value: responseNewOrder
+            })
+            dispatch('listLines')
+            Message({
+              type: 'success',
+              message: `Nueva Orden ${responseNewOrder.documentNo} Creada`
+            })
+            resolve(responseNewOrder)
+          })
+          .catch(error => {
+            console.warn(`Error getting Create Order: ${error.message}. Code: ${error.code}.`)
+            Message({
+              type: 'error',
+              message: error.message
+            })
+            resolve({})
+          })
+      })
+    },
+    newLine({ commit, state, dispatch }, {
+      price,
+      product,
+      quantity,
+      chargeUuid,
+      discountRate,
+      resourceAssignmentUuid
+    }) {
+      return new Promise(resolve => {
+        const {
+          uuid,
+          order,
+          priceList,
+          warehouse
+        } = state.point
+        createOrderLine({
+          posUuid: uuid,
+          orderUuid: order.uuid,
+          priceListUuid: priceList.uuid,
+          warehouseUuid: warehouse.uuid,
+          productUuid: product.uuid,
+          chargeUuid,
+          description: product.description,
+          quantity,
+          price,
+          discountRate,
+          resourceAssignmentUuid
+        })
+          .then(responseNewLine => {
+            console.log({ responseNewLine })
+            // commit('setUpdatePointVPOS', {
+            //   attribute: 'order',
+            //   value: responseNewLine
+            // })
+            Message({
+              type: 'success',
+              message: `Producto ${responseNewLine.product.name} Agregado`
+            })
+            dispatch('getOrder')
+            dispatch('listLines')
+            resolve(responseNewLine)
+          })
+          .catch(error => {
+            console.warn(`Error Getting Add New Line: ${error.message}. Code: ${error.code}.`)
+            Message({
+              type: 'error',
+              message: error.message
+            })
+            resolve({})
+          })
+      })
+    },
+    listLines({ commit, state }) {
+      return new Promise(resolve => {
+        let pageToken
+        const {
+          uuid,
+          order
+        } = state.point
+        listOrderLines({
+          posUuid: uuid,
+          orderUuid: order.uuid,
+          pageSize: 50,
+          pageToken
+        })
+          .then(responseList => {
+            const { orderLineList } = responseList
+            console.log({ responseList })
+            commit('setUpdateOrderVPOS', {
+              attribute: 'listLines',
+              value: orderLineList
+            })
+          })
+          .catch(error => {
+            console.warn(`Error getting List Lines: ${error.message}. Code: ${error.code}.`)
+            Message({
+              type: 'error',
+              message: error.message
+            })
+            resolve([])
           })
       })
     }
