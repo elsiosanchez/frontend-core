@@ -95,6 +95,7 @@ export default {
     priceListUuid,
     warehouseUuid,
     campaignUuid,
+    discountRate,
     salesRepresentativeUuid
   }) {
     const isCompleted = rootGetters.posAttributes.currentPointOfSales.currentOrder.isProcessed
@@ -110,6 +111,7 @@ export default {
       discountAmount,
       discountRateOff,
       customerUuid,
+      discount: discountRate,
       priceListUuid: currentPriceList,
       warehouseUuid: currentWarehouse,
       campaignUuid,
