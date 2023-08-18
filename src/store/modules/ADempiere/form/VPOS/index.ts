@@ -114,7 +114,8 @@ const VPOS = {
   listPricesPoint: Object([]),
   listWarehouses: Object([]),
   listDocumentTypes: Object([]),
-  listProduct: Object([])
+  listProduct: Object([]),
+  isShowProductList: Boolean(false)
 }
 
 export default {
@@ -161,6 +162,9 @@ export default {
     },
     setProductList(state, list) {
       state.listProduct = list
+    },
+    setShowProductList(state, show) {
+      state.isShowProductList = show
     }
   },
   actions: {
@@ -283,7 +287,10 @@ export default {
     /**
      * GET List product price
      */
-    searchProductList({ commit, state }, searchValue) {
+    searchProductList({ commit, state }, {
+      searchValue,
+      pageSize
+    }) {
       return new Promise(resolve => {
         let businessPartnerUuid, priceListUuid, warehouseUuid, pageToken
         const {
@@ -301,7 +308,7 @@ export default {
           businessPartnerUuid,
           priceListUuid,
           warehouseUuid,
-          pageSize: 15,
+          pageSize,
           pageToken
         })
           .then(responseProducList => {
@@ -486,6 +493,12 @@ export default {
     },
     getListDocumentTypes(state) {
       return state.listDocumentTypes
+    },
+    getProductList(state) {
+      return state.listProduct
+    },
+    getShowProductList(state) {
+      return state.isShowProductList
     }
   }
 }
