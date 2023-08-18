@@ -54,7 +54,7 @@ const warehouse = {
 }
 
 const order = {
-  uuid: String,
+  uuid: String(''),
   id: Number,
   name: String,
   list: Object([]),
@@ -63,7 +63,7 @@ const order = {
 
 const VPOS = {
   point: {
-    uuid: String,
+    uuid: String(''),
     id: Number(undefined),
     name: String(''),
     description: String,
@@ -109,6 +109,7 @@ const VPOS = {
     isKeepPriceFromCustomer: Boolean(false),
     isAllowsModifyCustomer: Boolean(false)
   },
+  order: {},
   listPoint: Object([]),
   listPricesPoint: Object([]),
   listWarehouses: Object([]),
@@ -138,10 +139,13 @@ export default {
       attribute,
       value
     }) {
-      state.point.order[attribute] = value
+      state.order[attribute] = value
     },
     setPoint(state, point) {
       state.point = point
+    },
+    setOrder(state, order) {
+      state.order = order
     },
     setListPoint(state, list) {
       state.listPoint = list
@@ -176,9 +180,6 @@ export default {
               message: error.message
             })
             resolve({})
-          })
-          .finally(() => {
-            dispatch('searchPointList')
           })
       })
     },
@@ -235,9 +236,6 @@ export default {
             })
             resolve({})
           })
-          .finally(() => {
-            dispatch('searchPointList')
-          })
       })
     },
     listAvailableWarehouse({ commit, dispatch, state }, uuid) {
@@ -259,9 +257,6 @@ export default {
             })
             resolve({})
           })
-          .finally(() => {
-            dispatch('searchPointList')
-          })
       })
     },
     listAvailableDocumentTypes({ commit, dispatch, state }, uuid) {
@@ -282,9 +277,6 @@ export default {
               message: error.message
             })
             resolve({})
-          })
-          .finally(() => {
-            dispatch('searchPointList')
           })
       })
     },
@@ -314,7 +306,6 @@ export default {
         })
           .then(responseProducList => {
             const { productPricesList } = responseProducList
-            // console.log({ responseProducList })
             commit('setProductList', productPricesList)
             resolve(productPricesList)
           })
@@ -335,21 +326,19 @@ export default {
      * Update Order Lines (Update Line)
      * List Order Lines (List Line)
      */
-    getOrder({ commit, state }) {
+    refrestOrder({ commit, state }) {
       const {
-        uuid,
-        order
+        uuid
       } = state.point
+      const order = state.order
       return new Promise(resolve => {
+        if (isEmptyValue(uuid) || isEmptyValue(order)) return resolve({})
         getOrder(
           order.uuid,
           uuid
         )
           .then(responseOrder => {
-            commit('setUpdatePointVPOS', {
-              attribute: 'order',
-              value: responseOrder
-            })
+            commit('setOrder', responseOrder)
             resolve(resolve)
           })
           .catch(error => {
@@ -383,11 +372,7 @@ export default {
           campaignUuid: defaultCampaignUuid
         })
           .then(responseNewOrder => {
-            console.log({ responseNewOrder })
-            commit('setUpdatePointVPOS', {
-              attribute: 'order',
-              value: responseNewOrder
-            })
+            commit('setOrder', responseNewOrder)
             dispatch('listLines')
             Message({
               type: 'success',
@@ -416,10 +401,10 @@ export default {
       return new Promise(resolve => {
         const {
           uuid,
-          order,
           priceList,
           warehouse
         } = state.point
+        const order = state.order
         createOrderLine({
           posUuid: uuid,
           orderUuid: order.uuid,
@@ -434,16 +419,11 @@ export default {
           resourceAssignmentUuid
         })
           .then(responseNewLine => {
-            console.log({ responseNewLine })
-            // commit('setUpdatePointVPOS', {
-            //   attribute: 'order',
-            //   value: responseNewLine
-            // })
             Message({
               type: 'success',
               message: `Producto ${responseNewLine.product.name} Agregado`
             })
-            dispatch('getOrder')
+            dispatch('refrestOrder')
             dispatch('listLines')
             resolve(responseNewLine)
           })
@@ -461,9 +441,9 @@ export default {
       return new Promise(resolve => {
         let pageToken
         const {
-          uuid,
-          order
+          uuid
         } = state.point
+        const order = state.order
         listOrderLines({
           posUuid: uuid,
           orderUuid: order.uuid,
@@ -472,7 +452,6 @@ export default {
         })
           .then(responseList => {
             const { orderLineList } = responseList
-            console.log({ responseList })
             commit('setUpdateOrderVPOS', {
               attribute: 'listLines',
               value: orderLineList
@@ -492,6 +471,9 @@ export default {
   getters: {
     getPoint(state) {
       return state.point
+    },
+    getCurrentOrder(state) {
+      return state.order
     },
     getListPoint(state) {
       return state.listPoint
