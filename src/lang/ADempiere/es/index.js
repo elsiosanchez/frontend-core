@@ -379,6 +379,7 @@ export default {
         campaign: 'Campaña',
         noCampaignSelected: 'Sin Campaña seleccionada',
         BusinessPartnerCreate: {
+          billingManagement: 'Dirección de Facturación',
           phone: 'Telefono',
           businessPartner: 'Socio de Negocios',
           successfullyCreated: 'Socio de Negocio Creado Exitosamente',
@@ -389,6 +390,14 @@ export default {
           withoutSetting: 'Sin Establecer',
           taxId: 'Identificación Fiscal',
           searchValue: 'Valor de la Búsqueda',
+          code: 'Código',
+          identificationNumber: 'Número Identificación',
+          personType: 'Tipo de Persona',
+          taxpayer: 'Contribuyente',
+          taxpayerType: 'Tipo de Contribuyente',
+          name: 'Nombre',
+          name2: 'Nombre 2',
+          email: 'Email',
           address: {
             edit: 'Editar',
             selectAddress: 'Seleccionar Dirección',

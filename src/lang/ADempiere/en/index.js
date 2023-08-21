@@ -378,6 +378,7 @@ export default {
         campaign: 'Campaign',
         noCampaignSelected: 'No Campaign selected',
         BusinessPartnerCreate: {
+          billingManagement: 'Billing Management',
           phone: 'Phone',
           businessPartner: 'Business Partner',
           successfullyCreated: 'Business Partner Successfully Created',
@@ -388,6 +389,14 @@ export default {
           withoutSetting: 'Without Setting',
           taxId: 'Tax Identification',
           searchValue: 'Search Value',
+          code: 'Code',
+          identificationNumber: 'IdentificationNumber',
+          personType: 'Type of Person',
+          taxpayer: 'Taxpayer',
+          taxpayerType: 'Taxpayer Type',
+          name: 'Name',
+          name2: 'Name 2',
+          email: 'Email',
           address: {
             edit: 'Edit',
             selectAddress: 'Select Address',
