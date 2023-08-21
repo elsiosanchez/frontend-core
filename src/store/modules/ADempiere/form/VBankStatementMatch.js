@@ -22,19 +22,28 @@ import {
   listBusinessPartners,
   // requestSearchModesList,
   requestImportedBankMovements,
-  listPayments,
-  listMatchingMovements
+  requestPaymentsList,
+  requestMatchingMovementsList,
+  requestGetBankStatement,
+  requestBankStatemensList,
+  requestListUnMatch,
+  requestResultMovements,
+  requestProcess
   // processMovements
 } from '@/api/ADempiere/form/VBankStatementMatch.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
-import { dateTimeFormats } from '@/utils/ADempiere/formatValue/dateFormat'
+import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const bankStatementMatch = {
   step: 1,
   matchMode: 0,
+  bankStatement: {
+    records: [],
+    currentRow: {}
+  },
   bankAccount: {
     id: undefined,
     uuid: '',
@@ -59,16 +68,22 @@ const bankStatementMatch = {
   },
   payments: {
     records: [],
+    select: [],
     currentRow: {}
   },
   importedPayments: {
+    select: [],
     records: [],
     currentRow: {}
   },
   matchingMovements: {
     list: [],
     select: {},
+    listUnMatch: [],
     isLoading: false
+  },
+  result: {
+    list: []
   }
 }
 
@@ -93,6 +108,13 @@ export default {
       value
     }) {
       state[criteria][attribute] = value
+    },
+
+    setBankStatementsList(state, list) {
+      state.bankStatement.records = list
+    },
+    setCurrentBankStatement(state, row) {
+      state.bankStatement.currentRow = row
     },
 
     setBankAccountsList(state, list) {
@@ -123,6 +145,32 @@ export default {
   },
 
   actions: {
+    getBankStatementFromServer({ commit }, {
+      id,
+      uuid
+    }) {
+      return new Promise(resolve => {
+        requestGetBankStatement({
+          id,
+          uuid
+        })
+          .then(response => {
+            commit('setCurrentBankStatement', response)
+
+            commit('setBankAccountId', response.bankAccountId)
+
+            resolve(response)
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+          })
+      })
+    },
+
     /**
      * Get List Bank Accounts
      * @param {string} searchValue
@@ -202,7 +250,7 @@ export default {
     /**
      * Get List Payments
      */
-    searchListPayments({ state, commit, getters }, {
+    getPaymentsListFromServer({ state, commit, getters }, {
       searchValue
     }) {
       return new Promise(resolve => {
@@ -211,16 +259,21 @@ export default {
         const businessPartnerId = state.businessPartner.id
         const dateFrom = state.transactionDate.from
         const dateTo = state.transactionDate.to
+        let bankStatementId = -1
+        if (!isEmptyValue(getters.getCurrentBankStatement)) {
+          bankStatementId = getters.getCurrentBankStatement.id
+        }
 
         // const {
         //   paymentAmount,
         // } = getters.getCriteriaVBankStatement
         // const paymentAmountTo = (paymentAmount.to === 0) ? null : paymentAmount.to
         // const paymentAmountFrom = (paymentAmount.from === 0) ? null : paymentAmount.from
-        listPayments({
-          matchMode: matchMode.value,
+        requestPaymentsList({
+          matchMode: matchMode,
           searchValue,
           bankAccountId,
+          bankStatementId,
           // paymentAmountTo,
           // paymentAmountFrom,
           businessPartnerId,
@@ -255,26 +308,35 @@ export default {
         const dateFrom = state.transactionDate.from
         const dateTo = state.transactionDate.to
 
-        // const {
-        //   paymentAmount,
-        // } = getters.getCriteriaVBankStatement
-        // const paymentAmountTo = (paymentAmount.to === 0) ? null : paymentAmount.to
-        // const paymentAmountFrom = (paymentAmount.from === 0) ? null : paymentAmount.from
-
         requestImportedBankMovements({
           matchMode: matchMode,
           searchValue,
           bankAccountId,
-          // paymentAmountTo: paymentAmountTo,
-          // paymentAmountFrom: paymentAmountFrom,
           businessPartnerId,
           transactionDateFrom: dateFrom,
           transactionDateTo: dateTo
         })
           .then(response => {
             const { records } = response
-            commit('setImportedPayments', records)
-            resolve(records)
+
+            const recordsList = records.map(record => {
+              const { transaction_date } = record
+              let transactionDate = null
+              if (transaction_date > 0) {
+                transactionDate = formatDate({
+                  value: transaction_date,
+                  isDate: true
+                })
+              }
+
+              return {
+                ...record,
+                transactionDate
+              }
+            })
+
+            commit('setImportedPayments', recordsList)
+            resolve(recordsList)
           })
           .catch(error => {
             showMessage({
@@ -289,7 +351,7 @@ export default {
     /**
      * Get List Matching Movements
      */
-    searchListMatchingMovements({ state, commit, getters }, {
+    getMatchingMovementsListFromServer({ state, commit, getters }, {
       searchValue
     }) {
       return new Promise(resolve => {
@@ -306,29 +368,39 @@ export default {
         const dateFrom = state.transactionDate.from
         const dateTo = state.transactionDate.to
 
-        // const {
-        //   paymentAmount,
-        // } = getters.getCriteriaVBankStatement
-        // const paymentAmountTo = (paymentAmount.to === 0) ? null : paymentAmount.to
-        // const paymentAmountFrom = (paymentAmount.from === 0) ? null : paymentAmount.from
+        let bankStatementId = -1
+        if (!isEmptyValue(getters.getCurrentBankStatement)) {
+          bankStatementId = getters.getCurrentBankStatement.id
+        }
 
-        listMatchingMovements({
+        requestMatchingMovementsList({
           matchMode: matchMode,
           searchValue,
+          bankStatementId,
           bankAccountId,
-          // paymentAmountTo: paymentAmountTo,
-          // paymentAmountFrom: paymentAmountFrom,
           businessPartnerId,
           transactionDateFrom: dateFrom,
           transactionDateTo: dateTo
         })
           .then(response => {
             const { records } = response
-            if (isEmptyValue(records)) return
-            list = records.map(list => {
+            if (isEmptyValue(records)) {
+              return
+            }
+
+            list = records.map(record => {
+              const { transaction_date } = record
+              let transactionDate = null
+              if (transaction_date > 0) {
+                transactionDate = formatDate({
+                  value: transaction_date,
+                  isDate: true
+                })
+              }
+
               return {
-                ...list,
-                transactionDate: dateTimeFormats(list.transaction_date, 'YYYY-MM-DD')
+                ...record,
+                transactionDate
               }
             })
           })
@@ -353,12 +425,163 @@ export default {
             resolve(list)
           })
       })
+    },
+
+    getBankStatementsListFromServer({ commit }, {
+      bankAccountId
+    }) {
+      return new Promise(resolve => {
+        requestBankStatemensList({
+          bankAccountId
+        })
+          .then(response => {
+            commit('setBankStatementsList', response.records)
+
+            resolve(response.records)
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+          })
+      })
+    },
+
+    listUnMatch({ state, dispatch }) {
+      return new Promise(resolve => {
+        requestListUnMatch({
+          listImportedMovements: state.matchingMovements.listUnMatch
+        })
+          .then(response => {
+            dispatch('getPaymentsListFromServer', {})
+            dispatch('searchListImportedBankMovements', {})
+            dispatch('getMatchingMovementsListFromServer', {})
+            const { message } = response
+            showMessage({
+              type: 'success',
+              message,
+              showClose: true
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            resolve(error)
+          })
+      })
+    },
+
+    processBankStatementMatch({ state, getters }) {
+      return new Promise((resolve, reject) => {
+        const bankAccountId = state.bankAccount.id
+        const dateFrom = state.transactionDate.from
+        const dateTo = state.transactionDate.to
+        let bankStatementId = -1
+        if (!isEmptyValue(getters.getCurrentBankStatement)) {
+          bankStatementId = getters.getCurrentBankStatement.id
+        }
+        requestProcess({
+          bankStatementId,
+          bankAccountId,
+          transactionDateFrom: dateFrom,
+          transactionDateTo: dateTo
+        })
+          .then(response => {
+            const { message } = response
+            showMessage({
+              type: 'success',
+              message: message,
+              showClose: true
+            })
+            resolve()
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            reject(error)
+          })
+      })
+    },
+
+    resultMovements({ state, commit, getters }) {
+      return new Promise(resolve => {
+        const bankAccountId = state.bankAccount.id
+        const dateFrom = state.transactionDate.from
+        const dateTo = state.transactionDate.to
+        let bankStatementId = -1
+        if (!isEmptyValue(getters.getCurrentBankStatement)) {
+          bankStatementId = getters.getCurrentBankStatement.id
+        }
+        requestResultMovements({
+          bankStatementId,
+          bankAccountId,
+          transactionDateFrom: dateFrom,
+          transactionDateTo: dateTo
+        })
+          .then(response => {
+            const { records } = response
+            if (isEmptyValue(records)) {
+              commit('updateAttributeCriteria', {
+                criteria: 'result',
+                attribute: 'list',
+                value: records
+              })
+              resolve()
+            }
+
+            const list = records.map(record => {
+              const { transaction_date } = record
+              let transactionDate = null
+              if (transaction_date > 0) {
+                transactionDate = formatDate({
+                  value: transaction_date,
+                  isDate: true
+                })
+              }
+
+              return {
+                ...record,
+                transactionDate
+              }
+            })
+
+            commit('updateAttributeCriteria', {
+              criteria: 'result',
+              attribute: 'list',
+              value: list
+            })
+            resolve()
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+          })
+      })
     }
   },
 
   getters: {
     getStatementMatchStep: (state) => {
       return state.step || 1
+    },
+
+    getCurrentBankStatement: (state) => {
+      return state.bankStatement.currentRow
+    },
+    getBankStatementsList: (state) => {
+      return state.bankStatement.records
     },
 
     getBanksAccountsListStatementMatch: (state) => {
@@ -390,6 +613,9 @@ export default {
     },
     getListMatchingMovements: (state) => {
       return state.matchingMovements
+    },
+    getResult: (state) => {
+      return state.result
     }
   }
 }

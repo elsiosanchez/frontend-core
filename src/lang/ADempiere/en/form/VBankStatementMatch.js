@@ -21,7 +21,7 @@ const VBankStatementMatch = {
     searchCriteria: 'Search Criteria',
     automaticMatch: 'Automatic Matching',
     pendingMatch: 'Pending Matching',
-    summaryAdjustment: 'Resume and Adjust'
+    confirmImport: 'Confirm / Import'
   },
   searchMode: {
     title: 'Search Mode',
@@ -30,6 +30,7 @@ const VBankStatementMatch = {
   },
   field: {
     bankAccount: 'Bank Account',
+    bankStatement: 'Bank Statement',
     businessPartner: 'Business Partner',
     searchMode: 'Search Mode',
     matchesPayment: 'Matches Payment',
@@ -40,6 +41,17 @@ const VBankStatementMatch = {
     simulateMatch: 'Simulate Match',
     assignedMatch: 'Assigned Match',
     unassignedMatch: 'Unassigned Match'
+  },
+  bankStatement: {
+    name: 'Name',
+    documentNo: 'Document No.',
+    bankStatementDate: 'Bank Statement Date',
+    bank: 'Bank',
+    bankAccount: 'Bank Account',
+    currentBalance: 'Current Balance',
+    beginningBalance: 'Beginning Balance',
+    statementDifference: 'Statement Difference',
+    endingBalance: 'Ending Balance'
   },
   automaticMatch: {
     title: 'Automatic Matching',
@@ -54,12 +66,14 @@ const VBankStatementMatch = {
       amount: 'Amount',
       description: 'Description',
       referenceNo: 'Reference No.',
-      memo: 'Memo'
+      memo: 'Memo',
+      match: 'Match',
+      total: 'Total'
     },
     withoutAutomaticMatch: 'Without Automatic Matching'
   },
-  importedMovements: {
-    title: 'Imported Movements',
+  bankMovements: {
+    title: 'Bank Movements',
     table: {
       date: 'Date',
       transactionDate: 'Transaction Date',
@@ -68,7 +82,9 @@ const VBankStatementMatch = {
       businessPartner: 'Business Partner',
       currency: 'Currency',
       amount: 'Amount',
-      memo: 'Memo'
+      memo: 'Memo',
+      match: 'Match',
+      total: 'Total'
     }
   },
   systemPayments: {
@@ -76,15 +92,19 @@ const VBankStatementMatch = {
     table: {
       date: 'Date',
       transactionDate: 'Transaction Date',
+      paymentDate: 'Payment Date',
       receipt: 'Receipts',
       documentNo: 'Document No.',
       businessPartner: 'Business Partner',
       tenderType: 'Payment Type',
       currency: 'Currency',
       amount: 'Amount',
-      description: 'Description'
+      description: 'Description',
+      match: 'Match',
+      total: 'Total'
     }
-  }
+  },
+  result: 'Result'
 }
 
 export default VBankStatementMatch

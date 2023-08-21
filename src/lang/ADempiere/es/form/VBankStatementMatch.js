@@ -21,7 +21,7 @@ const VBankStatementMatch = {
     searchCriteria: 'Criterio de Busqueda',
     automaticMatch: 'Coincidencia Automatica',
     pendingMatch: 'Pendiente por Coincidencia',
-    summaryAdjustment: 'Resume y Ajuste'
+    confirmImport: 'Confirmar / Importar'
   },
   searchMode: {
     title: 'Modo de Búsqueda',
@@ -30,6 +30,7 @@ const VBankStatementMatch = {
   },
   field: {
     bankAccount: 'Cuenta Bancaria',
+    bankStatement: 'Estado de Cuenta Bancaria',
     businessPartner: 'Socio de Negocio',
     searchMode: 'Modo de Búsqueda',
     matchesPayment: 'Pagos Coindidentes',
@@ -40,6 +41,17 @@ const VBankStatementMatch = {
     simulateMatch: 'Simular Conciliación',
     assignedMatch: 'Asignar Conciliación',
     unassignedMatch: 'Desasignar Conciliación'
+  },
+  bankStatement: {
+    name: 'Nombre',
+    documentNo: 'Nro. Documento',
+    bankStatementDate: 'Fecha de Estado de Cuenta',
+    bank: 'Banco',
+    bankAccount: 'Cuenta Bancaria',
+    currentBalance: 'Saldo Actual',
+    beginningBalance: 'Saldo Inicial',
+    statementDifference: 'Diferencia de Cuenta',
+    endingBalance: 'Saldo Final'
   },
   automaticMatch: {
     title: 'Coincidencia Automatica',
@@ -54,12 +66,14 @@ const VBankStatementMatch = {
       amount: 'Monto',
       description: 'Descripción',
       referenceNo: 'No. de Referencia',
-      memo: 'Memo'
+      memo: 'Memo',
+      match: 'Coincidencia',
+      total: 'Total'
     },
     withoutAutomaticMatch: 'Sin Coincidencia Automática'
   },
-  importedMovements: {
-    title: 'Movimientos Importados',
+  bankMovements: {
+    title: 'Movimientos Bancarios',
     table: {
       date: 'Fecha',
       transactionDate: 'Fecha de la Transacción',
@@ -68,7 +82,9 @@ const VBankStatementMatch = {
       businessPartner: 'Socio del Negocio',
       currency: 'Moneda',
       amount: 'Monto',
-      memo: 'Memo'
+      memo: 'Memo',
+      match: 'Coincidencia',
+      total: 'Total'
     }
   },
   systemPayments: {
@@ -76,15 +92,19 @@ const VBankStatementMatch = {
     table: {
       date: 'Fecha',
       transactionDate: 'Fecha de la Transacción',
+      paymentDate: 'Fecha del Pago',
       receipt: 'Cobros',
       documentNo: 'Documento No.',
       businessPartner: 'Socio del Negocio',
       tenderType: 'Tipo de Pago',
       currency: 'Moneda',
       amount: 'Monto',
-      description: 'Descripción'
+      description: 'Descripción',
+      match: 'Coincidencia',
+      total: 'Total'
     }
-  }
+  },
+  result: 'Resultado'
 }
 
 export default VBankStatementMatch
