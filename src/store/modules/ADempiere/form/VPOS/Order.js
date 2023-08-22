@@ -26,7 +26,12 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const OrderVPOS = {
   list: [],
-  isShowOrder: false
+  isShowOrder: false,
+  searchCriteria: {
+    documentNo: '',
+    dateOrderedTo: '',
+    businessPartnerUuid: ''
+  }
 }
 
 export default {
@@ -37,15 +42,59 @@ export default {
     },
     setShowOrder(state, show) {
       state.isShowOrder = show
+    },
+    setSearchCriteria(state, {
+      criteria,
+      value
+    }) {
+      state.searchCriteria[criteria] = value
     }
   },
   actions: {
-    listOrder({ commit }, {
-      searchValue
+    listOrder({ commit, getters }, {
+      posUuid = getters.getPoint.uuid,
+      isClosed,
+      pageSize,
+      pageToken,
+      documentNo,
+      grandTotal,
+      openAmount,
+      isNullified,
+      dateOrderedTo,
+      isBindingOffer,
+      isOnlyProcessed,
+      isWaitingForPay,
+      dateOrderedFrom,
+      isOnlyAisleSeller,
+      businessPartnerUuid,
+      isWaitingForInvoice,
+      isWaitingForShipment,
+      salesRepresentativeUuid = getters.getPoint.salesRepresentative.uuid
     }) {
       return new Promise(resolve => {
+        const {
+          uuid,
+          salesRepresentative
+        } = getters.getPoint
         listOrders({
-          searchValue
+          posUuid: uuid,
+          isClosed,
+          pageSize,
+          pageToken,
+          documentNo,
+          grandTotal,
+          openAmount,
+          isNullified,
+          dateOrderedTo,
+          isBindingOffer,
+          isOnlyProcessed,
+          isWaitingForPay,
+          dateOrderedFrom,
+          isOnlyAisleSeller,
+          businessPartnerUuid,
+          isWaitingForInvoice,
+          isWaitingForShipment,
+          salesRepresentativeUuid: salesRepresentative.uuid
         })
           .then(response => {
             const { ordersList } = response
@@ -58,7 +107,7 @@ export default {
               message: error.message,
               showClose: true
             })
-            resolve(error)
+            resolve([])
             console.warn(`Error Getting List Order: ${error.message}. Code: ${error.code}.`)
           })
       })
@@ -70,6 +119,9 @@ export default {
     },
     getShowOrder(state) {
       return state.isShowOrder
+    },
+    getSearchCriteria(state) {
+      return state.searchCriteria
     }
   }
 }

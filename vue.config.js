@@ -68,7 +68,7 @@ module.exports = {
         rel: 'preload',
         // to ignore runtime.js
         // https://github.com/vuejs/vue-cli/blob/dev/packages/@vue/cli-service/lib/config/app.js#L171
-        fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
+        fileBlacklist: [/\.map$/, /hot-update\.(js|ts)$/, /runtime\..*\.(js|ts)$/],
         include: 'initial'
       }
     ])
@@ -101,7 +101,7 @@ module.exports = {
             .after('html')
             .use('script-ext-html-webpack-plugin', [{
             // `runtime` must same as runtimeChunk name. default is `runtime`
-              inline: /runtime\..*\.js$/
+              inline: /runtime\..*\.(js|ts)$/
             }])
             .end()
           config

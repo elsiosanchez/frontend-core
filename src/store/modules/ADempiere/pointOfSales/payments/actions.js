@@ -693,10 +693,12 @@ export default {
       }
       return undefined
     })
+    console.log({ addProduct })
     if (isEmptyValue(addProduct)) {
       deliveryList.push(product)
       commit('setDeliveryList', deliveryList)
     } else {
+      console.log({ deliveryList })
       deliveryList.map(delivery => {
         if (delivery.uuid === product.uuid) {
           return {
