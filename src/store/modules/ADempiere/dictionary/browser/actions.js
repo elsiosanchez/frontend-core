@@ -99,8 +99,10 @@ export default {
           })
           // set parent context
           if (!isEmptyValue(parentUuid)) {
+            // TODO: Fix Window Context in Browser
+            const { currentTab } = rootGetters.getContainerInfo
             const parentContext = rootGetters.getValuesView({
-              parentUuid
+              parentUuid: isEmptyValue(currentTab) ? parentUuid : currentTab.containerUuid
             })
             dispatch('updateValuesOfContainer', {
               containerUuid: uuid,
