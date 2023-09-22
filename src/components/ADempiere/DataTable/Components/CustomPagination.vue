@@ -179,7 +179,7 @@ export default defineComponent({
     const currentIndex = computed(() => {
       const records = recordsWithFilter.value
       if (isEmptyValue(records)) {
-        return selection
+        return props.selection
       }
       const index = records.findIndex(row => row.UUID === store.getters.getUuidOfContainer(containerUuid))
       return indexRowByPage({
