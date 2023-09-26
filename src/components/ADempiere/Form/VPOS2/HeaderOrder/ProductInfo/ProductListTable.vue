@@ -100,6 +100,14 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :handle-size-change="handleSizeChange"
       />
       <el-button
+        type="primary"
+        class="button-base-icon"
+        icon="el-icon-check"
+        style="float: right;margin-left: 5px;"
+        :disabled="isEmptyValue(selectProduct)"
+        @click="addProduct(selectProduct)"
+      />
+      <el-button
         type="danger"
         class="button-base-icon"
         icon="el-icon-close"
@@ -128,10 +136,14 @@ export default defineComponent({
     CustomPagination
   },
   setup() {
+    /**
+     * Ref
+     */
     const searchValue = ref('')
     const isLoading = ref(false)
     const pageSizeNumber = ref(15)
     const selection = ref(0)
+    const selectProduct = ref({})
     let timeoutSearch
     /**
      * Computed
@@ -147,7 +159,7 @@ export default defineComponent({
     })
 
     const order = computed(() => {
-      return store.getters.getPoint.order
+      return store.getters.getCurrentOrder
     })
     // Methods
     function copyCode(row) {
@@ -167,6 +179,7 @@ export default defineComponent({
         })
           .finally(() => {
             isLoading.value = false
+            searchValue.value = ''
           })
       }, 1000)
     }
@@ -180,28 +193,35 @@ export default defineComponent({
     }
 
     function addProduct(row) {
+      console.log(row, { selectProduct: selectProduct.value })
       if (isEmptyValue(order.value)) {
         store.dispatch('newOrder')
           .finally(() => {
-            store.dispatch('newLine', row)
-              .finally(() => {
-                close(false)
-              })
+            store.dispatch('newLine', {
+              productUuid: row.product.uuid
+            })
           })
+      } else {
+        store.dispatch('newLine', {
+          productUuid: row.product.uuid
+        })
       }
+      close(false)
     }
 
     function close(show = false) {
       store.commit('setShowProductList', show)
+      selectProduct.value = {}
+      searchValue.value = ''
     }
 
     function handleCurrentChange(row) {
       if (!isEmptyValue(row)) selection.value = 1
+      selectProduct.value = row
     }
 
     function handleSizeChange(pageSize) {
       isLoading.value = true
-      console.log({ pageSize }, typeof pageSize, pageSize)
       pageSizeNumber.value = pageSize
       timeoutSearch = setTimeout(() => {
         store.dispatch('searchProductList', {
@@ -211,29 +231,29 @@ export default defineComponent({
           .finally(() => {
             isLoading.value = false
           })
-      }, 1000)
+      }, 500)
     }
 
     function handleChangePage(pageNumber) {
-      console.log({ pageNumber })
       isLoading.value = true
       timeoutSearch = setTimeout(() => {
         store.dispatch('searchProductList', {
           searchValue: searchValue.value,
           pageSize: pageSizeNumber.value,
-          pageToken: store.getters.getProductPageToken + pageNumber
+          pageToken: store.getters.getProductPageToken + '-' + pageNumber
         })
           .finally(() => {
             isLoading.value = false
           })
-      }, 1000)
+      }, 500)
     }
 
     return {
       // Ref
-      searchValue,
       selection,
       isLoading,
+      searchValue,
+      selectProduct,
       pageSizeNumber,
       // Computed
       listProducto,

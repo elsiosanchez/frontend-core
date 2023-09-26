@@ -115,7 +115,7 @@ export default defineComponent({
     const isLoading = ref(false)
     const isTrigger = ref(false)
     const order = computed(() => {
-      return store.getters.getPoint.order
+      return store.getters.getCurrentOrder
     })
 
     const show = computed({

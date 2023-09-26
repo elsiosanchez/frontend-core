@@ -121,6 +121,7 @@ export default {
           return
         }
         commit('setVPOS', getPointOfSales)
+        commit('setOrder', {})
         const currentRouter = router.app.$route
         const {
           name,

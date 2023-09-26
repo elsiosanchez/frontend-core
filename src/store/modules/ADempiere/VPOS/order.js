@@ -20,10 +20,11 @@
 import {
   createOrder,
   // updateOrder,
-  // deleteOrder,
-  listOrders
-  // getOrder
+  deleteOrder,
+  listOrders,
+  getOrder
 } from '@/api/ADempiere/form/point-of-sales.js'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 // Utils and Helper Methods
 // import { isEmptyValue } from '@/utils/ADempiere'
@@ -31,7 +32,9 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const OrderVPOS = {
   list: [],
-  order: {},
+  order: {
+    lines: []
+  },
   isShowOrder: false
 }
 
@@ -55,7 +58,7 @@ export default {
      * @param {String} warehouseUuid
      * @param {String} documentTypeUuid
      * @param {String} salesRepresentativeUuid
-     * @returns {Object} Order
+     * @returns {Object} responseOrder
      */
     newOrder({ commit, getters }) {
       return new Promise(resolve => {
@@ -74,7 +77,8 @@ export default {
           documentTypeUuid: documentType.uuid,
           priceListUuid: priceList.uuid,
           warehouseUuid: warehouse.uuid,
-          campaignUuid: defaultCampaign.uuid
+          campaignUuid: defaultCampaign.uuid,
+          salesRepresentativeUuid: getters['user/getUserUuid']
         })
           .then(responseOrder => {
             commit('setOrder', responseOrder)
@@ -91,50 +95,78 @@ export default {
           })
       })
     },
+    /**
+     * Get List Orders
+     * @param {String} posUuid
+     * @param {String} documentNo
+     * @param {String} documentStatus
+     * @param {String} businessPartnerUuid
+     * @param {Number} grandTotal
+     * @param {Number} openAmount
+     * @param {Boolean} isWaitingForPay
+     * @param {Boolean} isOnlyProcessed
+     * @param {Boolean} isOnlyAisleSeller
+     * @param {Boolean} isWaitingForInvoice
+     * @param {Boolean} isWaitingForShipment
+     * @param {Boolean} isBindingOffer
+     * @param {Boolean} isClosed
+     * @param {Boolean} isNullified
+     * @param {Boolean} isOnlyRma
+     * @param {String} dateOrderedFrom
+     * @param {String} dateOrderedTo
+     * @param {String} salesRepresentativeUuid
+     * @param {String} searchValue
+     * @param {Number} pageSize
+     * @param {String} pageToken
+     * @returns {Array} ListOrdersResponse
+     */
     listOrder({ commit, getters }, {
-      posUuid = getters.getPoint.uuid,
-      isClosed,
-      pageSize,
-      pageToken,
       documentNo,
+      documentStatus,
+      businessPartnerUuid,
       grandTotal,
       openAmount,
-      isNullified,
-      dateOrderedTo,
-      isBindingOffer,
-      isOnlyProcessed,
       isWaitingForPay,
-      dateOrderedFrom,
+      isOnlyProcessed,
       isOnlyAisleSeller,
-      businessPartnerUuid,
       isWaitingForInvoice,
       isWaitingForShipment,
-      salesRepresentativeUuid = getters.getPoint.salesRepresentative.uuid
+      isBindingOffer,
+      isClosed,
+      isNullified,
+      isOnlyRma,
+      dateOrderedFrom,
+      dateOrderedTo,
+      searchValue,
+      pageSize,
+      pageToken
     }) {
       return new Promise(resolve => {
         const {
-          uuid,
-          salesRepresentative
+          uuid
         } = getters.getPoint
         listOrders({
           posUuid: uuid,
-          isClosed,
-          pageSize,
-          pageToken,
           documentNo,
+          documentStatus,
+          businessPartnerUuid,
           grandTotal,
           openAmount,
-          isNullified,
-          dateOrderedTo,
-          isBindingOffer,
-          isOnlyProcessed,
           isWaitingForPay,
-          dateOrderedFrom,
+          isOnlyProcessed,
           isOnlyAisleSeller,
-          businessPartnerUuid,
           isWaitingForInvoice,
           isWaitingForShipment,
-          salesRepresentativeUuid: salesRepresentative.uuid
+          isBindingOffer,
+          isClosed,
+          isNullified,
+          isOnlyRma,
+          dateOrderedFrom,
+          dateOrderedTo,
+          salesRepresentativeUuid: getters['user/getUserUuid'],
+          searchValue,
+          pageSize,
+          pageToken
         })
           .then(response => {
             const { ordersList } = response
@@ -151,7 +183,69 @@ export default {
             console.warn(`Error Getting List Order: ${error.message}. Code: ${error.code}.`)
           })
       })
+    },
+    /**
+     * Get Order
+     * @param {String} posUuid
+     * @param {String} orderUuid
+     * @returns {Object} responseOrder
+     */
+    overloadOrder({ commit, getters }, {
+      order
+    }) {
+      return new Promise(resolve => {
+        const { uuid } = getters.getPoint
+        if (isEmptyValue(order)) resolve({})
+        getOrder({
+          posUuid: uuid,
+          orderUuid: order.uuid
+        })
+          .then(responseOrder => {
+            commit('setOrder', responseOrder)
+            resolve(responseOrder)
+          })
+          .catch(error => {
+            console.warn(`Get Order: ${error.message}. Code: ${error.code}.`)
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    /**
+     * Delete Order
+     * @param {String} posUuid
+     * @param {String} orderUuid
+     * @returns (Empty) {}
+     */
+    deleteOrder({ commit, getters }) {
+      return new Promise(resolve => {
+        const pos = getters.getPoint
+        const order = getters.getCurrentOrder
+        if (isEmptyValue(order)) resolve({})
+        deleteOrder({
+          posUuid: pos.uuid,
+          order: order.uuid
+        })
+          .then(() => {
+            commit('setOrder', {})
+            resolve({})
+          })
+          .catch(error => {
+            console.warn(`Delete Order: ${error.message}. Code: ${error.code}.`)
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
     }
+
   },
   getters: {
     getListOrder(state) {

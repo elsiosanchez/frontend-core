@@ -15,35 +15,40 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <el-table
-    id="linesOrder"
-    ref="linesTable"
-    :data="[]"
-    border
-    fit
-    highlight-current-row
-    style="height: 100% !important;"
-  >
-    <template>
-      <el-table-column
-        v-for="(valueOrder, key) in orderLineDefinition"
-        :key="key"
-        :column-key="valueOrder.columnName"
-        :label="valueOrder.label"
-        :align="valueOrder.isNumeric ? 'right' : 'left'"
-      >
-        <template slot-scope="scope">
-          {{ scope.row }}
-        </template>
-      </el-table-column>
-    </template>
-  </el-table>
+  <span>
+    <!-- {{ lines[0].quantityOrdered }} -->
+    <el-table
+      id="linesOrder"
+      ref="linesTable"
+      :data="lines"
+      border
+      fit
+      highlight-current-row
+      style="height: 100% !important;"
+    >
+      <template v-for="(valueOrder, key) in orderLineDefinition">
+        <el-table-column
+          v-if="displayLabel({ row: valueOrder })"
+          :key="key"
+          :column-key="valueOrder.columnName"
+          :label="valueOrder.label"
+          :align="valueOrder.isNumeric ? 'right' : 'left'"
+        >
+          <template slot-scope="scope">
+            {{ scope.row }}
+          </template>
+        </el-table-column>
+      </template>
+    </el-table>
+  </span>
 </template>
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
+// Utils and Helper Methods
+import { displayLabel } from './Lines.ts'
 
 export default defineComponent({
   name: 'infoOrder',
@@ -114,12 +119,15 @@ export default defineComponent({
       }
     })
     const lines = computed(() => {
-      return store.getters.getPoint.order.listLines
+      return store.getters.getListOrderLines
     })
+
+    // const { displayTableLabel } = displayLabel({ row })
 
     return {
       orderLineDefinition,
-      lines
+      lines,
+      displayLabel
     }
   }
 })

@@ -17,7 +17,7 @@ const productList = {
 export default {
   state: productList,
   mutations: {
-    setShowProduct(state, show) {
+    setShowProductList(state, show) {
       state.showProductList = show
     },
     setProductCount(state, recordCount) {
@@ -95,6 +95,9 @@ export default {
     },
     getProductPageToken: (state) => {
       return state.pageToken
+    },
+    getShowProductList: (state) => {
+      return state.showProductList
     }
   }
 }
