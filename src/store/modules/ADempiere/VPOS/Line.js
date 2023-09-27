@@ -124,13 +124,16 @@ export default {
      * @param {String} pageToken
      * @returns {Array} ListOrderLinesResponse
      */
-    listLines({ commit, getters }) {
+    listLines({
+      commit,
+      getters,
+      dispatch
+    }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
-        console.log({
-          currentPos,
-          currentOrder
+        dispatch('overloadOrder', {
+          order: currentOrder
         })
         if (isEmptyValue(currentOrder)) resolve([])
         listOrderLines({

@@ -194,12 +194,12 @@ export default {
       order
     }) {
       return new Promise(resolve => {
-        const { uuid } = getters.getPoint
+        const { uuid } = getters.getVPOS
         if (isEmptyValue(order)) resolve({})
-        getOrder({
-          posUuid: uuid,
-          orderUuid: order.uuid
-        })
+        getOrder(
+          order.uuid,
+          uuid
+        )
           .then(responseOrder => {
             commit('setOrder', responseOrder)
             resolve(responseOrder)

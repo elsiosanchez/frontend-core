@@ -35,7 +35,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           :align="valueOrder.isNumeric ? 'right' : 'left'"
         >
           <template slot-scope="scope">
-            {{ scope.row }}
+            <!-- {{ scope.row }} -->
+            {{ displayValue({ row: scope.row, columnName: valueOrder.columnName}) }}
           </template>
         </el-table-column>
       </template>
@@ -48,7 +49,7 @@ import { defineComponent, computed } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
 // Utils and Helper Methods
-import { displayLabel } from './Lines.ts'
+import { displayLabel, displayValue } from './Lines.ts'
 
 export default defineComponent({
   name: 'infoOrder',
@@ -122,12 +123,12 @@ export default defineComponent({
       return store.getters.getListOrderLines
     })
 
-    // const { displayTableLabel } = displayLabel({ row })
-
     return {
       orderLineDefinition,
       lines,
-      displayLabel
+      // Methods
+      displayLabel,
+      displayValue
     }
   }
 })

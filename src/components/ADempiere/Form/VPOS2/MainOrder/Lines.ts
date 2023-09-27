@@ -17,14 +17,87 @@
  */
 
 import store from '@/store'
+import { isEmptyValue } from '@/utils/ADempiere'
+import { formatPrice } from '@/utils/ADempiere/valueFormat.js'
+
 /**
  * Show the correct display format
  * @param {object} row record
  * @param {object} orderLine or field definition
  */
 
-export function displayValue(row, orderLine) {
-  return ''
+export function displayValue({
+  row,
+  columnName
+}) {
+  const {
+    uom,
+    price,
+    charge,
+    product,
+    taxRate,
+    totalAmount,
+    description,
+    priceWithTax,
+    quantityOrdered,
+    totalAmountWithTax,
+    resourceAssignment
+  } = row
+  const {
+    isDisplayDiscount,
+    isDisplayTaxAmount
+  } = store.getters.getVPOS
+  const isMobile = store.getters.device === 'mobile'
+  const { priceList } = store.getters.getCurrentOrder
+  const {
+    currency,
+    is_tax_included
+  } = priceList
+  if (columnName === 'LineDescription') {
+    if (isMobile) return product.name
+    if (!isEmptyValue(resourceAssignment)) return product.name + ' - (' + resourceAssignment.name + ')'
+    if (!isEmptyValue(product.name)) return description
+    if (!isEmptyValue(product.value)) return charge.columnName
+    return product.value + ' - ' + product.name
+  }
+  if (columnName === 'CurrentPrice') {
+    let currentPrice = price
+    if (!isDisplayTaxAmount && !isDisplayDiscount) currentPrice = priceWithTax
+    if (isMobile) return formatPrice(currentPrice)
+    return formatPrice(currentPrice, currency.iso_code)
+  }
+  if (columnName === 'QtyEntered') {
+    if (isEmptyValue(uom.uom)) return formatQuantity({ value: quantityOrdered, isInteger: false, precision: 1 })
+    let precision = 0
+    if (!isEmptyValue(row.uom.uom.starndard_precision)) precision = row.uom.uom.starndard_precision
+    return formatQuantity({
+      value: row.quantityOrdered,
+      precision
+    })
+  }
+  if (columnName === 'UOM') return isEmptyValue(uom.uom.symbol) ? uom.uom.name : uom.uom.symbol
+  if (columnName === 'Discount') return formatQuantity({ value: row.discount }) + ' %'
+  if (columnName === 'taxIndicator') {
+    const {
+      rate,
+      name
+    } = taxRate
+    let taxIndicator = Number.parseFloat(rate).toFixed(2) + ' %'
+    if (rate <= 0) {
+      taxIndicator = name
+    }
+    return taxIndicator
+  }
+  if (columnName === 'GrandTotal') {
+    let price = totalAmountWithTax
+    if (is_tax_included) {
+      price = totalAmount
+    }
+    if (isMobile) {
+      return formatPrice(price)
+    }
+    return formatPrice(price, currency)
+  }
 }
 /**
  * Show Table Label
@@ -85,4 +158,27 @@ export function displayLabel({
       break
   }
   return display
+}
+
+/**
+ * Get standard presicion
+ * @returns {number}
+ */
+function formatQuantity({ value, isInteger = false, precision = store.getters.getStandardPrecision }) {
+  if (isEmptyValue(value)) {
+    value = 0
+  }
+  // without decimals
+  // if (Number.isInteger(value)) {
+  if (isInteger) {
+    precision = 0
+  }
+
+  // get formatted decimal number
+  return new Intl.NumberFormat(undefined, {
+    useGrouping: true, // thousands separator
+    minimumIntegerDigits: 1,
+    minimumFractionDigits: precision,
+    maximumFractionDigits: precision
+  }).format(value)
 }
