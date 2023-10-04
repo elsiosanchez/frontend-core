@@ -202,7 +202,7 @@ export const runProcessOfBrowser = {
     */
 
     store.commit('setShowedModalDialog', {
-      containerUuid: process.uuid,
+      containerUuid: process.id,
       isShowed: true
     })
   }

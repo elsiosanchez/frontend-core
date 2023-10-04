@@ -2047,7 +2047,7 @@ export const containerManager = {
       parentUuid,
       containerUuid,
       contextColumnNames,
-      fieldUuid: uuid,
+      uuid,
       id,
       //
       columnName,

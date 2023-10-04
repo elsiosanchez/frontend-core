@@ -123,7 +123,7 @@ const processManager = {
         }, () => {})
 
         requestRunProcess({
-          uuid: containerUuid,
+          id: containerUuid,
           parametersList
         })
           .then(runProcessRepsonse => {
@@ -199,7 +199,7 @@ const processManager = {
         })
 
         requestRunProcess({
-          uuid: containerUuid,
+          id: containerUuid,
           parametersList,
           // in window
           recordId,
@@ -314,7 +314,7 @@ const processManager = {
         let isProcessedError = false
         let summary = ''
         requestRunProcess({
-          uuid: containerUuid,
+          id: containerUuid,
           parametersList,
           tableName,
           recordUuid

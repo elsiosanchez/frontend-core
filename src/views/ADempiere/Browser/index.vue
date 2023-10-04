@@ -171,7 +171,7 @@ export default defineComponent({
       if (isEmptyValue(browser) || isEmptyValue(browser.process)) {
         return undefined
       }
-      return browser.process.uuid
+      return browser.process.id
     })
 
     // TODO: Handle per individual smart browser

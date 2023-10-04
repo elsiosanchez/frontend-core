@@ -54,7 +54,6 @@ export default {
 
   getProcessOfBrowser: (state, getters, rootState, rootGetters) => (browserId) => {
     const { process } = getters.getStoredBrowser(browserId)
-
     return process
   },
 

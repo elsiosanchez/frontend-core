@@ -140,12 +140,12 @@ export default {
             // get browser definition
 
             dispatch('setModalDialog', {
-              containerUuid: process.uuid,
+              containerUuid: process.id,
               title: process.name,
               doneMethod: () => {
-                const fieldsList = rootGetters.getStoredFieldsFromProcess(process.uuid)
+                const fieldsList = rootGetters.getStoredFieldsFromProcess(process.id)
                 const emptyMandatory = rootGetters.getFieldsListEmptyMandatory({
-                  containerUuid: process.uuid,
+                  containerUuid: process.id,
                   fieldsList
                 })
                 if (!isEmptyValue(emptyMandatory)) {
@@ -158,7 +158,7 @@ export default {
 
                 store.dispatch('startProcessOfBrowser', {
                   parentUuid: browserDefinition.id,
-                  containerUuid: process.uuid
+                  containerUuid: process.id
                 }).then(processOutputResponse => {
                   // close current page
                   const currentRoute = router.app._route
@@ -178,7 +178,7 @@ export default {
                 })
 
                 dispatch('updateValuesOfContainer', {
-                  containerUuid: process.uuid,
+                  containerUuid: process.id,
                   attributes: parentValues
                 })
               },
@@ -320,7 +320,7 @@ export default {
       if (!isEmptyValue(browserDefinition.process)) {
         // clear values to process associated
         dispatch('setProcessDefaultValues', {
-          containerUuid: browserDefinition.process.uuid
+          containerUuid: browserDefinition.process.id
         })
       }
     })
