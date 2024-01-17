@@ -32,13 +32,13 @@
 
     <el-row v-if="!isEmptyValue(dashboardsList)">
       <el-col :span="24">
+        <panel-group-portlet />
+      </el-col>
+      <el-col :span="24">
         <panel-group />
       </el-col>
       <el-col :span="24">
         <panel-group-pie />
-      </el-col>
-      <el-col :span="24">
-        <panel-group-portlet />
       </el-col>
       <el-col v-if="!isEmptyValue(mainDashboard)" :span="24" style="padding-right:8px;margin-bottom:2px;">
         <dashboard-definition
