@@ -218,13 +218,6 @@ export default defineComponent({
       return store.getters.getStoredDashboardsList.filter(list => list.fileName !== 'docstatus')
     })
 
-    store.getters.getStoredDashboardsList.forEach(element => {
-      const { name, sequence, dashboardType } = element
-      if (!isEmptyValue(dashboardType)) {
-        console.log({ name, sequence, dashboardType })
-      }
-    })
-
     const mainDashboard = computed(() => {
       return store.getters.getStoredMainDashboard
     })
