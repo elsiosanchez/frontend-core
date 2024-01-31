@@ -18,7 +18,7 @@
 
 let eventGuid = 0
 const todayStr = new Date().toISOString().replace(/T.*$/, '') // YYYY-MM-DD of today
-console.log({ todayStr })
+
 export const INITIAL_EVENTS = [
   {
     id: createEventId(),
