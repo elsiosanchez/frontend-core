@@ -80,6 +80,7 @@ import {
   computed
   // ref
 } from '@vue/composition-api'
+
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import esLocale from '@fullcalendar/core/locales/es'
@@ -96,9 +97,11 @@ import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'CalendarView',
+
   components: {
     FullCalendar // make the <FullCalendar> tag available
   },
+
   setup() {
     /**
      * Ref
@@ -110,6 +113,7 @@ export default defineComponent({
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
+
     const calendarOptions = computed(() => {
       return {
         plugins: [
@@ -149,14 +153,15 @@ export default defineComponent({
     /**
      * Methods
      */
-
-    function parse(fecha) {
-      const partesFecha = fecha.split('T')[0].split('-')
-      return `${partesFecha[0]}-${partesFecha[1]}-${partesFecha[2]}`
+    function parse(dateToParse) {
+      const parts = dateToParse.split('T')[0].split('-')
+      return `${parts[0]}-${parts[1]}-${parts[2]}`
     }
 
     function handleDateSelect(selectInfo) {
-      if (!selectInfo) return
+      if (!selectInfo) {
+        return
+      }
       const title = prompt(lang.t('component.calendar.titleNewEvent'))
       const calendarApi = selectInfo.view.calendar
       calendarApi.unselect() // clear date selection
@@ -181,7 +186,7 @@ export default defineComponent({
       currentEvents.value = events
     }
 
-    store.dispatch('listTasks', {})
+    store.dispatch('getListTasksFromServer', {})
 
     return {
       // Ref
