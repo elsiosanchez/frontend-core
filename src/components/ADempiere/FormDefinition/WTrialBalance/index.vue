@@ -58,6 +58,7 @@
                 clearable
                 filterable
                 @visible-change="showListOrganization"
+                @change="activateAuto"
               >
                 <el-option
                   v-for="item in organizationOptions"
@@ -103,6 +104,7 @@
                 filterable
                 clearable
                 @visible-change="showListPeriods"
+                @change="activateAuto"
               >
                 <el-option
                   v-for="item in untilPeriodOptions"
@@ -124,6 +126,7 @@
               >
                 <el-select
                   v-model="accountingAccount1"
+                  :filter-method="filterMethod"
                   style="width: 100%;"
                   filterable
                   clearable
@@ -141,6 +144,7 @@
                 </b>
                 <el-select
                   v-model="accountingAccount2"
+                  :filter-method="filterMethod"
                   style="width: 100%;"
                   filterable
                   clearable
@@ -169,6 +173,7 @@
                 filterable
                 clearable
                 @visible-change="showListReportCubes"
+                @change="activateAuto"
               >
                 <el-option
                   v-for="item in cubeReportOptions"
@@ -186,7 +191,12 @@
               <template slot="label">
                 {{ $t('form.WTrialBalance.showPeriod') }}
               </template>
-              <el-switch v-model="showPeriod" @change="visibleColumn" />
+              <el-switch
+                v-model="showPeriod"
+                :active-value="false"
+                :inactive-value="true"
+                @change="visibleColumn"
+              />
             </el-form-item>
             <el-form-item
               style="text-align:center; margin-left: 5%;"
@@ -194,7 +204,12 @@
               <template slot="label">
                 {{ $t('form.WTrialBalance.showAccumulated') }}
               </template>
-              <el-switch v-model="showAccumulated" @change="visibleColumn" />
+              <el-switch
+                v-model="showAccumulated"
+                :active-value="false"
+                :inactive-value="true"
+                @change="visibleColumn"
+              />
             </el-form-item>
             <el-form-item
               style="text-align: center; margin-top:7%; margin-right:10%; float:right"
@@ -222,6 +237,7 @@
     </el-card>
     <div style="padding-top: 10px;">
       <el-table
+        height="500"
         :cell-class-name="classChecker"
         :data="listSummary"
         border
@@ -274,7 +290,11 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
 export default defineComponent({
   name: 'WTrialBalance',
-
+  data() {
+    return {
+      activeName: 'top'
+    }
+  },
   props: {
     metadata: {
       type: Object,
@@ -293,6 +313,9 @@ export default defineComponent({
           return 'redClass'
         }
       }
+    },
+    filterMethod(query) {
+      this.showListAccoutingKeys(true, query)
     }
   },
   setup(props) {
@@ -580,7 +603,7 @@ export default defineComponent({
       } = param
       const sums = []
       columns.forEach((column, index) => {
-        sums[index] = 'N/A'
+        sums[index] = ''
         // if (index === 0) {
         //   sums[index] = 'Total'
         //   return
@@ -601,6 +624,12 @@ export default defineComponent({
       })
 
       return sums
+    }
+    const activateAuto = () => {
+      if (!isEmptyValue(organization.value) && !isEmptyValue(untilPeriod.value) && !isEmptyValue(cubeReport.value)) {
+        refresh()
+      }
+      return
     }
     function changeView(data) {
       isVisible.value = data
@@ -633,6 +662,7 @@ export default defineComponent({
       // Computed
       calculate,
       validateBeforeSearch,
+      activateAuto,
       // Methods
       changeSelections,
       showListOrganization,
