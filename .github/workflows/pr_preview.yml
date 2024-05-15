@@ -1,0 +1,135 @@
+name: Deploy Pull Rrquest Preview
+
+on:
+  push:
+    branches:
+      - '*'         # matches every branch that doesn't contain a '/'
+      - '*/*'       # matches every branch containing a single '/'
+      - '**'        # matches every branch
+    paths-ignore:
+      - README.md
+      - README.es.md
+      - 'docs/**'
+      - .github/workflows/docs.yml
+      - .github/**.md # Templates
+
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - '*'
+      - main
+
+jobs:
+  create-deployment-preview:
+    if: github.event.action == 'opened'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Node configuration
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          cache: 'yarn'
+
+      - name: Enable https to install packages
+        run: git config --global url."https://".insteadOf git://
+
+      - name: Install packages
+        run: yarn ci
+
+      - name: Run Linter
+        run: yarn lint
+
+      # - name: Run Unit Test
+      #   run: test:unit
+
+      - name: Compile dist
+        run: yarn build:prod
+
+      - name: Deploy to GitHub Pull Request Previwer
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages-pr-${{ github.event.pull_request.number }}
+          name: adempiere-vue
+          path: dist
+
+  update-deployment-preview:
+    if: github.event.action == 'synchronize'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Node configuration
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          cache: 'yarn'
+
+      - name: Enable https to install packages
+        run: git config --global url."https://".insteadOf git://
+
+      - name: Install packages
+        run: yarn ci
+
+      - name: Run Linter
+        run: yarn lint
+
+      # - name: Run Unit Test
+      #   run: test:unit
+
+      - name: Compile dist
+        run: yarn build:prod
+
+      - name: Upload dist app
+        uses: actions/upload-artifact@v3
+        with:
+          name: adempiere-vue
+          branch: gh-pages-pr-${{ github.event.pull_request.number }}
+          path: dist
+          folder: dist
+
+  delete-deployment-preview:
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Node configuration
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          cache: 'yarn'
+
+      - name: Enable https to install packages
+        run: git config --global url."https://".insteadOf git://
+
+      - name: Install packages
+        run: yarn ci
+
+      - name: Run Linter
+        run: yarn lint
+
+      # - name: Run Unit Test
+      #   run: test:unit
+
+      - name: Compile dist
+        run: yarn build:prod
+
+      - name: Deploy to GitHub Pull Request Previwer
+        uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branch: gh-pages-pr-${{ github.event.pull_request.number }}
+          name: adempiere-vue
+          path: dist
+
+      - name: Delete branch
+        run: |
+          git branch -D gh-pages-pr-${{ github.event.pull_request.number }}
+          git push origin --delete gh-pages-pr-${{ github.event.pull_request.number }}
