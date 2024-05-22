@@ -165,6 +165,12 @@ const acctViewer = {
       recordUuid,
       recordId
     }) {
+      console.log({
+        searchValue,
+        tableName,
+        recordUuid,
+        recordId
+      })
       const accoutingSchemaId = getters.getCurrentStoredAccoutingSchemaId
       if (isEmptyValue(accoutingSchemaId)) {
         return
