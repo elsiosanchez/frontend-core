@@ -35,6 +35,8 @@
       :controls="isShowControls"
       :controls-position="controlsPosition"
       autofocus
+      :min="minValue"
+      :max="maxValue"
       :size="sizeField"
       @change="preHandleChange"
       @focus="focusGained"
@@ -59,7 +61,7 @@
 </template>
 
 <script>
-
+import store from '@/store'
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 
@@ -130,7 +132,7 @@ export default {
       }
       if (isDecimalField(this.metadata.display_type)) {
         // return store.getters.getStandardPrecision
-        return this.$store.getters.getCurrencyPrecision
+        return store.getters.getCurrencyPrecision
       }
       return undefined
     },
