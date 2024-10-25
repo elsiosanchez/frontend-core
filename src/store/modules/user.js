@@ -23,6 +23,7 @@ import { CLIENT, ORGANIZATION, CURRENCY, WAREHOUSE } from '@/utils/ADempiere/con
 import { title } from '@/settings'
 import { config } from '@/utils/ADempiere/config'
 import { ACCOUNTING_CONTEXT_PREFIX } from '@/utils/ADempiere/contextUtils'
+
 // API Request Methods
 import {
   requestUserActivity
@@ -45,7 +46,6 @@ import {
   systemInfoS3,
   systemInfoReportEngine
 } from '@/api/ADempiere/common/index.ts'
-
 import { getCurrencyPrecision } from '@/api/ADempiere/system-core.js'
 
 // Utils and Helper Methods
