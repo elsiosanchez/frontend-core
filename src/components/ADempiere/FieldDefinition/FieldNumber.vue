@@ -32,11 +32,11 @@
       v-shortkey="shortcutKeys"
       v-bind="commonsProperties"
       type="number"
+      :min="minValue"
+      :max="maxValue"
       :controls="isShowControls"
       :controls-position="controlsPosition"
       autofocus
-      :min="minValue"
-      :max="maxValue"
       :size="sizeField"
       @change="preHandleChange"
       @focus="focusGained"
@@ -62,6 +62,7 @@
 
 <script>
 import store from '@/store'
+
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 
