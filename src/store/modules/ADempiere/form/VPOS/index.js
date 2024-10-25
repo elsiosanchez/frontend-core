@@ -86,14 +86,20 @@ export default {
      */
     searchPointOfSaleData({
       commit,
+      getters,
       dispatch
     }, id) {
       return new Promise(resolve => {
         const currentRouter = router.app.$route
+        const currentPos = getters.getVPOS
         const { posId } = currentRouter.query
         if (!isEmptyValue(posId)) id = posId
         if (isEmptyValue(id)) {
           dispatch('listPointOfSale')
+          resolve({})
+          return
+        }
+        if (!isEmptyValue(currentPos) && currentPos.id === Number(id)) {
           resolve({})
           return
         }
