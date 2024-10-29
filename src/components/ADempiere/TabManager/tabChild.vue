@@ -497,7 +497,6 @@ export default defineComponent({
     }
 
     setTimeout(() => {
-      console.log({ currentRoute })
       if (
         !isEmptyValue(currentRoute.params) &&
         !isEmptyValue(currentRoute.params.children) &&
