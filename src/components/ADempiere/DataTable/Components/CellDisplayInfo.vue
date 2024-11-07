@@ -170,7 +170,9 @@ export default defineComponent({
     const isPreviewImage = ref(false)
 
     const columnName = computed(() => {
-      if (!isEmptyValue(props.fieldAttributes.column_name)) return props.fieldAttributes.column_name
+      if (!isEmptyValue(props.fieldAttributes.column_name)) {
+        return props.fieldAttributes.column_name
+      }
       return props.fieldAttributes.columnName
     })
     // const elementName = computed(() => {
