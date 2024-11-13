@@ -453,9 +453,6 @@ export default defineComponent({
     })
     // Current Record ID
     const currentRecordId = computed(() => {
-      if (!isEmptyValue(currentRoute) && !isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) {
-        return currentRoute.query.recordId
-      }
       if (currentTabMetadata.value) {
         return store.getters.getIdOfContainer({
           containerUuid: currentTabMetadata.value.containerUuid,

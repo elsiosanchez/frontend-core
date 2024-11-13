@@ -127,7 +127,6 @@
 <script>
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 
-import router from '@/router'
 import language from '@/lang'
 import store from '@/store'
 
@@ -173,7 +172,6 @@ export default defineComponent({
     /**
      * Const
      */
-    const currentRoute = router.app._route
 
     const containerUuid = props.tabAttributes.uuid
 
@@ -197,9 +195,6 @@ export default defineComponent({
       return store.getters.getUuidOfContainer(containerUuid)
     })
     const recordId = computed(() => {
-      if (!isEmptyValue(currentRoute) && !isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) {
-        return currentRoute.query.recordId
-      }
       return store.getters.getIdOfContainer({
         containerUuid: containerUuid,
         tableName: props.tabAttributes.table_name
