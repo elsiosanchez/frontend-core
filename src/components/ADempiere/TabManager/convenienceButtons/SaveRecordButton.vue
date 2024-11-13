@@ -158,7 +158,11 @@ export default defineComponent({
             query,
             params
           } = currentRoute
-          const { id } = response
+          const { id, uuid } = response
+          params.action = uuid
+          params.recordId = id
+          query.recordId = id
+          query.action = uuid
           // refresh parent tab on document window
           if (!tabAttributes.value.isParentTab) {
             const { firstTabUuid } = tabAttributes.value
@@ -177,11 +181,13 @@ export default defineComponent({
           router.replace({
             name,
             query: {
+              action: uuid,
               ...query,
               recordId: id,
               filters: []
             },
             params: {
+              action: uuid,
               ...params,
               filters: []
             }

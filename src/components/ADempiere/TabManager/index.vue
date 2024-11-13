@@ -453,6 +453,9 @@ export default defineComponent({
     })
     // Current Record ID
     const currentRecordId = computed(() => {
+      if (!isEmptyValue(currentRoute) && !isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) {
+        return currentRoute.query.recordId
+      }
       if (currentTabMetadata.value) {
         return store.getters.getIdOfContainer({
           containerUuid: currentTabMetadata.value.containerUuid,
@@ -616,6 +619,9 @@ export default defineComponent({
           containerUuid
         })
       }
+      // const contextAttributes = store.getters.getTabData({
+      //   containerUuid: currentTabMetadata.value.containerUuid
+      // }).contextAttributes
       store.dispatch('getEntities', {
         parentUuid: props.parentUuid,
         tabUuid: routerParams.containerUuid,
@@ -623,7 +629,8 @@ export default defineComponent({
         filters,
         referenceUuid: query.referenceUuid,
         filtersRecord,
-        pageNumber
+        pageNumber,
+        contextAttributes: '{"C_Invoice_ID":1287874}'
       }).then(responseData => {
         if (isCreateNew.value || isEmptyValue(responseData)) {
         // set values in panel
