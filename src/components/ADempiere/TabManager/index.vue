@@ -664,6 +664,7 @@ export default defineComponent({
         const recordId = currentRecordId.value
         setValuesPath({
           query: {
+            action: responseData.uuid,
             ...currentRoute.query,
             recordId
           },

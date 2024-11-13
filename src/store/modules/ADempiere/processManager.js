@@ -286,6 +286,12 @@ const processManager = {
                   return rootGetters.getIsLoadedTabRecord({
                     containerUuid: tabItem.uuid
                   })
+                }).forEach(tabItem => {
+                  // if loaded data refresh this data
+                  dispatch('getEntities', {
+                    parentUuid: windowsUuid,
+                    containerUuid: tabItem.uuid
+                  })
                 })
               }
             }
