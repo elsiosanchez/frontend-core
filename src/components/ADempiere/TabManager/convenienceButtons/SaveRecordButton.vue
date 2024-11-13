@@ -159,10 +159,6 @@ export default defineComponent({
             params
           } = currentRoute
           const { id, uuid } = response
-          params.action = uuid
-          params.recordId = id
-          query.recordId = id
-          query.action = uuid
           // refresh parent tab on document window
           if (!tabAttributes.value.isParentTab) {
             const { firstTabUuid } = tabAttributes.value
@@ -177,7 +173,10 @@ export default defineComponent({
               })
             }
           }
-
+          if (query.options === 'create-new') {
+            delete query.recordId
+            delete params.recordId
+          }
           router.replace({
             name,
             query: {
@@ -191,7 +190,7 @@ export default defineComponent({
               ...params,
               filters: []
             }
-          }, () => {})
+          })
         })
         .catch(error => {
           // console.error('Error saving record', error.message)

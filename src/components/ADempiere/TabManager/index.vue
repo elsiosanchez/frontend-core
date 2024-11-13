@@ -619,9 +619,9 @@ export default defineComponent({
           containerUuid
         })
       }
-      // const contextAttributes = store.getters.getTabData({
-      //   containerUuid: currentTabMetadata.value.containerUuid
-      // }).contextAttributes
+      const contextAttributes = store.getters.getTabData({
+        containerUuid: currentRoute.query.containerUuid
+      }).contextAttributes
       store.dispatch('getEntities', {
         parentUuid: props.parentUuid,
         tabUuid: routerParams.containerUuid,
@@ -630,7 +630,7 @@ export default defineComponent({
         referenceUuid: query.referenceUuid,
         filtersRecord,
         pageNumber,
-        contextAttributes: '{"C_Invoice_ID":1287874}'
+        contextAttributes
       }).then(responseData => {
         if (isCreateNew.value || isEmptyValue(responseData)) {
         // set values in panel
