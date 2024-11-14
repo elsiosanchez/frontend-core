@@ -50,6 +50,7 @@ import store from '@/store'
 // import { displayLineProductPriceValue } from '@/utils/ADempiere/dictionary/form/VPOS'
 // import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'fieldAmount',
@@ -96,6 +97,7 @@ export default defineComponent({
     // Methods
     const displayValue = computed(() => {
       const currency = store.getters.getAvailableCurrencies.currencie
+      if (!isEmptyValue(props.valueDisplay)) return props.valueDisplay
       return formatPrice({ value: Number(totalAmount.value), currency: currency.iso_code })
     })
     function customFocusGained(event) {
