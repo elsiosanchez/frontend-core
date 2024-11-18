@@ -91,7 +91,8 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isLookup } from '@/utils/ADempiere/references'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
-
+import { DATE } from '@/utils/ADempiere/references.js'
+import { formatDate as formatDateTemp, getDateFormat } from '@/utils/ADempiere/formatValue/dateFormat'
 // API Request Methods
 import { listZoomWindowsRequest } from '@/api/ADempiere/fields/zoom.js'
 
@@ -222,6 +223,17 @@ export default defineComponent({
       if (!isEmptyValue(rowData)) {
         const { display_value, value: currentValue } = rowData
         if (!isEmptyValue(display_value) || isLookup(field.display_type)) {
+          if (field.display_type === DATE.id) {
+            return formatDateTemp({
+              value: display_value,
+              isTime: false,
+              format: getDateFormat({
+                format: undefined,
+                isTime: false,
+                isDate: true
+              })
+            })
+          }
           return display_value
         }
         if (!isEmptyValue(currentValue)) {
@@ -340,6 +352,10 @@ export default defineComponent({
       isLoaded,
       // Computed
       show,
+      // Utilities
+      DATE,
+      formatDateTemp,
+      getDateFormat,
       // Métodos
       loadZoom,
       cellStyle,
