@@ -197,7 +197,7 @@ export default defineComponent({
       if (props.fieldAttributes.is_encrypted) {
         return '••••••••••••••••••'
       }
-      let currentValue = props.dataRow[columnName.value]
+      const currentValue = props.dataRow[columnName.value]
       return formatField({
         value: currentValue,
         currency: props.dataRow[DISPLAY_COLUMN_PREFIX + CURRENCY],
