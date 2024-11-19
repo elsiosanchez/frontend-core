@@ -337,9 +337,6 @@ export default defineComponent({
       isLoaded,
       // Computed
       show,
-      // Utilities
-      formatDateTemp,
-      getDateFormat,
       // Métodos
       loadZoom,
       cellStyle,
