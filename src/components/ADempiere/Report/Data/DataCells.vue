@@ -224,15 +224,12 @@ export default defineComponent({
       if (!isEmptyValue(rowData)) {
         const { display_value, value: currentValue } = rowData
         if (!isEmptyValue(display_value) || isLookup(field.display_type)) {
-          if (field.display_type === DATE.id) {
-            return formatField({
-              value: display_value,
-              displayedValue: display_value,
-              displayType: field.display_type,
-              columnName: field.column_name
-            })
-          }
-          return display_value
+          return formatField({
+            value: display_value,
+            displayedValue: display_value,
+            displayType: field.display_type,
+            columnName: field.column_name
+          })
         }
         if (!isEmptyValue(currentValue)) {
           if (!isEmptyValue(currentValue.value)) {
