@@ -290,6 +290,7 @@ export default {
 
 <style lang="scss" scope>
 .custom-field-bpartner-info {
+  width: 500px !important;
   // items of lust
   li {
     line-height: normal;

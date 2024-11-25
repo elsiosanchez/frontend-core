@@ -179,6 +179,7 @@ export default {
 
 <style lang="scss">
 .custom-field-search-info {
+  width: 500px !important;
   // button icon suffix
   .button-search {
     padding-left: 10px !important;
@@ -192,6 +193,7 @@ export default {
 </style>
 <style lang="scss" scope>
 .custom-field-search-info {
+  width: 500px !important;
   // items of lust
   li {
     line-height: normal;

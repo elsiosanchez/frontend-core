@@ -375,6 +375,7 @@ export default {
     max-height: 400px;
   }
   .custom-field-prodcut-info {
+    width: 500px !important;
     li {
       line-height: normal;
       padding-bottom: 15px;

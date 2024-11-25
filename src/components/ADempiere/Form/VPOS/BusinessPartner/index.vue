@@ -993,6 +993,7 @@ export default {
 
 <style lang="scss" scope>
   .custom-field-bpartner-info {
+    width: 500px !important;
     li {
       line-height: normal;
       padding: 15px;
