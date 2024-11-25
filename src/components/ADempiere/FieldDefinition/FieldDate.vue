@@ -238,7 +238,7 @@ export default {
           endValue = value.at(1)
         }
 
-        if (startValue === null) {
+        if (isEmptyValue(startValue)) {
           startValue = undefined
           endValue = undefined
         }
@@ -340,15 +340,16 @@ export default {
         startValue = value.at(0)
         endValue = value.at(1)
       }
+      if (this.typePicker !== 'datetime') {
+        if (isEmptyValue(startValue)) {
+          startValue = undefined
+          endValue = undefined
+        }
 
-      if (startValue === null) {
-        startValue = undefined
-        endValue = undefined
-      }
-
-      if (typeof startValue !== 'object' && startValue !== undefined) {
-        startValue = new Date(startValue)
-        endValue = new Date(endValue)
+        if (typeof startValue !== 'object' && !isEmptyValue(startValue)) {
+          startValue = new Date(startValue)
+          endValue = new Date(endValue)
+        }
       }
       this.handleFieldChange({
         value: startValue,
