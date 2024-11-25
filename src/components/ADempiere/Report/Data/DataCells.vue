@@ -145,7 +145,6 @@ export default defineComponent({
     // Ref
     const isLoaded = ref(false)
     // Computed
-
     const show = computed({
       get() {
         const showValidate = props.currentSelectedRow === props.rowData && props.currentSelectedColumn === props.attributes.code && props.rowData.is_parent
@@ -219,13 +218,17 @@ export default defineComponent({
         return
       }
       const rowData = row.cells[field.code]
+      const { datePattern } = store.getters['getCurrentLanguageDefinition']
+      const precision = store.getters['user/getCurrencyPrecision'].standard_precision
       if (!isEmptyValue(rowData)) {
         const { display_value, value: currentValue } = rowData
         return formatField({
           value: currentValue,
           displayedValue: display_value,
           displayType: field.display_type,
-          columnName: field.column_name
+          columnName: field.column_name,
+          precision,
+          optionalFormat: datePattern
         })
       }
     }
