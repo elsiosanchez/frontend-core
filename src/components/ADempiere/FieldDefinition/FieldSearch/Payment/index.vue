@@ -289,7 +289,9 @@ export default {
 
 <style lang="scss" scope>
 .custom-field-payment-info {
-  width: 500px !important;
+  &.el-autocomplete-suggestion {
+    min-width: 250px !important;
+  }
   // items of lust
   li {
     line-height: normal;

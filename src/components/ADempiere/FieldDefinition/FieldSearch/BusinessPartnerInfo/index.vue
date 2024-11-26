@@ -203,8 +203,10 @@ export default {
 
 <style lang="scss" scope>
 .custom-field-bpartner-info {
-  width: 500px !important;
-  // items of lust
+  &.el-autocomplete-suggestion {
+    min-width: 250px !important;
+  }
+
   li {
     line-height: normal;
     // padding: 15px;

@@ -375,7 +375,9 @@ export default {
     max-height: 400px;
   }
   .custom-field-prodcut-info {
-    width: 500px !important;
+    &.el-autocomplete-suggestion {
+      min-width: 250px !important;
+    }
     li {
       line-height: normal;
       padding-bottom: 15px;
