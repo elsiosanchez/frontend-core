@@ -307,7 +307,7 @@ export default {
           ordersHistory: 'Orders History',
           generateImmediateInvoice: 'Generate Immediate Invoice',
           completePreparedOrder: 'Complete Prepared Order',
-          cancelSaleTransaction: 'Cancel Sale Transaction',
+          cancelSaleTransaction: 'Cancel Sales Transaction',
           createPos: 'Create Point of Sale Withdrawal',
           print: 'Print Document',
           preview: 'View Preview',
