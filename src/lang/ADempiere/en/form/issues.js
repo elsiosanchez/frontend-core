@@ -18,8 +18,8 @@
 
 const issues = {
   documentNo: 'Document No',
-  issues: 'Issues',
-  issuesAll: 'All Issues',
+  issues: 'Requests',
+  issuesAll: 'All Requests',
   subject: 'Subject',
   summary: 'Summary',
   created: 'Created',
@@ -44,15 +44,15 @@ const issues = {
   change: 'Change',
   to: 'to',
   emailTemplate: 'Email Template',
-  nextActionDate: 'Next Action Date',
+  nextActionDate: 'Deadline',
   expirationType: 'Expiration Type',
   timeRecord: 'Time Record',
-  businessPartner: 'Business Partner',
-  salesAgent: 'Sales Agent',
+  businessPartner: 'Client',
+  salesAgent: 'Assigned to',
   category: 'Category',
   project: 'Project',
   group: 'Group',
-  nextDate: 'Next Date',
+  nextDate: 'Deadline',
   taskStatus: 'Task Status',
   filters: 'Filters'
 }
