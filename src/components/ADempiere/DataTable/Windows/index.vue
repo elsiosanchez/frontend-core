@@ -622,15 +622,9 @@ export default defineComponent({
       const { name, display_type, columnName } = fieldAttributes
       const size = 8
       const lenght = name.length
-      if (['C_BPartner_ID', 'C_Project_ID', 'C_BankAccount_ID'].includes(columnName)) {
-        return 300
-      }
-      if (columnName === 'Name') {
-        return 200
-      }
-      if (columnName === 'M_Product_ID') {
-        return 400
-      }
+      if (['C_BPartner_ID', 'C_Project_ID', 'C_BankAccount_ID'].includes(columnName)) return 300
+      if (columnName === 'Name') return 350
+      if (columnName === 'M_Product_ID') return 400
       const sum = (lenght * size) + 50
       if (isBooleanField(display_type)) {
         if (sum < 140) return 140
