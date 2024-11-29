@@ -174,9 +174,11 @@ export default defineComponent({
             action: response.uuid,
             recordId: response.id
           })
+          isSaveRecordLoading.value = false
         })
         .catch(error => {
           // console.error('Error saving record', error.message)
+          isSaveRecordLoading.value = false
           showMessage({
             message: error.message,
             type: 'error'
