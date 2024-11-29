@@ -211,9 +211,9 @@ function displayLineGranTotal({
   row
 }) {
   const {
-    is_tax_included,
     price_list
   } = store.getters.getCurrentOrder
+  const { is_tax_included } = price_list
   let currency = {
     iso_code: ''
   }
