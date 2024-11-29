@@ -340,6 +340,10 @@ const actions = {
     id
   }) {
     return new Promise((resolve, reject) => {
+      if (isEmptyValue(id)) {
+        reject('Empty currency precision ID')
+        return
+      }
       getCurrencyPrecision({
         id
       })
