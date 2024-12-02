@@ -319,7 +319,7 @@ export default defineComponent({
         .then(response => {
           if (!isEmptyValue(response.error_msg)) {
             showMessage({
-              message: response.errorMsg,
+              message: response.error_msg,
               type: 'error'
             })
           }
