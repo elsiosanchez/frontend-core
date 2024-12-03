@@ -334,6 +334,7 @@ export default {
     commit('setOrder', order)
   },
   currentOrder({ commit }, findOrder) {
+    commit('setCurrentOrder', findOrder)
     commit('findOrder', findOrder)
   },
   findOrderServer({ commit, rootGetters }, orderUuid) {
