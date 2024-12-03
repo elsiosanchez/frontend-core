@@ -216,9 +216,7 @@ export default ({
         columnName: DISPLAY_COLUMN_PREFIX + columnName,
         value: displayValue
       })
-      return
     }
-
     store.dispatch('notifyFieldChange', {
       containerUuid,
       containerManager,
