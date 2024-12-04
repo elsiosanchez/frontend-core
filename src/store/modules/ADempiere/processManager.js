@@ -25,7 +25,9 @@ import {
   requestRunBusinessProcessAsBrowser,
   requestRunBusinessProcessAsWindow
 } from '@/api/ADempiere/business-data/runBusinessProcess.ts'
-
+import {
+  refreshRecord
+} from '@/utils/ADempiere/dictionary/window'
 // Constants
 import { RECORD_ID } from '@/utils/ADempiere/constants/systemColumns'
 
@@ -287,16 +289,11 @@ const processManager = {
                     containerUuid: tabItem.uuid
                   })
                 }).forEach(tabItem => {
-                  // if loaded data refresh this data
-                  const { keyColumn } = tabItem
-                  const filtersRecord = {
-                    columnName: keyColumn,
-                    value: recordId
-                  }
-                  dispatch('getEntities', {
+                  refreshRecord.refreshRecord({
                     parentUuid: windowsUuid,
                     containerUuid: tabItem.uuid,
-                    filtersRecord
+                    recordId: recordId,
+                    isRefreshChilds: true
                   })
                 })
               }
