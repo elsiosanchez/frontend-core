@@ -403,6 +403,9 @@ export default defineComponent({
           currentLine.value.isEditDiscount = false
           isLoadingDiscount.value = false
         })
+        .finally(() => {
+          isLoadingDiscount.value = false
+        })
     }
 
     function refreshLine(line) {
