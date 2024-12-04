@@ -420,6 +420,7 @@ export default {
       dispatch,
       getters
     }, {
+      isListLine,
       customer_id,
       campaign_id,
       warehouse_id,
@@ -467,6 +468,7 @@ export default {
               }
             }, () => {})
             dispatch('currentOrder', response)
+            if (isListLine) dispatch('listLines')
             // dispatch('overloadOrder', { order: response })
             resolve({})
           })

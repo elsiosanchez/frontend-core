@@ -223,6 +223,24 @@ export default defineComponent({
       return store.getters.getVPOS
     })
 
+    const isLoading = computed(() => {
+      return store.getters.getLoadingLines
+    })
+
+    /**
+     * Methods copyCode
+     * @param {*} value - The object containing the product information.
+     * @param {Object} value.product - The object representing the product.
+     * @param {string} value.product.value - The value of the product to be copied.
+     *
+     * @returns {void} Returns no value.
+     *
+     * @example
+     * const productInfo = {
+     * product: {
+     *  value: 'product code 12345'
+     * }
+     */
     function copyCode(value) {
       copyToClipboard({
         text: value.product.value,
@@ -452,6 +470,7 @@ export default defineComponent({
       isLoadingQty,
       currentLine,
       lines,
+      isLoading,
       // Methods
       handleCurrentChangeOrderLine,
       displayLabel,

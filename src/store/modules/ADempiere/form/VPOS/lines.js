@@ -39,7 +39,8 @@ const OrderVPOS = {
   lines: [],
   listUOM: [],
   stocks: [],
-  currentLine: {}
+  currentLine: {},
+  isLoadingLines: false
 }
 
 export default {
@@ -62,6 +63,9 @@ export default {
     },
     setCurrentLine(state, line) {
       state.currentLine = line
+    },
+    setLoadingLines(state, isLoading) {
+      state.isLoadingLines = isLoading
     }
   },
   actions: {
@@ -162,6 +166,7 @@ export default {
         //   order: currentOrder
         // })
         if (isEmptyValue(currentOrder)) resolve([])
+        commit('setLoadingLines', false)
         listOrderLines({
           posId: currentPos.id,
           orderId: currentOrder.id,
@@ -179,6 +184,7 @@ export default {
               }
             })
             commit('setListOrderLines', list)
+            commit('setLoadingLines', true)
             resolve(list)
           })
           .catch(error => {
@@ -192,6 +198,7 @@ export default {
               message,
               showClose: true
             })
+            commit('setLoadingLines', true)
             resolve([])
             console.warn(`Error Getting List Order Lines: ${error.message}. Code: ${error.code}.`)
           })
@@ -406,6 +413,9 @@ export default {
     },
     getCurrentLine(state) {
       return state.currentLine
+    },
+    getLoadingLines(state) {
+      return state.isLoadingLines
     }
   }
 }
