@@ -220,9 +220,9 @@ function displayLineGranTotal({
   if (!isEmptyValue(price_list)) currency = price_list.currency
   const {
     total_amount_with_tax,
-    total_amount
+    total_base_amount
   } = row
-  if (is_tax_included) return formatPrice(Number(total_amount), currency.iso_code)
+  if (is_tax_included) return formatPrice(Number(total_base_amount), currency.iso_code)
   return formatPrice(Number(total_amount_with_tax), currency.iso_code)
 }
 
