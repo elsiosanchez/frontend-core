@@ -1022,6 +1022,10 @@
               {{ $t('issues.createNewRequest') }}
               <i class="el-icon-plus" />
             </el-button>
+            <el-button v-if="!isPanelEditRequest" style="float: right;margin-right: 10px;" plain type="primary" @click="uploadFile()">
+              {{ $t('component.attachment.uploadFile') }}
+              <i class="el-icon-upload" />
+            </el-button>
           </div>
           <div id="panel-issues" style="display: flex;width: -webkit-fill-available;">
             <div id="panel-left" style="padding: 0px;width: 75%;">
@@ -1493,7 +1497,12 @@
           </el-timeline>
         </span>
       </el-header>
-
+      <upload-issue
+        v-if="!isPanelEditRequest"
+        :number-document="documentNumber"
+        :record-id="issueId"
+        :subject="currentSubject"
+      />
       <el-main height="auto" style="height: auto;overflow: auto;padding: 0px 0px 30px !important;">
         <issue-comment-add
           v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest"
@@ -1519,7 +1528,7 @@ import IssueCommentAdd from '@/components/ADempiere/FormDefinition/IssueManageme
 import IssueCommentView from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueCommentView.vue'
 import IssueLog from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueLog.vue'
 import IssueRecordTime from '@/components/ADempiere/FormDefinition/IssueManagement/IssueRecordTime/index.vue'
-
+import UploadIssue from '@/components/ADempiere/Form/Issues/component/upload.vue'
 // Constants
 import { REQUEST_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
 
@@ -1551,7 +1560,8 @@ export default defineComponent({
     IssueCommentAdd,
     IssueCommentView,
     IssueLog,
-    IssueRecordTime
+    IssueRecordTime,
+    UploadIssue
   },
 
   props: {
@@ -1646,7 +1656,15 @@ export default defineComponent({
     const currentIssues = computed(() => {
       return store.getters.getCurrentIssues
     })
-
+    const documentNumber = computed(() => {
+      return currentIssues.value ? currentIssues.value.document_no : 0
+    })
+    const issueId = computed(() => {
+      return currentIssues.value ? currentIssues.value.id : 0
+    })
+    const currentSubject = computed(() => {
+      return currentIssues.value ? currentIssues.value.subject_no : ''
+    })
     const userId = computed(() => {
       return store.getters['user/userInfo'].id
     })
@@ -2614,7 +2632,11 @@ export default defineComponent({
           })
       })
     }
-
+    function uploadFile() {
+      store.dispatch('showLogs', {
+        show: true
+      })
+    }
     function remoteMethodTaskStatus(query) {
       if (!isEmptyValue(query) && query.length > 1) {
         findTaskStatus(true, query)
@@ -2635,6 +2657,11 @@ export default defineComponent({
     }
 
     return {
+      // Upload
+      uploadFile,
+      documentNumber,
+      currentSubject,
+      issueId,
       // Ref
       subject,
       currentSalesReps,
