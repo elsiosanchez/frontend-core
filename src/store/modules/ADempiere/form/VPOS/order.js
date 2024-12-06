@@ -420,7 +420,7 @@ export default {
       dispatch,
       getters
     }, {
-      isListLine,
+      isListLine = true,
       customer_id,
       campaign_id,
       warehouse_id,

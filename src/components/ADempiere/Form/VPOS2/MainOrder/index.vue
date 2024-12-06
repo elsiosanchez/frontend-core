@@ -146,10 +146,29 @@ export default defineComponent({
     editQtyEntered
   },
   setup() {
+    /**
+     * Ref
+     * @currentLine {Object}
+     * @isLoadingDiscount {Boolean}
+     * @isLoadingQty {Boolean}
+     * @currentLine {Boolean}
+     */
     const currentLine = ref({})
     const isLoadingDiscount = ref(false)
     const isLoadingQty = ref(false)
     const isLoadingPrice = ref(false)
+
+    /**
+     * Computed
+     * @lines
+     * @orderLineDefinition
+     * @isLoading
+     * @currentPos
+     */
+    const lines = computed(() => {
+      return store.getters.getListOrderLines
+    })
+
     const orderLineDefinition = computed(() => {
       return {
         lineDescription: {
@@ -215,16 +234,13 @@ export default defineComponent({
         }
       }
     })
-    const lines = computed(() => {
-      return store.getters.getListOrderLines
+
+    const isLoading = computed(() => {
+      return store.getters.getLoadingLines
     })
 
     const currentPos = computed(() => {
       return store.getters.getVPOS
-    })
-
-    const isLoading = computed(() => {
-      return store.getters.getLoadingLines
     })
 
     /**
@@ -248,10 +264,64 @@ export default defineComponent({
       })
     }
 
+    /**
+     * Handles the change of the current line in the order.
+     *
+     * This function takes care of updating the status of the current line in the Vuex store and also updates a local reactive reference.
+     * Vuex store and also updates a local reactive reference.
+     * It is used to reflect the change of the selected line in the user interface and in the status of the order.
+     * user interface and in the global state of the application.
+     *
+     * @param {Object} line - The order line that is set as the current line.
+     * Must be an object that contains the relevant information * of the order line
+     * of the order line.
+     *
+     * @returns {void} Returns no value.
+     *
+     * @example
+     * // Suppose we have an order line.
+     * const orderLine = { id: 1, product: 'Product A', quantity: 2 };
+     * handleCurrentChangeOrderLine(orderLine);
+     *
+     * This will update the state in the store and the local reference.
+     */
+
     function handleCurrentChangeOrderLine(line) {
       store.commit('setCurrentLine', line)
       currentLine.value = line
     }
+
+    /**
+     * Enables editing of a row according to the selected column.
+     * -
+     * This function is used to mark a specific row as editable
+     * depending on the column being edited. Depending on the key
+     * of the column, a flag is set in the corresponding row
+     * to allow editing of certain fields (current price, quantity * entered or discount)
+     * entered or discount).
+     * -
+     * @param {Object} row - The row of the order to be edited
+     * Must be an object representing a row
+     * in the table, with properties indicating
+     * whether each field can be edited.
+     * -
+     * @param {Object} column - The column being edited
+     * Must be an object containing information
+     * about the column, including its key.
+     * -
+     * @param {Object} cell - The object of the cell being edited
+     * This parameter may contain additional information
+     * about the cell, although it is not used in this function.
+     *
+     * @returns {void} Returns no value.
+     *
+     * @example
+     * // Suppose we have a row and a column.
+     * const row = { isEditCurrentPrice: false, isEditQtyEntered: false, isEditDiscount: false };
+     * const column = { columnKey: 'CurrentPrice' };
+     * editLine(row, column);
+     *
+     */
 
     function editLine(row, column, cell) {
       const { columnKey } = column
@@ -265,6 +335,42 @@ export default defineComponent({
       if (columnKey === 'QtyEntered') row.isEditQtyEntered = false
       if (columnKey === 'CurrentPrice') row.isEditCurrentPrice = false
       if (columnKey === 'Discount') row.isEditDiscount = false
+    }
+
+    function refreshLine(line) {
+      currentLine.value.available_quantity = line.line.available_quantity
+      currentLine.value.base_tax_amoun = line.base_tax_amoun
+      currentLine.value.charge = line.charge
+      currentLine.value.description = line.description
+      currentLine.value.discount_amount = line.discount_amount
+      currentLine.value.discount_rate = line.discount_rate
+      currentLine.value.id = line.id
+      currentLine.value.line = line.line
+      currentLine.value.line_description = line.line_description
+      currentLine.value.list_tax_amount = line.list_tax_amount
+      currentLine.value.order_id = line.order_id
+      currentLine.value.price = line.price
+      currentLine.value.price_base = line.price_base
+      currentLine.value.price_base_with_tax = line.price_base_with_tax
+      currentLine.value.price_list = line.price_list
+      currentLine.value.price_list_with_tax = line.price_list_with_tax
+      currentLine.value.price_with_tax = line.price_with_tax
+      currentLine.value.product = line.product
+      currentLine.value.product_uom = line.product_uom
+      currentLine.value.quantity = line.quantity
+      currentLine.value.quantity_ordered = line.quantity_ordered
+      currentLine.value.resource_assignment = line.resource_assignment
+      currentLine.value.source_rma_line_id = line.source_rma_line_id
+      currentLine.value.tax_amount = line.tax_amount
+      currentLine.value.tax_rate = line.tax_rate
+      currentLine.value.total_amount = line.total_amount
+      currentLine.value.total_amount_converted = line.total_amount_converted
+      currentLine.value.total_amount_with_tax = line.total_amount_with_tax
+      currentLine.value.total_amount_with_tax_converted = line.total_amount_with_tax_converted
+      currentLine.value.total_base_amount = line.total_base_amount
+      currentLine.value.total_base_amount_with_tax = line.total_base_amount_with_tax
+      currentLine.value.total_discount_amount = line.total_discount_amount
+      currentLine.value.total_tax_amount = line.total_tax_amount
     }
 
     function updateCurrentPrice(price) {
@@ -426,51 +532,17 @@ export default defineComponent({
         })
     }
 
-    function refreshLine(line) {
-      currentLine.value.available_quantity = line.line.available_quantity
-      currentLine.value.base_tax_amoun = line.base_tax_amoun
-      currentLine.value.charge = line.charge
-      currentLine.value.description = line.description
-      currentLine.value.discount_amount = line.discount_amount
-      currentLine.value.discount_rate = line.discount_rate
-      currentLine.value.id = line.id
-      currentLine.value.line = line.line
-      currentLine.value.line_description = line.line_description
-      currentLine.value.list_tax_amount = line.list_tax_amount
-      currentLine.value.order_id = line.order_id
-      currentLine.value.price = line.price
-      currentLine.value.price_base = line.price_base
-      currentLine.value.price_base_with_tax = line.price_base_with_tax
-      currentLine.value.price_list = line.price_list
-      currentLine.value.price_list_with_tax = line.price_list_with_tax
-      currentLine.value.price_with_tax = line.price_with_tax
-      currentLine.value.product = line.product
-      currentLine.value.product_uom = line.product_uom
-      currentLine.value.quantity = line.quantity
-      currentLine.value.quantity_ordered = line.quantity_ordered
-      currentLine.value.resource_assignment = line.resource_assignment
-      currentLine.value.source_rma_line_id = line.source_rma_line_id
-      currentLine.value.tax_amount = line.tax_amount
-      currentLine.value.tax_rate = line.tax_rate
-      currentLine.value.total_amount = line.total_amount
-      currentLine.value.total_amount_converted = line.total_amount_converted
-      currentLine.value.total_amount_with_tax = line.total_amount_with_tax
-      currentLine.value.total_amount_with_tax_converted = line.total_amount_with_tax_converted
-      currentLine.value.total_base_amount = line.total_base_amount
-      currentLine.value.total_base_amount_with_tax = line.total_base_amount_with_tax
-      currentLine.value.total_discount_amount = line.total_discount_amount
-      currentLine.value.total_tax_amount = line.total_tax_amount
-    }
-
     return {
-      currentPos,
-      orderLineDefinition,
+      // Ref
+      currentLine,
       isLoadingDiscount,
       isLoadingPrice,
       isLoadingQty,
-      currentLine,
+      // Computed
       lines,
+      orderLineDefinition,
       isLoading,
+      currentPos,
       // Methods
       handleCurrentChangeOrderLine,
       displayLabel,
