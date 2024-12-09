@@ -69,7 +69,7 @@
           />
           <comparison-operator
             v-if="!fieldAttributes.is_info_only"
-            :metadata-field="field"
+            :field-attributes="fieldAttributes"
             :container-manager="containerManager"
             :is-read-only-from-field="fieldAttributes.isReadOnlyFromField"
             :style="styleOperator"

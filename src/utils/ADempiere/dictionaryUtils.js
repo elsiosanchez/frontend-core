@@ -222,7 +222,9 @@ export function generateField({
 
   // set field operators list
   let operator = OPERATOR_EQUAL.operator // by default equal
-  let operatorsList = []
+  let operatorsList = [
+    operator
+  ]
   if (moreAttributes.isAdvancedQuery || fieldToGenerate.is_query_criteria || (moreAttributes.isLegacyReport === false && !moreAttributes.isProcessBeforeLaunch)) {
     isComparisonField = !['FieldBinary', 'FieldButton', 'FieldImage'].includes(componentReference.componentPath)
     if (isComparisonField) {
@@ -341,6 +343,18 @@ export function generateField({
         ...field,
         parsedDefaultValue: parsedDefaultValueTo
       })
+    }
+  }
+
+  if (moreAttributes.isProcessBeforeLaunch) {
+    if (field.is_range) {
+      field.operatorsList = [
+        field.operator
+      ]
+    } else {
+      field.operatorsList = [
+        OPERATOR_EQUAL.operator
+      ]
     }
   }
 

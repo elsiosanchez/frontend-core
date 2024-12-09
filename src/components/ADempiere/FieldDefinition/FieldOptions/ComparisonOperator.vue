@@ -35,7 +35,7 @@
     </el-button>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item
-        v-for="(operator, index) in operatorList"
+        v-for="(operator, index) in operatorsList"
         :key="index"
         :command="operator"
         :class="{ 'is-current-comparison-operator': operator === currentOperatorValue}"
@@ -57,14 +57,17 @@ import {
 
 // Constants
 import {
-  FIELD_OPERATORS_LIST, IGNORE_VALUE_OPERATORS_LIST
+  OPERATOR_EQUAL, FIELD_OPERATORS_LIST, IGNORE_VALUE_OPERATORS_LIST
 } from '@/utils/ADempiere/dataUtils'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'ComparisonOperator',
 
   props: {
-    metadataField: {
+    fieldAttributes: {
       type: Object,
       default: () => ({})
     },
@@ -83,20 +86,28 @@ export default defineComponent({
      * Computed
      */
     const currentOperatorValue = computed(() => {
-      return props.metadataField.operator
+      return props.fieldAttributes.operator
     })
 
-    const operatorList = computed(() => {
-      const isComparisonField = !['FieldBinary', 'FieldButton', 'FieldImage'].includes(props.metadataField.componentPath)
-      if (isComparisonField) {
-        const operatorsField = FIELD_OPERATORS_LIST.find(item => {
-          return item.componentPath === props.metadataField.componentPath
-        })
-        if (operatorsField) {
-          return operatorsField.operatorsList
-        }
+    const operatorsList = computed(() => {
+      const isComparisonField = !['FieldBinary', 'FieldButton', 'FieldImage'].includes(props.fieldAttributes.componentPath)
+      if (!isComparisonField) {
+        return [
+          OPERATOR_EQUAL.operator
+        ]
       }
-      return props.metadataField.operatorsList
+      if (!isEmptyValue(props.fieldAttributes.operatorsList)) {
+        return props.fieldAttributes.operatorsList
+      }
+      const operatorsField = FIELD_OPERATORS_LIST.find(item => {
+        return item.componentPath === props.fieldAttributes.componentPath
+      })
+      if (!isEmptyValue(operatorsField)) {
+        return operatorsField.operatorsList
+      }
+      return [
+        OPERATOR_EQUAL.operator
+      ]
     })
 
     /**
@@ -107,7 +118,7 @@ export default defineComponent({
         columnName,
         containerUuid,
         parentUuid
-      } = props.metadataField
+      } = props.fieldAttributes
       store.commit('updateValueOfField', {
         containerUuid,
         columnName,
@@ -118,21 +129,21 @@ export default defineComponent({
         columnName,
         attributeName: 'operator',
         attributeValue: operator,
-        field: props.metadataField
+        field: props.fieldAttributes
       })
 
       store.dispatch('notifyFieldChange', {
         parentUuid,
         containerUuid,
         containerManager: props.containerManager,
-        field: props.metadataField,
+        field: props.fieldAttributes,
         columnName,
         newValue: undefined
       })
     }
 
     function isDisableOperator(operator) {
-      if (props.metadataField.isMandatory) {
+      if (props.fieldAttributes.required) {
         return IGNORE_VALUE_OPERATORS_LIST.includes(operator)
       }
       return false
@@ -141,7 +152,7 @@ export default defineComponent({
     return {
       // Computed
       currentOperatorValue,
-      operatorList,
+      operatorsList,
       // Methods
       handleOperator,
       isDisableOperator
