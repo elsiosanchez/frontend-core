@@ -496,7 +496,16 @@ export default defineComponent({
     })
 
     if (!isEmptyValue(recordUuidTabParent.value) && !tabData.value.isLoading) {
-      getData()
+      if (!isEmptyValue(tabData.value.recordsList)) {
+        const hasEditRow = tabData.value.recordsList.some((data, index) => {
+          return data.isEditRow && index !== 0
+        })
+        if (!hasEditRow) {
+          getData()
+        }
+      } else {
+        getData()
+      }
     }
 
     setTimeout(() => {
