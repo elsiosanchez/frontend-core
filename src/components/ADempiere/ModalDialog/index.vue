@@ -51,6 +51,15 @@
         @click="cancelButton"
       />
       <el-button
+        plain
+        type="info"
+        class="button-base-icon"
+        style="font-size: 25px;"
+        @click="clearParameters"
+      >
+        <svg-icon icon-class="layers-clear" />
+      </el-button>
+      <el-button
         type="primary"
         icon="el-icon-check"
         class="button-base-icon"
@@ -97,6 +106,15 @@
         class="button-base-icon"
         @click="cancelButton"
       />
+      <el-button
+        plain
+        type="info"
+        class="button-base-icon"
+        style="font-size: 25px;"
+        @click="clearParameters"
+      >
+        <svg-icon icon-class="layers-clear" />
+      </el-button>
       <el-button
         type="primary"
         icon="el-icon-check"
@@ -210,12 +228,6 @@ export default defineComponent({
       return false
     })
 
-    watch(isShowed, (newValue, oldValue) => {
-      if (newValue !== oldValue && newValue) {
-        loadModal()
-      }
-    })
-
     const loadModal = () => {
       if (!isEmptyValue(storedModalDialog.value.beforeOpen)) {
         storedModalDialog.value.beforeOpen({
@@ -240,6 +252,13 @@ export default defineComponent({
         isShowed: false
       })
     }
+
+    const clearParameters = () => {
+      containerManagerModalDialog.value.setDefaultValues({
+        containerUuid: props.containerUuid
+      })
+    }
+
     const cancelButton = () => {
       closeDialog()
       // call custom function to cancel
@@ -258,7 +277,16 @@ export default defineComponent({
     }
     if (isShowed.effect && isShowed.value) {
       loadModal()
+      clearParameters()
     }
+
+    // watchers
+    watch(isShowed, (newValue, oldValue) => {
+      if (newValue !== oldValue && newValue) {
+        loadModal()
+        clearParameters()
+      }
+    })
 
     return {
       // computeds
@@ -271,6 +299,7 @@ export default defineComponent({
       isMobile,
       title,
       // methods
+      clearParameters,
       cancelButton,
       closeDialog,
       doneButton
