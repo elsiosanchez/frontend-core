@@ -187,8 +187,16 @@ export default {
               containerUuid: tabAssociatedUuid,
               tableName: table_name
             })
-
-            const { code } = rootGetters.getStoredReport(process.uuid)
+            let code = ''
+            if (
+              !isEmptyValue(process) &&
+              !isEmptyValue(process.uuid)
+            ) {
+              const storedReportDefinition = rootGetters.getStoredReport(process.uuid)
+              if (!isEmptyValue(storedReportDefinition)) {
+                code = storedReportDefinition.code
+              }
+            }
             if (code === FINANCIAL_REPORT_CODE) {
               dispatch('startReport', {
                 parentUuid: tabUuid,

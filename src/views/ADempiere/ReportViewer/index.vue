@@ -150,12 +150,14 @@ export default defineComponent({
 
     const name = computed(() => {
       if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) return storedReportOutput.value.name
-      return storedReportDefinition.value.name
+      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) return storedReportDefinition.value.name
+      return ''
     })
 
     const help = computed(() => {
       if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) return storedReportOutput.value.name
-      return storedReportDefinition.value.help
+      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) return storedReportDefinition.value.help
+      return ''
     })
 
     const link = computed(() => {
@@ -199,7 +201,7 @@ export default defineComponent({
         getCachedReport()
         return
       }
-      if (!isEmptyValue(store.getters.getStoredReport(storedReportOutput.value.reportUuidStore))) {
+      if (!isEmptyValue(storedReportOutput.value) && !isEmptyValue(store.getters.getStoredReport(storedReportOutput.value.reportUuidStore))) {
         getCachedReport()
         return
       }
