@@ -96,7 +96,6 @@ export default defineComponent({
           return operatorsField.operatorsList
         }
       }
-
       return props.metadataField.operatorsList
     })
 

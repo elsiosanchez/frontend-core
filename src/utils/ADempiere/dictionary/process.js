@@ -129,7 +129,8 @@ export function generateProcess({
     panelName: processToGenerate.name,
     isEvaluateValueChanges: true,
     isEditSecuence: false,
-    panelType: panelType
+    panelType: panelType,
+    isProcessBeforeLaunch: processToGenerate.is_process_before_launch
   }
 
   //  Convert from gRPC

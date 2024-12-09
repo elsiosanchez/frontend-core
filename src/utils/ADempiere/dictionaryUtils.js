@@ -223,7 +223,7 @@ export function generateField({
   // set field operators list
   let operator = OPERATOR_EQUAL.operator // by default equal
   let operatorsList = []
-  if (moreAttributes.isAdvancedQuery || fieldToGenerate.is_query_criteria || moreAttributes.isLegacyReport === false) {
+  if (moreAttributes.isAdvancedQuery || fieldToGenerate.is_query_criteria || (moreAttributes.isLegacyReport === false && !moreAttributes.isProcessBeforeLaunch)) {
     isComparisonField = !['FieldBinary', 'FieldButton', 'FieldImage'].includes(componentReference.componentPath)
     if (isComparisonField) {
       const operatorsField = FIELD_OPERATORS_LIST.find(item => {
@@ -233,7 +233,6 @@ export function generateField({
         operatorsList = operatorsField.operatorsList
       }
     }
-
     if (['FieldText', 'FieldTextLong', 'FieldUrl'].includes(componentReference.componentPath)) {
       operator = OPERATOR_LIKE.operator
     }
