@@ -218,6 +218,23 @@ export default {
 
         return true
       })
+  },
+
+  getStoredProcessParameterFromColumnName: (state, getters) => ({
+    containerUuid,
+    columnName,
+    fieldsList = []
+  }) => {
+    if (isEmptyValue(fieldsList)) {
+      fieldsList = getters.getProcessParameters(containerUuid)
+      if (isEmptyValue(fieldsList)) {
+        return undefined
+      }
+    }
+
+    return fieldsList.find(itemField => {
+      return itemField.column_name === columnName
+    })
   }
 
 }

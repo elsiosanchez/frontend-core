@@ -148,6 +148,20 @@ export function isReadOnlyColumn({ is_read_only }) {
   return is_read_only
 }
 
+export function changeFieldAttribure({
+  containerUuid,
+  columnName,
+  attributeName,
+  attributeValue
+}) {
+  return store.dispatch('changeBrowseFieldAttribute', {
+    containerUuid,
+    columnName,
+    attributeName,
+    attributeValue
+  })
+}
+
 /**
  * Manage the browser panel
  */
@@ -219,6 +233,7 @@ export const containerManager = {
 
   isReadOnlyField,
 
+  changeFieldAttribure,
   changeFieldShowedFromUser({ containerUuid, fieldsShowed }) {
     store.dispatch('changeBrowserFieldShowedFromUser', {
       containerUuid,

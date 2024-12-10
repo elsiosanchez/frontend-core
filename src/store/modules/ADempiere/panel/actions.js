@@ -799,6 +799,7 @@ const actions = {
    * @param {mixed}  attributeValue
    */
   changeFieldAttribure({ commit, getters }, {
+    parentUuid,
     containerUuid,
     columnName,
     field,

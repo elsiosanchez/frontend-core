@@ -113,6 +113,27 @@ export default {
     })
   },
 
+  changeProcessFieldAttribute({ commit, getters }, {
+    containerUuid,
+    columnName,
+    field,
+    attributeName,
+    attributeValue
+  }) {
+    if (isEmptyValue(field)) {
+      field = getters.getStoredProcessParameterFromColumnName({
+        containerUuid,
+        columnName
+      })
+    }
+
+    commit('changeProcessFieldAttribute', {
+      field,
+      attributeName,
+      attributeValue
+    })
+  },
+
   /**
    * Used by components/fields/filterFields
    */

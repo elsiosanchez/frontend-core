@@ -710,6 +710,29 @@ export default {
     })
   },
 
+  changeTabFieldAttribute({ commit, getters }, {
+    parentUuid,
+    containerUuid,
+    columnName,
+    field,
+    attributeName,
+    attributeValue
+  }) {
+    if (isEmptyValue(field)) {
+      field = getters.getStoredFieldFromTab({
+        parentUuid,
+        containerUuid,
+        columnName
+      })
+    }
+
+    commit('changeTabFieldAttribute', {
+      field,
+      attributeName,
+      attributeValue
+    })
+  },
+
   /**
    * Used by components/fields/filterFields
    */
@@ -962,8 +985,8 @@ export default {
 
         if (!attribute.columnName.startsWith(DISPLAY_COLUMN_PREFIX)) {
           const field = rootGetters.getStoredFieldFromTab({
-            windowUuid: parentUuid,
-            tabUuid: containerUuid,
+            parentUuid,
+            containerUuid,
             columnName: attribute.columnName
           })
           // activate logics

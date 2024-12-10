@@ -231,6 +231,23 @@ export default {
 
         return true
       })
+  },
+
+  getStoredReportParameterFromColumnName: (state, getters) => ({
+    containerUuid,
+    columnName,
+    fieldsList = []
+  }) => {
+    if (isEmptyValue(fieldsList)) {
+      fieldsList = getters.getStoredFieldsFromReport(containerUuid)
+      if (isEmptyValue(fieldsList)) {
+        return undefined
+      }
+    }
+
+    return fieldsList.find(itemField => {
+      return itemField.column_name === columnName
+    })
   }
 
 }

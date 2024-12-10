@@ -278,6 +278,27 @@ export default {
     })
   },
 
+  changeReportFieldAttribute({ commit, getters }, {
+    containerUuid,
+    columnName,
+    field,
+    attributeName,
+    attributeValue
+  }) {
+    if (isEmptyValue(field)) {
+      field = getters.getStoredReportParameterFromColumnName({
+        containerUuid,
+        columnName
+      })
+    }
+
+    commit('changeReportFieldAttribute', {
+      field,
+      attributeName,
+      attributeValue
+    })
+  },
+
   /**
    * Used by components/fields/filterFields
    * @param {string} containerUuid

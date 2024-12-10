@@ -183,6 +183,20 @@ export const mimeTypeOfReport = {
  */
 export const DEFAULT_REPORT_TYPE = 'pdf'
 
+export function changeFieldAttribure({
+  containerUuid,
+  columnName,
+  attributeName,
+  attributeValue
+}) {
+  return store.dispatch('changeReportFieldAttribute', {
+    containerUuid,
+    columnName,
+    attributeName,
+    attributeValue
+  })
+}
+
 /**
  * Container manager to Report panel
  */
@@ -217,6 +231,7 @@ export const containerManager = {
     })
   },
 
+  changeFieldAttribure,
   changeFieldShowedFromUser({ containerUuid, fieldsShowed }) {
     store.dispatch('changeReportFieldShowedFromUser', {
       containerUuid,

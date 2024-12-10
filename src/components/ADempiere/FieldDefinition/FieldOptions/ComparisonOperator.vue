@@ -124,12 +124,19 @@ export default defineComponent({
         columnName,
         value: null
       })
-      store.dispatch('changeFieldAttribure', {
+      // store.dispatch('changeFieldAttribure', {
+      //   containerUuid,
+      //   columnName,
+      //   attributeName: 'operator',
+      //   attributeValue: operator
+      //   // field: props.fieldAttributes
+      // })
+      props.containerManager.changeFieldAttribure({
+        parentUuid,
         containerUuid,
         columnName,
         attributeName: 'operator',
-        attributeValue: operator,
-        field: props.fieldAttributes
+        attributeValue: operator
       })
 
       store.dispatch('notifyFieldChange', {

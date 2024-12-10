@@ -1413,6 +1413,22 @@ export function generateTabs({
   }
 }
 
+export function changeFieldAttribure({
+  parentUuid,
+  containerUuid,
+  columnName,
+  attributeName,
+  attributeValue
+}) {
+  return store.dispatch('changeTabFieldAttribute', {
+    parentUuid,
+    containerUuid,
+    columnName,
+    attributeName,
+    attributeValue
+  })
+}
+
 /**
  * Manage the window tab panel
  */
@@ -1983,6 +1999,7 @@ export const containerManager = {
     })
   },
 
+  changeFieldAttribure,
   changeFieldShowedFromUser({ parentUuid, containerUuid, fieldsShowed }) {
     store.dispatch('changeTabFieldShowedFromUser', {
       parentUuid,
@@ -1990,7 +2007,6 @@ export const containerManager = {
       fieldsShowed
     })
   },
-
   changeColumnShowedFromUser({ parentUuid, containerUuid, fieldsShowed }) {
     store.dispatch('changeTabColumnShowedFromUser', {
       parentUuid,

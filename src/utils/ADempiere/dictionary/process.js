@@ -103,6 +103,20 @@ export function isReadOnlyField({ read_only_logic, isReadOnlyFromLogic }) {
   return !isEmptyValue(read_only_logic) && isReadOnlyFromLogic
 }
 
+export function changeFieldAttribure({
+  containerUuid,
+  columnName,
+  attributeName,
+  attributeValue
+}) {
+  return store.dispatch('changeProcessFieldAttribute', {
+    containerUuid,
+    columnName,
+    attributeName,
+    attributeValue
+  })
+}
+
 /**
  * Generate the actions and the associated process to store in the vuex store,
  * avoiding additional requests
@@ -250,6 +264,7 @@ export const containerManager = {
 
   isMandatoryField,
 
+  changeFieldAttribure,
   changeFieldShowedFromUser({ containerUuid, fieldsShowed }) {
     store.dispatch('changeProcessFieldShowedFromUser', {
       containerUuid,

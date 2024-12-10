@@ -375,6 +375,27 @@ export default {
     })
   },
 
+  changeBrowseFieldAttribute({ commit, getters }, {
+    containerUuid,
+    columnName,
+    field,
+    attributeName,
+    attributeValue
+  }) {
+    if (isEmptyValue(field)) {
+      field = getters.getStoredBrowserFieldFromColumnName({
+        containerUuid,
+        columnName
+      })
+    }
+
+    commit('changeBrowserFieldAttribute', {
+      field,
+      attributeName,
+      attributeValue
+    })
+  },
+
   /**
    * Used by components/fields/filterFields
    * @param {string} containerUuid

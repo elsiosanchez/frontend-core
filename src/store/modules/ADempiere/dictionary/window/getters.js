@@ -114,10 +114,10 @@ export default {
     return window.currentTabUuid
   },
 
-  getStoredFieldFromTab: (state, getters) => ({ windowUuid, tabUuid, columnName, fieldUuid }) => {
-    return getters.getStoredFieldsFromTab(windowUuid, tabUuid)
+  getStoredFieldFromTab: (state, getters) => ({ parentUuid, containerUuid, columnName, fieldUuid }) => {
+    return getters.getStoredFieldsFromTab(parentUuid, containerUuid)
       .find(field => {
-        return field.columnName === columnName ||
+        return field.column_name === columnName ||
           field.uuid === fieldUuid
       })
   },
