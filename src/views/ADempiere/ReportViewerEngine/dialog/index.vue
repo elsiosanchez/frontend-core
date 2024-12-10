@@ -8,7 +8,7 @@
     @close="viewShowDialog"
   >
     <el-row :gutter="12">
-      <el-col v-if="!isLegacy" :span="!isPanel ? 24 : 12">
+      <el-col v-if="!isLegacy" :span="12">
         <el-card>
           <template #header>
             <p>{{ $t('report.reportEnginer.exportFormat') }}</p>
@@ -29,7 +29,7 @@
           </el-row>
         </el-card>
       </el-col>
-      <el-col v-if="isPanel" :span="12">
+      <el-col :span="12">
         <el-card>
           <template #header>
             <p>{{ $t('report.reportEnginer.optionsImport.format') }}</p>
@@ -216,11 +216,6 @@ export default defineComponent({
       type: Object,
       required: false
     },
-    isPanel: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
     isLegacy: {
       type: Boolean,
       required: false,
@@ -267,13 +262,13 @@ export default defineComponent({
     const oldContent = ref(markdownContent.value)
     const allReport = ref(false)
     const pageSize = computed(() => {
-      if (isEmptyValue(props.reportOutput)) {
-        return 25
+      if (allReport.value) {
+        return undefined
       }
-      if (!allReport.value) {
+      if (!isEmptyValue(props.reportOutput)) {
         return props.reportOutput.pageSize
       }
-      return props.reportOutput.record_count
+      return 25
     })
     const pageToken = computed(() => {
       if (isEmptyValue(props.reportOutput)) {
