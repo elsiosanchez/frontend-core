@@ -27,7 +27,7 @@
     clearable
     :multiple="isSelectMultiple"
     :allow-create="metadata.isSelectCreated"
-    :collapse-tags="!isSelectMultiple"
+    :collapse-tags="true"
     remote
     :remote-method="remoteSearch"
     :size="sizeField"

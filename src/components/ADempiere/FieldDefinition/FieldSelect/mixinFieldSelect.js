@@ -40,8 +40,9 @@ export default {
 
   computed: {
     isSelectMultiple() {
-      return (this.metadata.isAdvancedQuery || this.metadata.is_query_criteria) &&
-      MULTIPLE_VALUES_OPERATORS_LIST.includes(this.metadata.operator)
+      return (this.metadata.isAdvancedQuery || this.metadata.is_query_criteria ||
+        (this.metadata.isLegacyReport === false && !this.metadata.isProcessBeforeLaunch)) &&
+        MULTIPLE_VALUES_OPERATORS_LIST.includes(this.metadata.operator)
     },
 
     blankOption() {
