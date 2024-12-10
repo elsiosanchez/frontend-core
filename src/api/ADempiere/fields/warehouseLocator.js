@@ -62,7 +62,7 @@ export function requestListWarehouseLocators({
   pageSize = ROWS_OF_RECORDS_BY_PAGE
 }) {
   return request({
-    url: '/material-management/locatos',
+    url: '/material-management/locators',
     method: 'get',
     params: {
       search_value: searchValue,

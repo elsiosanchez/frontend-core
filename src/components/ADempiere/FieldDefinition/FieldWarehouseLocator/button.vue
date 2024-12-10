@@ -21,7 +21,7 @@
     ref="warehouseLocatorPopover"
     v-model="isShowedPopover"
     placement="top-end"
-    width="550"
+    width="600"
     trigger="click"
     popper-class="warehouse-locators-popover"
   >

@@ -32,7 +32,7 @@
         <el-form
           v-shortkey="shortsKey"
           label-position="top"
-          size="small"
+          size="mini"
           class="form-min-label"
           @submit.native.prevent="notSubmitForm"
           @shortkey.native="keyAction"
@@ -82,6 +82,7 @@
       <el-col :span="24">
         <el-table
           v-loading="isLoadingRecords"
+          class="ware-house-locator-table"
           :data="recordsList"
           height="300"
           stripe
@@ -118,16 +119,20 @@
           <el-table-column
             prop="aisle"
             :label="$t('field.warehouseLocator.aisle')"
+            align="right"
           />
 
           <el-table-column
             prop="bin"
             :label="$t('field.warehouseLocator.bin')"
+            width="100"
+            align="right"
           />
 
           <el-table-column
             prop="level"
             :label="$t('field.warehouseLocator.level')"
+            align="right"
           />
         </el-table>
       </el-col>
@@ -483,6 +488,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.ware-house-locator-table.el-table .el-table__body .el-table__row .el-table__cell .cell {
+  line-height: 15px !important
+}
+.ware-house-locator-table.el-table .el-table__body .el-table__row .el-table__cell {
+  padding-top: 5px;
+  padding-bottom: 3px;
+}
 .warehouse-locators-list-container {
   .warehouse-locators-query-criteria {
     // remove space bottom collapse
