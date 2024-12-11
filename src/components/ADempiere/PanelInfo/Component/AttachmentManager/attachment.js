@@ -207,7 +207,7 @@ export default defineComponent({
      * @param {Boolean} isDownload
      */
     const handleDownload = async(file, isDownload = true) => {
-      const imageURL = `${config.adempiere.api.url}resources/${file.fullName}`
+      const imageURL = `${config.adempiere.api.url}/resources/${file.fullName}`
       if (!isEmptyValue(file.content_type) && file.content_type.includes('image')) {
         const linkImage = document.createElement('a')
         linkImage.href = imageURL

@@ -77,17 +77,17 @@
       />
 
       <el-popover
-        v-else-if="(!isEmptyValue(displayedValue) && fieldAttributes.componentPath === IMAGE.componentPath)"
+        v-else-if="(fieldAttributes.componentPath === IMAGE.componentPath)"
         v-model="isPreviewImage"
-        placement="left"
-        width="300"
+        placement="top"
+        width="100"
         trigger="hover"
         :open-delay="400"
       >
         <el-image
           v-if="isPreviewImage"
           class="image-file"
-          :src="imageSourceMedium"
+          :src="imageSource"
           lazy
           fit="contain"
         >
@@ -112,7 +112,7 @@
 
         <img
           slot="reference"
-          :src="imageSourceSmall"
+          :src="imageSource"
           width="25px"
           height="25px"
         >
@@ -126,6 +126,7 @@
 </template>
 
 <script>
+import store from '@/store'
 import { defineComponent, ref, computed } from '@vue/composition-api'
 
 // Components and Mixins
@@ -137,7 +138,6 @@ import ProgressPercentage from '@/components/ADempiere/ContainerOptions/Progress
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
-import { getImagePath } from '@/utils/ADempiere/resource'
 import { isNumberField } from '@/utils/ADempiere/references'
 import { standardPrecisionContext } from '@/utils/ADempiere/formatValue/numberFormat.js'
 
@@ -145,6 +145,7 @@ import { standardPrecisionContext } from '@/utils/ADempiere/formatValue/numberFo
 import { IMAGE, TEXT_LONG } from '@/utils/ADempiere/references'
 import { CURRENCY } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
+import { pathImageWindows } from '@/utils/ADempiere/resource'
 
 export default defineComponent({
   name: 'CellDisplayInfo',
@@ -166,9 +167,14 @@ export default defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, { root }) {
     const isPreviewImage = ref(false)
-
+    const tableName = computed(() => {
+      if (!isEmptyValue(props.fieldAttributes.tabTableName)) {
+        return props.fieldAttributes.tabTableName
+      }
+      return ''
+    })
     const columnName = computed(() => {
       if (!isEmptyValue(props.fieldAttributes.column_name)) {
         return props.fieldAttributes.column_name
@@ -197,6 +203,9 @@ export default defineComponent({
       if (props.fieldAttributes.is_encrypted) {
         return '••••••••••••••••••'
       }
+      if (props.fieldAttributes.displayTypeName === 'Imagen') {
+        console.log(props.fieldAttributes.componentPath)
+      }
       const currentValue = props.dataRow[columnName.value]
       return formatField({
         value: currentValue,
@@ -218,33 +227,21 @@ export default defineComponent({
       }
       return classCss
     })
-
-    const imageSourceSmall = computed(() => {
-      const displayedAlt = displayedValue.value
-      if (isEmptyValue(displayedAlt)) {
-        return undefined
-      }
-      const { uri } = getImagePath({
-        file: displayedAlt,
-        width: 20,
-        height: 20
-      })
-      return uri
+    const clientUuid = computed(() => {
+      const { client } = store.getters['user/getRole']
+      return client.uuid
     })
-
-    const imageSourceMedium = computed(() => {
-      const displayedAlt = displayedValue.value
-      if (isEmptyValue(displayedAlt)) {
-        return undefined
-      }
-      const { uri } = getImagePath({
-        file: displayedAlt,
-        width: 400,
-        height: 400
+    const imageSource = computed(() => {
+      const { query, params } = root.$route
+      return pathImageWindows({
+        clientId: clientUuid.value,
+        containerType: 'attachment',
+        columnName: columnName.value.toLowerCase(),
+        tableName: tableName.value.toLowerCase(),
+        recordId: query.recordId ? query.recordId : params.recordId,
+        resourceName: columnName.value.toLowerCase() + '.png'
       })
-      return uri
     })
-
     // const isPercentageColumn = computed(() => {
     //   return [columnName.value, elementName.value].includes('TaskStatus')
     // })
@@ -259,6 +256,8 @@ export default defineComponent({
     return {
       columnName,
       displayColumnName,
+      clientUuid,
+      tableName,
       // data
       // isPercentageColumn,
       IMAGE,
@@ -268,9 +267,8 @@ export default defineComponent({
       cellCssClass,
       displayedValue,
       isPreviewImage,
-      imageSourceSmall,
       defaulPrecisions,
-      imageSourceMedium,
+      imageSource,
       // Methods
       copyContent
     }

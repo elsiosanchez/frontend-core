@@ -491,7 +491,7 @@ export default {
         name
       } = this.infoImage
       const file = document.createElement('a')
-      file.href = `${config.adempiere.api.url}resources/${name}`
+      file.href = `${config.adempiere.api.url}/resources/${name}`
       file.download = `${name}`
       file.target = '_blank'
       file.click()
