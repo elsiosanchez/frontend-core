@@ -325,7 +325,7 @@ export default defineComponent({
 
     function searchZoom(field) {
       props.containerManager.searchFieldZoom({
-        id: field.id,
+        id: field.internal_id,
         columnName: field.columnName,
         tabTableName: field.tabTableName,
         valueField: valueField.value
