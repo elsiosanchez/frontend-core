@@ -144,7 +144,7 @@
           :container-manager="containerManager"
           :total-records="recordCount"
           :page-number="currentPageNumber"
-          :page-size="recordsList.length"
+          :page-size="currentPageSize"
           :handle-change-page-number="handleChangePageNumber"
           :handle-change-page-size="handleChangeSizePage"
         />
