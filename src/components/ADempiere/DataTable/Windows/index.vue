@@ -512,8 +512,8 @@ export default defineComponent({
         handleSelectionAll(currentSelection)
         toggleSelection(currentSelection)
         return
-      } else {
-        row.isEditRow = row.isSelectedRow
+      // } else {
+      //   row.isEditRow = row.isSelectedRow
       }
 
       const { table_name } = props.panelMetadata
@@ -529,7 +529,7 @@ export default defineComponent({
         changeAllOthers.forEach(element => {
           element.isEditRow = false
         })
-        row.isEditRow = true
+        row.isEditRow = false
         row.isSelectedRow = true
         if (!isEmptyValue(currentRowEdit) && !isEmptyValue(currentRowEdit.UUID)) {
           props.containerManager.exitEditMode({
