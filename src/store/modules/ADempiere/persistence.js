@@ -361,7 +361,14 @@ const persistence = {
                   recordUuid: response.values[UUID]
                 })
               })
-              .catch(error => reject(error))
+              .catch(error => {
+                console.warn(`Error Save: ${error.message}. Code: ${error.code}.`)
+                showMessage({
+                  message: error.message,
+                  type: 'error'
+                })
+                reject(error)
+              })
           } else {
             const recordAttributes = {}
             attributesList
@@ -485,7 +492,14 @@ const persistence = {
                   })
                 })
               })
-              .catch(error => reject(error))
+              .catch(error => {
+                console.warn(`Error Save: ${error.message}. Code: ${error.code}.`)
+                showMessage({
+                  message: error.message,
+                  type: 'error'
+                })
+                reject(error)
+              })
           }
         }
 

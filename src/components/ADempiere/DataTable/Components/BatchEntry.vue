@@ -102,6 +102,10 @@ export default defineComponent({
       })
     })
 
+    const tabAttributes = computed(() => {
+      return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
+    })
+
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({
         parentUuid: props.parentUuid,
@@ -182,6 +186,7 @@ export default defineComponent({
       store.dispatch('flushPersistenceQueue', {
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
+        tabId: tabAttributes.value.internal_id,
         tableName: props.tableName,
         attributesList: sendFieldServer
       })
@@ -219,6 +224,7 @@ export default defineComponent({
     return {
       fieldsList,
       containerManagerBatchEntry,
+      tabAttributes,
       actionKeyEnter,
       sendValuesToServer,
       isLoadingTable,

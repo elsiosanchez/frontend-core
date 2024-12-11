@@ -306,7 +306,7 @@ export default defineComponent({
     })
 
     const batchEntry = computed(() => {
-      return tableHeaders.value.filter(fieldItem => fieldItem.isQuickEntry)
+      return tableHeaders.value.filter(fieldItem => fieldItem.is_quick_entry)
     })
 
     function handleChangePage(pageNumber) {
