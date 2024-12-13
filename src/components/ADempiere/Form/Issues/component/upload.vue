@@ -1,10 +1,10 @@
 <template>
   <el-drawer
+    class="issuesUpload"
     :visible.sync="showContainerInfo"
     :with-header="true"
     :before-close="uploadFile"
     :size="isDrawerWidth"
-    class="drawer-panel-info"
   >
     <span slot="title">
       <svg-icon
@@ -52,7 +52,7 @@ export default defineComponent({
   },
   setup() {
     const showContainerInfo = computed(() => {
-      return store.getters.getShowLogs
+      return store.getters.getShowUploadImg
     })
     const isDrawerWidth = computed(() => {
       if (isMobile.value) {
@@ -64,10 +64,9 @@ export default defineComponent({
       return store.state.app.device === 'mobile'
     })
     function uploadFile() {
-      store.dispatch('showLogs', {
-        show: false
-      })
+      store.commit('setShowUploadImg', false)
     }
+
     return {
       uploadFile,
       showContainerInfo,
@@ -77,3 +76,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.el-drawer__wrapper .issuesUpload {
+  z-index: 2100 !important;
+}
+
+.v-modal {
+  z-index: 2000 !important
+}
+</style>

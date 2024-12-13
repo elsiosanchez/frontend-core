@@ -53,12 +53,16 @@ const initStateIssueManagement = {
     pageNumber: 1,
     isloading: false,
     nextPageToken: undefined
-  }
+  },
+  showUploadImg: false
 }
 
 export default {
   state: initStateIssueManagement,
   mutations: {
+    setShowUploadImg(state, show) {
+      state.showUploadImg = show
+    },
     // new
     setListIssues(state, payload) {
       state.listIssues = payload
@@ -574,6 +578,9 @@ export default {
     },
     geIssuesData: (state) => {
       return state.data
+    },
+    getShowUploadImg: (state) => {
+      return state.showUploadImg
     }
   }
 }

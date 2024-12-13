@@ -2633,9 +2633,7 @@ export default defineComponent({
       })
     }
     function uploadFile() {
-      store.dispatch('showLogs', {
-        show: true
-      })
+      store.commit('setShowUploadImg', true)
     }
     function remoteMethodTaskStatus(query) {
       if (!isEmptyValue(query) && query.length > 1) {
