@@ -67,18 +67,13 @@ export function requestListWarehouseLocators({
     params: {
       search_value: searchValue,
       page_token: pageToken,
-      page_size: pageSize
-    },
-    data: {
-      context_attributes: contextAttributesList,
+      page_size: pageSize,
       warehouse_id: warehouseId,
+      context_attributes: contextAttributesList,
       warehouse_uuid: warehouseUuid,
       field_uuid: fieldUuid,
       process_parameter_uuid: processParameterUuid,
       browse_field_uuid: browseFieldUuid
     }
   })
-    .then(response => {
-      return camelizeObjectKeys(response)
-    })
 }
