@@ -851,6 +851,7 @@ const reportManager = {
      */
     exportReport({
       commit,
+      getters,
       rootGetters,
       dispatch
     }, {
@@ -865,7 +866,14 @@ const reportManager = {
       isSummary,
       isLegacy
     }) {
+      const storedReportGenerated = getters.getReportGenerated(containerUuid)
       const reportDefinition = rootGetters.getStoredReport(containerUuid)
+      if (isEmptyValue(printFormatId) || printFormatId <= 0) {
+        printFormatId = storedReportGenerated.printFormatId
+      }
+      if (isEmptyValue(reportViewId) || reportViewId <= 0) {
+        reportViewId = storedReportGenerated.reportViewId
+      }
       const { fieldsList } = reportDefinition
       const filters = getOperatorAndValue({
         format: 'array',
