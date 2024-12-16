@@ -63,7 +63,7 @@ export default defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, { root }) {
     const isSaveRecordLoading = ref(false)
 
     const isMobile = computed(() => {
@@ -112,21 +112,29 @@ export default defineComponent({
 
       return isExistsChanges.value
     })
-
+    const currentRouter = root._route
     const recordId = computed(() => {
       const { table } = tabAttributes.value
       const { key_columns, table_name } = table
+      const { query, params } = currentRouter
+      console.log({
+        query, params
+      })
       const currentReccord = store.getters.getTabCurrentRow({
         containerUuid: tabAttributes.value.containerUuid
       })
+      let id = -1
       if (!isEmptyValue(currentReccord[table_name + '_ID'])) {
-        return currentReccord[table_name + '_ID']
+        id = currentReccord[table_name + '_ID']
       }
-      if (!isEmptyValue(key_columns)) {
+      if (isEmptyValue(id) && !isEmptyValue(key_columns)) {
         const keyIndex = key_columns.length - 1
-        return currentReccord[key_columns.at(keyIndex)]
+        id = currentReccord[key_columns.at(keyIndex)]
       }
-      return -1
+      if (isEmptyValue(id) && !isEmptyValue(query) && !isEmptyValue(query.recordId)) {
+        id = query.recordId
+      }
+      return id
     })
 
     function saveChanges() {
@@ -146,7 +154,6 @@ export default defineComponent({
 
       store.dispatch('fieldListInfo', { info })
       isSaveRecordLoading.value = true
-
       store.dispatch('flushPersistenceQueue', {
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
