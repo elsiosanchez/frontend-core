@@ -180,17 +180,41 @@
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import {
+  defineComponent,
+  computed
+} from '@vue/composition-api'
 import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
-import { formatPrice, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import {
+  formatPrice,
+  formatQuantity
+} from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'infoOrder',
   setup() {
+    // Constants
+    const orderDefaults = {
+      documentNo: '',
+      salesRepresentative: {
+        id: null,
+        name: ''
+      },
+      documentType: {
+        id: null,
+        name: ''
+      },
+      discountAmount: null,
+      totalLines: null,
+      taxAmount: null,
+      grandTotal: null,
+      dateOrdered: ''
+    }
+    // Computed
     const infoOrder = computed(() => {
       const order = store.getters.getCurrentOrder
       if (
@@ -209,22 +233,7 @@ export default defineComponent({
           documentType: order.document_type
         }
       }
-      return {
-        documentNo: '',
-        salesRepresentative: {
-          id: null,
-          name: ''
-        },
-        documentType: {
-          id: null,
-          name: ''
-        },
-        discountAmount: null,
-        totalLines: null,
-        taxAmount: null,
-        grandTotal: null,
-        dateOrdered: ''
-      }
+      return orderDefaults
     })
 
     const lines = computed(() => {
@@ -250,6 +259,8 @@ export default defineComponent({
       })
     })
 
+    // Methods
+
     function displayAmount(amount) {
       const { price_list } = store.getters.getCurrentOrder
       if (isEmptyValue(price_list)) return amount
@@ -263,11 +274,13 @@ export default defineComponent({
     }
 
     return {
+      // Computed
       lines,
       infoOrder,
       listSellers,
       getItemQuantity,
       displayCurrency,
+      // Methods
       formatPrice,
       changeSeller,
       displayAmount,

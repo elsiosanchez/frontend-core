@@ -96,9 +96,10 @@ export default defineComponent({
     }
 
     return {
+      // Computed
       order,
       currentLine,
-      // isEmptyValue,
+      // Methods
       releaseOrder,
       deleteOrderLine,
       openShowCollections

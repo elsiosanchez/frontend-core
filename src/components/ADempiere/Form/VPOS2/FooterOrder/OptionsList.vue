@@ -148,11 +148,9 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <script>
 import { defineComponent, computed, watch } from '@vue/composition-api'
 
-// import lang from '@/lang'
 import store from '@/store'
 import router from '@/router'
 // Utils and Helper Methods
-// import { Persona } from '@/utils/ADempiere/form/PonitOfSales/instructure.ts'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
@@ -162,9 +160,11 @@ export default defineComponent({
     const currentPointOfSales = computed(() => {
       return store.getters.getVPOS
     })
+
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
     })
+
     const pointUuid = computed(() => {
       if (isEmptyValue(currentPointOfSales.value)) return ''
       const { id } = currentPointOfSales.value
@@ -290,7 +290,7 @@ export default defineComponent({
       }
     }
 
-    function updateListAvalibles(point) {
+    function updateListAvalibles() {
       store.dispatch('listAvailablePrices')
       store.dispatch('listCampaigns')
       store.dispatch('listAvailableWarehouse')
@@ -299,30 +299,28 @@ export default defineComponent({
     }
 
     watch(pointUuid, (newValue, oldValue) => {
-      if (!isEmptyValue(newValue) && newValue !== oldValue) {
-        updateListAvalibles(newValue)
-      }
+      if (!isEmptyValue(newValue) && newValue !== oldValue) updateListAvalibles(newValue)
     })
 
     return {
       pointName,
       listPoint,
-      pointPrices,
       listPrices,
-      pointCampaigns,
-      listCampaigns,
+      pointPrices,
       currentOrder,
-      currentPointOfSales,
+      listCampaigns,
+      listWarehouses,
+      pointCampaigns,
+      pointWarehouses,
       pointDocumentType,
       listDocumentTypes,
-      pointWarehouses,
-      listWarehouses,
+      currentPointOfSales,
       // Methods
       changePos,
+      changePrices,
       changeCampaigns,
-      changeDocumentType,
       changeWarehouses,
-      changePrices
+      changeDocumentType
     }
   }
 })
