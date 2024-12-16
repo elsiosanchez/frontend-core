@@ -139,7 +139,8 @@ export default {
     containerUuid: tabUuid
   }) {
     const tabDefinition = getters.getStoredTab(windowUuid, tabUuid)
-
+    const currentRoute = router.app._route
+    const { query, params } = currentRoute
     const actionsList = []
 
     actionsList.push(createNewRecord)
@@ -455,12 +456,18 @@ export default {
 
               const storedTab = rootGetters.getStoredTab(windowUuid, tabAssociatedUuid)
               const { table_name } = storedTab
-
-              const recordId = rootGetters.getIdOfContainer({
+              let recordId = rootGetters.getIdOfContainer({
                 containerUuid: storedTab.containerUuid,
                 tableName: table_name
               })
-
+              if (isEmptyValue(recordId)) {
+                if (!isEmptyValue(query.recordId)) {
+                  recordId = query.recordId
+                }
+                if (isEmptyValue(recordId) && !isEmptyValue(params.recordId)) {
+                  recordId = query.recordId
+                }
+              }
               dispatch('startProcessOfWindows', {
                 parentUuid: tabAssociatedUuid,
                 containerUuid: process.uuid,
