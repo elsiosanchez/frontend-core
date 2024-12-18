@@ -68,6 +68,9 @@ export default defineComponent({
         case 'ProductSearch':
           form = import('@/components/ADempiere/Form/ProductSearch')
           break
+        case 'businessPartnerInformation':
+          form = import('@/components/ADempiere/Form/BusinessPartnerInformation')
+          break
         case 'WFActivity':
           form = import('@/components/ADempiere/Form/WorkflowActivity')
           break
@@ -108,6 +111,9 @@ export default defineComponent({
         case 'issuesAll':
           form = import('@/components/ADempiere/FormDefinition/IssueManagement/IssuesAll.vue')
           break
+        // case 'businessPartnerInformation':
+        //   form = import('@/components/ADempiere/FormDefinition/BusinessPartnerInformation')
+        //   break
         case 'IssueManagement':
           form = import('@/components/ADempiere/FormDefinition/IssueManagement')
           break

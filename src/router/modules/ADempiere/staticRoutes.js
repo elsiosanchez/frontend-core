@@ -88,6 +88,37 @@ const staticRoutes = [
     },
     children: [
       {
+        path: '/businessPartnerInformation',
+        component: () => import('@/views/ADempiere/Form'),
+        name: 'businessPartnerInformation',
+        hidden: false,
+        validateToEnable: ({ role, dynamicRoutes }) => {
+          if (isEmptyValue(dynamicRoutes)) {
+            return false
+          }
+          const menuTree = dynamicRoutes
+          const viewSearch = recursiveTreeSearch({
+            treeData: menuTree,
+            attributeValue: 'window_' + REQUEST_ALL_WINDOW_ID,
+            attributeName: 'meta',
+            secondAttribute: 'containerKey',
+            attributeChilds: 'children'
+          })
+          if (isEmptyValue(viewSearch)) {
+            return false
+          }
+          return true
+        },
+        meta: {
+          title: language.t('form.businessPartnerInformation.title'),
+          icon: 'user',
+          fileName: 'businessPartnerInformation',
+          isIndex: true,
+          isAll: true,
+          type: 'from'
+        }
+      },
+      {
         path: '/Issues/All',
         component: () => import('@/views/ADempiere/Form'),
         name: 'Issues All',

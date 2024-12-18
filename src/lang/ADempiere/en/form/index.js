@@ -33,7 +33,7 @@ import timeRecord from './timeRecord'
 import match from './match'
 import tasks from './tasks'
 import issues from './issues'
-
+import businessPartnerInformation from './BusinessPartnerInformation'
 export default {
   accountingViewer,
   workflowActivity,
@@ -51,5 +51,6 @@ export default {
   timeRecord,
   match,
   tasks,
-  issues
+  issues,
+  businessPartnerInformation
 }

@@ -104,3 +104,21 @@ export function requestListBusinessPartner({
     }
   })
 }
+
+export function requestAddressLocations({
+  id
+}) {
+  return request({
+    url: `/fields/business-partners/${id}/address-locations`,
+    method: 'get'
+  })
+}
+
+export function requestContact({
+  id
+}) {
+  return request({
+    url: `/fields/business-partners/${id}/contacts`,
+    method: 'get'
+  })
+}
