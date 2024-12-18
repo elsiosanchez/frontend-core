@@ -116,10 +116,7 @@ export default defineComponent({
     const recordId = computed(() => {
       const { table } = tabAttributes.value
       const { key_columns, table_name } = table
-      const { query, params } = currentRouter
-      console.log({
-        query, params
-      })
+      const { query } = currentRouter
       const currentReccord = store.getters.getTabCurrentRow({
         containerUuid: tabAttributes.value.containerUuid
       })

@@ -204,8 +204,10 @@ export default defineComponent({
     }
 
     function hangleChangeRecord(action) {
-      if (action !== 'changeNextRecord' &&
-        isExistsChanges.value) {
+      if (
+        action !== 'changeNextRecord' &&
+        isExistsChanges.value
+      ) {
         store.dispatch('flushPersistenceQueue', {
           parentUuid: props.parentUuid,
           containerUuid: props.containerUuid,

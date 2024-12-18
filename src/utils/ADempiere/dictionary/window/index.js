@@ -1665,12 +1665,15 @@ export const containerManager = {
     }
 
     // tab properties
-    const { isParentTab, link_column_name } = store.getters.getStoredTab(parentUuid, containerUuid)
+    const {
+      isParentTab
+      // link_column_name
+    } = store.getters.getStoredTab(parentUuid, containerUuid)
 
     // fill value with context
-    if (link_column_name === columnName) {
-      return true
-    }
+    // if (link_column_name === columnName) {
+    //   return true
+    // }
 
     if (!isParentTab) {
       // if parent record is new lock childs field to read only
@@ -1774,10 +1777,15 @@ export const containerManager = {
       return true
     }
 
-    const { isParentTab, link_column_name, parent_column_name } = store.getters.getStoredTab(parentUuid, containerUuid)
+    const {
+      isParentTab,
+      // link_column_name,
+      parent_column_name
+    } = store.getters.getStoredTab(parentUuid, containerUuid)
 
     // fill value with context
-    if (is_parent || link_column_name === columnName || parent_column_name === columnName) {
+    if (is_parent || parent_column_name === columnName) {
+    // if (is_parent || link_column_name === columnName || parent_column_name === columnName) {
       return true
     }
 

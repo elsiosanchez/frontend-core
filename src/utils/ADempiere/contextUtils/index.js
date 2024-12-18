@@ -25,6 +25,7 @@ import {
   IS_SO_TRX,
   SALES_TRANSACTION_COLUMNS
 } from '@/utils/ADempiere/constants/systemColumns'
+import { IS_ADVANCED_QUERY } from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helper Methods
 import {
@@ -84,6 +85,17 @@ export const getContext = ({
       containerUuid,
       columnName
     })
+    if (
+      isEmptyValue(value) &&
+      !isEmptyValue(containerUuid) &&
+      containerUuid.endsWith(IS_ADVANCED_QUERY)
+    ) {
+      value = store.getters.getValueOfField({
+        parentUuid: parentUuid.replace(IS_ADVANCED_QUERY, ''),
+        containerUuid: containerUuid.replace(IS_ADVANCED_QUERY, ''),
+        columnName
+      })
+    }
 
     // get by global and accounting context
     if (isForceSession && isEmptyValue(value)) {

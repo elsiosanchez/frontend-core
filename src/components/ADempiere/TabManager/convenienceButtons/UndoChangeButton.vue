@@ -92,11 +92,29 @@ export default defineComponent({
       return !isEmptyValue(oldRecordUuid) || isExistsChanges.value
     })
 
+    function editMode() {
+      const row = store.getters.getTabCurrentRow({
+        containerUuid: props.containerUuid
+      })
+      row.isEditRow = true
+      row.isSelectedRow = true
+      store.dispatch('changeTabAttribute', {
+        attributeName: 'currentRowSelect',
+        attributeNameControl: undefined,
+        attributeValue: row,
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid
+      })
+    }
+
     function undoChanges() {
       // store.dispatch('fieldListInfo', {
       //   fieldsList: props.tabAttributes.fieldsList,
       //   option: language.t('actionMenu.undo')
       // })
+      if (tabAttributes.value.isShowedTableRecords) {
+        editMode()
+      }
       const info = {
         fieldsList: tabAttributes.value.fieldsList,
         option: language.t('actionMenu.undo')

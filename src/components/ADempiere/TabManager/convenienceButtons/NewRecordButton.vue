@@ -153,7 +153,26 @@ export default defineComponent({
       }
     }
 
+    function exitEditMode() {
+      const row = store.getters.getTabCurrentRow({
+        containerUuid: props.containerUuid
+      })
+      row.isEditRow = false
+      row.isSelectedRow = false
+      store.dispatch('changeTabAttribute', {
+        attributeName: 'currentRowSelect',
+        attributeNameControl: undefined,
+        attributeValue: row,
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid
+      })
+    }
+
     function newRecord(isCopy = false) {
+      if (tabAttributes.value.isShowedTableRecords) {
+        exitEditMode()
+      }
+
       createNewRecord.createNewRecord({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
