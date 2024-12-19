@@ -968,7 +968,8 @@ export function setRecordPath({
   action,
   recordId,
   tabChild,
-  recordChildId
+  recordChildId,
+  scrollPosition
 }) {
   const currentRoute = router.app._route
   const { query } = currentRoute
@@ -979,7 +980,8 @@ export function setRecordPath({
       action,
       recordId,
       tabChild,
-      recordChildId
+      recordChildId,
+      scrollPosition
     }
   })
 }

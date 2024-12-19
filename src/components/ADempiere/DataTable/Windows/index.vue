@@ -102,7 +102,8 @@ import {
   onUpdated,
   computed,
   watch,
-  ref
+  ref,
+  nextTick
 } from '@vue/composition-api'
 
 import store from '@/store'
@@ -126,7 +127,6 @@ export default defineComponent({
     FullScreenContainer,
     LoadingView
   },
-
   props: {
     parentUuid: {
       type: String,
@@ -177,7 +177,6 @@ export default defineComponent({
     const attributeName = 'isShowedTableRecords'
     const action = 'changeTabAttribute'
     const currentRoute = router.app._route
-
     const multipleTable = ref(null)
     const {
       storedWindow
@@ -373,7 +372,10 @@ export default defineComponent({
      * @param {object} row
      * @param {string} column
      */
+    let scrollPosition = 0
     function handleRowClick(row, column, event) {
+      const tableElement = multipleTable.value.$el
+      scrollPosition = tableElement.scrollTop
       currentRowSelect.value = row
       if (row.isNewRow || column.type === 'selection') {
         return
@@ -400,11 +402,13 @@ export default defineComponent({
         )
         if (currentTab.isParentTab) {
           setRecordPath({
-            recordId: row[table_name + '_ID']
+            recordId: row[table_name + '_ID'],
+            scrollPosition
           })
         } else {
           setRecordPath({
-            recordChildId: row[table_name + '_ID']
+            recordChildId: row[table_name + '_ID'],
+            scrollPosition
           })
         }
       }
@@ -639,7 +643,15 @@ export default defineComponent({
       }
       return sum
     }
-
+    function scrollToBottom() {
+      nextTick(() => {
+        const container = multipleTable.value
+        const { query } = currentRoute
+        if (!isEmptyValue(container) && !isEmptyValue(query.scrollPosition)) {
+          multipleTable.value.$el.scrollTop = query.scrollPosition
+        }
+      })
+    }
     /**
      * Watch - watch works directly on a ref
      * @param newValue - New Assessed Property value
@@ -705,9 +717,9 @@ export default defineComponent({
      * Registers a callback to be called after the component has been mounted
      */
     onMounted(() => {
+      scrollToBottom()
       loadSelection()
     })
-
     return {
       // Refs
       isChangeOptions,
