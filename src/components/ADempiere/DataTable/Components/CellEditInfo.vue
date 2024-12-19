@@ -37,6 +37,7 @@
       }"
       size="mini"
       size-field-input="mini"
+      @keyup.native.enter="actionKeyEnter(fieldAttributes)"
       @shortkey="keyboardShortcuts"
     />
   </span>
@@ -53,16 +54,24 @@
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
-
+import store from '@/store'
+import router from '@/router'
+import language from '@/lang'
 // Components and Mixins
 import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 
 // Constants
 import { BINARY_DATA, BUTTON, IMAGE } from '@/utils/ADempiere/references'
+import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helpers Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import {
+  isEmptyValue
+  // setRecordPath
+} from '@/utils/ADempiere/valueUtils'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
+import { showMessage } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
   name: 'CellEditInfo',
@@ -103,7 +112,7 @@ export default defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, { root }) {
     const isReadOnly = computed(() => {
       return props.containerManager.isReadOnlyColumn({
         field: props.fieldAttributes,
@@ -152,6 +161,51 @@ export default defineComponent({
       return classCss
     })
 
+    const emptyMandatoryFields = computed(() => {
+      return store.getters.getTabFieldsEmptyMandatory({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        formatReturn: false
+      }).filter(itemField => {
+        // omit send to server (to create or update) columns manage by backend
+        return itemField.is_always_updateable ||
+          !LOG_COLUMNS_NAME_LIST.includes(itemField.columnName)
+      }).map(itemField => {
+        return itemField.name
+      })
+    })
+
+    const tabAttributes = computed(() => {
+      return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
+    })
+
+    const recordUuid = computed(() => {
+      return store.getters.getUuidOfContainer(props.containerUuid)
+    })
+
+    const currentRouter = root._route
+
+    const recordId = computed(() => {
+      const { table } = tabAttributes.value
+      const { key_columns, table_name } = table
+      const { query } = currentRouter
+      const currentReccord = store.getters.getTabCurrentRow({
+        containerUuid: tabAttributes.value.containerUuid
+      })
+      let id = -1
+      if (!isEmptyValue(currentReccord[table_name + '_ID'])) {
+        id = currentReccord[table_name + '_ID']
+      }
+      if (isEmptyValue(id) && !isEmptyValue(key_columns)) {
+        const keyIndex = key_columns.length - 1
+        id = currentReccord[key_columns.at(keyIndex)]
+      }
+      if (isEmptyValue(id) && !isEmptyValue(query) && !isEmptyValue(query.recordId)) {
+        id = query.recordId
+      }
+      return id
+    })
+
     function isRowCanBeEdited(record) {
       if (!record.isSelectedRow) {
         return false
@@ -176,6 +230,93 @@ export default defineComponent({
       })
     }
 
+    function actionKeyEnter(params) {
+      const { currentTab } = store.getters.getContainerInfo
+      const emptyMandatory = emptyMandatoryFields.value.join(', ')
+      if (!isEmptyValue(emptyMandatory)) {
+        showMessage({
+          message: language.t('notifications.mandatoryFieldMissing') + emptyMandatory,
+          type: 'info'
+        })
+        return
+      }
+
+      const info = {
+        fieldsList: currentTab.fieldsList,
+        option: language.t('actionMenu.save')
+      }
+
+      store.dispatch('fieldListInfo', { info })
+      const currentRoute = router.app._route
+      const recordUuid = store.getters.getUuidOfContainer(currentTab.containerUuid)
+      const currentReccord = store.getters.getTabCurrentRow({
+        containerUuid: currentTab.containerUuid
+      })
+      let recordId = -1
+      if (!isEmptyValue(currentReccord[currentTab.table_name + '_ID'])) recordId = currentReccord[currentTab.table_name + '_ID']
+      store.dispatch('flushPersistenceQueue', {
+        parentUuid: currentTab.parentUuid,
+        containerUuid: currentTab.containerUuid,
+        tabId: currentTab.internal_id,
+        tableName: currentTab.table_name,
+        recordUuid,
+        recordId
+      })
+        .then(response => {
+          const { query } = currentRoute
+          let id = query.recordId
+          if (!isEmptyValue(response)) id = response.id
+          // refresh parent tab on document window
+          if (!currentTab.isParentTab) {
+            const { firstTabUuid } = currentTab
+            const firstTab = store.getters.getStoredTab(
+              currentTab.parentUuid,
+              firstTabUuid
+            )
+            if (!isEmptyValue(firstTab) && firstTab.table.is_document) {
+              refreshRecord.refreshRecord({
+                parentUuid: currentTab.parentUuid,
+                containerUuid: firstTabUuid
+              })
+            }
+          }
+
+          recordPath({
+            currentRoute,
+            recordId: id
+          })
+        })
+        .catch(error => {
+          showMessage({
+            message: error.message,
+            type: 'error'
+          })
+        })
+    }
+
+    function recordPath({
+      currentRoute,
+      recordId
+    }) {
+      const {
+        name,
+        query,
+        params
+      } = currentRoute
+      router.replace({
+        name,
+        query: {
+          ...query,
+          recordId,
+          filters: []
+        },
+        params: {
+          ...params,
+          filters: []
+        }
+      }, () => {})
+    }
+
     function keyboardShortcuts(event) {
       switch (event.srcKey) {
         case 'exit':
@@ -191,10 +332,15 @@ export default defineComponent({
 
     return {
       // computeds
-      cellCssClass,
+      recordId,
       cellTable,
+      recordUuid,
+      cellCssClass,
+      tabAttributes,
       isRowChangeEdited,
+      emptyMandatoryFields,
       // methods
+      actionKeyEnter,
       isRowCanBeEdited,
       exitEdit,
       enterEdit,
