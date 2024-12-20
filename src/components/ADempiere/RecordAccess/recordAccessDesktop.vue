@@ -1,20 +1,22 @@
 <!--
- ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
- Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A.
- Contributor(s): Elsio Sanchez esanchez@erpya.com www.erpya.com
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez Elsiosanchez15@outlook.com https://github.com/Elsiosanchez
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <div>
     <div class="board">
@@ -36,7 +38,7 @@
           >
             <div
               v-for="(element, index) in excludedList"
-              :key="element.roleUuid"
+              :key="element.uuid"
               class="board-item"
               style="height: 50%;padding-left: 0px;padding-right: 0px;min-width: 250px;max-width: 100%;"
             >
@@ -51,7 +53,7 @@
                   <template slot-scope="scope">
                     <b style="white-space: normal;">
                       {{
-                        scope.row.roleName
+                        scope.row.name
                       }}
                     </b>
                   </template>
@@ -81,7 +83,7 @@
           >
             <div
               v-for="(element, index) in includedList"
-              :key="element.roleUuid"
+              :key="element.uuid"
               class="board-item"
               style="height: 50%;padding-left: 0px;padding-right: 0px;min-width: 400px;max-width: 100%;"
             >
@@ -96,7 +98,7 @@
                   <template slot-scope="scope">
                     <b style="white-space: normal;">
                       {{
-                        scope.row.roleName
+                        scope.row.name
                       }}
                     </b>
                   </template>
@@ -104,7 +106,7 @@
                 <el-table-column min-width="100">
                   <template slot-scope="scope">
                     <el-switch
-                      v-model="scope.row.isExclude"
+                      v-model="scope.row.is_exclude"
                       active-color="#13ce66"
                       inactive-color="#ff4949"
                       :inactive-text="$t('data.recordAccess.isLock')"
@@ -114,9 +116,9 @@
                 </el-table-column>
                 <el-table-column>
                   <template slot-scope="scope">
-                    <div v-if="scope.row.isExclude">
+                    <div v-if="scope.row.is_exclude">
                       <el-switch
-                        v-model="scope.row.isReadOnly"
+                        v-model="scope.row.is_read_only"
                         :inactive-text="$t('data.recordAccess.isReadonly')"
                         active-text="Editable"
                       />
@@ -125,7 +127,7 @@
                       <b>
                         {{ $t('data.recordAccess.isDependentEntities') }}
                       </b>
-                      <el-switch v-model="scope.row.isDependentEntities" />
+                      <el-switch v-model="scope.row.is_dependent_entities" />
                     </div>
                   </template>
                 </el-table-column>
@@ -153,11 +155,14 @@
 <script>
 import draggable from 'vuedraggable'
 import recordAccessMixin from './recordAccess.js'
+
 export default {
   name: 'RecordAccessDesktop',
+
   components: {
     draggable
   },
+
   mixins: [recordAccessMixin]
 }
 </script>

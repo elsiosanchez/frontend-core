@@ -145,3 +145,81 @@ export const openBrowserAssociated = {
     }
   }
 }
+
+export const lockRecord = {
+  name: language.t('recordManager.lockRecord'),
+  type: 'lockRecord',
+  enabled: ({ parentUuid, containerUuid }) => {
+    const currentRole = store.getters['user/getRole']
+    if (!currentRole.is_personal_lock) {
+      return false
+    }
+    return !isEmptyValue(
+      store.getters.getUuidOfContainer(containerUuid)
+    )
+  },
+  svg: false,
+  icon: 'el-icon-lock',
+  actionName: 'lockRecord',
+  lockRecord: ({ parentUuid, containerUuid, tableName }) => {
+  }
+}
+
+export const unlockRecord = {
+  name: language.t('recordManager.unlockRecord'),
+  type: 'unlockRecord',
+  enabled: ({ parentUuid, containerUuid }) => {
+    const currentRole = store.getters['user/getRole']
+    if (!currentRole.is_personal_lock) {
+      return false
+    }
+    return !isEmptyValue(
+      store.getters.getUuidOfContainer(containerUuid)
+    )
+  },
+  svg: false,
+  icon: 'el-icon-unlock',
+  actionName: 'unlockRecord',
+  unlockRecord: ({ parentUuid, containerUuid, tableName }) => {
+  }
+}
+
+/**
+ * Record access
+ * @param {string} tableName
+ * @param {number} recordId
+ * @param {string} recordUuid
+ */
+export const recordAccess = {
+  name: language.t('data.recordAccess.actions'),
+  description: language.t('data.noDescription'),
+  enabled: ({ parentUuid, containerUuid }) => {
+    const currentRole = store.getters['user/getRole']
+    // if (!currentRole.is_personal_access) {
+    if (!currentRole.is_personal_lock) {
+      return false
+    }
+    return !isEmptyValue(
+      store.getters.getUuidOfContainer(containerUuid)
+    )
+  },
+  svg: false,
+  icon: 'el-icon-set-up',
+  actionName: 'recordAccess',
+  recordAccess: ({ parentUuid, containerUuid, recordId, recordUuid }) => {
+    const storedTab = store.getters.getStoredTab(parentUuid, containerUuid)
+    const { table_name } = storedTab
+    if (isEmptyValue(recordId)) {
+      recordId = store.getters.getIdOfContainer({
+        containerUuid: containerUuid,
+        tableName: table_name
+      })
+    }
+    store.dispatch('loadRecordAccessFromServer', {
+      tableName: table_name,
+      recordId,
+      recordUuid
+    })
+    store.commit('setShowRecordAccess', true)
+  }
+}

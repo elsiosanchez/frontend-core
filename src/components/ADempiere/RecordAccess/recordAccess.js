@@ -19,14 +19,16 @@
 import language from '@/lang'
 
 // API Request Methods
-import { setRecordAccess } from '@/api/ADempiere/actions/record-access.js'
+import { setRecordAccess } from '@/api/ADempiere/record-management/record-access.js'
 
 // Utils and Helpers Methods
 import { isLookup } from '@/utils/ADempiere/references'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default {
   name: 'MixinRecordAccess',
+
   props: {
     parentUuid: {
       type: String,
@@ -61,17 +63,19 @@ export default {
       default: undefined
     }
   },
+
   data() {
     return {
       group: 'sequence',
-      isReadonly: false,
-      isDependentEntities: true,
+      is_read_only: false,
+      is_dependent_entities: true,
       recordAccess: {
         recordUuid: '',
         roles: []
       }
     }
   },
+
   computed: {
     excludedList: {
       get() {
@@ -103,37 +107,42 @@ export default {
       return this.$store.getters.getRecordAccess
     }
   },
+
   created() {
-  //   getRecordAccess({
-  //     tableName: this.tableName,
-  //     recordId: this.record[this.tableName + '_ID'],
-  //     recordUuid: this.record.UUID
-  //   })
-  //     .then(access => {
-    this.recordAccess.tableName = this.listRecordAccess.tableName
-    this.recordAccess.recordId = this.listRecordAccess.recordId
-    this.recordAccess.recordUuid = this.listRecordAccess.recordUuid
-    this.listRecordAccess.availableRoles.forEach(role => {
-      this.recordAccess.roles.push({
-        ...role,
-        isRoleConfig: false,
-        isLocked: role.isExclude
+    // getRecordAccess({
+    //   tableName: this.tableName,
+    //   recordId: this.record[this.tableName + '_ID'],
+    //   recordUuid: this.record.UUID
+    // })
+    //   .then(access => {
+    if (!isEmptyValue(this.listRecordAccess)) {
+      this.recordAccess.tableName = this.listRecordAccess.table_name
+      this.recordAccess.recordId = this.listRecordAccess.recordId
+      this.recordAccess.recordUuid = this.listRecordAccess.recordUuid
+      this.listRecordAccess.available_roles.forEach(role => {
+        this.recordAccess.roles.push({
+          ...role,
+          isRoleConfig: false,
+          isLocked: role.is_exclude
+        })
       })
-    })
-    this.listRecordAccess.currentRoles.forEach(role => {
-      this.recordAccess.roles.find(availableRole => availableRole.roleId === role.roleId).isLocked = role.isExclude
-      this.recordAccess.roles.find(availableRole => availableRole.roleId === role.roleId).isRoleConfig = true
-      this.recordAccess.roles.find(availableRole => availableRole.roleId === role.roleId).isDependentEntities = role.isDependentEntities
-      this.recordAccess.roles.find(availableRole => availableRole.roleId === role.roleId).isReadOnly = role.isReadOnly
-      this.recordAccess.roles.find(availableRole => availableRole.roleId === role.roleId).isExclude = role.isExclude
-    })
-  //     })
+
+      this.listRecordAccess.current_roles.forEach(role => {
+        this.recordAccess.roles.find(availableRole => availableRole.id === role.id).isLocked = role.is_exclude
+        this.recordAccess.roles.find(availableRole => availableRole.id === role.id).isRoleConfig = true
+        this.recordAccess.roles.find(availableRole => availableRole.id === role.id).is_dependent_entities = role.is_dependent_entities
+        this.recordAccess.roles.find(availableRole => availableRole.id === role.id).is_read_only = role.is_read_only
+        this.recordAccess.roles.find(availableRole => availableRole.id === role.id).is_exclude = role.is_exclude
+      })
+    }
+    //     })
   },
+
   methods: {
     handleChange(value) {
       const action = Object.keys(value)[0] // get property
       const element = value[action].element
-      const index = this.recordAccess.roles.findIndex(role => role.roleId === element.roleId)
+      const index = this.recordAccess.roles.findIndex(role => role.id === element.id)
       switch (action) {
         case 'added':
           this.addItem({
@@ -176,7 +185,7 @@ export default {
     },
     saveRecordAccess(recordAccesses) {
       setRecordAccess({
-        tableName: this.listRecordAccess.tableName,
+        tableName: this.listRecordAccess.table_name,
         recordId: this.listRecordAccess.id,
         recordUuid: this.listRecordAccess.uuid,
         recordAccesses
@@ -197,10 +206,10 @@ export default {
     },
     validateList(list) {
       list.forEach(element => {
-        if (element.isExclude) {
-          element.isReadOnly = false
+        if (element.is_exclude) {
+          element.is_read_only = false
         } else {
-          element.isDependentEntities = false
+          element.is_dependent_entities = false
         }
       })
       return list

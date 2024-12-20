@@ -312,7 +312,9 @@ export default defineComponent({
      */
     function runAction(action) {
       const { actionName } = action
-      if (actionName === 'Moreoptions') return store.commit('setShowMenuMobile', true)
+      if (actionName === 'Moreoptions') {
+        return store.commit('setShowMenuMobile', true)
+      }
       action[actionName]({
         root,
         parentUuid: props.parentUuid,

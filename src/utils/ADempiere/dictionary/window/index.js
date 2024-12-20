@@ -1182,63 +1182,6 @@ export const refreshRecords = {
   }
 }
 
-export const lockRecord = {
-  name: language.t('actionMenu.refreshRecords'),
-  type: 'lockRecord',
-  enabled: ({ parentUuid, containerUuid }) => {
-    return !isEmptyValue(
-      store.getters.getUuidOfContainer(containerUuid)
-    )
-  },
-  svg: false,
-  icon: 'el-icon-lock',
-  actionName: 'lockRecord',
-  lockRecord: ({ parentUuid, containerUuid, tableName }) => {
-  }
-}
-
-export const unlockRecord = {
-  name: language.t('actionMenu.refreshRecords'),
-  type: 'unlockRecord',
-  enabled: ({ parentUuid, containerUuid }) => {
-    return !isEmptyValue(
-      store.getters.getUuidOfContainer(containerUuid)
-    )
-  },
-  svg: false,
-  icon: 'el-icon-unlock',
-  actionName: 'unlockRecord',
-  unlockRecord: ({ parentUuid, containerUuid, tableName }) => {
-  }
-}
-
-/**
- * Record access
- * @param {string} tableName
- * @param {number} recordId
- * @param {string} recordUuid
- */
-export const recordAccess = {
-  name: language.t('data.recordAccess.actions'),
-  description: language.t('data.noDescription'),
-  enabled: ({ parentUuid, containerUuid }) => {
-    return !isEmptyValue(
-      store.getters.getUuidOfContainer(containerUuid)
-    )
-  },
-  svg: false,
-  icon: 'el-icon-set-up',
-  actionName: 'recordAccess',
-  recordAccess: ({ tableName, recordId, recordUuid }) => {
-    store.dispatch('listRecordAccess', {
-      tableName,
-      recordId,
-      recordUuid
-    })
-    store.commit('setShowRecordAccess', true)
-  }
-}
-
 /**
  * Generate window
  * @param {object} responseWindow

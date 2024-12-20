@@ -49,12 +49,12 @@ import {
   openFormAssociated,
   refreshRecord,
   refreshRecords,
-  recordAccess,
   undoChange
 } from '@/utils/ADempiere/dictionary/window'
 import {
   openBrowserAssociated,
-  openSequenceTab
+  openSequenceTab,
+  recordAccess
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { panelAdvanceQuery } from '@/utils/ADempiere/dictionary/panel.js'
 import {

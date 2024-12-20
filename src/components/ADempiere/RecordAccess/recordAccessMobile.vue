@@ -1,3 +1,22 @@
+<!--
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez Elsiosanchez15@outlook.com https://github.com/Elsiosanchez
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
 <template>
   <div>
     <el-card class="box-card">
@@ -8,11 +27,11 @@
       </div>
       <div style="margin-bottom: 5%;">
         <span style="margin-bottom: 5%;">
-          {{ $t('data.recordAccess.availableRoles') }} ({{ labelListExcludo.length }})
+          {{ $t('data.recordAccess.availableRoles') }} ({{ labelListExclude.length }})
         </span>
         <br>
         <el-select
-          v-model="labelListExcludo"
+          v-model="labelListExclude"
           multiple
           style="margin-top: 2.5%;"
           filterable
@@ -22,9 +41,9 @@
         >
           <el-option
             v-for="item in includedList"
-            :key="item.roleUuid"
-            :label="item.roleName"
-            :value="item.roleName"
+            :key="item.uuid"
+            :label="item.name"
+            :value="item.name"
           />
         </el-select>
       </div>
@@ -46,9 +65,9 @@
         >
           <el-option
             v-for="item in excludedList"
-            :key="item.roleUuid"
-            :label="item.roleName"
-            :value="item.roleName"
+            :key="item.uuid"
+            :label="item.name"
+            :value="item.name"
           />
         </el-select>
       </div>
@@ -72,10 +91,10 @@
           @change="addRolesLockReadOnly"
         >
           <el-option
-            v-for="item in includedList.filter(element => element.isExclude)"
-            :key="item.roleUuid"
-            :label="item.roleName"
-            :value="item.roleName"
+            v-for="item in includedList.filter(element => element.is_exclude)"
+            :key="item.uuid"
+            :label="item.name"
+            :value="item.name"
           />
         </el-select>
       </div>
@@ -100,9 +119,9 @@
         >
           <el-option
             v-for="item in includedList"
-            :key="item.roleUuid"
-            :label="item.roleName"
-            :value="item.roleName"
+            :key="item.uuid"
+            :label="item.name"
+            :value="item.name"
           />
         </el-select>
       </div>
@@ -126,10 +145,10 @@
           @change="addlockedRolesIsDependentEntities"
         >
           <el-option
-            v-for="item in includedList.filter(element => !element.isExclude)"
-            :key="item.roleUuid"
-            :label="item.roleName"
-            :value="item.roleName"
+            v-for="item in includedList.filter(element => !element.is_exclude)"
+            :key="item.uuid"
+            :label="item.name"
+            :value="item.name"
           />
         </el-select>
       </div>
@@ -154,7 +173,9 @@ import recordAccessMixin from './recordAccess.js'
 
 export default {
   name: 'RecordAccessMobile',
+
   mixins: [recordAccessMixin],
+
   props: {
     parentUuid: {
       type: String,
@@ -181,34 +202,36 @@ export default {
       default: undefined
     }
   },
+
   data() {
     return {
       group: 'sequence',
-      isReadonly: false,
-      isDependentEntities: false,
+      is_read_only: false,
+      is_dependent_entities: false,
       labelListInclude: [],
-      labelListExcludo: []
+      labelListExclude: []
     }
   },
+
   computed: {
     listExclude() {
       return this.excludedList.map(element => {
-        return element.roleName
+        return element.name
       })
     },
     listInclude() {
       return this.includedList.map(element => {
-        return element.roleName
+        return element.name
       })
     },
     listRolesLock: {
       get() {
         const list = this.includedList.filter(element => {
-          return !element.isExclude
+          return !element.is_exclude
         })
         if (list) {
           return list.map(element => {
-            return element.roleName
+            return element.name
           })
         }
         return []
@@ -219,13 +242,13 @@ export default {
     listRolesLockReadOnly: {
       get() {
         const list = this.includedList.filter(element => {
-          if (element.isExclude && element.isReadOnly) {
+          if (element.is_exclude && element.is_read_only) {
             return element
           }
         })
         if (list) {
           return list.map(element => {
-            return element.roleName
+            return element.name
           })
         }
         return []
@@ -236,13 +259,13 @@ export default {
     listLabelRolesLockReadOnly: {
       get() {
         const list = this.includedList.filter(element => {
-          if (!element.isExclude && element.isReadOnly) {
+          if (!element.is_exclude && element.is_read_only) {
             return element
           }
         })
         if (list) {
           return list.map(element => {
-            return element.roleName
+            return element.name
           })
         }
         return []
@@ -253,13 +276,13 @@ export default {
     listRolesUnLock: {
       get() {
         const list = this.includedList.filter(element => {
-          if (!element.isExclude && element.isDependentEntities) {
+          if (!element.is_exclude && element.is_dependent_entities) {
             return element
           }
         })
         if (list) {
           return list.map(element => {
-            return element.roleName
+            return element.name
           })
         }
         return []
@@ -268,18 +291,20 @@ export default {
       }
     }
   },
+
   watch: {
     listInclude(value) {
       this.labelListInclude = value
     },
     listExclude(value) {
-      this.labelListExcludo = value
+      this.labelListExclude = value
     }
   },
+
   methods: {
     addListInclude(element) {
       const index = this.recordAccess.roles.findIndex(item => {
-        if (element[element.length - 1] === item.roleName) {
+        if (element[element.length - 1] === item.name) {
           return item
         }
       })
@@ -292,7 +317,7 @@ export default {
     },
     addListExclude(element) {
       const index = this.recordAccess.roles.findIndex(item => {
-        if (element[element.length - 1] === item.roleName) {
+        if (element[element.length - 1] === item.name) {
           return item
         }
       })
@@ -305,47 +330,47 @@ export default {
     },
     addRolesLock(element) {
       const index = this.recordAccess.roles.findIndex(item => {
-        if (element[element.length - 1] === item.roleName) {
+        if (element[element.length - 1] === item.name) {
           return item
         }
       })
 
       if (index >= 0) {
-        this.recordAccess.roles[index].isExclude = !this.recordAccess.roles[index].isExclude
+        this.recordAccess.roles[index].is_exclude = !this.recordAccess.roles[index].is_exclude
       }
     },
     addRolesLockReadOnly(element) {
       const index = this.recordAccess.roles.find(item => {
-        if (element[element.length - 1] === item.roleName) {
+        if (element[element.length - 1] === item.name) {
           return item
         }
       })
       if (index) {
-        index.isReadOnly = !index.isReadOnly
+        index.is_read_only = !index.is_read_only
       } else {
         const undo = this.recordAccess.roles.find(item => {
-          if (this.listRolesLockReadOnly[0] === item.roleName) {
+          if (this.listRolesLockReadOnly[0] === item.name) {
             return item
           }
         })
-        undo.isReadOnly = !undo.isReadOnly
+        undo.is_read_only = !undo.is_read_only
       }
     },
     addlockedRolesIsDependentEntities(element) {
       const index = this.recordAccess.roles.find(item => {
-        if (element[element.length - 1] === item.roleName) {
+        if (element[element.length - 1] === item.name) {
           return item
         }
       })
       if (index) {
-        index.isDependentEntities = !index.isDependentEntities
+        index.is_dependent_entities = !index.is_dependent_entities
       } else {
         const undo = this.recordAccess.roles.find(item => {
-          if (this.listRolesUnLock[0] === item.roleName) {
+          if (this.listRolesUnLock[0] === item.name) {
             return item
           }
         })
-        undo.isDependentEntities = !undo.isDependentEntities
+        undo.is_dependent_entities = !undo.is_dependent_entities
       }
     },
     SendRecorAccess(list) {
