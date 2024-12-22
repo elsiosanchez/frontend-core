@@ -96,8 +96,8 @@ export default {
     setFile(state, file) {
       state.file = file
     },
-    setImportFormat(state, formats) {
-      state.importFormat = formats
+    setImportFormat(state, currentImportFormat) {
+      state.importFormat = currentImportFormat
     },
     setIndexRecordPreview(state, index) {
       state.indexRecordPreview = index
@@ -139,9 +139,13 @@ export default {
               criteria: 'importFormatId',
               value: id
             })
-            commit('setImportFormat', response)
 
-            resolve(response)
+            const importFormat = {
+              ...response
+            }
+            commit('setImportFormat', importFormat)
+
+            resolve(importFormat)
           })
       })
     },
@@ -210,6 +214,7 @@ export default {
           })
       })
     },
+
     saveRecords({ getters }) {
       return new Promise(resolve => {
         const {
@@ -321,7 +326,7 @@ export default {
       return state.charsetsList || []
     },
 
-    getImportFormat(state) {
+    getStoredImportFormat(state) {
       return state.importFormat
     },
     getStoredImportFormatsList(state) {
@@ -341,7 +346,7 @@ export default {
     getIndexRecordPreview(state) {
       return state.indexRecordPreview
     },
-    getNavigationLine(state) {
+    getImportRowLine(state) {
       return state.navigationLine
     }
   }

@@ -20,46 +20,47 @@
 <template>
   <el-row :gutter="10">
     <el-form
-      ref="form-express-receipt"
+      ref="import-format-fields"
       label-position="top"
-      class="form-min-label"
+      class="form-base"
       inline
     >
       <el-col
-        v-for="(field, key) in formatFields"
-        :key="field.sequence"
+        v-for="(fieldFormat) in formatFieldsList"
+        :key="fieldFormat.sequence"
         :span="6"
       >
         <el-form-item
-          :label="field.name"
+          :label="fieldFormat.name"
           style="margin-bottom: 0px !important;width: 100%;"
         >
           <el-input
-            v-if="field.data_type === 'S'"
-            :value="displayValue(field, key)"
+            v-if="fieldFormat.data_type === 'S'"
+            :value="formatValue(fieldFormat, currentLine)"
             disabled
             style="width: 100%;"
           />
 
           <el-input-number
-            v-else-if="field.data_type === 'N'"
-            :value="displayValue(field, key)"
+            v-else-if="fieldFormat.data_type === 'N'"
+            :value="formatValue(fieldFormat, currentLine)"
             controls-position="right"
             disabled
             style="width: 100%;"
+            :precision="numberPrecision(fieldFormat)"
           />
 
           <el-date-picker
-            v-else-if="field.data_type === 'D'"
-            v-model="field.default_value"
-            type="date"
+            v-else-if="fieldFormat.data_type === 'D'"
+            :value="formatValue(fieldFormat, currentLine)"
+            type="datetime"
             disabled
             style="width: 100%;"
           />
 
           <el-input
-            v-else-if="field.data_type === 'C'"
-            :value="displayValue(field, key)"
+            v-else-if="fieldFormat.data_type === 'C'"
+            :value="formatValue(fieldFormat, currentLine)"
             disabled
             style="width: 100%;"
           />
@@ -77,37 +78,36 @@ import { defineComponent, computed } from '@vue/composition-api'
 import store from '@/store'
 
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere'
+import { formatValue } from '@/utils/ADempiere/dictionary/form/VFileImport'
 
 export default defineComponent({
   name: 'ImportFormatFields',
 
   setup() {
-    const formatFields = computed(() => {
-      const { format_fields } = store.getters.getImportFormat
+    const formatFieldsList = computed(() => {
+      const { format_fields } = store.getters.getStoredImportFormat
       return format_fields
     })
 
     const currentLine = computed(() => {
-      return store.getters.getNavigationLine
+      return store.getters.getImportRowLine || {}
     })
 
-    function displayValue(field, index) {
-      const { header } = store.getters.getFile
-      if (isEmptyValue(header)) {
-        return
+    function numberPrecision(field) {
+      const value = formatValue(field, currentLine.value)
+      if (Number.isInteger(value)) {
+        return 0
       }
-      if (isEmptyValue(currentLine.value)) {
-        return
-      }
-      return currentLine.value[field.column_name]
+      return 2
     }
 
     return {
       // Computed
-      formatFields,
-      // Methos
-      displayValue
+      currentLine,
+      formatFieldsList,
+      // Methods
+      numberPrecision,
+      formatValue
     }
   }
 })

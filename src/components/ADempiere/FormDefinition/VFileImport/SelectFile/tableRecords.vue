@@ -33,17 +33,19 @@
     @current-change="changeRow"
   >
     <index-column
-      v-if="!isEmptyValue(headerTable)"
+      v-if="!isEmptyValue(formatFieldsList)"
     />
 
     <el-table-column
-      v-for="(item, key) in headerTable"
-      :key="key"
-      :label="key"
+      v-for="(item) in formatFieldsList"
+      :key="item.uuid"
+      :label="item.name"
       width="180"
     >
       <template slot-scope="scope">
-        {{ scope.row[key] }}
+        <span :class="{ 'cell-align-right': item.data_type === ROW_TYPE_NUMBER }">
+          {{ formatValue(item, scope.row) }}
+        </span>
       </template>
     </el-table-column>
   </el-table>
@@ -56,6 +58,13 @@ import store from '@/store'
 
 // Components and Mixins
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
+
+// Constants
+import { ROW_TYPE_NUMBER } from '@/utils/ADempiere/dictionary/form/VFileImport'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatValue } from '@/utils/ADempiere/dictionary/form/VFileImport'
 
 export default defineComponent({
   name: 'TableRecords',
@@ -72,14 +81,16 @@ export default defineComponent({
       return data
     })
 
-    const headerTable = computed(() => {
-      const { header } = store.getters.getFile
-      return header
-    })
-
     const isLoadingTable = computed(() => {
       const { isLoading } = store.getters.getFile
       return isLoading
+    })
+
+    const formatFieldsList = computed(() => {
+      if (isEmptyValue(store.getters.getStoredImportFormat)) {
+        return []
+      }
+      return store.getters.getStoredImportFormat.format_fields
     })
 
     const currentLine = computed({
@@ -89,7 +100,7 @@ export default defineComponent({
         singleTable.value.setCurrentRow(newRow)
       },
       get() {
-        return store.getters.getNavigationLine
+        return store.getters.getImportRowLine || {}
       }
     })
 
@@ -104,18 +115,21 @@ export default defineComponent({
     })
 
     return {
+      ROW_TYPE_NUMBER,
       singleTable,
+      formatFieldsList,
       //
       currentLine,
       isLoadingTable,
       dataTable,
-      headerTable,
+      formatValue,
       //
       changeRow
     }
   }
 })
 </script>
+
 <style lang="scss">
 .el-table--medium .el-table__cell {
   padding: 2px 0 !important;

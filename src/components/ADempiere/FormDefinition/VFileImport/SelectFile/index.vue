@@ -191,7 +191,7 @@ export default defineComponent({
     })
 
     const importFormat = computed(() => {
-      return store.getters.getImportFormat
+      return store.getters.getStoredImportFormat
     })
 
     const storedImportFormatsList = computed(() => {
