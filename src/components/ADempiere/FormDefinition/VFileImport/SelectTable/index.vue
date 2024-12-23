@@ -55,7 +55,7 @@
               </span>
             </el-card>
             <el-form
-              ref="form-express-receipt"
+              ref="select-table"
               label-position="top"
               class="form-min-label"
               inline

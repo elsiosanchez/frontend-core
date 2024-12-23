@@ -23,12 +23,12 @@
       <el-card>
         <el-row :gutter="24">
           <el-form
-            ref="form-express-receipt"
+            ref="select-file"
             label-position="top"
             class="form-min-label"
             inline
           >
-            <el-col :span="8" style="border: 1px solid rgb(230, 235, 245);padding: 0px 10px;">
+            <el-col :span="8" style="border-right: 3px solid rgb(230, 235, 245);padding: 0px 10px;">
               <el-form-item
                 :label="$t('form.VFileImport.configureToImport.selectFileToImport')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;color: transparent !important;"
@@ -36,7 +36,7 @@
                 <span style="display: flex;">
                   <upload-resource
                     style="display: inline-block; text-align: center;"
-                    table-name="AD_ImpFormat"
+                    :table-name="TABLE_NAME"
                     :record-id="importFormat.id"
                     :load-data="handleSuccess"
                   />
@@ -47,7 +47,7 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="8" style="border: 1px solid #e6ebf5;">
+            <el-col :span="8" style="border: 0px solid #e6ebf5;">
               <el-form-item
                 :label="$t('form.VFileImport.selectTable.listOfCharacterSets')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
@@ -60,7 +60,7 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="8" style="border: 1px solid #e6ebf5;">
+            <el-col :span="8" style="border-left: 3px solid #e6ebf5;">
               <el-form-item
                 :label="$t('form.VFileImport.selectTable.importFormat')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
@@ -76,7 +76,7 @@
                   plain
                   split-button
                   :hide-on-click="true"
-                  :class="{ 'action-container': true, 'without-defualt-action': false }"
+                  :class="{ 'import-format-dropdown': true }"
                   @command="changeImportFormat"
                 >
                   <span>
@@ -84,13 +84,19 @@
                   </span>
                   <el-dropdown-menu
                     slot="dropdown"
+                    class="import-format-dropdown-menu"
                   >
                     <el-dropdown-item
-                      v-for="(list, index) in storedImportFormatsList"
+                      v-for="(item, index) in storedImportFormatsList"
                       :key="index"
-                      :command="list.values.KeyColumn"
+                      :command="item.values.KeyColumn"
                     >
-                      {{ list.values.DisplayColumn }}
+                      <b v-if="!isEmptyValue(importFormat) && importFormat.id == item.id">
+                        {{ item.values.DisplayColumn }}
+                      </b>
+                      <span v-else>
+                        {{ item.values.DisplayColumn }}
+                      </span>
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -162,6 +168,9 @@ import {
 
 import store from '@/store'
 
+// Constants
+import { TABLE_NAME } from '@/utils/ADempiere/dictionary/form/VFileImport'
+
 // Components and Mixins
 import UploadResource from '@/components/ADempiere/PanelInfo/Component/AttachmentManager/uploadResource.vue'
 import TableRecords from './tableRecords.vue'
@@ -169,7 +178,7 @@ import ImportFormatFields from './importFormatFields.vue'
 import SelectResource from './selectResource.vue'
 
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'SelectFile',
@@ -220,14 +229,26 @@ export default defineComponent({
     }
 
     function changeImportFormat(command) {
+      const { id: currentImportFormatId } = importFormat.value
+
       store.dispatch('getImportFormatFromServer', {
         id: command
       })
         .then(response => {
-          if (!isEmptyValue(resourceId.value)) {
-            store.dispatch('getPreviewRecordsFromServer')
-          }
+          // if (!isEmptyValue(resourceId.value)) {
+          //   store.dispatch('getPreviewRecordsFromServer')
+          // }
+          store.commit('setResourceReference', {})
         })
+
+      if (isEmptyValue(currentImportFormatId) !== command) {
+        store.commit('setNavigationLine', {})
+        store.commit('updateAttributeVFileImport', {
+          attribute: 'file',
+          criteria: 'data',
+          value: []
+        })
+      }
     }
 
     watch(resourceId, (newValue, oldValue) => {
@@ -242,6 +263,7 @@ export default defineComponent({
     })
 
     return {
+      TABLE_NAME,
       // Computed
       resourceId,
       storedImportFormatsList,
@@ -260,20 +282,35 @@ export default defineComponent({
   border-bottom: 1px solid #dfe6ec;
   background: #E8F4FF;
 }
-.el-input.is-disabled .el-input__inner {
-    background-color: #F5F7FA;
-    border-color: #dfe4ed;
-    color: rgb(27, 26, 26);
-    cursor: not-allowed;
-}
+// .el-input.is-disabled .el-input__inner {
+//     background-color: #F5F7FA;
+//     border-color: #dfe4ed;
+//     color: rgb(27, 26, 26);
+//     cursor: not-allowed;
+// }
 .scroll-list-field {
   max-height: 30vh;
   padding-bottom: 15px;
 }
 .main-configure-file-import {
   height: 100%;
-}
-.title-import-format {
-  padding: 5px;
+
+  .import-format-dropdown {
+    .el-button-group {
+      // light blue style of the drop down menu section
+      >.el-button {
+        font-weight: bold;
+        // margin-right: 2px;
+        color: #0080ff;
+        border-color: #0080ff;
+        background: #ecf5ff;
+        border: solid #0080ff 1px;
+      }
+    }
+  }
+
+  .title-import-format {
+    padding: 5px;
+  }
 }
 </style>

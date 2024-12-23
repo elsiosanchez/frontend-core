@@ -42,7 +42,7 @@
       </span>
 
       <attachment-manager
-        :table-name="'AD_ImpFormat'"
+        :table-name="TABLE_NAME"
         :record-id="importFormatId"
         :is-selectable="true"
       />
@@ -55,6 +55,9 @@
 import { defineComponent, ref, computed } from '@vue/composition-api'
 
 import store from '@/store'
+
+// Constants
+import { TABLE_NAME } from '@/utils/ADempiere/dictionary/form/VFileImport'
 
 // Components and Mixins
 import AttachmentManager from '@/components/ADempiere/PanelInfo/Component/AttachmentManager/index.vue'
@@ -92,7 +95,7 @@ export default defineComponent({
         return
       }
       store.dispatch('getAttachmentFromServer', {
-        tableName: 'AD_ImpFormat',
+        tableName: TABLE_NAME,
         recordId: props.importFormatId,
         containerType: 'attachment'
       })
@@ -109,8 +112,12 @@ export default defineComponent({
     }
 
     return {
+      TABLE_NAME,
+      // Refs
       isShowedFiles,
+      // Computeds
       isDisabledManageFile,
+      // Methods
       openAttachments
     }
   }

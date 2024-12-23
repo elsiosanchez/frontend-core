@@ -2,6 +2,7 @@
   ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
   Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
   Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -17,17 +18,17 @@
 -->
 
 <template>
-  <div class="main-express-receipt">
+  <div class="import-file-loader-save-process">
     <el-card class="box-card">
       <el-card>
         <el-row :gutter="24">
           <el-form
-            ref="form-express-receipt"
+            ref="save-process"
             label-position="top"
             class="form-min-label"
             inline
           >
-            <el-col :span="spanSize" style="border: 1px solid #e6ebf5;">
+            <el-col :span="spanSize" style="border-right: 3px solid #e6ebf5;">
               <el-form-item
                 :label="$t('form.VFileImport.selectTable.listOfCharacterSets')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
@@ -40,7 +41,7 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="spanSize" style="border: 1px solid #e6ebf5;">
+            <el-col :span="spanSize" style="border-right: 3px solid #e6ebf5;">
               <el-form-item
                 :label="$t('form.VFileImport.selectTable.importFormat')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
@@ -53,33 +54,34 @@
               </el-form-item>
             </el-col>
 
-            <el-col :span="spanSize" style="border: 1px solid #e6ebf5;">
+            <el-col :span="spanSize" style="border: 0px solid #e6ebf5;">
               <el-form-item
-                :label="$t('form.VFileImport.step.saveAndProcess')"
+                :label="$t('form.VFileImport.saveAndProcess.manageData')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
               >
                 <el-switch
                   v-model="isProcess"
+                  :inactive-text="$t('form.VFileImport.saveAndProcess.onlySave')"
+                  :active-text="$t('form.VFileImport.saveAndProcess.saveAndProcess')"
                 />
               </el-form-item>
             </el-col>
 
-            <el-col v-if="isProcess" :span="spanSize" style="border: 1px solid #e6ebf5;">
+            <el-col v-if="isProcess" :span="spanSize" style="border-left: 3px solid #e6ebf5;">
               <el-form-item
                 :label="$t('form.VFileImport.saveAndProcess.processes')"
                 style="width: 100%;text-align: center;margin-bottom: 0px !important;"
               >
                 <el-dropdown
-                  v-if="!isEmptyValue(importProcessList) && importProcessList.length > 0"
+                  v-if="!isEmptyValue(importProcessList)"
                   plain
                   split-button
                   :hide-on-click="true"
-                  :class="{ 'action-container': true, 'without-defualt-action': false }"
-                  @click="loadProcess({ processId: importProcessList[0].id, processUuid: importProcessList[0].values.UUID })"
+                  :class="{ 'import-format-process-dropdown': true }"
                   @command="handleCommand"
                 >
                   <span>
-                    {{ importProcessList[0].values.DisplayColumn }}
+                    {{ getProcessDefinition.name }}
                   </span>
                   <el-dropdown-menu
                     slot="dropdown"
@@ -89,7 +91,7 @@
                     >
                       <el-dropdown-item
                         :key="index"
-                        :command="process.internal_id + '|' + process.values.UUID"
+                        :command="process.id + '|' + process.values.UUID"
                       >
                         {{ process.values.DisplayColumn }}
                       </el-dropdown-item>
@@ -97,11 +99,10 @@
                   </el-dropdown-menu>
                 </el-dropdown>
                 <el-tag
-                  v-else-if="!isEmptyValue(importProcessList) && importProcessList.length === 1"
-                  @click="loadProcess(importProcessList[0].id)"
+                  v-else
                 >
                   <b style="font-size: 16px;">
-                    {{ importProcessList[0].values.DisplayColumn }}
+                    {{ $t('form.VFileImport.saveAndProcess.withoutProcess') }}
                   </b>
                 </el-tag>
               </el-form-item>
@@ -174,7 +175,9 @@ export default defineComponent({
     })
 
     const spanSize = computed(() => {
-      if (isProcess.value) return 6
+      if (isProcess.value) {
+        return 6
+      }
       return 8
     })
 
@@ -204,12 +207,23 @@ export default defineComponent({
 
     const getProcessDefinition = computed(() => {
       const { processDefinition } = store.getters.getAttribute
-      return processDefinition
+      if (!isEmptyValue(processDefinition)) {
+        return processDefinition
+      }
+      return {}
     })
 
     /**
      * Methods
      */
+    function handleCommand(key) {
+      const values = key.split('|')
+      loadProcess({
+        processId: values.at(0),
+        processUuid: values.at(1)
+      })
+    }
+
     function loadProcess({ processId, processUuid }) {
       const storedProcess = store.getters.getStoredProcess(processUuid)
       if (!isEmptyValue(storedProcess)) {
@@ -221,7 +235,7 @@ export default defineComponent({
         return
       }
       store.dispatch('getProcessDefinitionFromServer', {
-        id: processId
+        id: processUuid
       })
         .then(processResponse => {
           store.commit('updateAttributeVFileImport', {
@@ -230,14 +244,6 @@ export default defineComponent({
             value: processResponse
           })
         })
-    }
-
-    function handleCommand(key) {
-      const values = key.split('|')
-      loadProcess({
-        processId: values.at(0),
-        processUuid: values.at(1)
-      })
     }
 
     watch(importProcessList, (newValue, oldValue) => {
@@ -279,50 +285,19 @@ export default defineComponent({
     color: rgb(27, 26, 26);
     cursor: not-allowed;
 }
-.action-container {
-  &.without-defualt-action {
-    .el-button {
-      padding-left: 5px;
-      padding-right: 8px;
-    }
-  }
 
-  .el-button-group {
-    // light blue style of the first section of the menu button
-    // >.el-button::first-child {
-    >.el-button:not(:last-child) {
-      :not(.without-defualt-action) {
-        min-width: 105px;
+.import-file-loader-save-process {
+  .import-format-process-dropdown {
+    .el-button-group {
+      // light blue style of the drop down menu section
+      >.el-button {
+        font-weight: bold;
+        // margin-right: 2px;
+        color: #0080ff;
+        border-color: #0080ff;
+        background: #ecf5ff;
+        border: solid #0080ff 1px;
       }
-      font-weight: bold;
-      // margin-right: -1px;
-      color: #0080ff;
-      border-color: #0080ff;
-      background: #ecf5ff;
-    }
-
-    // light blue style of the drop down menu section
-    .el-button--primary:last-child {
-      // margin-right: 2px;
-      color: #0080ff;
-      border-color: #0080ff;
-      background: #e6f1fd;
-      border-left-color: #000000 !important;
-    }
-
-    // dark blue style when pointing to the menu
-    .el-button--primary:hover {
-      background: #1890ff;
-      border-color: #1890ff;
-      color: #FFFFFF;
-    }
-    .el-button-group > .el-button:last-child {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      font-weight: bold !important;
-      color: #0080ff;
-      border-color: #0080ff;
-      background: #ecf5ff;
     }
   }
 }

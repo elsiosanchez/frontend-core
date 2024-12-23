@@ -25,8 +25,8 @@
     border
     highlight-current-row
     style="width: 100%"
-    height="350"
-    class="table-data-dile-import"
+    :height="500"
+    class="table-data-file-import-loader"
     :element-loading-text="$t('notifications.loading')"
     element-loading-background="rgba(255, 255, 255, 0.8)"
     :empty-text="$t('form.VFileImport.configureToImport.emptyDataTable')"
@@ -96,7 +96,11 @@ export default defineComponent({
     const currentLine = computed({
       set(newRow) {
         store.commit('setNavigationLine', newRow)
-        store.commit('setIndexRecordPreview', newRow.rowIndex)
+        let index = -1
+        if (!isEmptyValue(newRow)) {
+          index = newRow.rowIndex
+        }
+        store.commit('setIndexRecordPreview', index)
         singleTable.value.setCurrentRow(newRow)
       },
       get() {

@@ -19,6 +19,8 @@
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
+export const TABLE_NAME = 'AD_ImpFormat'
+
 export const ROW_TYPE_CONSTANT = 'C'
 
 export const ROW_TYPE_DATE = 'D'

@@ -61,6 +61,10 @@ export default defineComponent({
       return store.getters.getStoredCurrentTableName
     })
 
+    const importFormat = computed(() => {
+      return store.getters.getStoredImportFormat
+    })
+
     const storedImportFormatsList = computed(() => {
       return store.getters.getStoredImportFormatsList
     })
@@ -73,9 +77,23 @@ export default defineComponent({
       },
       // setter
       set(value) {
+        const { id: currentImportFormatId } = importFormat.value
+
         store.dispatch('getImportFormatFromServer', {
           id: value
         })
+          .then(response => {
+            store.commit('setResourceReference', {})
+          })
+
+        if (isEmptyValue(currentImportFormatId) !== value) {
+          store.commit('setNavigationLine', {})
+          store.commit('updateAttributeVFileImport', {
+            attribute: 'file',
+            criteria: 'data',
+            value: []
+          })
+        }
       }
     })
 
