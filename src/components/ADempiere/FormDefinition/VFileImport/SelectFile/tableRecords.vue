@@ -25,7 +25,7 @@
     border
     highlight-current-row
     style="width: 100%"
-    :height="500"
+    height="300"
     class="table-data-file-import-loader"
     :element-loading-text="$t('notifications.loading')"
     element-loading-background="rgba(255, 255, 255, 0.8)"

@@ -19,7 +19,7 @@
 
 <template>
   <div class="main-configure-file-import">
-    <el-card class="box-card">
+    <el-card class="box-card" :body-style="{ height: '45vh' }">
       <el-card>
         <el-row :gutter="24">
           <el-form
