@@ -207,7 +207,7 @@ export default {
               criteria: 'listProcess',
               value: records
             })
-            resolve(response)
+            resolve(records)
           })
           .catch(error => {
             console.warn(`Error getting List Process Import: ${error.message}. Code: ${error.code}.`)

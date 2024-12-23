@@ -196,6 +196,21 @@ export default defineComponent({
         })
         if (value) {
           store.dispatch('getProcessesListFromServer', storedTableName.value)
+            .then(response => {
+              if (!isEmptyValue(response)) {
+                const firstProcess = response.at()
+                loadProcess({
+                  processId: firstProcess.id,
+                  processUuid: firstProcess.values.UUID
+                })
+              } else {
+                store.commit('updateAttributeVFileImport', {
+                  attribute: 'attribute',
+                  criteria: 'processDefinition',
+                  value: {}
+                })
+              }
+            })
         }
       }
     })
