@@ -23,14 +23,19 @@ export default [
   {
     label: lang.t('form.VAllocation.payment.table.date'),
     columnName: 'transaction_date',
-    width: '145',
+    width: '90',
     align: 'left'
   },
   {
     label: lang.t('form.VAllocation.payment.table.apAr'),
     columnName: 'transaction_type',
-    width: '90',
+    width: '110',
     align: 'left'
+  },
+  {
+    label: lang.t('form.VAllocation.invoice.table.documentType'),
+    columnName: 'document_type',
+    width: '210'
   },
   {
     label: lang.t('form.VAllocation.payment.table.organization'),
@@ -41,7 +46,7 @@ export default [
   {
     label: lang.t('form.VAllocation.payment.table.documentNo'),
     columnName: 'document_no',
-    width: '150',
+    width: '130',
     align: 'left'
   },
   {

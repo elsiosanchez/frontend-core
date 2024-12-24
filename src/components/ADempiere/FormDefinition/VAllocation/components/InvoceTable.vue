@@ -42,18 +42,19 @@
       :label="header.label"
     >
       <template slot-scope="scope">
-        <span v-if="(header.columnName === 'organization' || header.columnName === 'transaction_type')">
+        <span v-if="(['organization', 'transaction_type', 'target_document_type'].includes(header.columnName))">
           {{ scope.row[header.columnName].name }}
         </span>
         <span
           v-else-if="isCellInput(header)"
-          style="width: 100% !important"
+          style="width: 100% !important;text-align: right;"
         >
           <el-input-number
             v-model="scope.row[header.columnName]"
             controls-position="right"
             size="mini"
-            style="width: 100% !important"
+            class="epale"
+            style="width: 100% !important;text-align: right;"
           />
         </span>
         <span v-else>
@@ -147,7 +148,6 @@ export default defineComponent({
     const selectListAll = computed(() => {
       return store.getters.getListSelectInvoceandPayment
     })
-
     const listInvoces = computed(() => {
       return store.getters.getListVAllocation.invoce
     })
@@ -312,8 +312,11 @@ export default defineComponent({
   }
   .el-input-number {
     .el-input--medium .el-input__inner {
-      text-align: end;
+      text-align: right;
     }
+  }
+  .el-input--mini .el-input__inner {
+    text-align: right;
   }
   .panel-top-search-criteria {
     display: flex;
@@ -340,6 +343,9 @@ export default defineComponent({
   }
   .el-table .cell span {
     line-height: 15px !important
+  }
+  .epale .el-input-number .el-input-number--mini .is-controls-right {
+    text-align: right;
   }
 </style>
 <style>

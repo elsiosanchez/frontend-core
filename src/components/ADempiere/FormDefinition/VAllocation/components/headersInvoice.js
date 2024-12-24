@@ -23,12 +23,17 @@ export default [
   {
     label: lang.t('form.VAllocation.invoice.table.date'),
     columnName: 'date_invoiced',
-    width: '145'
+    width: '90'
   },
   {
     label: lang.t('form.VAllocation.invoice.table.apAr'),
     columnName: 'transaction_type',
-    width: '90'
+    width: '130'
+  },
+  {
+    label: lang.t('form.VAllocation.invoice.table.targetDocumentType'),
+    columnName: 'target_document_type',
+    width: '210'
   },
   {
     label: lang.t('form.VAllocation.invoice.table.organization'),
@@ -38,7 +43,7 @@ export default [
   {
     label: lang.t('form.VAllocation.invoice.table.documentNo'),
     columnName: 'document_no',
-    width: '150'
+    width: '125'
   },
   {
     label: lang.t('form.VAllocation.invoice.table.description'),

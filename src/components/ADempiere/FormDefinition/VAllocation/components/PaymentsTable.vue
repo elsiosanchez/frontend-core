@@ -42,7 +42,7 @@
       :label="header.label"
     >
       <template slot-scope="scope">
-        <span v-if="(header.columnName === 'organization' || header.columnName === 'transaction_type')">
+        <span v-if="(['organization', 'transaction_type', 'document_type'].includes(header.columnName))">
           {{ scope.row[header.columnName].name }}
         </span>
         <span

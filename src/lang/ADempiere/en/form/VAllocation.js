@@ -24,17 +24,17 @@ const VAllocation = {
     summaryAndAdjustment: 'Summary and Adjustment'
   },
   searchCriteria: {
-    businessPartner: 'BusinessPartner',
+    businessPartner: 'Business Partner',
     organization: 'Organization',
     currency: 'Currency',
     date: 'Date',
-    transactionType: 'TransactionType',
+    transactionType: 'Transaction Type',
     option: {
       assignFromOrder: 'Assign from Order',
       fullAmount: 'Full Amount',
       autoAssign: 'Auto-Assign',
       manual: 'Manual',
-      closingBalance: 'ClosingBalance'
+      closingBalance: 'Closing Balance'
     }
   },
   payment: {
@@ -42,8 +42,9 @@ const VAllocation = {
     table: {
       date: 'Date',
       apAr: 'CP - CC',
+      documentType: 'Document Type',
       organization: 'Organization',
-      documentNo: 'No Document',
+      documentNo: 'Document No',
       description: 'Description',
       converted: 'Converted',
       open: 'Open',
@@ -55,8 +56,9 @@ const VAllocation = {
     table: {
       date: 'Date',
       apAr: 'CP - CC',
+      targetDocumentType: 'Target Document Type',
       organization: 'Organization',
-      documentNo: 'No Document',
+      documentNo: 'Document No',
       description: 'Description',
       converted: 'Converted',
       open: 'Open',
