@@ -265,67 +265,6 @@ export default defineComponent({
       store.dispatch('loadTransactonsTypesFromServer')
     }
 
-    function isMandatoryField({ isMandatory, isMandatoryFromLogic }) {
-      return isMandatory || isMandatoryFromLogic
-    }
-    function isDisplayedDefault() {
-      return true
-    }
-    function isReadOnlyField({ is_query_criteria, isReadOnlyFromLogic }) {
-      return is_query_criteria && isReadOnlyFromLogic
-    }
-
-    function getLookupList({ parentUuid, containerUuid, contextColumnNames, uuid, id, searchValue, isAddBlankValue = false, blankValue }) {
-      return store.dispatch('getLookupListFromServer', {
-        parentUuid,
-        containerUuid,
-        contextColumnNames,
-        columnId: id,
-        fieldUuid: uuid,
-        searchValue,
-        // app attributes
-        isAddBlankValue,
-        blankValue
-      })
-    }
-
-    function getSearchRecordsList({
-      parentUuid, containerUuid,
-      contextColumnNames, filters, searchValue,
-      id, tableName, columnName,
-      pageNumber, pageSize
-    }) {
-      filters = [{
-        columnName: 'IsActive',
-        value: true
-      }]
-      if (receivablesOnly.value && !payablesOnly.value) {
-        filters.push({
-          columnName: 'IsCustomer',
-          value: receivablesOnly.value
-        })
-      } else if (payablesOnly.value && !receivablesOnly.value) {
-        filters.push({
-          columnName: 'IsVendor',
-          value: payablesOnly.value
-        })
-      }
-
-      return store.dispatch('getSearchRecordsFromServer', {
-        isForm: true,
-        parentUuid,
-        containerUuid,
-        contextColumnNames,
-        fieldId: id,
-        tableName,
-        columnName,
-        filters,
-        searchValue,
-        pageNumber,
-        pageSize
-      })
-    }
-
     currentDate.value = new Date()
 
     /**
@@ -347,17 +286,10 @@ export default defineComponent({
       receivablesPayables,
       // List Option
       currentTypeTransaction,
-      // businessPartners,
       // Computed
       labelReceivablesOnly,
       labelPayablesOnly,
-      currentDate,
-      // Methods,
-      isMandatoryField,
-      isDisplayedDefault,
-      isReadOnlyField,
-      getLookupList,
-      getSearchRecordsList
+      currentDate
     }
   }
 })

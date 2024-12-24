@@ -34,6 +34,15 @@ input[type=text].input-as-password {
   }
 }
 
+.el-input-number {
+  &.is-controls-right {
+    .el-input__inner {
+      // reduce 
+      padding-right: 40px !important;
+    }
+  }
+}
+
 button.button-base-icon {
   padding: 4px 8px;
   font-size: 24px;

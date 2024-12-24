@@ -39,6 +39,14 @@
       >
         <template v-slot:footer>
           <el-button
+            :loading="isLoadingPayments || isLoadingInvoices"
+            type="success"
+            class="button-base-icon"
+            icon="el-icon-refresh-right"
+            size="small"
+            @click="refreshRecords();"
+          />
+          <el-button
             type="danger"
             class="button-base-icon"
             icon="el-icon-close"
@@ -123,6 +131,13 @@ export default defineComponent({
       }
     ])
 
+    const isLoadingPayments = computed(() => {
+      return store.getters.getIsLoadingPayments
+    })
+    const isLoadingInvoices = computed(() => {
+      return store.getters.getIsLoadingInvoices
+    })
+
     const currentStep = computed({
       // getter
       get() {
@@ -154,6 +169,11 @@ export default defineComponent({
       return isEmptyValue(businessPartnerId) || isEmptyValue(currencyId)
     })
 
+    function refreshRecords() {
+      store.dispatch('findListPayment')
+      store.dispatch('findListInvoices')
+    }
+
     function nextStep(step) {
       if (currentStep.value === 0) {
         store.commit('setListSelectInvoceandPayment', [])
@@ -166,8 +186,7 @@ export default defineComponent({
       }
       currentStep.value++
       if (currentStep.value === 1) {
-        store.dispatch('findListPayment')
-        store.dispatch('findListInvoices')
+        refreshRecords()
       }
     }
 
@@ -180,8 +199,11 @@ export default defineComponent({
       currentStep,
       // Computed
       isDisabledProcess,
+      isLoadingPayments,
+      isLoadingInvoices,
       // Methods
-      nextStep
+      nextStep,
+      refreshRecords
     }
   }
 })

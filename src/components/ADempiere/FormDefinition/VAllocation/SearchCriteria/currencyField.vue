@@ -38,7 +38,10 @@
     >
       <empty-option-select
         :current-value="currentCurrencyValue"
+        :is-allows-zero="true"
+        :disabled="true"
       />
+
       <el-option
         v-for="item in optionsCurrency"
         :key="item.id"

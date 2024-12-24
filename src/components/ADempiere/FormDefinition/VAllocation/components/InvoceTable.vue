@@ -20,8 +20,9 @@
   <el-table
     id="listInvocesTable"
     ref="listInvocesTable"
-    v-loading="isLoadingInvoces"
+    v-loading="isLoadingInvoices"
     :data="listInvoces"
+    size="mini"
     border
     style="width: 100%;height: 85%;"
     :element-loading-text="$t('notifications.loading')"
@@ -31,72 +32,177 @@
   >
     <el-table-column
       type="selection"
-      width="40"
+      :width="35"
     />
+
     <el-table-column
-      v-for="(header, key) in headersInvoice"
-      :key="key"
-      prop="id"
-      :align="header.align"
-      :min-width="header.width"
-      :label="header.label"
+      align="left"
+      :min-width="85"
+      :label="$t('form.VAllocation.invoice.table.date')"
     >
       <template slot-scope="scope">
-        <span v-if="(['organization', 'transaction_type', 'target_document_type'].includes(header.columnName))">
-          {{ scope.row[header.columnName].name }}
-        </span>
-        <span
-          v-else-if="isCellInput(header)"
-          style="width: 100% !important;text-align: right;"
+        {{ formatDate({ value: scope.row.date_invoiced }) }}
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="85"
+      :label="$t('form.VAllocation.invoice.table.apAr')"
+    >
+      <template slot-scope="scope">
+        <p
+          style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;;margin: 0px;"
         >
-          <el-input-number
-            v-model="scope.row[header.columnName]"
-            controls-position="right"
-            size="mini"
-            class="epale"
-            style="width: 100% !important;text-align: right;"
-          />
-        </span>
-        <span v-else>
-          <p
-            v-if="typeof scope.row[header.columnName] === 'object'"
-            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
+          <el-popover
+            placement="top-start"
+            trigger="hover"
+            width="300"
           >
-            {{ scope.row[header.columnName].value }}
-          </p>
-          <p
-            v-else-if="scope.row[header.columnName].length < 13 || (typeof scope.row[header.columnName] === 'number')"
-            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
-          >
-            <span v-if="['document_no', 'description'].includes(header.columnName)">
-              {{ scope.row[header.columnName] }}
-            </span>
-            <span v-else-if="header.columnName.includes('date')">
-              {{ formatDate({ value: scope.row[header.columnName], format: 'DD/MM/yyyy'}) }}
-            </span>
-            <span v-else>
-              {{ formatPrice({ value: Number(scope.row[header.columnName]), currency: scope.row.currency.iso_code }) }}
-            </span>
-          </p>
-          <p
-            v-else
-            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
-          >
-            <el-popover
-              placement="top-start"
-              trigger="hover"
-              width="300"
+            {{ scope.row.transaction_type.name }}
+            <p
+              slot="reference"
+              type="text"
+              style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
             >
-              {{ scope.row[header.columnName] }}
-              <p
-                slot="reference"
-                type="text"
-                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
-              >
-                {{ scope.row[header.columnName] }}
-              </p>
-            </el-popover>
-          </p>
+              {{ scope.row.transaction_type.name }}
+            </p>
+          </el-popover>
+        </p>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="185"
+      :label="$t('form.VAllocation.invoice.table.targetDocumentType')"
+    >
+      <template slot-scope="scope">
+        {{ scope.row.target_document_type.name }}
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="130"
+      :label="$t('form.VAllocation.invoice.table.organization')"
+    >
+      <template slot-scope="scope">
+        {{ scope.row.organization.name }}
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="130"
+      :label="$t('form.VAllocation.invoice.table.documentNo')"
+    >
+      <template slot-scope="scope">
+        {{ scope.row.document_no }}
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.description')"
+    >
+      <template slot-scope="scope">
+        <p
+          style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;;margin: 0px;"
+        >
+          <el-popover
+            placement="top-start"
+            trigger="hover"
+            width="300"
+          >
+            {{ scope.row.description }}
+            <p
+              slot="reference"
+              type="text"
+              style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 10px;font-size: 12px;margin: 0px;"
+            >
+              {{ scope.row.description }}
+            </p>
+          </el-popover>
+        </p>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.converted')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ formatPrice({ value: scope.row.converted_amount, currency: scope.row.currency.iso_code }) }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.open')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ formatPrice({ value: scope.row.open_amount, currency: scope.row.currency.iso_code }) }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.tradeDiscount')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ formatPrice({ value: scope.row.discount_amount, currency: scope.row.currency.iso_code }) }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.writeOff')"
+    >
+      <template slot-scope="scope">
+        <el-input-number
+          v-model="scope.row.writeOff"
+          controls-position="right"
+          size="mini"
+          style="width: 100% !important"
+        />
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.applied')"
+    >
+      <template slot-scope="scope">
+        <el-input-number
+          v-model="scope.row.applied"
+          controls-position="right"
+          size="mini"
+          style="width: 100% !important"
+        />
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="150"
+      :label="$t('form.VAllocation.invoice.table.overUnderPay')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ formatPrice({ value: scope.row.original_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
     </el-table-column>
@@ -108,9 +214,6 @@ import { defineComponent, ref, computed, watch } from '@vue/composition-api'
 
 import store from '@/store'
 // import router from '@/router'
-
-// Components and Mixins
-import headersInvoice from './headersInvoice.js'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
@@ -132,10 +235,7 @@ export default defineComponent({
       const initialValue = 0
       return sumInvoce.reduce((accumulator, currentValue) => accumulator + currentValue, initialValue)
     })
-    const isLoadingInvoces = computed(() => {
-      const { isLoadingInvoces } = store.getters.getisLoadTables
-      return isLoadingInvoces
-    })
+
     /**
      * Refs
      */
@@ -145,6 +245,9 @@ export default defineComponent({
     /**
      * computed
      */
+    const isLoadingInvoices = computed(() => {
+      return store.getters.getIsLoadingInvoices
+    })
     const selectListAll = computed(() => {
       return store.getters.getListSelectInvoceandPayment
     })
@@ -284,13 +387,11 @@ export default defineComponent({
       //
       diference,
       sumApplied,
-      // Import
-      headersInvoice,
       // Refs
       panelInvoce,
       listInvocesTable,
       // Computed
-      isLoadingInvoces,
+      isLoadingInvoices,
       selectListAll,
       listInvoces,
       // Methods

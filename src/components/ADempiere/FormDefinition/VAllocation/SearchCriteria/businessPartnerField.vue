@@ -38,6 +38,12 @@
       :remote-method="remoteMethodBPartner"
       @visible-change="findBusinessPartners"
     >
+      <empty-option-select
+        :current-value="currentBPartner"
+        :is-allows-zero="true"
+        :disabled="true"
+      />
+
       <el-option
         v-for="item in optionsBPartner"
         :key="item.id"
@@ -58,11 +64,18 @@ import {
   listBusinessPartners
 } from '@/api/ADempiere/form/VAllocation.ts'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // Utils and Helper Methods
 import { createFieldFromDictionary } from '@/utils/ADempiere/lookupFactory'
 
 export default defineComponent({
-  name: 'BusinessPartner',
+  name: 'BusinessPartnerField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   props: {
     metadata: {
@@ -101,6 +114,19 @@ export default defineComponent({
       if (searchValue !== '') {
         clearTimeout(timeOut.value)
         timeOut.value = setTimeout(() => {
+          // TODO: Add filters with receivable y payables
+          // if (receivablesOnly.value && !payablesOnly.value) {
+          //   filters.push({
+          //     columnName: 'IsCustomer',
+          //     value: receivablesOnly.value
+          //   })
+          // } else if (payablesOnly.value && !receivablesOnly.value) {
+          //   filters.push({
+          //     columnName: 'IsVendor',
+          //     value: payablesOnly.value
+          //   })
+          // }
+
           loadingBPartner.value = true
           listBusinessPartners({
             searchValue
@@ -125,6 +151,18 @@ export default defineComponent({
       if (!isFind) {
         return
       }
+      // TODO: Add filters with receivable y payables
+      // if (receivablesOnly.value && !payablesOnly.value) {
+      //   filters.push({
+      //     columnName: 'IsCustomer',
+      //     value: receivablesOnly.value
+      //   })
+      // } else if (payablesOnly.value && !receivablesOnly.value) {
+      //   filters.push({
+      //     columnName: 'IsVendor',
+      //     value: payablesOnly.value
+      //   })
+      // }
       loadingBPartner.value = true
       listBusinessPartners({
         searchValue

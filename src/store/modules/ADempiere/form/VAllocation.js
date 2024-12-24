@@ -36,7 +36,6 @@ const initStateCriteria = {
   organizationId: -1,
   currencyId: -1,
   listOrganization: [],
-  transactionOrganizationsList: [],
   listCurrency: [],
   date: '',
   transactionType: '',
@@ -71,6 +70,7 @@ const initStateVAllocation = {
     chargeId: 0,
     description: '',
     totalDifference: 0,
+    transactionOrganizationsList: [],
     transactionOrganizationId: ''
   },
   paymentAssignment: {
@@ -81,10 +81,8 @@ const initStateVAllocation = {
     }
   },
   listSelectAll: [],
-  isLoadTables: {
-    isLoadingInvoces: false,
-    isLoadingPayments: false
-  },
+  isLoadingPayments: false,
+  isLoadingInvoices: false,
   steps: 0
 }
 
@@ -131,13 +129,13 @@ export default {
       attribute,
       value
     }) {
-      state.difference[attribute] = value
+      Vue.set(state.difference, attribute, value)
     },
     setProcess(state, {
       attribute,
       value
     }) {
-      state.process[attribute] = value
+      Vue.set(state.process, attribute, value)
     },
     setListDifference(state) {
       const payments = state.list.payments
@@ -187,6 +185,12 @@ export default {
     setListSelectInvoceandPayment(state, list) {
       state.listSelectAll = list
     },
+    setIsLoadingPayments(state, isLoading = false) {
+      state.isLoadingPayments = isLoading
+    },
+    setIsLoadingInvoices(state, isLoading = false) {
+      state.isLoadingInvoices = isLoading
+    },
     resetStateVAllocation(state) {
       Vue.set(state, 'searchCriteria', {
         ...initStateCriteria
@@ -229,11 +233,8 @@ export default {
           transactionType,
           isAutomaticWriteOff
         } = state.searchCriteria
-        commit('updateAttributeCriteriaVallocation', {
-          attribute: 'isLoadingPayments',
-          criteria: 'isLoadTables',
-          value: true
-        })
+        console.log({ organizationId })
+        commit('setIsLoadingPayments', true)
         requestListPayments({
           businessPartnerId,
           date,
@@ -245,23 +246,20 @@ export default {
         })
           .then(response => {
             const { records } = response
-            const list = records.map(payments => {
+            const recordsList = records.map(payment => {
               return {
-                ...payments,
-                transaction_date: dateTimeFormats(payments.transaction_date, 'YYYY-MM-DD'),
+                ...payment,
+                transaction_date: dateTimeFormats(payment.transaction_date, 'YYYY-MM-DD'),
                 applied: 0,
-                open_amount: Number(payments.open_amount),
+                open_amount: Number(payment.open_amount),
                 isSelect: false,
                 type: 'isPayment'
               }
             })
-            commit('setListPayments', list)
-            commit('updateAttributeCriteriaVallocation', {
-              attribute: 'isLoadingPayments',
-              criteria: 'isLoadTables',
-              value: false
-            })
-            resolve(list)
+            commit('setListPayments', recordsList)
+
+            resolve(recordsList)
+            commit('setIsLoadingPayments', false)
           })
           .catch(error => {
             showMessage({
@@ -269,12 +267,9 @@ export default {
               message: error.message,
               showClose: true
             })
-            commit('updateAttributeCriteriaVallocation', {
-              attribute: 'isLoadingPayments',
-              criteria: 'isLoadTables',
-              value: false
-            })
+
             resolve([])
+            commit('setIsLoadingPayments', false)
             console.warn(`Error getting List Product: ${error.message}. Code: ${error.code}.`)
           })
       })
@@ -283,27 +278,20 @@ export default {
       return new Promise(resolve => {
         const {
           businessPartnerId,
-          businessPartnerUuid,
           date,
           organizationId,
-          organizationUuid,
           currencyId,
           currencyUuid,
           isMultiCurrency,
           transactionType,
           isAutomaticWriteOff
         } = state.searchCriteria
-        commit('updateAttributeCriteriaVallocation', {
-          attribute: 'isLoadingInvoces',
-          criteria: 'isLoadTables',
-          value: true
-        })
+
+        commit('setIsLoadingInvoices', true)
         requestListInvoices({
           businessPartnerId,
-          businessPartnerUuid,
           date,
           organizationId,
-          organizationUuid,
           currencyId,
           currencyUuid,
           isMultiCurrency,
@@ -312,26 +300,23 @@ export default {
         })
           .then(response => {
             const { records } = response
-            const list = records.map(payments => {
+            const recordsList = records.map(invoice => {
               return {
-                ...payments,
-                date_invoiced: dateTimeFormats(payments.date_invoiced, 'YYYY-MM-DD'),
+                ...invoice,
+                date_invoiced: dateTimeFormats(invoice.date_invoiced, 'YYYY-MM-DD'),
                 applied: 0,
                 writeOff: 0,
                 isSelect: false,
-                discount_amount: Number(payments.discount_amount),
-                open_amount: Number(payments.open_amount),
+                discount_amount: Number(invoice.discount_amount),
+                open_amount: Number(invoice.open_amount),
                 amountApplied: 0,
                 type: 'isInvoce'
               }
             })
-            commit('updateAttributeCriteriaVallocation', {
-              attribute: 'isLoadingInvoces',
-              criteria: 'isLoadTables',
-              value: false
-            })
-            commit('setListInvoces', list)
-            resolve(list)
+            commit('setListInvoces', recordsList)
+
+            resolve(recordsList)
+            commit('setIsLoadingInvoices', false)
           })
           .catch(error => {
             showMessage({
@@ -339,12 +324,8 @@ export default {
               message: error.message,
               showClose: true
             })
-            commit('updateAttributeCriteriaVallocation', {
-              attribute: 'isLoadingInvoces',
-              criteria: 'isLoadTables',
-              value: false
-            })
             resolve([])
+            commit('setIsLoadingInvoices', false)
             console.warn(`Error getting List Product: ${error.message}. Code: ${error.code}.`)
           })
       })
@@ -486,8 +467,11 @@ export default {
     getListSelectInvoceandPayment(state) {
       return state.listSelectAll
     },
-    getisLoadTables(state) {
-      return state.isLoadTables
+    getIsLoadingPayments(state) {
+      return state.isLoadingPayments
+    },
+    getIsLoadingInvoices(state) {
+      return state.isLoadingInvoices
     }
   }
 }

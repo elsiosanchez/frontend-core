@@ -30,7 +30,7 @@
       clearable
       :filter-method="remoteSearchOrganizations"
       required
-      @visible-change="findOrganizations"
+      @visible-change="loadOrganizations"
     >
       <empty-option-select
         :current-value="transactionOrganizationId"
@@ -72,7 +72,11 @@ export default defineComponent({
   },
 
   setup() {
-    const organizationId = computed(() => {
+    const sessionOrganizationId = computed(() => {
+      return store.getters['user/getOrganization'].id
+    })
+
+    const filterOrganizationId = computed(() => {
       const { organizationId } = store.getters.getSearchFilter
       return organizationId
     })
@@ -95,14 +99,13 @@ export default defineComponent({
     const optionsOrganizationsList = computed({
       // getter
       get() {
-        const { transactionOrganizationsList } = store.getters.getSearchFilter
-        return transactionOrganizationsList
+        const { transactionOrganizationsList } = store.getters.getProcess
+        return transactionOrganizationsList || []
       },
       // setter
       set(list) {
-        store.commit('updateAttributeCriteriaVallocation', {
+        store.commit('setProcess', {
           attribute: 'transactionOrganizationsList',
-          criteria: 'searchCriteria',
           value: list
         })
       }
@@ -119,12 +122,12 @@ export default defineComponent({
       if (!isEmptyValue(query) && query.length > 2) {
         const result = optionsOrganizationsList.value.filter(findFilter(query))
         if (isEmptyValue(result)) {
-          findOrganizations(true, query)
+          loadOrganizations(true, query)
         }
       }
     }
 
-    function findOrganizations(isFind, searchValue) {
+    function loadOrganizations(isFind, searchValue) {
       if (!isFind) {
         return
       }
@@ -138,19 +141,28 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if (!isEmptyValue(organizationId.value) && organizationId.value > 0 &&
-        (isEmptyValue(transactionOrganizationId.value) || transactionOrganizationId.value <= 0)) {
-        transactionOrganizationId.value = organizationId.value
+      if (isEmptyValue(transactionOrganizationId.value) || transactionOrganizationId.value <= 0) {
+        // set with filter
+        if (!isEmptyValue(filterOrganizationId.value) && filterOrganizationId.value > 0) {
+          transactionOrganizationId.value = filterOrganizationId.value
+        }
+        // set with session
+        if (isEmptyValue(transactionOrganizationId.value) || transactionOrganizationId.value <= 0) {
+          transactionOrganizationId.value = sessionOrganizationId.value
+        }
       }
+
       if (isEmptyValue(optionsOrganizationsList.value) && !isEmptyValue(transactionOrganizationId.value) && transactionOrganizationId.value > 0) {
-        findOrganizations(true, '')
+        loadOrganizations(true, '')
       }
     })
 
     return {
+      sessionOrganizationId,
+      filterOrganizationId,
       transactionOrganizationId,
       optionsOrganizationsList,
-      findOrganizations,
+      loadOrganizations,
       remoteSearchOrganizations
     }
   }

@@ -34,7 +34,7 @@ export function requestListTransactionTypes() {
 export function listBusinessPartners({
   searchValue,
   pageToken,
-  pageSize
+  pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
     url: '/payment-allocation/business-partners',
@@ -161,7 +161,7 @@ export function requestListInvoices({
 export function requestListCharges({
   searchValue,
   pageToken,
-  pageSize
+  pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
     url: '/payment-allocation/charges',
@@ -180,7 +180,7 @@ export function requestListCharges({
 export function requestListTransactionOrganizations({
   searchValue,
   pageToken,
-  pageSize
+  pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
     url: '/payment-allocation/organizations/transactions',

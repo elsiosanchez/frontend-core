@@ -80,31 +80,7 @@
                 :span="5"
                 style="text-align: center;"
               >
-                <el-form-item
-                  :label="$t('form.VAllocation.footer.charge')"
-                  label-width="120px"
-                  style="margin: 0px;padding: 0px;"
-                >
-                  <el-select
-                    v-model="charges"
-                    style="width: 100%;"
-                    filterable
-                    clearable
-                    :filter-method="remoteSearchCharges"
-                    @visible-change="findCharges"
-                  >
-                    <empty-option-select
-                      :current-value="charges"
-                      :is-allows-zero="false"
-                    />
-                    <el-option
-                      v-for="item in optionsCharges"
-                      :key="item.id"
-                      :label="item.label"
-                      :value="item.id"
-                    />
-                  </el-select>
-                </el-form-item>
+                <charge-field />
               </el-col>
               <el-col
                 :span="5"
@@ -133,15 +109,9 @@
                 :span="3"
                 style="padding-left: 0px;padding-right: 0px;text-align: center;"
               >
-                <el-form-item
-                  label-width="120px"
-                  style="margin: 0px;padding: 0px;"
-                >
-                  <template slot="label">
-                    <i style="color: transparent !important;"> {{ 'Buttons Actions' }}</i>
-                  </template>
+                <div class="buttons-actions" style="margin-top: 15px;">
                   <slot name="footer" />
-                </el-form-item>
+                </div>
               </el-col>
             </el-row>
           </el-form>
@@ -158,26 +128,20 @@ import store from '@/store'
 import router from '@/router'
 
 // Components and Mixins
-import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-import headersInvoice from './headersInvoice.js'
-import headersPayments from './headersPayments.js'
 import InvoceTable from './InvoceTable.vue'
 import PaymentsTable from './PaymentsTable.vue'
 import OrganizationTransactionField from '@/components/ADempiere/FormDefinition/VAllocation/ProcessFooter/organizationTransactionField.vue'
+import ChargeField from '@/components/ADempiere/FormDefinition/VAllocation/ProcessFooter/chargeField.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-// API Request Methods
-import {
-  requestListCharges
-} from '@/api/ADempiere/form/VAllocation.ts'
 
 export default defineComponent({
   name: 'Payments',
 
   components: {
-    EmptyOptionSelect,
+    ChargeField,
     InvoceTable,
     OrganizationTransactionField,
     PaymentsTable
@@ -189,9 +153,12 @@ export default defineComponent({
      */
     const listPaymentsTable = ref(null)
     const listInvocesTable = ref(null)
-    const optionsCharges = ref([])
-    const tableData = ref([])
     const panelInvoce = ref(250)
+
+    const organizationId = computed(() => {
+      const { organizationId } = store.getters.getSearchFilter
+      return organizationId
+    })
 
     /**
      * computed
@@ -315,22 +282,6 @@ export default defineComponent({
       }
     })
 
-    const charges = computed({
-      // getter
-      get() {
-        const { chargeId } = store.getters.getProcess
-        // return date
-        return chargeId
-      },
-      // setter
-      set(value) {
-        store.commit('setProcess', {
-          attribute: 'chargeId',
-          value
-        })
-      }
-    })
-
     const description = computed({
       // getter
       get() {
@@ -446,37 +397,6 @@ export default defineComponent({
       }
       return formatQuantity({ value: Math.abs(totalSum) })
     })
-    /**
-     * Methods
-     */
-    function findCharges(isFind, searchValue) {
-      if (!isFind) {
-        return
-      }
-      requestListCharges({
-        searchValue
-      })
-        .then(response => {
-          const { records } = response
-          optionsCharges.value = records.map(currency => {
-            const { id, uuid, values } = currency
-            return {
-              id,
-              uuid,
-              label: values.DisplayColumn
-            }
-          })
-        })
-    }
-
-    function remoteSearchCharges(query) {
-      if (!isEmptyValue(query) && query.length > 2) {
-        const result = optionsCharges.value.filter(findFilter(query))
-        if (isEmptyValue(result)) {
-          findCharges(true, query)
-        }
-      }
-    }
 
     function findFilter(queryString) {
       return (query) => {
@@ -597,20 +517,6 @@ export default defineComponent({
       return appliedPay
     }
 
-    function isCellInput(cell) {
-      const { columnName } = cell
-      let isInput = false
-      switch (columnName) {
-        case 'writeOff':
-          isInput = true
-          break
-        case 'applied':
-          isInput = true
-          break
-      }
-      return isInput
-    }
-
     function toggleSelectionInvoces(rows) {
       if (isEmptyValue(listInvocesTable.value)) return
       if (rows) {
@@ -729,13 +635,9 @@ export default defineComponent({
     })
 
     return {
+      organizationId,
       // Refs
       sumApplied,
-      tableData,
-      headersPayments,
-      headersInvoice,
-      optionsCharges,
-      charges,
       listInvocesTable,
       listPaymentsTable,
       description,
@@ -755,10 +657,7 @@ export default defineComponent({
       handleSelectionInvoces,
       toggleSelectionPayments,
       toggleSelectionInvoce,
-      remoteSearchCharges,
       // toggleSelection,
-      isCellInput,
-      findCharges,
       findFilter,
       //
       summaryDiference,

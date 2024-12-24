@@ -72,7 +72,7 @@ export default defineComponent({
   },
 
   setup() {
-    const organizationIdSession = computed(() => {
+    const sessionOrganizationId = computed(() => {
       return store.getters['user/getOrganization'].id
     })
 
@@ -149,14 +149,14 @@ export default defineComponent({
       loadOrganizations(true, '')
 
       const currentValue = currentOrganizationValue.value
-      if (isEmptyValue(currentValue) || currentValue <= 0) {
-        currentOrganizationValue.value = organizationIdSession.value
+      if (isEmptyValue(currentValue) || currentValue < 0) {
+        currentOrganizationValue.value = sessionOrganizationId.value
       }
     })
 
     return {
       // Computeds
-      organizationIdSession,
+      sessionOrganizationId,
       currentOrganizationValue,
       optionsList,
       // Methods
