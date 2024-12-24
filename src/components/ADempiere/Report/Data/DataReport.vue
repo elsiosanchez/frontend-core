@@ -477,7 +477,7 @@ export default defineComponent({
       }
       columns.value.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = 'Total'
+          sums[index] = ''
           return
         }
         const totalSum = recursiveSum(data, column.code)
