@@ -170,6 +170,7 @@ export default {
     listOrder({ commit, getters }, {
       search_value,
       document_no,
+      invoice_no,
       document_status,
       business_partner_id,
       grand_total,
@@ -200,6 +201,7 @@ export default {
           pageToken,
           search_value,
           document_no,
+          invoice_no,
           document_status,
           business_partner_id,
           grand_total,

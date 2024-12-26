@@ -203,6 +203,13 @@ export default defineComponent({
     function selectCustomer(search) {
       if (isEmptyValue(search)) return
       searchCustomer.value = search.value + ' - ' + search.name
+      if (
+        !isEmptyValue(search) &&
+        !isEmptyValue(currentOrder.value) &&
+        currentOrder.value.customer.id === search.id
+      ) {
+        return
+      }
       if (!isEmptyValue(currentOrder.value.id)) {
         store.dispatch('updateCurrentOrder', {
           customer_id: search.id

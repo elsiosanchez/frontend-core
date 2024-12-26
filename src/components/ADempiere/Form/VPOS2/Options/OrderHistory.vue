@@ -34,7 +34,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           <el-row :gutter="20">
             <el-col :span="6">
               <el-form-item
-                label="No. del Documento"
+                :label="$t('form.byInvoice.documentNo')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -48,7 +48,21 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </el-col>
             <el-col :span="6">
               <el-form-item
-                label="Socio de Negocio"
+                :label="$t('form.byInvoice.invoiceNo')"
+                class="form-item-criteria"
+                style="margin: 0px;width: 100%;"
+              >
+                <el-input
+                  v-model="invoiceNo"
+                  style="margin: 0px;width: 100%;"
+                  maxlength="30"
+                  @input="filterdocumentNo"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item
+                :label="$t('form.byInvoice.businessPartner')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -120,7 +134,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </el-col>
             <el-col :span="6">
               <el-form-item
-                label="Fecha Desde"
+                :label="$t('form.pos.optionsPoinSales.generalOptions.dateFrom')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -135,7 +149,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </el-col>
             <el-col :span="6">
               <el-form-item
-                label="Fecha Hasta"
+                :label="$t('form.pos.optionsPoinSales.generalOptions.dateTo')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -157,6 +171,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       :data-list="dataListOrders"
       :search-parameters="{
         document_no: documentNo,
+        invoice_no: invoiceNo,
         business_partner_id: businessPartner,
         date_ordered_from: dateOrderedFrom,
         date_ordered_to: dateOrderedTo,
@@ -194,15 +209,16 @@ export default defineComponent({
   setup() {
     // Ref
     const documentNo = ref(null)
+    const invoiceNo = ref(null)
     const activeNames = ref('')
     const isLoading = ref(false)
     const isWaitingForInvoice = ref(false)
-    const isOnlyProcessed = ref(false)
+    const isOnlyProcessed = ref(true)
     const BPartnerList = ref([])
-    const dateOrderedTo = ref(null)
+    const dateOrderedTo = ref(new Date())
     const businessPartner = ref(null)
     const currentOptions = ref({})
-    const dateOrderedFrom = ref(null)
+    const dateOrderedFrom = ref(new Date())
     const isWaitingForShipment = ref(false)
     const isWaitingForPay = ref(false)
     // Computed
@@ -363,6 +379,7 @@ export default defineComponent({
       store.dispatch('listOrder', {
         ...params,
         document_no: documentNo.value,
+        invoice_no: invoiceNo.value,
         business_partner_id: businessPartner.value,
         date_ordered_from: dateOrderedFrom.value,
         date_ordered_to: dateOrderedTo.value,
@@ -374,6 +391,12 @@ export default defineComponent({
     }
 
     function filterdocumentNo() {
+      setTimeout(() => {
+        findListOrdes()
+      }, 500)
+    }
+
+    function filterInvoiceNo() {
       setTimeout(() => {
         findListOrdes()
       }, 500)
@@ -412,6 +435,7 @@ export default defineComponent({
     watch(isShowQuickOptions, (newValue, oldValue) => {
       if (newValue && newValue !== oldValue) {
         documentNo.value = null
+        invoiceNo.value = null
         businessPartner.value = null
         dateOrderedFrom.value = null
         dateOrderedTo.value = null
@@ -423,6 +447,7 @@ export default defineComponent({
     return {
       // Ref
       isLoading,
+      invoiceNo,
       documentNo,
       activeNames,
       BPartnerList,
@@ -449,6 +474,7 @@ export default defineComponent({
       formatPrice,
       remoteMethod,
       findListOrdes,
+      filterInvoiceNo,
       filterdocumentNo,
       selectedSearchOptions
     }

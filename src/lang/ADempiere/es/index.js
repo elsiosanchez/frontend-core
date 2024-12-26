@@ -521,6 +521,7 @@ export default {
       businessPartner: 'Socio de Negocio',
       copyShippingAddress: 'Copiar dirección para el envío',
       documentNo: 'Nro. Documento',
+      invoiceNo: 'Nro. Factura',
       emptyList: 'Utilice los filtros para realizar la busqueda de las ordenes'
     },
     guideSteps: {

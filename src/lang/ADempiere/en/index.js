@@ -519,7 +519,8 @@ export default {
       onlyAllocated: 'Only allocated to current point of sales',
       businessPartner: 'Business Partner',
       copyShippingAddress: 'Copy shipping address',
-      documentNo: 'Document No',
+      documentNo: 'Document Nro',
+      invoiceNo: 'Invoice Nro',
       emptyList: 'Use the filters to search for orders'
     },
     guideSteps: {

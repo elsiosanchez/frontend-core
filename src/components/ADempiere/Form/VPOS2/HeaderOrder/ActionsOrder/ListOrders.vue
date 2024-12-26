@@ -41,6 +41,12 @@
       />
 
       <el-table-column
+        prop="invoice_no"
+        width="155"
+        :label="$t('form.byInvoice.invoiceNo')"
+      />
+
+      <el-table-column
         width="155"
         :label="$t('pointOfSales.order.dateOfOrder')"
       >
@@ -103,6 +109,12 @@
         @click="setSelectedOrder()"
       />
       <el-button
+        type="success"
+        class="button-base-icon"
+        icon="el-icon-refresh"
+        style="float: right;"
+        @click="refresh()"
+      /><el-button
         type="danger"
         class="button-base-icon"
         icon="el-icon-close"
@@ -243,6 +255,14 @@ export default defineComponent({
       }, 500)
     }
 
+    function refresh() {
+      setTimeout(() => {
+        store.dispatch('listOrder', {
+          ...props.searchParameters
+        })
+      }, 500)
+    }
+
     return {
       selection,
       pageToken,
@@ -252,6 +272,7 @@ export default defineComponent({
       pageSizeNumber,
       dataListOrders,
       close,
+      refresh,
       formatDate,
       formatPrice,
       selectOrder,
