@@ -216,11 +216,6 @@ export default {
         }
       }
 
-      // with displayed value
-      if (!isEmptyValue(this.displayedValue)) {
-        return
-      }
-
       // request lookup
       this.getValueOfLookup()
     },
