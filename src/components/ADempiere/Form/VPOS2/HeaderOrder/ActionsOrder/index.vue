@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -60,7 +62,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     >
       <!-- Filters -->
       <el-collapse v-model="activeNames">
-        <el-collapse-item title="Parametros de Busqueda" name="1">
+        <el-collapse-item :title="$t('form.pos.optionsPoinSales.queryParameters')" name="1">
           <el-form
             :inline="true"
             label-position="top"
@@ -69,7 +71,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             <el-row :gutter="20">
               <el-col :span="6">
                 <el-form-item
-                  label="No. del Documento"
+                  :label="$t('form.pos.optionsPoinSales.salesOrder.documentNo')"
                   class="form-item-criteria"
                   style="margin: 0px;width: 100%;"
                 >
@@ -83,7 +85,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </el-col>
               <el-col :span="6">
                 <el-form-item
-                  label="Socio de Negocio"
+                  :label="$t('form.pos.optionsPoinSales.salesOrder.businessPartner')"
                   class="form-item-criteria"
                   style="margin: 0px;width: 100%;"
                 >
@@ -107,7 +109,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </el-col>
               <el-col :span="6">
                 <el-form-item
-                  label="Fecha Desde"
+                  :label="$t('form.pos.optionsPoinSales.salesOrder.dateFrom')"
                   class="form-item-criteria"
                   style="margin: 0px;width: 100%;"
                 >
@@ -121,7 +123,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </el-col>
               <el-col :span="6">
                 <el-form-item
-                  label="Fecha Hasta"
+                  :label="$t('form.pos.optionsPoinSales.salesOrder.dateTo')"
                   class="form-item-criteria"
                   style="margin: 0px;width: 100%;"
                 >
@@ -137,6 +139,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           </el-form>
         </el-collapse-item>
       </el-collapse>
+
       <!-- Tables Records Ordes -->
       <list-orders
         :data-list="dataListOrders"
@@ -159,20 +162,25 @@ import {
   watch,
   ref
 } from '@vue/composition-api'
+
 import store from '@/store'
 import language from '@/lang'
+
 // Components and Mixins
 import ListOrders from '@/components/ADempiere/Form/VPOS2/HeaderOrder/ActionsOrder/ListOrders.vue'
+
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 // import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
-  name: 'tableList',
+  name: 'ActionsOrder',
+
   components: {
     ListOrders
   },
+
   setup() {
     // Ref
     const documentNo = ref(null)
@@ -183,6 +191,7 @@ export default defineComponent({
     const businessPartner = ref(null)
     const currentOptions = ref({})
     const dateOrderedFrom = ref(null)
+
     // Computed
     const pickerOptions = computed(() => {
       return {
@@ -212,6 +221,7 @@ export default defineComponent({
         ]
       }
     })
+
     const dataListOrders = computed(() => {
       return store.getters.getOrderRecords.list
     })
@@ -308,6 +318,7 @@ export default defineComponent({
         }
       ]
     })
+
     //  Methods
     function newOrder() {
       const { is_allows_create_order } = store.getters.getVPOS

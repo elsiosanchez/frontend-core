@@ -298,11 +298,16 @@ export default {
       discountRate: '% Descuent',
       optionsPoinSales: {
         title: 'Quick Point of Sales Options',
+        queryParameters: 'Query Parameters',
         emptyAvailablePaymentMethodsRefudn: 'This Terminal does not have a Payment Method configured to allow Pending Refund',
         emptyAvailablePaymentMethods: 'This Terminal does not have a Payment Method configured to allow Refund',
         emptyListCashSummary: 'There is no cash movement',
         salesOrder: {
           title: 'Sale Order',
+          documentNo: 'Document No',
+          businessPartner: 'Business Partner',
+          dateTo: 'Date From',
+          dateFrom: 'Date To',
           newOrder: 'New Order',
           ordersHistory: 'Orders History',
           generateImmediateInvoice: 'Generate Immediate Invoice',
@@ -508,8 +513,8 @@ export default {
       title: 'Aisle Vendor Orders to be Invoiced',
       searchCompleteOrders: 'Completed',
       aisleSales: 'Sales Aisle',
-      label: 'Invoiced',
-      toDeliver: 'Delivered',
+      label: 'To Invoiced',
+      toDeliver: 'To Delivered',
       toCollect: 'On Credit',
       cancelled: 'Voided',
       closed: 'Closed',
@@ -519,8 +524,8 @@ export default {
       onlyAllocated: 'Only allocated to current point of sales',
       businessPartner: 'Business Partner',
       copyShippingAddress: 'Copy shipping address',
-      documentNo: 'Document Nro',
-      invoiceNo: 'Invoice Nro',
+      documentNo: 'Document No',
+      invoiceNo: 'Invoice No',
       emptyList: 'Use the filters to search for orders'
     },
     guideSteps: {

@@ -299,11 +299,16 @@ export default {
       discountRate: '% Discounto',
       optionsPoinSales: {
         title: 'Opciones Rápidas del Punto de Ventas',
+        queryParameters: 'Parámetros de Búsqueda',
         emptyAvailablePaymentMethods: 'Éste Terminal no tiene Método de Pago configurado para permitir Reembolso',
         emptyAvailablePaymentMethodsRefudn: 'Éste Terminal no tiene Método de Pago configurado para permitir Reembolso Pendiente',
         emptyListCashSummary: 'No hay moviemineto en caja',
         salesOrder: {
           title: 'Orden de Venta',
+          documentNo: 'No. del Documento',
+          businessPartner: 'Socio de Negocio',
+          dateTo: 'Fecha Desde',
+          dateFrom: 'Fecha Hasta',
           newOrder: 'Nueva Orden',
           ordersHistory: 'Histórico de Órdenes ',
           generateImmediateInvoice: 'Generar Factura Inmediata',

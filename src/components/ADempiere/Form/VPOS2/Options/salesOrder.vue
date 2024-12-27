@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -34,9 +36,12 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- ordersHistory -->
     <el-col :span="8">
-      <div>
+      <div
+        @click="listOrders(false)"
+      >
         <el-card
           shadow="never"
           class="custom-card-options"
@@ -44,25 +49,25 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         >
           <p
             class="card-options-buttons"
-            @click="listOrders(false)"
           >
             <i class="el-icon-news" />
             <br>
             {{ $t('form.pos.optionsPoinSales.salesOrder.ordersHistory') }}
           </p>
         </el-card>
-        <el-dialog
-          :title="$t('form.pos.optionsPoinSales.salesOrder.ordersHistory')"
-          :visible.sync="isShowOrdersHistory"
-          :custom-class="'option-order-list'"
-          :center="true"
-          :modal="false"
-          width="75%"
-        >
-          <order-history />
-        </el-dialog>
       </div>
+      <el-dialog
+        :title="$t('form.pos.optionsPoinSales.salesOrder.ordersHistory')"
+        :visible.sync="isShowOrdersHistory"
+        :custom-class="'option-order-list'"
+        :center="true"
+        :modal="false"
+        width="75%"
+      >
+        <order-history />
+      </el-dialog>
     </el-col>
+
     <!-- addResource -->
     <el-col :span="8">
       <div @click="addResource">
@@ -81,6 +86,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- completePreparedOrder -->
     <el-col :span="8">
       <div @click="completePreparedOrder">
@@ -107,6 +113,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- cancelSaleTransaction -->
     <el-col v-if="isAllowsReturnOrder" :span="8">
       <el-popover
@@ -179,6 +186,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </div>
       </el-popover>
     </el-col>
+
     <!-- printTicket -->
     <el-col v-if="isAllowsPrintDocument" :span="8">
       <div @click="printTicket">
@@ -205,6 +213,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- printTicketPreviwer -->
     <el-col v-if="IsAllowsPreviewDocument" :span="8">
       <div @click="printPreview">
@@ -231,6 +240,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- copyOrder -->
     <el-col v-if="IsCopyOrder" :span="8">
       <div @click="copyOrder">
@@ -257,6 +267,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- cancelOrder -->
     <el-col v-if="IsCancelOrder" :span="8">
       <div @click="cancelOrder">
@@ -283,6 +294,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- confirmShipment -->
     <el-col v-if="isConfirmShipment" :span="8">
       <div @click="confirmShipment">
@@ -309,6 +321,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- confirmShipmentAllProducts -->
     <el-col v-if="isConfirmShipment" :span="8">
       <div @click="confirmShipmentAllProducts">
@@ -335,6 +348,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-card>
       </div>
     </el-col>
+
     <!-- applyDiscountOnOrder -->
     <el-col v-if="isAllowsApplyDiscount" :span="8">
       <el-popover
@@ -410,6 +424,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </div>
       </el-popover>
     </el-col>
+
     <!-- applyDiscountToAllLines -->
     <el-col v-if="isAllowsApplyDiscount" :span="8">
       <el-popover
@@ -485,6 +500,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </div>
       </el-popover>
     </el-col>
+
     <!-- Create New Order RMA -->
     <el-col v-if="isRMA" :span="8">
       <div @click="returnProduct">
@@ -542,21 +558,26 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
+
 import lang from '@/lang'
 import store from '@/store'
+
 // Components and Mixins
 import OrderHistory from '@/components/ADempiere/Form/VPOS2/Options/OrderHistory.vue'
 // import Shipments from './Shipments.vue'
 // import OptionsList from './OptionsList.vue'
 // import InfoOrder from './InfoOrder.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'SalesOrder',
+
   components: {
     OrderHistory
   },
+
   setup() {
     const isShowCancelSaleTransaction = ref(false)
     const isShowApplyDiscount = ref(false)
@@ -612,7 +633,9 @@ export default defineComponent({
     })
 
     const IsCopyOrder = computed(() => {
-      if (isEmptyValue(currentOrder.value)) return false
+      if (isEmptyValue(currentOrder.value)) {
+        return false
+      }
       const { document_status } = currentOrder.value
       return !['CL', 'VO', 'RE'].includes(document_status.value)
     })
@@ -640,7 +663,9 @@ export default defineComponent({
       const { is_allows_return_order } = currentPointOfSales.value
       if (is_allows_return_order) {
         // const { document_status } = currentOrder.value
-        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'CO') return true
+        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'CO') {
+          return true
+        }
         return false
       }
       return is_allows_return_order
@@ -648,7 +673,9 @@ export default defineComponent({
     const isAllowsApplyDiscount = computed(() => {
       const { is_allows_apply_discount } = currentPointOfSales.value
       if (is_allows_apply_discount) {
-        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'DR') return is_allows_apply_discount
+        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'DR') {
+          return is_allows_apply_discount
+        }
         return false
       }
       return is_allows_apply_discount
@@ -673,7 +700,9 @@ export default defineComponent({
     })
 
     const isDisableClass = computed(() => {
-      if (isEmptyValue(currentOrder.value.id)) return 'is-disabled-option-card'
+      if (isEmptyValue(currentOrder.value.id)) {
+        return 'is-disabled-option-card'
+      }
       return 'card-options-buttons'
     })
 
@@ -696,7 +725,9 @@ export default defineComponent({
     }
 
     function listOrders() {
-      if (isShowOrdersHistory.value) return
+      if (isShowOrdersHistory.value) {
+        return
+      }
       store.commit('setShowOrdersHistory', true)
     }
 
@@ -705,8 +736,12 @@ export default defineComponent({
     }
 
     function completePreparedOrder() {
-      if (isEmptyValue(currentOrder.value.id)) return
-      if (isLoadingCompleteOrder.value) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      if (isLoadingCompleteOrder.value) {
+        return
+      }
       isLoadingCompleteOrder.value = true
       store.dispatch('process', {})
         .then(() => {
@@ -762,8 +797,12 @@ export default defineComponent({
     }
 
     function printTicket() {
-      if (isEmptyValue(currentOrder.value.id)) return
-      if (isLoadingPrintTicket.value) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      if (isLoadingPrintTicket.value) {
+        return
+      }
       isLoadingPrintTicket.value = true
       store.dispatch('printTicketVPOS', {
         orderId: currentOrder.value.id
@@ -774,8 +813,12 @@ export default defineComponent({
     }
 
     function printPreview() {
-      if (isEmptyValue(currentOrder.value.id)) return
-      if (isLoadingPreviewDocument.value) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      if (isLoadingPreviewDocument.value) {
+        return
+      }
       isLoadingPreviewDocument.value = true
       store.dispatch('printPreview', {
         orderId: currentOrder.value.id
@@ -786,8 +829,12 @@ export default defineComponent({
     }
 
     function copyOrder() {
-      if (isEmptyValue(currentOrder.value.id)) return
-      if (isLoadingCopyOrder.value) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      if (isLoadingCopyOrder.value) {
+        return
+      }
       isLoadingCopyOrder.value = true
       store.dispatch('copyOrder', {
         sourceOrderId: currentOrder.value.id
@@ -798,8 +845,12 @@ export default defineComponent({
     }
 
     function cancelOrder() {
-      if (isEmptyValue(currentOrder.value.id)) return
-      if (isLoadingCancelOrder.value) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      if (isLoadingCancelOrder.value) {
+        return
+      }
       isLoadingCancelOrder.value = true
       store.dispatch('deleteOrder')
         .then(() => {
@@ -808,7 +859,9 @@ export default defineComponent({
     }
 
     function confirmShipment() {
-      if (isEmptyValue(currentOrder.value.id)) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
       store.dispatch('newShipment', {})
       store.dispatch('setModalDialogVPOS', {
         title: lang.t('form.pos.optionsPoinSales.salesOrder.confirmDelivery'),
@@ -836,7 +889,9 @@ export default defineComponent({
     }
 
     function confirmShipmentAllProducts(params) {
-      if (isEmptyValue(currentOrder.value.id)) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
       store.dispatch('newShipment', {
         isCreateLinesFromOrder: true
       })
@@ -866,7 +921,9 @@ export default defineComponent({
     }
 
     function returnProduct() {
-      if (isEmptyValue(currentOrder.value.id)) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
       store.dispatch('createRMA')
       store.dispatch('setModalDialogVPOS', {
         title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA'),
@@ -891,7 +948,9 @@ export default defineComponent({
     }
 
     function newOrderRMA() {
-      if (isEmptyValue(currentOrder.value.id)) return
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
       store.dispatch('createOrderFromRMA', {
         sourceRmaId: currentOrder.value.id,
         salesRepresentativeId: currentOrder.value.sales_representative.id
