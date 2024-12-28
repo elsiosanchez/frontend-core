@@ -32,7 +32,7 @@
       @row-dblclick="changeInvoice"
     >
       <p slot="empty" style="width: 100%;">
-        {{ 'Utilice los filtros para realizar la Búsqueda' }}
+        {{ $t('field.order.emptyRecords') }}
       </p>
 
       <index-column
@@ -42,13 +42,14 @@
 
       <el-table-column
         prop="business_partner"
-        label="Socio de Negocio"
+        :label="$t('field.invoice.businessPartner')"
         header-align="center"
         width="200"
       />
+
       <el-table-column
         prop="date_invoiced"
-        label="Fecha de Facturación"
+        :label="$t('field.invoice.invoiceDate')"
         header-align="center"
         width="160"
       >
@@ -56,22 +57,23 @@
           {{ formatDate({ value: scope.row.date_invoiced }) }}
         </span>
       </el-table-column>
+
       <el-table-column
         prop="document_no"
-        label="Documento No"
+        :label="$t('field.invoice.documentNo')"
         header-align="center"
         width="170"
       />
 
       <el-table-column
         prop="currency"
-        label="Moneda"
+        :label="$t('field.invoice.currency')"
         header-align="center"
         width="110"
       />
 
       <el-table-column
-        label="Gran Total"
+        :label="$t('field.invoice.grandTotal')"
         header-align="center"
         width="130"
       >
@@ -81,7 +83,7 @@
       </el-table-column>
 
       <el-table-column
-        label="Convertido"
+        :label="$t('field.invoice.convertedAmount')"
         header-align="center"
         width="130"
       >
@@ -91,7 +93,7 @@
       </el-table-column>
 
       <el-table-column
-        label="Abierto"
+        :label="$t('field.invoice.openAmount')"
         header-align="center"
         width="130"
       >
@@ -102,14 +104,14 @@
 
       <el-table-column
         prop="payment_term"
-        label="Término de Pago"
+        :label="$t('field.invoice.paymentTerm')"
         header-align="center"
         width="130"
       />
 
       <el-table-column
         prop="is_paid"
-        label="Pagado"
+        :label="$t('field.invoice.paid')"
         header-align="center"
         width="130"
       >
@@ -120,7 +122,7 @@
 
       <el-table-column
         prop="is_sales_transaction"
-        label="Transacción de Ventas"
+        :label="$t('field.invoice.salesTransaction')"
         header-align="center"
         width="160"
       >
@@ -131,7 +133,7 @@
 
       <el-table-column
         prop="description"
-        label="Descripción"
+        :label="$t('field.invoice.description')"
         header-align="center"
         width="180"
       >
@@ -159,14 +161,14 @@
 
       <el-table-column
         prop="po_reference"
-        label="Referencia de Orden de Socio del Negocio"
+        :label="$t('field.invoice.reference')"
         header-align="center"
         width="270"
       />
 
       <el-table-column
         prop="document_status"
-        label="Estado del Documento"
+        :label="$t('field.invoice.documentStatus')"
         header-align="center"
         width="220"
       />

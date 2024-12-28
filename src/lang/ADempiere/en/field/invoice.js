@@ -18,6 +18,7 @@
 
 const invoice = {
   document: 'Document',
+  documentStatus: 'Document Status',
   businessPartner: 'Business Partner',
   salesTransaction: 'Sale Transaction',
   paid: 'Paid',

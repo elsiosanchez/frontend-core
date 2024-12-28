@@ -18,6 +18,7 @@
 
 const invoice = {
   document: 'Número de Documento',
+  documentStatus: 'Estado del Documento',
   businessPartner: 'Socio del Negocio',
   salesTransaction: 'Transacción de Venta',
   paid: 'Pagado',
@@ -26,7 +27,7 @@ const invoice = {
   salesOrder: 'Orden de Venta',
   purchaseOrder: 'Orden de Compra',
   grandTotal: 'Gran Total',
-  documentNo: 'Documento No.',
+  documentNo: 'No. Documento',
   currency: 'Moneda',
   convertedAmount: 'Convertido',
   openAmount: 'Abierto',
