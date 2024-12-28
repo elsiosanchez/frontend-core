@@ -37,11 +37,10 @@
     @keyup.native.enter="actionKeyPerformed"
     @submit="false"
   >
-    <i
-      v-if="isValueField"
+    <copy-clipboard
       slot="prefix"
-      class="el-input__icon el-icon-document-copy"
-      @click="copyValue"
+      class="el-input__icon"
+      :text="value"
     />
   </el-input>
 </template>
@@ -50,16 +49,17 @@
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 import fieldMixinText from '@/components/ADempiere/FieldDefinition/mixin/mixinFieldText.js'
+import CopyClipboard from '@/components/ADempiere/CopyClipboard'
 
 // Constants
 import { TEXT } from '@/utils/ADempiere/references'
 
-// Utils and Helper Methods
-import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-
 export default {
   name: 'FieldText',
+
+  components: {
+    CopyClipboard
+  },
 
   mixins: [
     fieldMixin,
@@ -123,19 +123,6 @@ export default {
     },
     isValueField() {
       return ['DocumentNo', 'Value'].includes(this.metadata.columnName)
-    }
-  },
-
-  methods: {
-    copyValue() {
-      let textToCopy = this.value
-      if (isEmptyValue(textToCopy)) {
-        textToCopy = '' // empty string
-      }
-      copyToClipboard({
-        text: textToCopy,
-        isShowMessage: true
-      })
     }
   }
 }

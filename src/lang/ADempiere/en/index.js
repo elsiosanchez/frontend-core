@@ -73,6 +73,7 @@ export default {
   operators,
 
   language: 'Language',
+  copyToClipboard: 'Copy to Clipboard',
   notifications: {
     // simplex
     completed: 'Completed',

@@ -74,6 +74,7 @@ export default {
   language: 'Idioma',
   timeControl,
   VPayPrint,
+  copyToClipboard: 'Copiar al Portapapeles',
   notifications: {
     // simplex
     completed: 'Completado',

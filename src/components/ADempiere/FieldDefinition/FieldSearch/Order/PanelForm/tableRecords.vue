@@ -106,7 +106,28 @@
         :label="$t('field.order.description')"
         header-align="center"
         width="180"
-      />
+      >
+        <template slot-scope="scope">
+          <el-popover
+            placement="top-start"
+            trigger="hover"
+            width="300"
+          >
+            <copy-clipboard
+              :text="scope.row.description"
+            />
+            {{ scope.row.description }}
+            <p
+              slot="reference"
+              type="text"
+              class="crop-text"
+              style="color: #606266;line-height: 15px;font-size: 12px;margin: 0px;"
+            >
+              {{ scope.row.description }}
+            </p>
+          </el-popover>
+        </template>
+      </el-table-column>
 
       <el-table-column
         prop="po_reference"
@@ -151,6 +172,7 @@ import {
 } from '@/utils/ADempiere/dictionary/field/search/order'
 
 // Components and Mixins
+import CopyClipboard from '@/components/ADempiere/CopyClipboard'
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
 import useOrder from './useOrder'
 
@@ -164,6 +186,7 @@ export default defineComponent({
   name: 'TableRecords',
 
   components: {
+    CopyClipboard,
     IndexColumn
   },
 

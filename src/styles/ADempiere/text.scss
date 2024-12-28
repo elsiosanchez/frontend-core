@@ -20,6 +20,12 @@
   word-break: normal
 }
 
+.crop-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .number-negative {
   // text-align-last: end !important;
   color: red !important;
