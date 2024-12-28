@@ -81,7 +81,7 @@ export default defineComponent({
     const isSalesTransaction = computed(() => {
       const stringValue = store.getters.getInvoicesQueryFilterByAttribute({
         containerUuid: props.uuidForm,
-        attributeKey: 'is_sales_transaction'
+        attributeKey: 'isSalesTransaction'
       })
       return convertStringToBoolean(stringValue)
     })
@@ -132,6 +132,7 @@ export default defineComponent({
 
     return {
       optionsListOrder,
+      isSalesTransaction,
       saleOrderField,
       currentSaleOrder,
       isLoading,
