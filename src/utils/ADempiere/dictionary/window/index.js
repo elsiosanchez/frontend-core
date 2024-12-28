@@ -29,7 +29,7 @@ import {
   ACTIVE, CLIENT, DOCUMENT_ACTION,
   DOCUMENT_NO, DOCUMENT_STATUS, CURRENCY,
   PROCESSING, PROCESSED, UUID, VALUE, // READ_ONLY_FORM_COLUMNS
-  ORGANIZATION, WAREHOUSE,
+  ORGANIZATION, COLUMNNAME_M_Warehouse_ID,
   RECORD_ID,
   LOG_COLUMNS_NAME_LIST
 } from '@/utils/ADempiere/constants/systemColumns'
@@ -209,7 +209,7 @@ export function evaluateDefaultFieldShowed({
   if (!isParentTab && (link_column_name === column_name || parent_column_name === column_name)) {
     return true
   }
-  if (is_document && [ORGANIZATION, WAREHOUSE].includes(column_name)) {
+  if (is_document && [ORGANIZATION, COLUMNNAME_M_Warehouse_ID].includes(column_name)) {
     return true
   }
 
@@ -2122,7 +2122,7 @@ export const containerManager = {
     pageNumber,
     pageSize
   }) {
-    return store.dispatch('listWarehouseLocators', {
+    return store.dispatch('listWarehouseLocatorsFromServer', {
       containerUuid,
       parentUuid,
       warehouseId,

@@ -16,35 +16,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// used in cell type number
-.cell-align-right {
-  text-align: right !important;
-  width: 100%;
-  display: inline-block;
-}
-td.number-align-right {
-  // text-align-last: end !important;
-  text-align: right !important;
-}
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
-.cell-align-center {
-  text-align: center !important;
-}
+export const TABLE_NAME = 'M_Locator'
 
-.disabled-record {
-  background: oldlace !important;
-  background-color: oldlace !important;
-  cursor: not-allowed !important;
+export const COLUMN_NAME = 'M_Locator_ID'
 
-  >.el-table__cell {
-    background: oldlace !important;
-    background-color: oldlace !important;
-    cursor: not-allowed !important;
+export const WAREHOUSE_LOCATOR_LIST_FORM = 'Warehouse-Locator-List'
+
+/**
+ * Generate displayed value from values
+ * @param {Object} recordRow
+ * @returns {String}
+ */
+export function generateDisplayedValue(recordRow) {
+  const { display_value } = recordRow
+
+  let displayedValue = display_value
+  if (!isEmptyValue(display_value)) {
+    return display_value
   }
 
-  >.header,>.info {
-    background: oldlace !important;
-    background-color: oldlace !important;
-    cursor: not-allowed !important;
+  // generate with standard columns
+  const { value, aisle, bin, level } = recordRow
+  if (!isEmptyValue(value)) {
+    displayedValue = value
   }
+
+  if (isEmptyValue(displayedValue)) {
+    displayedValue = aisle + '-' + bin + '-' + level
+  }
+
+  return displayedValue
 }

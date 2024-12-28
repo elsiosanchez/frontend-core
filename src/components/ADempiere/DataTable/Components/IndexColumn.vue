@@ -1,6 +1,6 @@
 <!--
  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
- Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+ Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,8 @@
     type="index"
     :index="indexTable"
     label="#"
-    class-name="number-align"
+    class-name="index-column number-align-right"
+    width="35"
     min-width="10"
     header-align="center"
   />
@@ -66,9 +67,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style>
-.number-align {
-  text-align-last: end !important;
-}
-</style>

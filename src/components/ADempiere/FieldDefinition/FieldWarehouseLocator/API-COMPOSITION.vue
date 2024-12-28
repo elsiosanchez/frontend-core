@@ -44,7 +44,7 @@
       </span>
     </template>
 
-    <button-popover
+    <button-panel
       slot="append"
       :parent-metadata="metadata"
       :container-manager="containerManager"
@@ -62,7 +62,7 @@ import lang from '@/lang'
 import store from '@/store'
 
 // Components and Mixins
-import ButtonPopover from './button.vue'
+import ButtonPanel from './buttonPanel.vue'
 import useFieldDefinition from '@/components/ADempiere/FieldDefinition/useFieldDefinition.js'
 import useDisplayedColumn from '@/components/ADempiere/FieldDefinition/useDisplayedColumn.js'
 import useLocatorWarehouse from './useLocatorWarehouse.js'
@@ -78,7 +78,7 @@ export default defineComponent({
   name: 'FieldWarehouseLocator',
 
   components: {
-    ButtonPopover
+    ButtonPanel
   },
 
   props: {

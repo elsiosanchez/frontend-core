@@ -24,7 +24,10 @@ import { computed } from '@vue/composition-api'
 import {
   DISPLAY_COLUMN_PREFIX
 } from '@/utils/ADempiere/dictionaryUtils'
-import { WAREHOUSE } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  WAREHOUSE_LOCATOR_LIST_FORM
+} from '@/utils/ADempiere/dictionary/field/warehouseLocator.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -63,14 +66,14 @@ export default ({
     if (!isEmptyValue(fieldAttributes.containerUuid)) {
       return fieldAttributes.column_name + '_' + containerUuid
     }
-    return 'Warehouse-Locator-Form'
+    return WAREHOUSE_LOCATOR_LIST_FORM
   })
 
   const warehouseId = computed(() => {
     return store.getters.getValueOfField({
       parentUuid,
       containerUuid,
-      columnName: WAREHOUSE
+      columnName: COLUMNNAME_M_Warehouse_ID
     })
   })
 
@@ -86,6 +89,12 @@ export default ({
         isShowed: newValue
       })
     }
+  })
+
+  const isLoadingRecords = computed(() => {
+    return store.getters.getIsLoadingWarehouseLocatorRecords({
+      containerUuid: uuidForm.value
+    })
   })
 
   const contextAttributesList = computed(() => {
@@ -145,6 +154,7 @@ export default ({
     isShowedPopover,
     uuidForm,
     warehouseId,
+    isLoadingRecords,
     clearValues,
     close,
     setValues

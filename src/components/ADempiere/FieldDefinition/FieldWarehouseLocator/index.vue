@@ -44,7 +44,7 @@
       </span>
     </template>
 
-    <button-popover
+    <button-panel
       slot="append"
       :parent-metadata="metadata"
       :container-manager="containerManager"
@@ -59,10 +59,10 @@ import store from '@/store'
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 import fieldWithDisplayColumn from '@/components/ADempiere/FieldDefinition/mixin/mixinWithDisplayColumn.js'
-import ButtonPopover from './button.vue'
+import ButtonPanel from './buttonPanel.vue'
 
 // Constants
-import { WAREHOUSE } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
 import { RECORD_ROWS_BY_LIST } from '@/utils/ADempiere/dictionary/field/lookups'
 
 // Utils and Helper Methods
@@ -73,7 +73,7 @@ export default {
   name: 'FieldWarehouseLocator',
 
   components: {
-    ButtonPopover
+    ButtonPanel
   },
 
   mixins: [
@@ -98,7 +98,7 @@ export default {
       return store.getters.getValueOfField({
         parentUuid: this.parentUuid,
         containerUuid: this.containerUuid,
-        columnName: WAREHOUSE
+        columnName: COLUMNNAME_M_Warehouse_ID
       })
     }
   },

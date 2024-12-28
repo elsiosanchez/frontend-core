@@ -21,7 +21,7 @@
     ref="warehouseLocatorPopover"
     v-model="isShowedPopover"
     placement="top-end"
-    width="600"
+    width="650"
     trigger="click"
     popper-class="warehouse-locators-popover"
   >
@@ -48,9 +48,12 @@ import { defineComponent } from '@vue/composition-api'
 
 // Components and Mixins
 import useLocatorWarehouse from './useLocatorWarehouse.js'
+import ListWarehouseLocators from './PanelForm/index.vue'
 
-// Components and Mixins
-import ListWarehouseLocators from './list.vue'
+// Constants
+import {
+  COLUMN_NAME
+} from '@/utils/ADempiere/dictionary/field/warehouseLocator.js'
 
 export default defineComponent({
   name: 'ButtonWarehouseLocator',
@@ -66,8 +69,8 @@ export default defineComponent({
         return {
           parentUuid: undefined,
           containerUuid: undefined,
-          columnName: 'M_Locator_ID',
-          elementName: 'M_Locator_ID'
+          columnName: COLUMN_NAME,
+          elementName: COLUMN_NAME
         }
       }
     },

@@ -18,7 +18,7 @@
 
 // Constants
 import {
-  ACTIVE, PROCESSED, PROCESSING, ORGANIZATION, WAREHOUSE
+  ACTIVE, PROCESSED, PROCESSING, ORGANIZATION, COLUMNNAME_M_Warehouse_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils.js'
 import { ID, YES_NO } from '@/utils/ADempiere/references'
@@ -260,7 +260,7 @@ export default {
           })
         }
 
-        if (is_document && [ORGANIZATION, WAREHOUSE].includes(columnName)) {
+        if (is_document && [ORGANIZATION, COLUMNNAME_M_Warehouse_ID].includes(columnName)) {
           // parsedDefaultValue = -1
         }
 

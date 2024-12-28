@@ -51,6 +51,7 @@ const initState = {
     nextPageToken: undefined,
     recordCount: 0,
     isLoaded: false,
+    isLoading: false,
     isShowed: false,
     pageSize: ROWS_OF_RECORDS_BY_PAGE,
     pageNumber: 1
@@ -77,6 +78,7 @@ const warehouseLocator = {
       nextPageToken,
       recordCount = 0,
       isLoaded = true,
+      isLoading = false,
       isShowed = false,
       pageSize = ROWS_OF_RECORDS_BY_PAGE,
       pageNumber = 1
@@ -90,6 +92,7 @@ const warehouseLocator = {
         nextPageToken,
         recordCount,
         isLoaded,
+        isLoading,
         isShowed,
         pageSize,
         pageNumber
@@ -118,6 +121,19 @@ const warehouseLocator = {
         })
       }
       Vue.set(state.warehouseLocatorsList[containerUuid], 'searchValue', searchValue)
+    },
+
+    setWarehouseLocatorIsLoading(state, {
+      containerUuid,
+      isLoading = false
+    }) {
+      if (isEmptyValue(state.warehouseLocatorsList[containerUuid])) {
+        Vue.set(state.warehouseLocatorsList, containerUuid, {
+          ...state.emptyWarehouseLocator,
+          containerUuid
+        })
+      }
+      Vue.set(state.warehouseLocatorsList[containerUuid], 'isLoading', isLoading)
     },
 
     setWarehouseLocatorWarehouseId(state, {
@@ -160,12 +176,12 @@ const warehouseLocator = {
           })
       })
     },
-    listWarehouseLocators({ commit, getters }, {
+    listWarehouseLocatorsFromServer({ commit, getters }, {
       containerUuid,
       parentUuid,
       //
       searchValue,
-      warehouseId,
+      // warehouseId,
       contextAttributesList = [],
       contextColumnNames = [],
       //
@@ -209,6 +225,15 @@ const warehouseLocator = {
           }
         }
 
+        const warehouseId = getters.getWarehouseLocatorWarehouseId({
+          containerUuid
+        })
+
+        commit('setWarehouseLocatorIsLoading', {
+          containerUuid,
+          isLoading: true
+        })
+
         requestListWarehouseLocators({
           // filters
           warehouseId,
@@ -249,11 +274,12 @@ const warehouseLocator = {
               warehouseId,
               currentRow,
               recordsList,
-              nextPageToken: response.nextPageToken,
+              nextPageToken: response.next_page_token,
               pageSize,
               pageNumber,
               isLoaded: true,
-              recordCount: response.recordCount
+              isLoading: false,
+              recordCount: response.record_count
             })
 
             resolve(recordsList)
@@ -263,6 +289,11 @@ const warehouseLocator = {
             showMessage({
               type: 'info',
               message: error.message
+            })
+
+            commit('setWarehouseLocatorIsLoading', {
+              containerUuid,
+              isLoading: true
             })
             resolve([])
           })
@@ -297,6 +328,11 @@ const warehouseLocator = {
       return getters.getWarehouseLocatorData({
         containerUuid
       }).isLoaded
+    },
+    getIsLoadingWarehouseLocatorRecords: (state, getters) => ({ containerUuid }) => {
+      return getters.getWarehouseLocatorData({
+        containerUuid
+      }).isLoading
     },
     getWarehouseLocatorRecordsList: (state, getters) => ({ containerUuid }) => {
       return getters.getWarehouseLocatorData({

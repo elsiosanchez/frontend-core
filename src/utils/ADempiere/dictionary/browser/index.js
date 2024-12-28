@@ -449,7 +449,7 @@ export const containerManager = {
     pageNumber,
     pageSize
   }) {
-    return store.dispatch('listWarehouseLocators', {
+    return store.dispatch('listWarehouseLocatorsFromServer', {
       containerUuid,
       parentUuid,
       warehouseId,

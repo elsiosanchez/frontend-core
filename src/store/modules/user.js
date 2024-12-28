@@ -19,7 +19,7 @@
 import language from '@/lang'
 
 // Constants
-import { CLIENT, ORGANIZATION, CURRENCY, UOM, WAREHOUSE } from '@/utils/ADempiere/constants/systemColumns'
+import { CLIENT, ORGANIZATION, CURRENCY, UOM, COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
 import { title } from '@/settings'
 import { config } from '@/utils/ADempiere/config'
 import { ACCOUNTING_CONTEXT_PREFIX, GLOBAL_CONTEXT_PREFIX } from '@/utils/ADempiere/contextUtils'
@@ -295,7 +295,7 @@ const actions = {
           commit('SET_CURRENT_ORGANIZATION_ID', sessionOrganizationId)
           setCurrentOrganization(sessionOrganizationId)
 
-          const sessionWarehouseId = defaultContext[`#${WAREHOUSE}`]
+          const sessionWarehouseId = defaultContext[`#${COLUMNNAME_M_Warehouse_ID}`]
           // commit('SET_WAREHOUSE', sessionWarehouseId)
           setCurrentWarehouse(sessionWarehouseId)
 
@@ -636,7 +636,7 @@ const actions = {
       })
       commit('SET_WAREHOUSE', undefined)
       commit('setPreferenceContext', {
-        columnName: `#${WAREHOUSE}`,
+        columnName: `#${COLUMNNAME_M_Warehouse_ID}`,
         value: -1
       }, {
         root: true
@@ -676,7 +676,7 @@ const actions = {
         setCurrentWarehouse(warehouseId)
         commit('SET_WAREHOUSE', warehouse)
         commit('setPreferenceContext', {
-          columnName: `#${WAREHOUSE}`,
+          columnName: `#${COLUMNNAME_M_Warehouse_ID}`,
           value: warehouseId
         }, {
           root: true
@@ -698,7 +698,7 @@ const actions = {
     commit('SET_WAREHOUSE', currentWarehouse)
 
     commit('setPreferenceContext', {
-      columnName: `#${WAREHOUSE}`,
+      columnName: `#${COLUMNNAME_M_Warehouse_ID}`,
       value: currentWarehouse.id
     }, {
       root: true

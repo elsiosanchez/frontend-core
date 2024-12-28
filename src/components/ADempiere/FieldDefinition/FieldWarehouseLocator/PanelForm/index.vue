@@ -20,7 +20,6 @@
   <el-main
     v-shortkey="shortsKey"
     class="warehouse-locators-list-container"
-    style="padding-top: 0px"
     @shortkey.native="keyAction"
   >
     <el-collapse v-model="activeAccordion" accordion class="warehouse-locators-query-criteria">
@@ -33,34 +32,18 @@
           v-shortkey="shortsKey"
           label-position="top"
           size="mini"
-          class="form-min-label"
+          class="form-base form-min-label"
           @submit.native.prevent="notSubmitForm"
           @shortkey.native="keyAction"
         >
-          <el-row>
+          <el-row :gutter="10">
             <el-col :span="12">
-              <el-form-item :label="$t('field.warehouseLocator.warehouse')">
-                <el-select
-                  v-model="currentWarehouseId"
-                  value-key="id"
-                  clearable
-                  filterable
-                  remote
-                  :remote-method="remoteSearchWarehouses"
-                  :loading="isLoadingWarehouses"
-                  :disabled="warehouseId > 0"
-                  @visible-change="getWarehousesList"
-                  @change="getListWarehouseLocator({})"
-                  @clear="clearWarehouses()"
-                >
-                  <el-option
-                    v-for="(warehouse, key) in warehousesList"
-                    :key="key"
-                    :value="warehouse.id"
-                    :label="warehouse.name"
-                  />
-                </el-select>
-              </el-form-item>
+              <warehouse-field
+                :parent-uuid="parentUuid"
+                :container-uuid="containerUuid"
+                :container-manager="containerManager"
+                :metadata="metadata"
+              />
             </el-col>
 
             <el-col :span="12">
@@ -82,11 +65,12 @@
       <el-col :span="24">
         <el-table
           v-loading="isLoadingRecords"
-          class="ware-house-locator-table"
+          class="warehouse-locator-table"
           :data="recordsList"
           height="300"
           stripe
           size="mini"
+          border
           fit
           style="width: 100%"
           @row-click="selectCurrentRow"
@@ -100,11 +84,13 @@
           <el-table-column
             prop="warehouse.name"
             :label="$t('field.warehouseLocator.warehouse')"
+            header-align="center"
           />
 
           <el-table-column
             prop="value"
             :label="$t('field.warehouseLocator.value')"
+            header-align="center"
           />
 
           <!-- <el-table-column
@@ -119,20 +105,25 @@
           <el-table-column
             prop="aisle"
             :label="$t('field.warehouseLocator.aisle')"
-            align="right"
+            width="75"
+            header-align="center"
+            class-name="number-align-right"
           />
 
           <el-table-column
             prop="bin"
             :label="$t('field.warehouseLocator.bin')"
-            width="100"
-            align="right"
+            width="95"
+            header-align="center"
+            class-name="number-align-right"
           />
 
           <el-table-column
             prop="level"
             :label="$t('field.warehouseLocator.level')"
-            align="right"
+            width="75"
+            header-align="center"
+            class-name="number-align-right"
           />
         </el-table>
       </el-col>
@@ -184,9 +175,10 @@ import { defineComponent, ref, onMounted, computed } from '@vue/composition-api'
 import store from '@/store'
 
 // Components and Mixins
-import useLocatorWarehouse from './useLocatorWarehouse.js'
+import useLocatorWarehouse from '../useLocatorWarehouse.js'
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
+import WarehouseField from '@/components/ADempiere/FieldDefinition/FieldWarehouseLocator/PanelForm/QueryCriteria/warehouseField.vue'
 
 // Constants
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
@@ -196,11 +188,12 @@ import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
 import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 export default defineComponent({
-  name: 'ListWarehouseLocations',
+  name: 'ListWarehouseLocators',
 
   components: {
     CustomPagination,
-    IndexColumn
+    IndexColumn,
+    WarehouseField
   },
 
   props: {
@@ -226,7 +219,7 @@ export default defineComponent({
     const {
       uuidForm,
       contextAttributesList,
-      warehouseId,
+      isLoadingRecords,
       clearValues,
       setValues,
       close
@@ -237,18 +230,9 @@ export default defineComponent({
       fieldAttributes: props.metadata
     })
 
-    const isLoadingRecords = ref(false)
-    const isLoadingWarehouses = ref(false)
     const currentRow = ref({})
     const activeAccordion = ref('query-criteria')
     const timeOutSearch = ref(null)
-    const timeOutSearchWarehouses = ref(null)
-
-    const warehousesList = computed(() => {
-      return store.getters.getListAvailableWarehouses({
-        containerUuid: uuidForm.value
-      })
-    })
 
     const recordData = computed(() => {
       return store.getters.getWarehouseLocatorData({
@@ -280,18 +264,6 @@ export default defineComponent({
         store.commit('setWarehouseLocatorSearchValue', {
           containerUuid: uuidForm.value,
           searchValue: newValue
-        })
-      }
-    })
-
-    const currentWarehouseId = computed({
-      get() {
-        return recordData.value.warehouseId
-      },
-      set(newValue) {
-        store.commit('setWarehouseLocatorWarehouseId', {
-          containerUuid: uuidForm.value,
-          warehouseId: newValue
         })
       }
     })
@@ -340,12 +312,10 @@ export default defineComponent({
       pageNumber = 1,
       pageSize = ROWS_OF_RECORDS_BY_PAGE
     }) {
-      isLoadingRecords.value = true
-
       props.containerManager.warehouseLocatorSearch({
         containerUuid: uuidForm.value,
         contextAttributesList: contextAttributesList.value,
-        warehouseId: currentWarehouseId.value,
+        // warehouseId: currentWarehouseId.value,
         uuid: props.metadata.uuid,
         id: props.metadata.internal_id,
         searchValue: searchValue.value,
@@ -354,9 +324,6 @@ export default defineComponent({
       })
         .catch(error => {
           console.warn(error)
-        })
-        .finally(() => {
-          isLoadingRecords.value = false
         })
     }
 
@@ -384,64 +351,7 @@ export default defineComponent({
       }, 500)
     }
 
-    function listAvailableWarehouses(searchValue = '') {
-      isLoadingWarehouses.value = true
-      store.dispatch('listAvailableWarehouses', {
-        containerUuid: uuidForm.value,
-        warehouseId: warehouseId.value,
-        searchValue
-      })
-        .finally(() => {
-          isLoadingWarehouses.value = false
-        })
-    }
-    function getWarehousesList(isShowList) {
-      if (isShowList) {
-        if (isEmptyValue(warehousesList.value)) {
-          listAvailableWarehouses()
-        }
-      }
-    }
-    function localSearch(searchQuery = '') {
-      if (isEmptyValue(searchQuery)) {
-        return warehousesList.value
-      }
-      searchQuery = searchQuery.toLocaleLowerCase()
-      return warehousesList.value.filter(option => {
-        return option.name.toLowerCase().includes(searchQuery) ||
-          option.description.toLowerCase().includes(searchQuery)
-      })
-    }
-    function remoteSearchWarehouses(searchQuery) {
-      const results = localSearch(searchQuery)
-      if (isEmptyValue(searchQuery) ||
-        (!isEmptyValue(searchQuery) && (isEmptyValue(results) || results.length < 3))) {
-        clearTimeout(timeOutSearchWarehouses.value)
-        timeOutSearchWarehouses.value = setTimeout(() => {
-          listAvailableWarehouses(searchQuery)
-        }, 1000)
-        return
-      }
-    }
-    function clearWarehouses() {
-      // store.commit('setWarehousesList', {
-      //   containerUuid: uuidForm.value,
-      //   recordsList: []
-      // })
-      setTimeout(() => {
-        currentWarehouseId.value = warehouseId.value
-      }, 100)
-      listAvailableWarehouses()
-    }
-
     onMounted(() => {
-      const parentWarehouseId = warehouseId.value
-      if (!isEmptyValue(parentWarehouseId) && parentWarehouseId > 0) {
-        currentWarehouseId.value = parentWarehouseId
-      }
-
-      listAvailableWarehouses()
-
       getListWarehouseLocator({
         pageNumber: currentPageNumber.value,
         pageSize: currentPageSize.value
@@ -460,10 +370,6 @@ export default defineComponent({
       recordsList,
       title,
       searchValue,
-      isLoadingWarehouses,
-      currentWarehouseId,
-      warehouseId,
-      warehousesList,
       shortsKey,
       // Methods
       convertBooleanToTranslationLang,
@@ -472,12 +378,8 @@ export default defineComponent({
       setValues,
       selectValue,
       selectCurrentRow,
-      listAvailableWarehouses,
-      getWarehousesList,
       listWithSearchValue,
-      clearWarehouses,
       getListWarehouseLocator,
-      remoteSearchWarehouses,
       handleChangeSizePage,
       handleChangePageNumber,
       close
@@ -488,20 +390,43 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.ware-house-locator-table.el-table .el-table__body .el-table__row .el-table__cell .cell {
+.warehouse-locator-table.el-table .el-table__body .el-table__row .el-table__cell .cell {
   line-height: 15px !important
 }
-.ware-house-locator-table.el-table .el-table__body .el-table__row .el-table__cell {
+.warehouse-locator-table.el-table .el-table__body .el-table__row .el-table__cell {
   padding-top: 5px;
   padding-bottom: 3px;
 }
 .warehouse-locators-list-container {
+  padding: 0px !important;
+
   .warehouse-locators-query-criteria {
     // remove space bottom collapse
     .el-collapse-item__content {
       padding-bottom: 0px;
     }
+    .el-form-item {
+      &.el-form-item--mini {
+        margin-bottom: 6px;
+
+        .el-form-item__label {
+          font-size: 11.3px;
+          line-height: 20px;
+        }
+      }
+    }
+    .el-collapse-item__header {
+      height: 40px;
+      line-height: 40px;
+    }
+
+    .el-collapse-item__wrap {
+      .el-collapse-item__content {
+        padding-bottom: 5px;
+      }
+    }
   }
+
   .warehouse-locators-list-footer {
     // add space bottom footer
     // padding-bottom: 10px;

@@ -42,7 +42,7 @@ export const COUNTRY = 'C_Country_ID'
 
 export const CURRENCY = 'C_Currency_ID'
 
-export const WAREHOUSE = 'M_Warehouse_ID'
+export const COLUMNNAME_M_Warehouse_ID = 'M_Warehouse_ID'
 
 export const UOM = 'C_UOM_ID'
 
