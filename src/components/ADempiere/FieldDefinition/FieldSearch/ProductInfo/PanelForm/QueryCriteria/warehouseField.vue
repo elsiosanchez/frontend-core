@@ -50,7 +50,11 @@ import store from '@/store'
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 
+// Constants
+import { COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
+
 // Utils and Helper Methods
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
@@ -80,6 +84,15 @@ export default defineComponent({
 
     const optionsList = computed(() => {
       return store.getters.getWarehouseList
+    })
+
+    const warehouseId = computed(() => {
+      return getContext({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        columnName: COLUMNNAME_M_Warehouse_ID,
+        isForceSession: true
+      })
     })
 
     const currentValue = computed({
@@ -116,6 +129,12 @@ export default defineComponent({
 
     function remoteSearch(searchValue) {
       store.dispatch('loadWarehouses', searchValue)
+    }
+
+    if (!isEmptyValue(warehouseId.value)) {
+      if (isEmptyValue(currentValue.value)) {
+        currentValue.value = warehouseId.value
+      }
     }
 
     return {
