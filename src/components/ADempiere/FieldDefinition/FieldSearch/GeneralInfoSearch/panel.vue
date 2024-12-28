@@ -2,6 +2,7 @@
   ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
   Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
   Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/elsiosanchez
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -68,8 +69,8 @@
       </p>
 
       <index-column
-        :page-number="pageNumber"
-        :page-size="pageSize"
+        :page-number="currentPageNumber"
+        :page-size="currentPageSize"
       />
 
       <el-table-column
@@ -101,8 +102,8 @@
           :container-manager="containerManagerList"
           :total-records="generalInfoData.recordCount"
           :selection="selection"
-          :page-number="pageNumber"
-          :page-size="recordsList.length"
+          :page-number="currentPageNumber"
+          :page-size="currentPageSize"
           :handle-change-page-number="setPageNumber"
           :handle-change-page-size="handleChangeSizePage"
         />
@@ -286,10 +287,10 @@ export default {
         containerUuid: this.uuidForm
       })
     },
-    pageNumber() {
+    currentPageNumber() {
       return this.generalInfoData.pageNumber
     },
-    pageSize() {
+    currentPageSize() {
       return this.generalInfoData.pageSize
     },
     isReadyFromGetData() {
@@ -391,7 +392,7 @@ export default {
       })
     },
     setPageNumber(pageNumber) {
-      this.getListSearchRecords(pageNumber, this.pageSize)
+      this.getListSearchRecords(pageNumber, this.currentPageSize)
     },
     subscribeChanges() {
       return store.subscribe((mutation, state) => {

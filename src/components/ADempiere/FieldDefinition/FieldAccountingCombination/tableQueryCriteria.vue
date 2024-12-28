@@ -80,7 +80,8 @@
       </p>
 
       <index-column
-        :page-number="pageNumber"
+        :page-number="currentPageNumber"
+        :page-size="currentPageSize"
       />
 
       <el-table-column
@@ -110,8 +111,8 @@
           :container-manager="containerManagerSearchList"
           :total-records="recordData.recordCount"
           :selection="selection"
-          :page-number="pageNumber"
-          :page-size="recordsList.length"
+          :page-number="currentPageSize"
+          :page-size="currentPageSize"
           :handle-change-page-number="setPageNumber"
         />
       </el-col>
@@ -313,8 +314,11 @@ export default {
         containerUuid: this.uuidForm
       })
     },
-    pageNumber() {
+    currentPageNumber() {
       return this.recordData.pageNumber
+    },
+    currentPageSize() {
+      return this.recordData.pageSize
     },
     isReadyFromGetData() {
       const { isLoaded } = this.recordData

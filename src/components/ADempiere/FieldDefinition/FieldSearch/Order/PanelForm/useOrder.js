@@ -91,6 +91,20 @@ export default ({
     return isLoading
   })
 
+  const recordCount = computed(() => {
+    return store.getters.getOrderRecordCount({
+      containerUuid: uuidForm
+    })
+  })
+
+  const pageNumber = computed(() => {
+    return infoData.value.pageNumber
+  })
+
+  const pageSize = computed(() => {
+    return infoData.value.pageSize
+  })
+
   const currentRow = computed({
     set(rowSelected) {
       store.commit('setOrderFieldSelectedRow', {
@@ -265,6 +279,9 @@ export default ({
     isLoadedRecords,
     isLoadingRecords,
     isSalesTransactionContext,
+    recordCount,
+    pageNumber,
+    pageSize,
     showQueryFields,
     //
     clearValues,

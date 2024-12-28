@@ -106,8 +106,8 @@
         :container-manager="containerManager"
         :total-records="recordsLength"
         :selection="selectionsLength"
-        :page-number="currentPage"
-        :page-size="recordsWithFilter"
+        :page-number="currentPageNumber"
+        :page-size="currentPageSize"
         :handle-change-page-number="handleChangePage"
         :handle-change-page-size="handleChangeSizePage"
       />
@@ -128,6 +128,9 @@ import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
+
+// Constants
+import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -255,8 +258,8 @@ export default defineComponent({
       })
     })
 
-    const currentPage = computed(() => {
-      if (props.containerManager.getRecordCount) {
+    const currentPageNumber = computed(() => {
+      if (props.containerManager.getPageNumber) {
         return parseInt(props.containerManager.getPageNumber({
           containerUuid: props.tabAttributes.uuid
         }), 10)
@@ -273,13 +276,13 @@ export default defineComponent({
       return 0
     })
 
-    const recordsWithFilter = computed(() => {
-      if (props.containerManager && props.containerManager.getRecordsList) {
+    const currentPageSize = computed(() => {
+      if (props.containerManager && props.containerManager.getPageSize) {
         return props.containerManager.getPageSize({
           containerUuid: props.tabAttributes.uuid
         })
       }
-      return []
+      return ROWS_OF_RECORDS_BY_PAGE
     })
 
     const selectionsLength = computed(() => {
@@ -379,10 +382,10 @@ export default defineComponent({
       // pagination
       styleHeadPanel,
       styleFooterPanel,
-      currentPage,
+      currentPageNumber,
       recordsLength,
       selectionsLength,
-      recordsWithFilter,
+      currentPageSize,
       storedWindow,
       batchEntry,
       activeNames,

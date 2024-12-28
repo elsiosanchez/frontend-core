@@ -35,7 +35,10 @@
         {{ $t('field.order.emptyRecords') }}
       </p>
 
-      <index-column />
+      <index-column
+        :page-number="pageNumber"
+        :page-size="pageSize"
+      />
 
       <el-table-column
         prop="business_partner"
@@ -194,6 +197,8 @@ export default defineComponent({
     const {
       currentRow,
       isLoadingRecords,
+      pageSize,
+      pageNumber,
       closeList,
       setValues
     } = useOrder({
@@ -245,6 +250,8 @@ export default defineComponent({
       //
       currentRow,
       isLoadingRecords,
+      pageNumber,
+      pageSize,
       recordsList,
       //
       handleCurrentChange,

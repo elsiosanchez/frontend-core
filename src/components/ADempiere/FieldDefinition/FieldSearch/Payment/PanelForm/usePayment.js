@@ -91,6 +91,20 @@ export default ({
     return isLoading
   })
 
+  const recordCount = computed(() => {
+    return store.getters.getPaymentData({
+      containerUuid: uuidForm
+    })
+  })
+
+  const pageNumber = computed(() => {
+    return paymentData.value.pageNumber
+  })
+
+  const pageSize = computed(() => {
+    return paymentData.value.pageSize
+  })
+
   const currentRow = computed({
     set(rowSelected) {
       store.commit('setPaymentFieldSelectedRow', {
@@ -264,6 +278,9 @@ export default ({
     isLoadedRecords,
     isLoadingRecords,
     isSalesTransactionContext,
+    pageNumber,
+    pageSize,
+    recordCount,
     showQueryFields,
     //
     clearValues,

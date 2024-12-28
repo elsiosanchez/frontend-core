@@ -105,7 +105,7 @@
       :total-records="recordCount"
       :is-showed-selected="true"
       :selection="selectionsLength"
-      :page-number="currentPage"
+      :page-number="currentPageNumber"
       :page-size="currentPageSize"
       :handle-change-page-number="handleChangePage"
       :handle-change-page-size="handleChangeSizePage"
@@ -256,8 +256,8 @@ export default defineComponent({
       }).length
     })
 
-    const currentPage = computed(() => {
-      if (props.containerManager.getRecordCount) {
+    const currentPageNumber = computed(() => {
+      if (props.containerManager.getPageNumber) {
         return parseInt(props.containerManager.getPageNumber({
           containerUuid: props.containerUuid
         }), 10)
@@ -266,7 +266,7 @@ export default defineComponent({
     })
 
     const currentPageSize = computed(() => {
-      if (props.containerManager.getRecordCount) {
+      if (props.containerManager.getPageSize) {
         return parseInt(props.containerManager.getPageSize({
           containerUuid: props.containerUuid
         }), 10)
@@ -519,7 +519,7 @@ export default defineComponent({
       currentOption,
       keyColumn,
       recordCount,
-      currentPage,
+      currentPageNumber,
       currentPageSize,
       selectionsLength,
       defaultSize,

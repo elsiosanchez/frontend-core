@@ -36,7 +36,10 @@
         {{ $t('field.businessPartner.emptyBusinessPartner') }}
       </p>
 
-      <index-column />
+      <index-column
+        :page-number="pageNumber"
+        :page-size="pageSize"
+      />
 
       <el-table-column
         prop="value"
@@ -165,6 +168,8 @@ export default defineComponent({
     const {
       currentRow,
       isLoadingRecords,
+      pageNumber,
+      pageSize,
       closeList,
       setValues
     } = useBusinessPartner({
@@ -229,6 +234,8 @@ export default defineComponent({
       //
       currentRow,
       isLoadingRecords,
+      pageNumber,
+      pageSize,
       recordsList,
       //
       handleCurrentChange,

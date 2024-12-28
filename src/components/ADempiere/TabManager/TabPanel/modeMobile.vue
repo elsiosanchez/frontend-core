@@ -119,8 +119,8 @@
         :container-manager="containerManager"
         :total-records="recordsLength"
         :selection="selectionsLength"
-        :page-number="currentPage"
-        :page-size="recordsWithFilter.length"
+        :page-number="currentPageNumber"
+        :page-size="currentPageSize"
         :handle-change-page-number="handleChangePage"
         :handle-change-page-size="handleChangeSizePage"
       />
@@ -143,6 +143,9 @@ import AdvancedTabQuery from '@/components/ADempiere/TabManager/AdvancedTabQuery
 // import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
+
+// Constants
+import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -296,13 +299,22 @@ export default defineComponent({
       })
     })
 
-    const currentPage = computed(() => {
-      if (props.containerManager.getRecordCount) {
+    const currentPageNumber = computed(() => {
+      if (props.containerManager.getPageNumber) {
         return parseInt(props.containerManager.getPageNumber({
           containerUuid: props.tabAttributes.uuid
         }), 10)
       }
       return 1
+    })
+
+    const currentPageSize = computed(() => {
+      if (props.containerManager && props.containerManager.getPageSize) {
+        return props.containerManager.getPageSize({
+          containerUuid: props.tabAttributes.uuid
+        })
+      }
+      return ROWS_OF_RECORDS_BY_PAGE
     })
 
     const recordsLength = computed(() => {
@@ -397,7 +409,8 @@ export default defineComponent({
       // pagination
       styleHeadPanel,
       styleFooterPanel,
-      currentPage,
+      currentPageNumber,
+      currentPageSize,
       recordsLength,
       selectionsLength,
       recordsWithFilter,

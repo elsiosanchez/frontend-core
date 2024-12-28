@@ -65,7 +65,7 @@
     <custom-pagination
       :total-records="productPrice.recordCount"
       :page-number="productPrice.pageNumber"
-      :page-size="listWithPrice.length"
+      :page-size="productPrice.pageSize"
       :handle-change-page-number="handleChangePage"
     />
 

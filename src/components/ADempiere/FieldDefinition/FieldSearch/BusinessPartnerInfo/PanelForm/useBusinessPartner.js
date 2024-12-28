@@ -97,6 +97,20 @@ export default ({
     return isLoading
   })
 
+  const recordCount = computed(() => {
+    return store.getters.getBusinessPartnerData({
+      containerUuid: uuidForm
+    })
+  })
+
+  const pageNumber = computed(() => {
+    return infoData.value.pageNumber
+  })
+
+  const pageSize = computed(() => {
+    return infoData.value.pageSize
+  })
+
   const currentRow = computed({
     set(rowSelected) {
       store.commit('setBusinessPartnerSelectedRow', {
@@ -288,6 +302,9 @@ export default ({
     isLoadedRecords,
     isLoadingRecords,
     isSalesTransactionContext,
+    pageNumber,
+    pageSize,
+    recordCount,
     showQueryFields,
     //
     clearValues,
