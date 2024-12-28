@@ -209,6 +209,11 @@ export default defineComponent({
     .el-form-item {
       &.el-form-item--mini {
         margin-bottom: 6px;
+
+        .el-form-item__label {
+          font-size: 11.3px;
+          line-height: 20px;
+        }
       }
     }
     .el-collapse-item__header {

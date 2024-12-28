@@ -51,7 +51,7 @@
         prop="date_invoiced"
         :label="$t('field.invoice.invoiceDate')"
         header-align="center"
-        width="160"
+        width="150"
       >
         <span slot-scope="scope" class="cell-align-center">
           {{ formatDate({ value: scope.row.date_invoiced }) }}
@@ -62,20 +62,20 @@
         prop="document_no"
         :label="$t('field.invoice.documentNo')"
         header-align="center"
-        width="170"
+        width="110"
       />
 
       <el-table-column
         prop="currency"
         :label="$t('field.invoice.currency')"
         header-align="center"
-        width="110"
+        width="70"
       />
 
       <el-table-column
         :label="$t('field.invoice.grandTotal')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.grand_total < 0 }">
           {{ formatQuantity({ value: scope.row.grand_total }) }}
@@ -85,7 +85,7 @@
       <el-table-column
         :label="$t('field.invoice.convertedAmount')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatQuantity({ value: scope.row.converted_amount }) }}
@@ -95,7 +95,7 @@
       <el-table-column
         :label="$t('field.invoice.openAmount')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
           {{ formatQuantity({ value: scope.row.open_amount }) }}
@@ -124,7 +124,7 @@
         prop="is_sales_transaction"
         :label="$t('field.invoice.salesTransaction')"
         header-align="center"
-        width="160"
+        width="155"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_sales_transaction) }}
@@ -170,7 +170,7 @@
         prop="document_status"
         :label="$t('field.invoice.documentStatus')"
         header-align="center"
-        width="220"
+        width="155"
       />
 
     </el-table>

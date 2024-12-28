@@ -50,7 +50,7 @@
         prop="date_ordered"
         :label="$t('field.order.orderDate')"
         header-align="center"
-        width="160"
+        width="125"
       >
         <span slot-scope="scope" class="cell-align-center">
           {{ formatDate({ value: scope.row.date_ordered }) }}
@@ -60,20 +60,20 @@
         prop="document_no"
         :label="$t('field.order.documentNo')"
         header-align="center"
-        width="170"
+        width="110"
       />
 
       <el-table-column
         prop="currency"
         :label="$t('field.order.currency')"
         header-align="center"
-        width="110"
+        width="70"
       />
 
       <el-table-column
         :label="$t('field.order.grandTotal')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.grand_total < 0 }">
           {{ formatQuantity({ value: scope.row.grand_total }) }}
@@ -83,7 +83,7 @@
       <el-table-column
         :label="$t('field.order.converted')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatQuantity({ value: scope.row.converted_amount }) }}
@@ -94,7 +94,7 @@
         prop="is_sales_transaction"
         :label="$t('field.order.salesTransaction')"
         header-align="center"
-        width="160"
+        width="155"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_sales_transaction) }}
@@ -133,14 +133,14 @@
         prop="po_reference"
         :label="$t('field.order.businessPartnerOrderReference')"
         header-align="center"
-        width="270"
+        width="265"
       />
 
       <el-table-column
         prop="is_delivered"
         :label="$t('field.order.delivered')"
         header-align="center"
-        width="130"
+        width="85"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_delivered) }}
@@ -151,7 +151,7 @@
         prop="document_status"
         :label="$t('field.order.documentStatus')"
         header-align="center"
-        width="220"
+        width="155"
       />
 
     </el-table>

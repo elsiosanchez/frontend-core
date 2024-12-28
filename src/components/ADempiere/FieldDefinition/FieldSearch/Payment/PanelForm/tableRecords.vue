@@ -66,14 +66,14 @@
         prop="document_no"
         :label="$t('field.payment.documentNo')"
         header-align="center"
-        width="170"
+        width="110"
       />
 
       <el-table-column
         prop="is_receipt"
         :label="$t('field.payment.receivable')"
         header-align="center"
-        width="160"
+        width="70"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_receipt) }}
@@ -84,13 +84,13 @@
         prop="currency"
         :label="$t('field.payment.currency')"
         header-align="center"
-        width="110"
+        width="70"
       />
 
       <el-table-column
         :label="$t('field.payment.totalPayment')"
         header-align="center"
-        width="130"
+        width="110"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.pay_amt < 0 }">
           {{ formatQuantity({ value: scope.row.pay_amt }) }}
@@ -100,7 +100,7 @@
       <el-table-column
         :label="$t('field.payment.converted')"
         header-align="center"
-        width="130"
+        width="100"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatQuantity({ value: scope.row.converted_amount }) }}
@@ -110,7 +110,7 @@
       <el-table-column
         :label="$t('field.payment.totalDiscount')"
         header-align="center"
-        width="130"
+        width="120"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.discount_amt < 0 }">
           {{ formatQuantity({ value: scope.row.discount_amt }) }}
@@ -120,7 +120,7 @@
       <el-table-column
         :label="$t('field.payment.totalAdjustment')"
         header-align="center"
-        width="130"
+        width="110"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.writeOff_amt < 0 }">
           {{ formatQuantity({ value: scope.row.writeOff_amt }) }}
@@ -131,7 +131,7 @@
         prop="is_allocated"
         :label="$t('field.payment.assigned')"
         header-align="center"
-        width="160"
+        width="80"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_allocated) }}
@@ -142,7 +142,7 @@
         prop="document_status"
         :label="$t('field.payment.documentStatus')"
         header-align="center"
-        width="220"
+        width="155"
       />
 
     </el-table>

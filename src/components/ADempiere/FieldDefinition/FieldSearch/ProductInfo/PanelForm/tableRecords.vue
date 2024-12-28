@@ -27,7 +27,7 @@
       :border="true"
       fit
       :data="recordsList"
-      :max-height="300"
+      :max-height="350"
       size="mini"
       :row-class-name="tableRowClassName"
       @current-change="handleCurrentChange"
@@ -148,7 +148,7 @@
           :label="$t('field.product.onHandQuantity')"
           sortable
           header-align="center"
-          width="110"
+          width="130"
         >
           <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}

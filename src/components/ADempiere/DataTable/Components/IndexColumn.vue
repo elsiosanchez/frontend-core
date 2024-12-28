@@ -22,8 +22,8 @@
     :index="indexTable"
     label="#"
     class-name="index-column number-align-right"
-    width="35"
-    min-width="10"
+    width="40"
+    min-width="15"
     header-align="center"
   />
 </template>
@@ -67,3 +67,12 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss">
+.index-column {
+  .cell {
+    padding-left: 5px !important;
+    padding-right: 5px;
+  }
+}
+</style>

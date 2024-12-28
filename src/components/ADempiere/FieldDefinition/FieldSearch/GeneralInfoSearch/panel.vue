@@ -33,7 +33,7 @@
 
         <el-form
           label-position="top"
-          size="small"
+          size="mini"
           @submit.native.prevent="notSubmitForm"
         >
           <el-row>
@@ -44,6 +44,7 @@
               :container-uuid="uuidForm"
               :container-manager="containerManagerList"
               :size-col="6"
+              :size-field-input="'mini'"
             />
           </el-row>
         </el-form>
@@ -78,6 +79,7 @@
         :key="key"
         :label="fieldAttributes.name"
         :prop="fieldAttributes.column_name"
+        :min-width="widthColumn(fieldAttributes)"
       >
         <template slot-scope="scope">
           <!-- formatted displayed value -->
@@ -170,6 +172,7 @@ import { containerManager as containerManagerForm } from '@/utils/ADempiere/dict
 import { showMessage } from '@/utils/ADempiere/notification'
 import { tableRowClassName } from '@/utils/ADempiere/dictionary/field/search/index.ts'
 import { changeFieldAttribure } from '@/utils/ADempiere/dictionary/field/search/index.ts'
+import { isNumberField, isDateField, isBooleanField, isDecimalField } from '@/utils/ADempiere/references'
 
 /**
  * TODO: Disable select inactive records.
@@ -405,6 +408,32 @@ export default {
         }
       })
     },
+    widthColumn(fieldColumn) {
+      const { column_name, display_type, name } = fieldColumn
+      if (['Value', 'DocumentNo'].includes(column_name)) {
+        return 100
+      }
+      const character = name.length + 1
+      const fontCode = 10 * 0.8
+      const widthTitle = character * fontCode
+      let widthDisplayType = widthTitle
+      if (isBooleanField(display_type)) {
+        widthDisplayType = 45
+      } else if (isDateField(display_type)) {
+        widthDisplayType = 95
+      } else if (
+        isNumberField(display_type) ||
+        isDecimalField(display_type)
+      ) {
+        widthDisplayType = 200
+      } else {
+        widthDisplayType = 150
+      }
+      if (widthTitle > widthDisplayType) {
+        return Math.ceil(widthTitle) + 15
+      }
+      return Math.ceil(widthDisplayType)
+    },
     loadSearchFields() {
       const fieldsListTable = this.storedColumnsListTable
       if (isEmptyValue(fieldsListTable)) {
@@ -475,17 +504,53 @@ export default {
 
 <style lang="scss">
 .general-info-list-container {
+  padding: 15px !important;
+
   .general-info-list-query-criteria {
     // space between quey criteria and table
     .el-collapse-item__content {
       padding-bottom: 0px !important;
     }
+
+    .el-form-item {
+      &.el-form-item--mini {
+        margin-bottom: 6px;
+
+        .el-form-item__label {
+          .label-field {
+            .field-title-name {
+              font-size: 11.3px;
+              line-height: 20px;
+            }
+          }
+          .el-submenu__title {
+            height: 20px;
+            line-height: 20px;
+          }
+        }
+      }
+    }
+    .el-collapse-item__header {
+      height: 40px;
+      line-height: 40px;
+    }
+
+    .el-collapse-item__wrap {
+      .el-collapse-item__content {
+        padding-bottom: 5px;
+      }
+    }
   }
+
   .general-info-table {
     .el-table__cell {
       padding: 0px !important;
       &.is-leaf {
         padding: 6px !important;
+      }
+
+      .cell {
+        line-height: 15px !important
       }
     }
   }

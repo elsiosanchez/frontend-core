@@ -24,7 +24,7 @@
     value-key="name"
     clearable
     style="width: 100%;"
-    popper-class="custom-field-bpartner-info"
+    popper-class="custom-field-invoice-info"
     :trigger-on-focus="false"
     :fetch-suggestions="localSearch"
     :select-when-unmatched="true"
@@ -110,7 +110,7 @@ export default {
 
   computed: {
     cssClassCustomField() {
-      return ' custom-field-bpartner-info '
+      return ' custom-field-invoice-info '
     },
     // to recrods list overwrite
     uuidForm() {
@@ -289,7 +289,7 @@ export default {
 </script>
 
 <style lang="scss" scope>
-.custom-field-bpartner-info {
+.custom-field-invoice-info {
   &.el-autocomplete-suggestion {
     min-width: 250px !important;
   }

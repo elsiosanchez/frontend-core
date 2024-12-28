@@ -66,12 +66,14 @@
             :container-uuid="containerUuid"
             :container-manager="containerManager"
             :metadata="fieldAttributes"
+            :size-field="sizeFieldInput"
           />
           <comparison-operator
             v-if="!fieldAttributes.is_info_only"
             :field-attributes="fieldAttributes"
             :container-manager="containerManager"
             :is-read-only-from-field="fieldAttributes.isReadOnlyFromField"
+            :size-field="sizeFieldInput"
             :style="styleOperator"
           />
         </div>
@@ -84,6 +86,7 @@
           :container-uuid="containerUuid"
           :container-manager="containerManager"
           :metadata="fieldAttributes"
+          :size-field="sizeFieldInput"
         />
       </el-form-item>
     </div>
@@ -550,6 +553,11 @@ export default {
    */
   .el-form-item__label {
     padding-bottom: 0px;
+    width: -moz-available;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: auto;
+    width: -webkit-fill-available;
   }
 
   /*
