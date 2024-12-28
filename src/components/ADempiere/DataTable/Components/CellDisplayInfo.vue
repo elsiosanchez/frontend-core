@@ -135,7 +135,7 @@ import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import ProgressPercentage from '@/components/ADempiere/ContainerOptions/ProgressPercentage.vue'
 
 // Utils and helpers Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isNumberField } from '@/utils/ADempiere/references'
@@ -189,7 +189,12 @@ export default defineComponent({
     })
 
     const cellValue = computed(() => {
-      return props.dataRow[columnName.value]
+      const currentValue = props.dataRow[columnName.value]
+      // date and number is object { value, type }
+      if (getTypeOfValue(currentValue) === 'OBJECT' && Object.prototype.hasOwnProperty.call(currentValue, 'value')) {
+        return currentValue.value
+      }
+      return currentValue
     })
 
     const defaulPrecisions = computed(() => {
@@ -202,9 +207,6 @@ export default defineComponent({
     const displayedValue = computed(() => {
       if (props.fieldAttributes.is_encrypted) {
         return '••••••••••••••••••'
-      }
-      if (props.fieldAttributes.displayTypeName === 'Imagen') {
-        console.log(props.fieldAttributes.componentPath)
       }
       const currentValue = props.dataRow[columnName.value]
       return formatField({
@@ -221,16 +223,21 @@ export default defineComponent({
       let classCss = ''
       if (isNumberField(props.fieldAttributes.display_type) || props.fieldAttributes.componentPath === 'FieldNumber') {
         classCss = ' cell-align-right '
+        if (cellValue.value < 0) {
+          classCss += ' number-negative '
+        }
       }
       if (props.fieldAttributes.isColumnDocumentStatus || props.fieldAttributes.display_type === IMAGE.id) {
         classCss = ' cell-align-center '
       }
       return classCss
     })
+
     const clientUuid = computed(() => {
       const { client } = store.getters['user/getRole']
       return client.uuid
     })
+
     const imageSource = computed(() => {
       const { query, params } = root.$route
       return pathImageWindows({

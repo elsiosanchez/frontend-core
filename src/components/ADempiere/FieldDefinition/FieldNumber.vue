@@ -104,7 +104,11 @@ export default {
 
   computed: {
     cssClassCustomField() {
-      return ' custom-field-number '
+      let classCss = ' custom-field-number '
+      if (this.value < 0) {
+        classCss += ' number-negative '
+      }
+      return classCss
     },
     maxValue() {
       if (isEmptyValue(this.metadata.valueMax)) {

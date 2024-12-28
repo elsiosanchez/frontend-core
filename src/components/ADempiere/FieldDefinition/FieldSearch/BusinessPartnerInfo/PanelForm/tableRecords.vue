@@ -66,8 +66,8 @@
         header-align="center"
         width="110"
       >
-        <span slot-scope="scope" class="cell-align-right">
-          {{ scope.row.open_balance_amount }}
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_balance_amount < 0 }">
+          {{ formatQuantity({ value: scope.row.open_balance_amount }) }}
         </span>
       </el-table-column>
 
@@ -77,8 +77,8 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
-          {{ scope.row.credit_available_amount }}
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_available_amount < 0 }">
+          {{ formatQuantity({ value: scope.row.credit_available_amount }) }}
         </span>
       </el-table-column>
 
@@ -88,8 +88,8 @@
         header-align="center"
         width="110"
       >
-        <span slot-scope="scope" class="cell-align-right">
-          {{ scope.row.credit_used_amount }}
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_used_amount < 0 }">
+          {{ formatQuantity({ value: scope.row.credit_used_amount }) }}
         </span>
       </el-table-column>
 
@@ -99,8 +99,8 @@
         header-align="center"
         width="110"
       >
-        <span slot-scope="scope" class="cell-align-right">
-          {{ scope.row.revenue_amount }}
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.revenue_amount < 0 }">
+          {{ formatQuantity({ value: scope.row.revenue_amount }) }}
         </span>
       </el-table-column>
 
@@ -127,6 +127,7 @@ import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn
 import useBusinessPartner from './useBusinessPartner'
 
 // Utils and Helper Methods
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { tableRowClassName } from '@/utils/ADempiere/dictionary/field/search/index.ts'
@@ -238,6 +239,7 @@ export default defineComponent({
       pageSize,
       recordsList,
       //
+      formatQuantity,
       handleCurrentChange,
       changeCurrentRecord,
       tableRowClassName

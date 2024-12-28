@@ -49,6 +49,7 @@
         header-align="center"
         width="90"
       />
+
       <el-table-column
         prop="name"
         :label="$t('field.product.name')"
@@ -65,7 +66,7 @@
           header-align="center"
           width="127"
         >
-          <span slot-scope="scope" class="cell-align-right">
+          <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.standard_price < 0 }">
             {{ formatQuantity({ value: scope.row.standard_price }) }}
           </span>
         </el-table-column>
@@ -94,6 +95,7 @@
             {{ formatQuantity({ value: scope.row.limit_price }) }}
           </span>
         </el-table-column>
+
         <el-table-column
           prop="margin"
           :label="$t('field.product.margin')"
@@ -115,6 +117,7 @@
         header-align="center"
         width="60"
       />
+
       <el-table-column
         prop="is_stocked"
         :label="$t('field.product.stocked')"
@@ -135,10 +138,11 @@
           header-align="center"
           width="140"
         >
-          <span slot-scope="scope" class="cell-align-right">
+          <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.available_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.available_quantity }) }}
           </span>
         </el-table-column>
+
         <el-table-column
           prop="on_hand_quantity"
           :label="$t('field.product.onHandQuantity')"
@@ -146,7 +150,7 @@
           header-align="center"
           width="110"
         >
-          <span slot-scope="scope" class="cell-align-right">
+          <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
           </span>
         </el-table-column>
@@ -163,6 +167,7 @@
             {{ formatQuantity({ value: scope.row.reserved_quantity }) }}
           </span>
         </el-table-column>
+
         <el-table-column
           prop="ordered_quantity"
           :label="$t('field.product.orderedQuantity')"
@@ -174,6 +179,7 @@
             {{ formatQuantity({ value: scope.row.ordered_quantity }) }}
           </span>
         </el-table-column>
+
         <el-table-column
           prop="unconfirmed_quantity"
           :label="$t('field.product.unconfirmedQuantity')"
@@ -185,6 +191,7 @@
             {{ formatQuantity({ value: scope.row.unconfirmed_quantity }) }}
           </span>
         </el-table-column>
+
         <el-table-column
           prop="unconfirmed_move_quantity"
           :label="$t('field.product.unconfirmedMove')"
@@ -220,6 +227,7 @@
         header-align="center"
         width="165"
       />
+
       <el-table-column
         prop="product_group"
         :label="$t('field.product.productGroup')"
@@ -227,6 +235,7 @@
         header-align="center"
         width="150"
       />
+
       <el-table-column
         prop="product_class"
         :label="$t('field.product.productClass')"
@@ -234,6 +243,7 @@
         header-align="center"
         width="150"
       />
+
       <el-table-column
         prop="vendor"
         :label="$t('field.product.vendor')"
@@ -241,6 +251,7 @@
         header-align="center"
         width="170"
       />
+
       <!--
       <el-table-column
         prop="upc"
@@ -249,6 +260,7 @@
         header-align="center"
         width="170"
       />
+
       <el-table-column
         prop="sku"
         :label="$t('field.product.sku')"

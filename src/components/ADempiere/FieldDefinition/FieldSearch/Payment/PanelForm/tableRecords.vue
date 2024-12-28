@@ -92,7 +92,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.pay_amt < 0 }">
           {{ formatQuantity({ value: scope.row.pay_amt }) }}
         </span>
       </el-table-column>
@@ -102,7 +102,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatQuantity({ value: scope.row.converted_amount }) }}
         </span>
       </el-table-column>
@@ -112,7 +112,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.discount_amt < 0 }">
           {{ formatQuantity({ value: scope.row.discount_amt }) }}
         </span>
       </el-table-column>
@@ -122,7 +122,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.writeOff_amt < 0 }">
           {{ formatQuantity({ value: scope.row.writeOff_amt }) }}
         </span>
       </el-table-column>

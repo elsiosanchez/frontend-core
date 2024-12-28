@@ -19,3 +19,16 @@
 .justify-text {
   word-break: normal
 }
+
+.number-negative {
+  // text-align-last: end !important;
+  color: red !important;
+
+  &.custom-field-number {
+    &.el-input {
+      .el-input__inner {
+        color: red !important;
+      }
+    }
+  }
+}

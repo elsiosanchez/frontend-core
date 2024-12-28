@@ -75,7 +75,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.grand_total < 0 }">
           {{ formatQuantity({ value: scope.row.grand_total }) }}
         </span>
       </el-table-column>
@@ -85,7 +85,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatQuantity({ value: scope.row.converted_amount }) }}
         </span>
       </el-table-column>
@@ -95,7 +95,7 @@
         header-align="center"
         width="130"
       >
-        <span slot-scope="scope" class="cell-align-right">
+        <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
           {{ formatQuantity({ value: scope.row.open_amount }) }}
         </span>
       </el-table-column>
