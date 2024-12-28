@@ -18,7 +18,7 @@
 
 <template>
   <el-form-item
-    :label="$t('field.order.documentNo')"
+    :label="$t('field.payment.documentNo')"
   >
     <el-input
       v-model="currentValue"

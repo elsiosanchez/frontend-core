@@ -107,12 +107,9 @@ import { YES_NO_OPTIONS_LIST } from '@/utils/ADempiere/dictionary/field/yesNo'
 
 // Components and Mixins
 import DocumentNo from './documentNoField.vue'
-import Description from './descriptionField.vue'
 import BusinessPartner from './businessPartner.vue'
 import BankAccount from './bankAccount.vue'
 import Receipt from './receiptField.vue'
-import DeliveredField from './DeliveredField.vue'
-import OrderField from './OrderField.vue'
 import billingDateField from './billingDateField.vue'
 import GrandTotalField from './grandTotalField.vue'
 
@@ -124,11 +121,8 @@ export default defineComponent({
 
   components: {
     DocumentNo,
-    Description,
     BusinessPartner,
     Receipt,
-    DeliveredField,
-    OrderField,
     BankAccount,
     billingDateField,
     GrandTotalField

@@ -25,7 +25,7 @@ const payment = {
   bankAccount: 'Cuenta Bancaria',
   businessPartner: 'Socio del Negocio',
   transactionDate: 'Fecha de la Transacción',
-  documentNo: 'Documento No',
+  documentNo: 'No Documento',
   receivable: 'Cobros',
   isReceipt: 'Recibo',
   currency: 'Moneda',

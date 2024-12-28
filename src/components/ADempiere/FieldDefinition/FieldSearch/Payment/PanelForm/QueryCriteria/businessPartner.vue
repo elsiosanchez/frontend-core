@@ -18,7 +18,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-form-item
-    :label="$t('field.order.businessPartner')"
+    :label="$t('field.payment.businessPartner')"
   >
     <el-select
       v-model="currentValue"

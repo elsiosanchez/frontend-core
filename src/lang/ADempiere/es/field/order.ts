@@ -23,7 +23,7 @@ const order = {
   notFound: 'Orden no Encontrada',
   searchWithEnter: 'Introduzca un valor para buscar Orden',
   // fields
-  documentNo: 'Documento No',
+  documentNo: 'No Documento',
   businessPartner: 'Socio del Negocio',
   salesTransaction: 'Transacción de Ventas',
   description: 'Descripción',
