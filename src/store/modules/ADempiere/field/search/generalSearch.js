@@ -34,7 +34,7 @@ import { TABLE_NAME as TABLE_NAME_ORDER } from '@/utils/ADempiere/dictionary/fie
 import { TABLE_NAME as TABLE_NAME_INVOICE } from '@/utils/ADempiere/dictionary/field/search/invoice'
 import { TABLE_NAME as TABLE_NAME_PAYMENT } from '@/utils/ADempiere/dictionary/field/search/payment'
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
-import { OPERATOR_LIKE } from '@/utils/ADempiere/dataUtils'
+import { OPERATOR_EQUAL } from '@/utils/ADempiere/dataUtils'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -66,6 +66,7 @@ const initState = {
   },
 
   tableNameField: {},
+  tableNameContainer: {},
   setIdentifierColumns: {},
   searchQueryFields: {},
   searchTableFields: {},
@@ -83,6 +84,9 @@ const generalInfoSearch = {
   mutations: {
     setTableNameByField(state, { uuid, tableName }) {
       Vue.set(state.tableNameField, uuid, tableName)
+    },
+    setTableNameByContainer(state, { containerUuid, tableName }) {
+      Vue.set(state.tableNameContainer, containerUuid, tableName)
     },
 
     setSearchIdentifierFields(state, {
@@ -160,10 +164,49 @@ const generalInfoSearch = {
       fieldsList = []
     }) {
       Vue.set(state.fileListIdentifier, containerUuid, fieldsList)
+    },
+
+    /**
+     * Change general search field attribute
+     * @param {object} field
+     * @param {string} attributeName
+     * @param {mixed} attributeValue
+     */
+    changeGeneralSearchFieldAttribute(state, payload) {
+      const { attributeName, attributeValue } = payload
+
+      payload.field[attributeName] = attributeValue
     }
   },
 
   actions: {
+    changeGeneralSearchFieldAttribute({ commit, getters }, {
+      containerUuid,
+      tableName,
+      columnName,
+      field,
+      attributeName,
+      attributeValue
+    }) {
+      const originContainerUuid = containerUuid.split('_').pop()
+      if (isEmptyValue(tableName)) {
+        tableName = getters.getTableNameByContainerUuid({
+          containerUuid: originContainerUuid
+        })
+      }
+      if (isEmptyValue(field)) {
+        field = getters.getGeneralSearchFieldFromColumnName({
+          tableName: tableName || originContainerUuid,
+          columnName
+        })
+      }
+
+      commit('changeGeneralSearchFieldAttribute', {
+        field,
+        attributeName,
+        attributeValue
+      })
+    },
 
     /**
      * Load identifiers to build display column by rows
@@ -196,6 +239,7 @@ const generalInfoSearch = {
      * @returns
      */
     getSearchFieldsFromServer({ commit }, {
+      containerUuid,
       uuid,
       //
       columnId,
@@ -223,6 +267,11 @@ const generalInfoSearch = {
               uuid: uuid,
               tableName: table_name
             })
+            const originContainerUuid = containerUuid.split('_').pop()
+            commit('setTableNameByContainer', {
+              containerUuid: originContainerUuid,
+              tableName: table_name
+            })
 
             if (CUSTOMIZED_SEARCH_TABLES.includes(table_name)) {
               resolve({
@@ -237,7 +286,8 @@ const generalInfoSearch = {
               const field = generateField({
                 fieldToGenerate: queryField,
                 moreAttributes: {
-                  containerUuid: tableName
+                  containerUuid: tableName,
+                  isAdvancedQuery: true
                 }
               })
 
@@ -420,10 +470,18 @@ const generalInfoSearch = {
               columnName,
               value
             } = parameter
+            const currentField = getters.getGeneralSearchFieldFromColumnName({
+              tableName,
+              columnName
+            })
+            let currentOperator = OPERATOR_EQUAL.operator
+            if (!isEmptyValue(currentField)) {
+              currentOperator = currentField.operator
+            }
 
             return JSON.stringify({
               name: columnName,
-              operator: OPERATOR_LIKE.operator,
+              operator: currentOperator,
               values: value
             })
           }).toString() + ']'
@@ -494,6 +552,9 @@ const generalInfoSearch = {
     getTableNameByField: (state) => ({ uuid }) => {
       return state.tableNameField[uuid]
     },
+    getTableNameByContainerUuid: (state) => ({ containerUuid }) => {
+      return state.tableNameContainer[containerUuid]
+    },
     getIdentifierColumns: (state) => ({ tableName }) => {
       return state.setIdentifierColumns[tableName] || []
     },
@@ -502,6 +563,24 @@ const generalInfoSearch = {
     },
     getSearchTableFields: (state) => ({ tableName }) => {
       return state.searchTableFields[tableName] || []
+    },
+    getGeneralSearchFieldFromColumnName: (state, getters) => ({
+      tableName,
+      columnName,
+      fieldsList = []
+    }) => {
+      if (isEmptyValue(fieldsList)) {
+        fieldsList = getters.getSearchQueryFields({
+          tableName
+        })
+        if (isEmptyValue(fieldsList)) {
+          return undefined
+        }
+      }
+
+      return fieldsList.find(itemField => {
+        return itemField.column_name === columnName
+      })
     },
 
     /**

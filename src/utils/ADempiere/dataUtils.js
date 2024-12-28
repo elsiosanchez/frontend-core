@@ -234,6 +234,7 @@ export const OPERATORS_FIELD_SEARCH = {
   operatorsList: [
     ...STANDARD_OPERATORS_LIST
     // TODO: Add support to IN and NOT IN
+    // ...MULTIPLE_VALUES_OPERATORS_LIST
   ]
 }
 
@@ -286,6 +287,16 @@ export const OPERATORS_FIELD_YES_NO = {
   ]
 }
 
+export const OPERATORS_FIELD_WAREHOUSE_LOCATOR = {
+  componentPath: 'FieldWarehouseLocator',
+  isRange: false,
+  operatorsList: [
+    ...STANDARD_OPERATORS_LIST
+    // TODO: Add support to IN and NOT IN
+    // ...MULTIPLE_VALUES_OPERATORS_LIST
+  ]
+}
+
 // Components associated with search componentPath
 export const FIELD_OPERATORS_LIST = [
   OPERATORS_FIELD_AMOUNT,
@@ -297,6 +308,7 @@ export const FIELD_OPERATORS_LIST = [
   OPERATORS_FIELD_TEXT_LONG,
   OPERATORS_FIELD_TIME,
   OPERATORS_FIELD_URL,
+  OPERATORS_FIELD_WAREHOUSE_LOCATOR,
   OPERATORS_FIELD_YES_NO
 ]
 

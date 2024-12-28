@@ -76,8 +76,7 @@
         v-for="(fieldAttributes, key) in storedColumnsListTable"
         :key="key"
         :label="fieldAttributes.name"
-        :prop="fieldAttributes.column_ame"
-        min-width="210"
+        :prop="fieldAttributes.column_name"
       >
         <template slot-scope="scope">
           <!-- formatted displayed value -->
@@ -156,7 +155,6 @@ import store from '@/store'
 // Constants
 import { GENERAL_INFO_SEARCH_LIST_FORM } from '@/utils/ADempiere/dictionary/field/search/index.ts'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
-import { OPERATOR_LIKE } from '@/utils/ADempiere/dataUtils'
 
 // Components and Mixins
 import fieldSearchMixin from '../mixinFieldSearch'
@@ -170,6 +168,7 @@ import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
 import { containerManager as containerManagerForm } from '@/utils/ADempiere/dictionary/form'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { tableRowClassName } from '@/utils/ADempiere/dictionary/field/search/index.ts'
+import { changeFieldAttribure } from '@/utils/ADempiere/dictionary/field/search/index.ts'
 
 /**
  * TODO: Disable select inactive records.
@@ -250,6 +249,7 @@ export default {
       return {
         ...this.containerManager,
         ...containerManagerForm,
+        changeFieldAttribure,
         actionPerformed: () => {},
         getFieldsLit: () => {},
         isDisplayedField: () => { return true },
@@ -408,6 +408,8 @@ export default {
       const fieldsListTable = this.storedColumnsListTable
       if (isEmptyValue(fieldsListTable)) {
         this.containerManager.getSearchDefinition({
+          containerUuid: this.metadata.containerUuid,
+          uuid: this.metadata.uuid,
           id: this.metadata.internal_id
         })
           .finally(() => {
@@ -425,15 +427,6 @@ export default {
             return false
           }
           return !isEmptyValue(attribute.value)
-        })
-        .map(attribute => {
-          if (!isEmptyValue(attribute) && !isEmptyValue(attribute.value) && (String(attribute.value).startsWith('%') || String(attribute.value).endsWith('%'))) {
-            return {
-              ...attribute,
-              operator: OPERATOR_LIKE.operator
-            }
-          }
-          return attribute
         })
 
       this.isLoadingRecords = true

@@ -146,6 +146,7 @@ export default {
     if (isEmptyValue(this.storedReferenceTableName) && !CUSTOMIZED_SEARCH_TABLES.includes(this.searchTableName)) {
       // load definition
       this.containerManager.getSearchDefinition({
+        containerUuid: this.metadata.containerUuid,
         uuid: this.metadata.uuid,
         id: this.metadata.internal_id
       })

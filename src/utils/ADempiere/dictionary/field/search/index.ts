@@ -16,6 +16,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import store from '@/store'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
@@ -119,4 +121,18 @@ export function tableRowClassName({ row, rowIndex }) {
     return 'disabled-record'
   }
   return ''
+}
+
+export function changeFieldAttribure({
+  containerUuid,
+  columnName,
+  attributeName,
+  attributeValue
+}) {
+  return store.dispatch('changeGeneralSearchFieldAttribute', {
+    containerUuid,
+    columnName,
+    attributeName,
+    attributeValue
+  })
 }
