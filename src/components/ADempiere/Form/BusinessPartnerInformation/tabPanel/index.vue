@@ -31,7 +31,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <script>
 import store from '@/store'
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import Location from './location.vue'
 import Contact from './contact.vue'
 export default defineComponent({
@@ -41,7 +41,14 @@ export default defineComponent({
     Contact
   },
   setup() {
-    const activeName = ref('location')
+    const activeName = computed({
+      set(value) {
+        store.commit('setTabOptionsBusiness', value)
+      },
+      get() {
+        return store.getters.getTabOptionsBusiness
+      }
+    })
     const rowSelect = computed(() => {
       return store.getters.getRowSelect
     })

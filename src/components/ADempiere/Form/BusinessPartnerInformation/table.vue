@@ -122,16 +122,14 @@ export default defineComponent({
       return 'calc(100vh - 410px)'
     })
     function styleCell({ row }) {
-      const openBalanceAmount = parseFloat(row.open_balance_amount)
-      const revenueAmount = parseFloat(row.revenue_amount)
-      const creditUsedAmount = parseFloat(row.credit_used_amount)
       const creditAvailableAmount = parseFloat(row.credit_available_amount)
-      if (openBalanceAmount < 0 || revenueAmount < 0 || creditUsedAmount < 0 || creditAvailableAmount < 0) {
+      if (creditAvailableAmount < 0) {
         return { color: 'red' }
       }
     }
     function openInfo(row) {
       store.commit('showDialogBusiness', true)
+      store.commit('setTabOptionsBusiness', 'location')
       store.commit('setRowSelect', row)
       store.dispatch('requestLocation', {
         id: row.id

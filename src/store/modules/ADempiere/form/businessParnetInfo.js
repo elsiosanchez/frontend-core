@@ -43,12 +43,16 @@ const businessPartner = {
   recordLocation: [],
   recordContact: [],
   isLoadingLocation: false,
-  isLoadingContact: false
+  isLoadingContact: false,
+  tabOptions: 'locatiom'
 }
 
 const formBusinessPartner = {
   state: businessPartner,
   mutations: {
+    setTabOptionsBusiness(state, tabOptions) {
+      state.tabOptions = tabOptions
+    },
     setIsLoadingContact(state, isLoadingContact) {
       state.isLoadingContact = isLoadingContact
     },
@@ -254,6 +258,9 @@ const formBusinessPartner = {
     },
     getIsLoadingContact: (state) => {
       return state.isLoadingContact
+    },
+    getTabOptionsBusiness: (state) => {
+      return state.tabOptions
     }
   }
 }

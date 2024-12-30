@@ -35,7 +35,7 @@ const businessPartner = {
   titleDialog: 'Contact and Address Information',
   locationAndAddress: 'Location / Address',
   locations: {
-    name: 'NAme',
+    name: 'Name',
     mobilePhone: 'Mobile Phone',
     fax: 'Fax',
     address: 'Address',
