@@ -143,12 +143,16 @@ import { defineComponent, onMounted, computed, watch, ref } from '@vue/compositi
 
 import store from '@/store'
 import lang from '@/lang'
+
 // Components and Mixins
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import QueryCriteria from '@/components/ADempiere/Form/ProductSearch/queryCriteria'
 import ShowInfoProduct from '@/components/ADempiere/Form/ProductSearch/dialogo/showInfoProduct'
+
+// Constants
+import { COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // API Request Methods
 import {
@@ -175,6 +179,7 @@ export default defineComponent({
     QueryCriteria,
     ShowInfoProduct
   },
+
   props: {
     height: {
       type: String,
@@ -493,7 +498,7 @@ export default defineComponent({
     function setContextValue() {
       const warehouse = getContext({
         parentUuid: uuidForm,
-        columnName: '#M_Warehouse_ID',
+        columnName: '#' + COLUMNNAME_M_Warehouse_ID,
         isForceSession: true
       })
       const priceListVersion = getContext({

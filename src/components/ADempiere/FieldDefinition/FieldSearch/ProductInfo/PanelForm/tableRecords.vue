@@ -115,7 +115,7 @@
         :label="$t('field.product.uom')"
         sortable
         header-align="center"
-        width="60"
+        width="65"
       />
 
       <el-table-column

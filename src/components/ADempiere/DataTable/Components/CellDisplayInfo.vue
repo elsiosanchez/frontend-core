@@ -175,16 +175,21 @@ export default defineComponent({
       }
       return ''
     })
+
     const columnName = computed(() => {
       if (!isEmptyValue(props.fieldAttributes.column_name)) {
         return props.fieldAttributes.column_name
       }
       return props.fieldAttributes.columnName
     })
+
     // const elementName = computed(() => {
     //   return props.fieldAttributes.element_name
     // })
     const displayColumnName = computed(() => {
+      if (isEmptyValue(props.fieldAttributes.displayColumnName)) {
+        return DISPLAY_COLUMN_PREFIX + columnName.value
+      }
       return props.fieldAttributes.displayColumnName
     })
 

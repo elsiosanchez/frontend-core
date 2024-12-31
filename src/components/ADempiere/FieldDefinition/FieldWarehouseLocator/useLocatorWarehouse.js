@@ -31,6 +31,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import useDisplayedColumn from '@/components/ADempiere/FieldDefinition/useDisplayedColumn.js'
 
@@ -70,7 +71,8 @@ export default ({
   })
 
   const warehouseId = computed(() => {
-    return store.getters.getValueOfField({
+    return getContext({
+      // isForceSession: true,
       parentUuid,
       containerUuid,
       columnName: COLUMNNAME_M_Warehouse_ID
