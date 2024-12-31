@@ -184,7 +184,8 @@ export default defineComponent({
 
     function setPageNumber(pageNumber) {
       loadRecordsList({
-        pageNumber
+        pageNumber,
+        pageSize: pageSize.value
       })
     }
     function setPageSize(pageSize) {

@@ -46,12 +46,14 @@
         header-align="center"
         width="200"
       />
+
       <el-table-column
         prop="business_partner"
         :label="$t('field.payment.businessPartner')"
         header-align="center"
         width="200"
       />
+
       <el-table-column
         prop="date_payment"
         :label="$t('field.payment.transactionDate')"
@@ -62,6 +64,7 @@
           {{ formatDate({ value: scope.row.date_payment }) }}
         </span>
       </el-table-column>
+
       <el-table-column
         prop="document_no"
         :label="$t('field.payment.documentNo')"
@@ -73,7 +76,7 @@
         prop="is_receipt"
         :label="$t('field.payment.receivable')"
         header-align="center"
-        width="70"
+        width="85"
       >
         <span slot-scope="scope" class="cell-align-right">
           {{ convertBooleanToTranslationLang(scope.row.is_receipt) }}
@@ -90,7 +93,7 @@
       <el-table-column
         :label="$t('field.payment.totalPayment')"
         header-align="center"
-        width="110"
+        width="120"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.pay_amt < 0 }">
           {{ formatQuantity({ value: scope.row.pay_amt }) }}
@@ -120,7 +123,7 @@
       <el-table-column
         :label="$t('field.payment.totalAdjustment')"
         header-align="center"
-        width="110"
+        width="120"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.writeOff_amt < 0 }">
           {{ formatQuantity({ value: scope.row.writeOff_amt }) }}
@@ -281,6 +284,13 @@ export default defineComponent({
 <style lang="scss">
 .payments-table {
   &.el-table {
+    .el-table__header {
+      .el-table__cell {
+        &.is-leaf {
+          padding: 2px 0px !important;
+        }
+      }
+    }
     .el-table__body {
       .el-table__row {
         .el-table__cell {

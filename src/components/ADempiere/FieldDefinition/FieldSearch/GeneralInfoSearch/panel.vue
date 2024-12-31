@@ -79,6 +79,7 @@
         :key="key"
         :label="fieldAttributes.name"
         :prop="fieldAttributes.column_name"
+        header-align="center"
         :min-width="widthColumn(fieldAttributes)"
       >
         <template slot-scope="scope">
@@ -543,11 +544,15 @@ export default {
   }
 
   .general-info-table {
+    .el-table__header {
+      .el-table__cell {
+        &.is-leaf {
+          padding: 6px 0px !important;
+        }
+      }
+    }
     .el-table__cell {
       padding: 0px !important;
-      &.is-leaf {
-        padding: 6px !important;
-      }
 
       .cell {
         line-height: 15px !important

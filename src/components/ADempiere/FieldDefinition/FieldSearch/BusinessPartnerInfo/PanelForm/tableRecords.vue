@@ -251,6 +251,13 @@ export default defineComponent({
 <style lang="scss">
 .business-partners-table {
   &.el-table {
+    .el-table__header {
+      .el-table__cell {
+        &.is-leaf {
+          padding: 2px 0px !important;
+        }
+      }
+    }
     .el-table__body {
       .el-table__row {
         .el-table__cell {
