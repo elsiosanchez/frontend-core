@@ -465,7 +465,7 @@ export default {
                   recordId = query.recordId
                 }
                 if (isEmptyValue(recordId) && !isEmptyValue(params.recordId)) {
-                  recordId = query.recordId
+                  recordId = params.recordId
                 }
               }
               dispatch('startProcessOfWindows', {
