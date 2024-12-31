@@ -30,7 +30,7 @@
         </span>
         <span v-else />
       </el-dropdown>
-      <span v-else class="el-dropdown-link" :class="cellStyle(attributes, rowData)">
+      <span v-else :class="'el-dropdown-link ' + cellStyle(attributes, rowData)">
         {{ displayLabel(attributes, rowData) }}
       </span>
       <el-dropdown-menu
@@ -85,7 +85,6 @@ import {
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 
 // Utils and Helper Methods
-
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
@@ -196,12 +195,13 @@ export default defineComponent({
      * @param {Object} row
      */
     function cellStyle(attibutes, row) {
-      if (isEmptyValue(attibutes) || isEmptyValue(row.cells[attibutes.code])) {
-        return {}
+      if (isEmptyValue(attibutes) || isEmptyValue(row) || isEmptyValue(row.cells[attibutes.code])) {
+        return ''
       }
-      const { value } = row.cells[attibutes.code]
-      let currentValue = value
-      if (isNumberField(attibutes.display_type)) {
+      const { code, display_type } = attibutes
+      const { value } = row.cells[code]
+      if (isNumberField(display_type)) {
+        let currentValue = value
         if (getTypeOfValue(currentValue) === 'OBJECT' && Object.prototype.hasOwnProperty.call(currentValue, 'value')) {
           currentValue = value.value
         }
@@ -209,6 +209,7 @@ export default defineComponent({
           return 'number-negative'
         }
       }
+      return ''
     }
 
     /**
