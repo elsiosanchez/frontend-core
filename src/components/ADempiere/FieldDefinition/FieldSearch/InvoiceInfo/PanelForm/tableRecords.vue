@@ -69,7 +69,7 @@
         prop="currency"
         :label="$t('field.invoice.currency')"
         header-align="center"
-        width="70"
+        width="75"
       />
 
       <el-table-column

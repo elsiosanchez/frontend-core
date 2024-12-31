@@ -84,7 +84,7 @@
         prop="currency"
         :label="$t('field.payment.currency')"
         header-align="center"
-        width="70"
+        width="75"
       />
 
       <el-table-column

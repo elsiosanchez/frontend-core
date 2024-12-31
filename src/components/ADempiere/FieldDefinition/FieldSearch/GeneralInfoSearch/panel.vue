@@ -411,7 +411,7 @@ export default {
     widthColumn(fieldColumn) {
       const { column_name, display_type, name } = fieldColumn
       if (['Value', 'DocumentNo'].includes(column_name)) {
-        return 100
+        return 115
       }
       const character = name.length + 1
       const fontCode = 10 * 0.8
