@@ -16,9 +16,7 @@
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 <template>
-  <span
-    :style="cellStyle(attributes.code, rowData)"
-  >
+  <span>
     <!-- Show cell label -->
     <el-dropdown
       v-if="!isEmptyValue(attributes.column_name)"
@@ -32,7 +30,7 @@
         </span>
         <span v-else />
       </el-dropdown>
-      <span v-else class="el-dropdown-link">
+      <span v-else class="el-dropdown-link" :class="cellStyle(attributes, rowData)">
         {{ displayLabel(attributes, rowData) }}
       </span>
       <el-dropdown-menu
@@ -87,10 +85,12 @@ import {
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+
+import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
+import { isNumberField } from '@/utils/ADempiere/references'
 
 // API Request Methods
 import { listZoomWindowsRequest } from '@/api/ADempiere/fields/zoom.js'
@@ -195,14 +195,18 @@ export default defineComponent({
      * @param {String} code
      * @param {Object} row
      */
-    function cellStyle(code, row) {
-      if (isEmptyValue(row.cells[code])) {
+    function cellStyle(attibutes, row) {
+      if (isEmptyValue(attibutes) || isEmptyValue(row.cells[attibutes.code])) {
         return {}
       }
-      const { value } = row.cells[code]
-      if (!isEmptyValue(value) && value.type) {
-        if (value.type === 'decimal' && value.value < 0) {
-          return { color: 'red' }
+      const { value } = row.cells[attibutes.code]
+      let currentValue = value
+      if (isNumberField(attibutes.display_type)) {
+        if (getTypeOfValue(currentValue) === 'OBJECT' && Object.prototype.hasOwnProperty.call(currentValue, 'value')) {
+          currentValue = value.value
+        }
+        if (parseFloat(currentValue) < 0) {
+          return 'number-negative'
         }
       }
     }
