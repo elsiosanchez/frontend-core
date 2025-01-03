@@ -556,7 +556,8 @@ export default {
     width: -moz-available;
     text-overflow: ellipsis;
     white-space: nowrap;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
     width: -webkit-fill-available;
   }
 
