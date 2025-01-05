@@ -42,15 +42,15 @@
               :body-style="{ padding: '5px' }"
             >
               <b>
-                <i>{{ '( ' + event.name + ' )' }}</i>
+                <i>{{ '( ' + event.title + ' )' }}</i>
               </b>
               <p style="font-size: 14px;">
                 {{ event.description }}
               </p>
               <p style="text-align: left;color: gray;font-size: 12px;margin: 0px;">
                 {{ translateDate({
-                  value: event.start_date,
-                  format: event.start_date.length > 10 ? 'short' : 'onlyDate'
+                  value: event.valid_from,
+                  format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
                 }) }}
               </p>
             </el-card>
@@ -69,6 +69,7 @@
         </template>
       </FullCalendar>
     </div>
+    <modal-calendar />
   </div>
 </template>
 
@@ -88,6 +89,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
+import ModalCalendar from './modal.vue'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
 // Constants
 import { createEventId } from './event-utils'
@@ -99,9 +102,9 @@ export default defineComponent({
   name: 'CalendarView',
 
   components: {
-    FullCalendar // make the <FullCalendar> tag available
+    FullCalendar,
+    ModalCalendar
   },
-
   setup() {
     /**
      * Ref
@@ -130,15 +133,16 @@ export default defineComponent({
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
         initialView: 'dayGridMonth',
-        initialEvents: store.getters.getListTasksEvents.map(list => {
-          const { start_date, end_date, name } = list
+        events: currentEvents.value.map(list => {
+          const { id, title, description, valid_from, valid_to } = list
           return {
-            id: list.request,
-            title: name,
-            start: parse(start_date),
-            end: parse(end_date)
+            id,
+            description,
+            title,
+            start: parse(valid_from),
+            end: parse(valid_to)
           }
-        }), // alternatively, use the `events` setting to fetch from a feed
+        }),
         editable: true,
         selectable: true,
         selectMirror: true,
@@ -146,10 +150,18 @@ export default defineComponent({
         weekends: true,
         select: handleDateSelect(),
         // eventClick: handleEventClick(),
-        eventsSet: handleEvents()
+        eventsSet: handleEvents(),
+        // dateClick: function(info) {
+        //   console.log(info)
+        // },
+        eventClick: handleEventClick
       }
     })
-
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
     /**
      * Methods
      */
@@ -157,7 +169,17 @@ export default defineComponent({
       const parts = dateToParse.split('T')[0].split('-')
       return `${parts[0]}-${parts[1]}-${parts[2]}`
     }
-
+    const handleEventClick = (info) => {
+      store.commit('setSelectedDate', {
+        title: info.event.title,
+        start: info.event.start,
+        end: info.event.end,
+        value: info.event.extendedProps.value,
+        location: info.event.extendedProps.location,
+        description: info.event.extendedProps.description
+      })
+      store.commit('setShowModal', true)
+    }
     function handleDateSelect(selectInfo) {
       if (!selectInfo) {
         return
@@ -176,23 +198,26 @@ export default defineComponent({
       }
     }
 
-    function handleEventClick(clickInfo) {
-      if (confirm(`${lang.t('component.calendar.deleteEventConfirm')} '${clickInfo.event.title}'`)) {
-        clickInfo.event.remove()
-      }
-    }
+    // function handleEventClick(clickInfo) {
+    //   if (confirm(`${lang.t('component.calendar.deleteEventConfirm')} '${clickInfo.event.title}'`)) {
+    //     clickInfo.event.remove()
+    //   }
+    // }
 
     function handleEvents(events) {
       currentEvents.value = events
     }
 
-    store.dispatch('getListTasksFromServer', {})
+    store.dispatch('getDisplayDefinition', {
+      tableName: tableName.value
+    })
 
     return {
       // Ref
       currentEvents,
       // Computed
       calendarOptions,
+      tableName,
       // Methods
       handleDateSelect,
       handleEventClick,
@@ -228,7 +253,7 @@ export default defineComponent({
 
     ul {
       overflow: auto;
-      height: 89vh;
+      height: calc(100vh - 180px);
       padding: 0px 5px;
       margin: 0;
     }

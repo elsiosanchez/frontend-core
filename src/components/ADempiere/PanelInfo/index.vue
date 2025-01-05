@@ -77,6 +77,7 @@ import StoreProduct from './Component/storeProduct'
 import WorkflowLogs from './Component/workflowLogs'
 import LoadingView from '@/components/ADempiere/LoadingView'
 import RecordDashboard from './Component/RecordDashboard'
+import Calendar from '@/views/ADempiere/CalendarView'
 
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
@@ -100,7 +101,8 @@ export default defineComponent({
     StoreProduct,
     WorkflowLogs,
     RecordDashboard,
-    LoadingView
+    LoadingView,
+    Calendar
   },
 
   props: {
@@ -230,6 +232,13 @@ export default defineComponent({
           isLoading: false,
           iconClass: 'dashboard',
           component: RecordDashboard
+        },
+        {
+          name: 'Calendar',
+          title: language.t('window.containerInfo.log.calendar'),
+          show: true,
+          isLoading: false,
+          component: Calendar
         }
       ]
     })
@@ -268,6 +277,7 @@ export default defineComponent({
       }
       return props.allTabsList[0].table_name
     })
+
     // Current Tab
     const currentTab = computed(() => {
       if (containerInfo.value.currentTab) {

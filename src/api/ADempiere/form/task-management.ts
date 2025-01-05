@@ -34,3 +34,21 @@ export function requestListTasks({
     }
   })
 }
+
+export function listCalendars({
+  id
+}) {
+  return request({
+    url: `/display-definition/calendars/${id}`,
+    method: 'get'
+  })
+}
+
+export function displayDefinition({
+  tableName
+}) {
+  return request({
+    url: `/display-definition/definitions/${tableName}`,
+    method: 'get'
+  })
+}

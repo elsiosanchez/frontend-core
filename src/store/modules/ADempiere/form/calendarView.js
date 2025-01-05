@@ -19,7 +19,7 @@
 // import lang from '@/lang'
 
 // API Request Methods
-import { requestListTasks } from '@/api/ADempiere/form/task-management.ts'
+import { requestListTasks, listCalendars, displayDefinition } from '@/api/ADempiere/form/task-management.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 
 // Utils and Helper Methods
@@ -27,7 +27,9 @@ import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const calendarView = {
-  listEvents: []
+  listEvents: [],
+  showModal: false,
+  selectedDate: []
 }
 
 export default {
@@ -36,6 +38,12 @@ export default {
   mutations: {
     setListTaks(state, list) {
       state.listEvents = list
+    },
+    setShowModal(state, value) {
+      state.showModal = value
+    },
+    setSelectedDate(state, value) {
+      state.selectedDate = value
     }
   },
 
@@ -76,11 +84,77 @@ export default {
             resolve({})
           })
       })
+    },
+    getListCalendars({ commit }, {
+      id
+    }) {
+      return new Promise(resolve => {
+        listCalendars({
+          id
+        })
+          .then(response => {
+            const { records } = response
+            commit('setListTaks', records)
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Add List Calendars: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    getDisplayDefinition({ dispatch }, {
+      tableName
+    }) {
+      return new Promise(resolve => {
+        displayDefinition({
+          tableName
+        })
+          .then(response => {
+            const { records	} = response
+            if (!isEmptyValue(records)) {
+              const id = records[0].resource_metadata.id
+              console.log(id)
+              dispatch('getListCalendars', {
+                id
+              })
+            }
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Get Display Definition: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
     }
   },
   getters: {
     getListTasksEvents(state) {
       return state.listEvents
+    },
+    getShowModal(state) {
+      return state.showModal
+    },
+    getSelectedDate(state) {
+      return state.selectedDate
     }
   }
 }

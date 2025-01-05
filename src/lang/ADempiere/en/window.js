@@ -64,7 +64,8 @@ const window = {
       recordUUID: 'Record UUID',
       tab: 'Tab',
       tableName: 'Table Name',
-      allChanges: 'See all changes'
+      allChanges: 'See all changes',
+      calendar: 'Calendar'
     },
     notices: {
       user: 'User',
