@@ -17,7 +17,7 @@
  */
 
 const businessPartner = {
-  title: 'Información del Socio del Negocio',
+  title: 'Buscador de Socio del Negocio',
   code: 'Código',
   contact: 'Contacto',
   phone: 'Teléfono',

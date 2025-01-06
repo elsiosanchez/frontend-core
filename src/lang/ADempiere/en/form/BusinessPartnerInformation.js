@@ -17,7 +17,7 @@
  */
 
 const businessPartner = {
-  title: 'Business Partner Information',
+  title: 'Search for Business Partner',
   code: 'Code',
   contact: 'Contact',
   phone: 'Phone',

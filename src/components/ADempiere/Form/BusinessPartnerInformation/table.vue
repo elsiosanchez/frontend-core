@@ -44,66 +44,15 @@
 
 <script>
 import store from '@/store'
-import lang from '@/lang'
 
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Utils
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-
+import headerList from './headerList.ts'
 export default defineComponent({
   name: 'TableBusinessInfo',
   setup() {
-    const headerList = ref([
-      {
-        label: lang.t('form.businessPartnerInformation.code'),
-        columnName: 'value',
-        width: '50',
-        align: 'left'
-      },
-      {
-        label: lang.t('form.businessPartnerInformation.companyName'),
-        columnName: 'name',
-        width: '60',
-        align: 'left'
-      },
-      // {
-      //   label: lang.t('form.businessPartnerInformation.fantasyName'),
-      //   columnName: 'name2',
-      //   width: '60',
-      //   align: 'left'
-      // },
-      {
-        label: lang.t('form.businessPartnerInformation.businessPartnerGroup'),
-        columnName: 'business_partner_group',
-        width: '60',
-        align: 'left'
-      },
-      {
-        label: lang.t('form.businessPartnerInformation.currentBalance'),
-        columnName: 'open_balance_amount',
-        width: '50',
-        align: 'right'
-      },
-      {
-        label: lang.t('form.businessPartnerInformation.availableCredit'),
-        columnName: 'credit_available_amount',
-        width: '50',
-        align: 'right'
-      },
-      {
-        label: lang.t('form.businessPartnerInformation.usedCredit'),
-        columnName: 'credit_used_amount',
-        width: '50',
-        align: 'right'
-      },
-      {
-        label: lang.t('form.businessPartnerInformation.income'),
-        columnName: 'revenue_amount',
-        width: '40',
-        align: 'right'
-      }
-    ])
     const businessInfo = computed(() => {
       return store.getters.getBusinessPartners.map(list => {
         return {

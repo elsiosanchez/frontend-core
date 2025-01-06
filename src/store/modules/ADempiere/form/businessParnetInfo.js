@@ -28,7 +28,7 @@ const businessPartner = {
   list: [],
   recordCount: 0,
   pageToken: '',
-  pageNumber: 15,
+  pageNumber: 100,
   code: '',
   contact: '',
   phone: '',
@@ -44,12 +44,26 @@ const businessPartner = {
   recordContact: [],
   isLoadingLocation: false,
   isLoadingContact: false,
-  tabOptions: 'locatiom'
+  tabOptions: 'location'
 }
 
 const formBusinessPartner = {
   state: businessPartner,
   mutations: {
+    setDefaulCriteria(state) {
+      state.code = ''
+      state.contact = ''
+      state.phone = ''
+      state.customersOnly = ''
+      state.companyName = ''
+      state.fantasyName = ''
+      state.email = ''
+      state.allOrAny = ''
+      state.zipCode = ''
+      state.rowSelect = []
+      state.recordLocation = []
+      state.recordContact = []
+    },
     setTabOptionsBusiness(state, tabOptions) {
       state.tabOptions = tabOptions
     },

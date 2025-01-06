@@ -32,20 +32,53 @@
       </el-collapse-item>
     </el-collapse>
     <Table />
-    <custom-pagination
-      :total-records="recordCount"
-      :page-number="pageToken"
-      :page-size="pageSize"
-      :handle-change-page-number="handleChangePage"
-      :handle-change-page-size="handleChangeSizePage"
-    />
+    <p>
+      <span style="float: right;">
+        <span style="display: inline-block; vertical-align: middle; margin-left: 50px;">
+          <el-button
+            type="info"
+            class="button-base-icon"
+            plain
+            @click="cleanCriteria()"
+          >
+            <svg-icon icon-class="layers-clear" />
+          </el-button>
+          <el-button
+            :loading="isLoading"
+            type="success"
+            class="button-base-icon"
+            icon="el-icon-refresh-right"
+            @click="search()"
+          />
+          <el-button
+            type="primary"
+            plain
+            class="button-base-icon"
+            icon="el-icon-download"
+            @click="exportExcel()"
+          />
+        </span>
+        <custom-pagination
+          style="display: inline-block; vertical-align: middle;"
+          :total-records="recordCount"
+          :page-number="pageToken"
+          :page-size="pageSize"
+          :handle-change-page-number="handleChangePage"
+          :handle-change-page-size="handleChangeSizePage"
+        />
+      </span>
+    </p>
     <Dialog />
   </div>
 </template>
 
 <script>
 import store from '@/store'
+import lang from '@/lang'
+
 import { defineComponent, computed, watch, ref } from '@vue/composition-api'
+import headerList from './headerList.ts'
+import { parseTime } from '@/utils'
 
 // Component
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
@@ -65,7 +98,9 @@ export default defineComponent({
     const pageToken = computed(() => {
       return store.getters.getPageTokenBusinness
     })
-
+    const businessInfo = computed(() => {
+      return store.getters.getBusinessPartners
+    })
     const pageSize = computed(() => {
       return store.getters.getPageSize
     })
@@ -130,7 +165,33 @@ export default defineComponent({
         })
       }, 1000)
     }
-
+    function exportExcel() {
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = headerList.map(list => list.label)
+        const filterVal = headerList.map(list => list.columnName)
+        const list = businessInfo.value
+        const data = formatJson(filterVal, list)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: lang.t('form.businessPartnerInformation.title'),
+          autoWidth: true,
+          bookType: 'xlsx'
+        })
+      })
+    }
+    function formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          return v[j]
+        }
+      }))
+    }
+    function cleanCriteria() {
+      store.commit('setDefaulCriteria')
+    }
     watch(
       [contact, email, phone, zipCode, code, companyName, fantasyName, allOrAny, customersOnly],
       () => {
@@ -155,10 +216,13 @@ export default defineComponent({
       email,
       allOrAny,
       zipCode,
+      businessInfo,
       //
       handleChangeSizePage,
       handleChangePage,
-      search
+      search,
+      exportExcel,
+      cleanCriteria
     }
   }
 })
