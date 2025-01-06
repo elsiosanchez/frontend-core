@@ -436,7 +436,8 @@ export default {
               }
 
               return dispatch('getProcessDefinitionFromServer', {
-                id: process.id.toString()
+                id: process.id.toString(),
+                containerUuidAssociated: process.uuid
               })
             },
             // TODO: Change to string and import dynamic in component
@@ -546,7 +547,8 @@ export default {
               }
 
               return dispatch('getProcessDefinitionFromServer', {
-                id: process.id.toString()
+                id: process.id.toString(),
+                containerUuidAssociated: tabDefinition.parentUuid
               })
             },
             // TODO: Change to string and import dynamic in component
@@ -578,11 +580,11 @@ export default {
             return isDisplayedFromLogic
           }
         }
-
         actionsList.push({
           ...defaultAction,
           ...process,
           containerUuid: process.uuid,
+          parentUuid: tabDefinition.parentUuid,
           displayed
         })
       })

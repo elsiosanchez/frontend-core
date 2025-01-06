@@ -277,14 +277,12 @@ export default defineComponent({
     }
     if (isShowed.effect && isShowed.value) {
       loadModal()
-      clearParameters()
     }
 
     // watchers
     watch(isShowed, (newValue, oldValue) => {
       if (newValue !== oldValue && newValue) {
         loadModal()
-        clearParameters()
       }
     })
 
