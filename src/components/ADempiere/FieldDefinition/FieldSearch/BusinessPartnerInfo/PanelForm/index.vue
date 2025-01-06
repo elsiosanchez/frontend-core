@@ -168,6 +168,9 @@ export default defineComponent({
 <style lang="scss">
 .business-partners-container {
   padding-top: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
   padding-bottom: 0px;
+  overflow-x: hidden;
 }
 </style>

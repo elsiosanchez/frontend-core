@@ -26,7 +26,7 @@
       :border="true"
       fit
       :data="recordsList"
-      :max-height="300"
+      :max-height="500"
       size="mini"
       :row-class-name="tableRowClassName"
       @current-change="handleCurrentChange"
@@ -45,26 +45,26 @@
         prop="value"
         :label="$t('field.businessPartner.value')"
         header-align="center"
-        width="90"
+        width="110"
       />
       <el-table-column
         prop="name"
         :label="$t('field.businessPartner.name')"
         header-align="center"
-        width="220"
+        width="350"
       />
       <el-table-column
         prop="business_partner_group"
         :label="$t('field.businessPartner.group')"
         header-align="center"
-        width="170"
+        width="120"
       />
 
       <el-table-column
         prop="open_balance_amount"
         :label="$t('field.businessPartner.openBalance')"
         header-align="center"
-        width="110"
+        width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_balance_amount < 0 }">
           {{ formatQuantity({ value: scope.row.open_balance_amount }) }}
@@ -75,7 +75,7 @@
         prop="credit_available_amount"
         :label="$t('field.businessPartner.creditAvailable')"
         header-align="center"
-        width="130"
+        width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_available_amount < 0 }">
           {{ formatQuantity({ value: scope.row.credit_available_amount }) }}
@@ -86,7 +86,7 @@
         prop="credit_used_amount"
         :label="$t('field.businessPartner.creditUsed')"
         header-align="center"
-        width="110"
+        width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_used_amount < 0 }">
           {{ formatQuantity({ value: scope.row.credit_used_amount }) }}
@@ -97,7 +97,7 @@
         prop="revenue_amount"
         :label="$t('field.businessPartner.revenue')"
         header-align="center"
-        width="110"
+        width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.revenue_amount < 0 }">
           {{ formatQuantity({ value: scope.row.revenue_amount }) }}

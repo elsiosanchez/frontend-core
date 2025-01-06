@@ -21,8 +21,7 @@
     ref="businessPartnerListPopover"
     v-model="showedPopoverPanel"
     popper-class="business-partners-popover"
-    placement="top"
-    width="900"
+    placement="left-start"
     trigger="click"
   >
     <panel-form
@@ -109,3 +108,9 @@ export default {
   }
 }
 </script>
+<style>
+.business-partners-popover{
+  margin: 0px !important;
+  padding: 10px;
+}
+</style>

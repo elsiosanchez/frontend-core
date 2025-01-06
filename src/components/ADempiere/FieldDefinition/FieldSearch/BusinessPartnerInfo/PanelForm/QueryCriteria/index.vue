@@ -190,7 +190,7 @@ export default defineComponent({
   .business-partners-query-criteria-collapse {
     .el-form-item {
       &.el-form-item--mini {
-        margin-bottom: 6px;
+        margin-bottom: 1px;
 
         .el-form-item__label {
           font-size: 11.3px;

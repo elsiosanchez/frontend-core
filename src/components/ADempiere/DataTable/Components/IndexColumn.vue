@@ -22,7 +22,7 @@
     :index="indexTable"
     label="#"
     class-name="index-column number-align-right"
-    width="40"
+    width="35"
     min-width="15"
     header-align="center"
   />
