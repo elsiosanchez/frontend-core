@@ -147,6 +147,7 @@ export default defineComponent({
                   quantityAvailable: formatQuantity({ value: list.quantityAvailable })
                 }
               })
+              autocompleteSearchProduct.value.$children[1].showPopper = true
               callBack(productList.value)
               isLoading.value = false
             })
@@ -179,6 +180,7 @@ export default defineComponent({
                   searchProduct.value = ''
                   autocompleteSearchProduct.value.close()
                   autocompleteSearchProduct.value.suggestions = []
+                  autocompleteSearchProduct.value.$children[1].showPopper = false
                 })
             })
         } else {
@@ -192,6 +194,7 @@ export default defineComponent({
                 searchProduct.value = ''
                 autocompleteSearchProduct.value.close()
                 autocompleteSearchProduct.value.suggestions = []
+                autocompleteSearchProduct.value.$children[1].showPopper = false
               })
             return
           }
@@ -204,6 +207,7 @@ export default defineComponent({
               searchProduct.value = ''
               autocompleteSearchProduct.value.close()
               autocompleteSearchProduct.value.suggestions = []
+              autocompleteSearchProduct.value.$children[1].showPopper = false
             })
         }
       }
