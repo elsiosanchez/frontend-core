@@ -219,6 +219,7 @@ export default defineComponent({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid
       })
+      if (!props.panelMetadata.isParentTab) return
       fieldIndex.value = fields.findIndex(field =>
         FOCUSABLE_FIELDS_LIST.includes(field.componentPath) &&
         props.containerManager.isDisplayedField(field) &&
