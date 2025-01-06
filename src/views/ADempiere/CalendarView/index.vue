@@ -208,21 +208,31 @@ export default defineComponent({
       currentEvents.value = events
     }
 
-    store.dispatch('getDisplayDefinition', {
-      tableName: tableName.value
+    const displayDefinition = computed(() => {
+      return store.getters.getDefinition
     })
-
+    function searchListCalendars() {
+      if (!isEmptyValue(displayDefinition.value)) {
+        const filter = displayDefinition.value.find(display => display.display_type === 'C')
+        store.dispatch('getListCalendars', {
+          id: filter.id
+        })
+      }
+    }
+    searchListCalendars()
     return {
       // Ref
       currentEvents,
       // Computed
       calendarOptions,
       tableName,
+      displayDefinition,
       // Methods
       handleDateSelect,
       handleEventClick,
       handleEvents,
       translateDate,
+      searchListCalendars,
       //
       esLocale,
       listPlugin,

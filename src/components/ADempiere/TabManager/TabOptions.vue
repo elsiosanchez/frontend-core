@@ -19,7 +19,32 @@
 <template>
   <div>
     <span v-show="!isEditSecuence">
+      <el-dropdown
+        v-if="storedTab && (showKanban && showKanban.show)"
+        split-button
+        size="small"
+        type="primary"
+        style="margin-right: 2px;"
+        @click="changeShowedRecords"
+        @command="handleCommandActions"
+      >
+        <span style="padding: 0px;">
+          <svg-icon icon-class="table" />
+          <b v-show="!isMobile">
+            {{ label }}
+          </b>
+        </span>
+        <el-dropdown-menu v-if="showKanban && showKanban.show" slot="dropdown">
+          <el-dropdown-item
+            command="newEmptyRecord"
+          >
+            <svg-icon icon-class="kanbanMode" />
+            {{ showKanban.title }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
       <el-button
+        v-else
         plain
         size="small"
         type="primary"
@@ -87,7 +112,7 @@
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import language from '@/lang'
 import store from '@/store'
@@ -143,6 +168,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    const showKanban = ref({})
     const listAction = computed(() => {
       const tab = props.tabAttributes
       return {
@@ -158,7 +184,6 @@ export default defineComponent({
         }
       }
     })
-
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
@@ -177,7 +202,14 @@ export default defineComponent({
         props.tabAttributes.uuid
       )
     })
-
+    const storedTab = computed(() => {
+      const tab = store.getters.getStoredTab(
+        props.parentUuid,
+        props.containerUuid
+      )
+      const { isParentTab } = tab
+      return isParentTab
+    })
     const label = computed(() => {
       if (isShowedTableRecords.value) {
         return language.t('window.toggleSingle')
@@ -195,7 +227,11 @@ export default defineComponent({
         store.commit('setShowMenuMobile', newValue)
       }
     })
-
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
     function changeShowedRecords() {
       const row = store.getters.getTabCurrentRow({ containerUuid: props.currentTabUuid })
       store.dispatch('changeTabAttribute', {
@@ -209,6 +245,7 @@ export default defineComponent({
       //   containerUuid: props.containerUuid,
       //   recordsSelected: [tabData.value.currentRowSelect]
       // })
+      store.commit('setPanelKanban', false)
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
         recordsSelected: [row]
@@ -225,17 +262,45 @@ export default defineComponent({
         containerUuid: props.tabAttributes.uuid
       })
     }
-
+    function handleCommandActions() {
+      store.commit('setPanelKanban', true)
+    }
+    function searchDisplay() {
+      if (storedTab.value) {
+        store.dispatch('getDisplayDefinition', {
+          tableName: tableName.value
+        })
+          .then(response => {
+            if (!isEmptyValue(response)) {
+              response.forEach(record => {
+                if (record.display_type === 'K') {
+                  showKanban.value = {
+                    show: true,
+                    title: record.type
+                  }
+                }
+              })
+            }
+          })
+      }
+    }
+    searchDisplay()
     return {
+      // ref
+      showKanban,
       // computed
+      storedTab,
       label,
       isMobile,
       listAction,
       isEditSecuence,
       showMenuMobile,
       isShowedTableRecords,
+      tableName,
       // methods
-      changeShowedRecords
+      changeShowedRecords,
+      handleCommandActions,
+      searchDisplay
     }
   }
 

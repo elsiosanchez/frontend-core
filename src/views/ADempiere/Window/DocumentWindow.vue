@@ -24,7 +24,19 @@
       >
         <record-access />
       </embedded>
+      <Kanban
+        v-if="showKanban"
+        :container-manager="containerManager"
+        :parent-uuid="windowMetadata.uuid"
+        :container-uuid="currentTabUuid"
+        :current-tab-uuid="currentTabUuid"
+        :tabs-list="windowMetadata.tabsListParent"
+        :all-tabs-list="allTabsList"
+        :actions-manager="actionsManager"
+        :style="styleScroll"
+      />
       <tab-manager
+        v-if="!showKanban"
         ref="tab-manager"
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -41,7 +53,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab && !showKanban" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -68,7 +80,7 @@ import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
 import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-
+import Kanban from '@/components/ADempiere/Kanban'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -83,7 +95,8 @@ export default defineComponent({
     ModalDialog,
     TabManager,
     TabManagerChild,
-    LoadingView
+    LoadingView,
+    Kanban
   },
 
   props: {
@@ -125,6 +138,9 @@ export default defineComponent({
     /**
      * Computed
      */
+    const showKanban = computed(() => {
+      return store.getters.getPanelKanban
+    })
     const stylePanelHeight = computed(() => {
       let style = 'width: 100% !important;overflow: auto;'
       switch (props.windowMetadata.windowType) {
@@ -155,9 +171,7 @@ export default defineComponent({
     const currentTabUuid = computed(() => {
       return store.getters.getCurrentTabUuid(props.windowMetadata.uuid)
     })
-
     const tableName = store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value)
-
     const styleFullScreen = computed(() => {
       if (!isWithChildsTab.value) {
         return 'height: 0% !important'
@@ -258,6 +272,8 @@ export default defineComponent({
       allTabsList,
       isLoadWindows,
       index,
+      // Kanban
+      showKanban,
       // Computeds
       stylePanelHeight,
       isWithChildsTab,

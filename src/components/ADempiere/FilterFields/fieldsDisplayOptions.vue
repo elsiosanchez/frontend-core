@@ -249,11 +249,11 @@ export default defineComponent({
     },
     availableFields: {
       type: Array,
-      required: true
+      required: false
     },
     availableFieldsWithValue: {
       type: Array,
-      required: true
+      required: false
     },
     showedFields: {
       type: Array,

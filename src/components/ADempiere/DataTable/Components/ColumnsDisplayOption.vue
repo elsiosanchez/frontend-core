@@ -86,11 +86,11 @@ export default defineComponent({
     },
     availableFields: {
       type: Array,
-      required: true
+      required: false
     },
     availableFieldsWithValue: {
       type: Array,
-      required: true
+      required: false
     },
     filterManager: {
       type: Function,
@@ -102,7 +102,7 @@ export default defineComponent({
     },
     allFieldsList: {
       type: Array,
-      required: true
+      required: false
     }
   },
 

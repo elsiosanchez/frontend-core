@@ -80,6 +80,7 @@ const window = {
   },
   toggleSingle: 'Toggle Single',
   multiRecord: 'Multi Record',
+  kanbanMode: 'Kanban mode',
   gridToggle: 'Toggle single/multi record',
   recordValidation: {
     closeWindow: 'Close Window',
@@ -92,7 +93,8 @@ const window = {
   tab: {
     sequenceTab: 'Sequence Tab'
   },
-  toggleTabContentVisibility: 'Toggle tab content visibility'
+  toggleTabContentVisibility: 'Toggle tab content visibility',
+  nodata: 'No Data'
 }
 
 export default window

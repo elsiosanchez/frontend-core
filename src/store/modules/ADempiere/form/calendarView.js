@@ -19,7 +19,7 @@
 // import lang from '@/lang'
 
 // API Request Methods
-import { requestListTasks, listCalendars, displayDefinition } from '@/api/ADempiere/form/task-management.ts'
+import { requestListTasks, listCalendars } from '@/api/ADempiere/form/task-management.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 
 // Utils and Helper Methods
@@ -66,7 +66,7 @@ export default {
             //     })
             //   }
             // })
-            commit('setListTaks', tasks)
+            // commit('setListTaks', tasks)
             resolve(tasks)
           })
           .catch(error => {
@@ -99,39 +99,6 @@ export default {
           })
           .catch(error => {
             console.warn(`Add List Calendars: ${error.message}. Code: ${error.code}.`)
-            let message = error.message
-            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
-              message = error.response.data.message
-            }
-            showMessage({
-              type: 'error',
-              message,
-              showClose: true
-            })
-            resolve({})
-          })
-      })
-    },
-    getDisplayDefinition({ dispatch }, {
-      tableName
-    }) {
-      return new Promise(resolve => {
-        displayDefinition({
-          tableName
-        })
-          .then(response => {
-            const { records	} = response
-            if (!isEmptyValue(records)) {
-              const id = records[0].resource_metadata.id
-              console.log(id)
-              dispatch('getListCalendars', {
-                id
-              })
-            }
-            resolve(response)
-          })
-          .catch(error => {
-            console.warn(`Get Display Definition: ${error.message}. Code: ${error.code}.`)
             let message = error.message
             if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
               message = error.response.data.message

@@ -141,7 +141,8 @@ export default defineComponent({
     const nameTab = ref('getRecordLogs')
     const recordsListStoreProduct = ref([])
     const isLoadingListReference = ref(false)
-
+    const showCalendar = ref(false)
+    const showResource = ref(false)
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
     }
@@ -236,7 +237,7 @@ export default defineComponent({
         {
           name: 'Calendar',
           title: language.t('window.containerInfo.log.calendar'),
-          show: true,
+          show: showCalendar.value,
           isLoading: false,
           component: Calendar
         }
@@ -261,7 +262,17 @@ export default defineComponent({
     const showPanelDashboard = computed(() => {
       return store.getters.getNumberDashboard
     })
-
+    function displayDefinition() {
+      const definition = store.getters.getDefinition
+      if (!isEmptyValue(definition)) {
+        definition.forEach(record => {
+          if (record.display_type === 'C') {
+            showCalendar.value = true
+          }
+        })
+      }
+    }
+    displayDefinition()
     // Container Info
     const containerInfo = computed(() => {
       const inf = store.getters.getContainerInfo
@@ -577,7 +588,10 @@ export default defineComponent({
       tableName,
       nameTab,
       recordsListStoreProduct,
+      showCalendar,
+      showResource,
       // Computed
+      displayDefinition,
       currentTab,
       isLoadLogs,
       storeProduct,

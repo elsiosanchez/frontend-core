@@ -1,7 +1,7 @@
 /**
  * ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
  * Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
- * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+ * Contributor(s): Ricardo Fenomeno ricardofenomeno13@gmail.com https://github.com/Ricargame
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,28 +19,38 @@
 // Get Instance for connection
 import { request } from '@/utils/ADempiere/request'
 
-export function requestListTasks({
-  date
-}) {
-  return request({
-    url: `/task-management/tasks`,
-    method: 'get',
-    params: {
-      // date: '2023-01-24T00:00:00.000Z',
-      is_with_projects: true,
-      is_with_requests: true,
-      is_with_resource_assignments: true
-      // date
-    }
-  })
-}
-
-export function listCalendars({
+export function worflows({
   id
 }) {
   return request({
-    url: `/display-definition/calendars/${id}`,
+    url: `/display-definition/workflows/${id}`,
     method: 'get'
   })
 }
 
+export function worflowsDefinitions({
+  id
+}) {
+  return request({
+    url: `/display-definition/workflows/${id}/definition`,
+    method: 'get'
+  })
+}
+
+export function displayDefinitions({
+  tableName
+}) {
+  return request({
+    url: `/display-definition/definitions/${tableName}`,
+    method: 'get'
+  })
+}
+
+export function displayDefinitionsExists({
+  tableName
+}) {
+  return request({
+    url: `/display-definition/definitions/${tableName}/exists`,
+    method: 'get'
+  })
+}

@@ -81,6 +81,7 @@ const window = {
   },
   toggleSingle: 'Cambiar Mono',
   multiRecord: 'Multi Registro',
+  kanbanMode: 'Modo Kanban',
   gridToggle: 'Cambiar mono/multi registro',
   recordValidation: {
     closeWindow: 'Cerrar Ventana',
@@ -93,7 +94,8 @@ const window = {
   tab: {
     sequenceTab: 'Pestaña de Sequencia'
   },
-  toggleTabContentVisibility: 'Cambiar visibilidad del contenido de la pestaña'
+  toggleTabContentVisibility: 'Cambiar visibilidad del contenido de la pestaña',
+  nodata: 'No Hay Datos'
 }
 
 export default window
