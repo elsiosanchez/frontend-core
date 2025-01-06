@@ -260,7 +260,7 @@ export default defineComponent({
     const isTemplateSelected = ref(false)
     const markdownContent = ref(store.getters.getDefaultBody)
     const oldContent = ref(markdownContent.value)
-    const allReport = ref(false)
+    const allReport = ref(1)
     const pageSize = computed(() => {
       if (allReport.value) {
         return undefined
