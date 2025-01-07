@@ -23,7 +23,8 @@ import {
 import {
   createCustomerRequest,
   requestUpdateCustomer,
-  requestListCustomers
+  requestListCustomers,
+  listCustomerTemplates
 } from '@/api/ADempiere/form/VPOS/customer'
 import {
   listCountriesRequest,
@@ -111,6 +112,8 @@ const customers = {
     email: '',
     phone: ''
   },
+  customerTemplates: [],
+  currentTemplates: 0,
   addressEdit: {
     posalCodeAdditional: '',
     countryId: undefined,
@@ -185,6 +188,12 @@ export default {
     },
     setValuesEditAddress(state, editAddress) {
       state.addressEdit = editAddress
+    },
+    setCustomerTemplates(state, templates) {
+      state.customerTemplates = templates
+    },
+    setCurrentTemplates(state, templates) {
+      state.currentTemplates = templates
     }
   },
   /**
@@ -433,6 +442,7 @@ export default {
       getters
     }, {
       additionalAttributes,
+      customer_template_id,
       addresses
     }) {
       return new Promise(resolve => {
@@ -450,9 +460,12 @@ export default {
         const lastName = getters.getAttributeFieldCustomer({
           attribute: 'name2'
         })
+        // const template = getters.customerTemplate
+        if (isEmptyValue(customer_template_id)) customer_template_id = getters.customerTemplate
         createCustomerRequest({
           additionalAttributes,
           addresses,
+          customer_template_id,
           name,
           posId: pos.id,
           value,
@@ -590,6 +603,39 @@ export default {
             resolve(error)
           })
       })
+    },
+    /**
+     * List Customer Templates
+     */
+    listCustomerTemplate({
+      commit
+    }, {
+      posId
+    }) {
+      return new Promise(resolve => {
+        listCustomerTemplates({
+          posId
+        })
+          .then(response => {
+            commit('setCustomerTemplates', response.customer_templates)
+            if (!isEmptyValue(response.customer_templates)) commit('setCurrentTemplates', response.customer_templates[0].id)
+            resolve(response.customer_templates)
+          })
+          .catch(error => {
+            console.warn(`List Customer Templates: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve(error)
+          })
+      })
     }
   },
   getters: {
@@ -628,6 +674,12 @@ export default {
     },
     getAttributeAddressEdit: (state) => ({ attribute }) => {
       return state.addressEdit[attribute]
+    },
+    getCustomerTemplates: (state) => {
+      return state.customerTemplates
+    },
+    getCurrentTemplates: (state) => {
+      return state.currentTemplates
     }
   }
 }

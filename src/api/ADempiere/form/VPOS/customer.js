@@ -33,14 +33,15 @@ import { request } from '@/utils/ADempiere/request'
  */
 export function createCustomerRequest({
   additionalAttributes,
-  addresses,
+  customer_template_id,
   description,
-  duns,
-  name,
+  addresses,
   naics,
   posId,
   value,
   taxId,
+  duns,
+  name,
   lastName
 }) {
   return request({
@@ -50,12 +51,13 @@ export function createCustomerRequest({
       duns,
       name,
       naics,
-      pos_id: posId,
       value,
-      tax_id: taxId,
-      last_name: lastName,
       addresses,
       description,
+      tax_id: taxId,
+      pos_id: posId,
+      last_name: lastName,
+      customer_template_id,
       additional_attributes: additionalAttributes
     }
   })
@@ -223,5 +225,25 @@ export function createCustomerBankAccount({
       social_security_number: driverLicense,
       is_ach: isAch
     }
+  })
+}
+
+/**
+ * List Customer Templates
+ * @param {string} filters
+ * @param {string} sort_by
+ * @param {repeated string} group_columns
+ * @param {repeated string} select_columns
+ * @param {int32} page_size
+ * @param {string} page_token
+ * @param {string} search_value
+ * @param {int32} pos_id
+ */
+export function listCustomerTemplates({
+  posId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/customers/templates`,
+    method: 'get'
   })
 }

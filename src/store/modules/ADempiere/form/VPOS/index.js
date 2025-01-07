@@ -210,6 +210,9 @@ export default {
           params
         } = currentRouter
         const { id } = getPointOfSales
+        dispatch('listCustomerTemplate', {
+          posId: id
+        })
         router.push({
           name,
           params: { ...params },

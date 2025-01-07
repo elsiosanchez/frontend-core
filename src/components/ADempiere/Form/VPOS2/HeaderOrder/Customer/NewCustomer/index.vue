@@ -21,6 +21,27 @@
     shadow="never"
     :body-style="{ padding: '5px' }"
   >
+    <el-dropdown
+      trigger="click"
+      style="float: right"
+      @command="handleSelectTemplate"
+    >
+      <span class="el-dropdown-link">
+        {{ $t('form.pos.order.BusinessPartnerCreate.partnerTemplate') }}<i class="el-icon-arrow-down el-icon--right" />
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item
+          v-for="(template, index) in listTemplate"
+          :key="index"
+          :command="template"
+        >
+          <i v-if="template.id === customerTemplate" class="el-icon-d-arrow-right" /> {{ template.name }}
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+
+    <br>
+    <br>
     <customer-data />
     <br>
     <add-address
@@ -99,6 +120,7 @@ export default defineComponent({
     const activeNames = ref(['1', '2'])
     const isVisibleAddress = ref(false)
     const copyShippingAddress = ref(true)
+    // const customerTemplate = ref({})
     const isLoading = ref(false)
 
     // Computed
@@ -208,6 +230,20 @@ export default defineComponent({
       ]
     })
 
+    const customerTemplate = computed({
+      get() {
+        return store.getters.getCurrentTemplates
+      },
+      // setter
+      set(value) {
+        store.commit('setCurrentTemplates', value)
+      }
+    })
+
+    const listTemplate = computed(() => {
+      return store.getters.getCustomerTemplates
+    })
+
     // Methods
 
     /**
@@ -221,6 +257,7 @@ export default defineComponent({
     function createBusinessParter() {
       isLoading.value = true
       store.dispatch('createCustomer', {
+        customer_template_id: customerTemplate.value,
         addresses: addresses.value.map(list => {
           return {
             ...list,
@@ -240,17 +277,24 @@ export default defineComponent({
         })
     }
 
+    function handleSelectTemplate(template) {
+      customerTemplate.value = template.id
+    }
+
     return {
       // Ref
       isLoading,
       activeNames,
+      customerTemplate,
       isVisibleAddress,
       copyShippingAddress,
       // Computed
       addresses,
       isDisabled,
+      listTemplate,
       // Methods
       close,
+      handleSelectTemplate,
       createBusinessParter
     }
   }
