@@ -34,6 +34,7 @@ import match from './match'
 import tasks from './tasks'
 import issues from './issues'
 import businessPartnerInformation from './BusinessPartnerInformation'
+import kanban from './kanban'
 export default {
   accountingViewer,
   workflowActivity,
@@ -52,5 +53,6 @@ export default {
   match,
   tasks,
   issues,
-  businessPartnerInformation
+  businessPartnerInformation,
+  kanban
 }

@@ -90,6 +90,8 @@
 <script>
 import draggable from 'vuedraggable'
 import store from '@/store'
+import lang from '@/lang'
+
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref } from '@vue/composition-api'
@@ -179,7 +181,19 @@ export default defineComponent({
       const info = store.getters.getInfoKanban
       if (!isEmptyValue(info)) {
         const { steps, records } = info
-        const result = steps.map(step => ({
+        const ungroupedItems = records
+          .filter(record => !steps.some(step => record.group_id === step.value && !isEmptyValue(record.description)))
+          .map(record => ({
+            id: record.id,
+            name: record.title,
+            description: record.description
+          }))
+        const ungroupedColumn = {
+          title: lang.t('form.kanban.noStatus'),
+          items: ungroupedItems
+        }
+
+        const groupedColumns = steps.map(step => ({
           title: step.name,
           items: records
             .filter(record => record.group_id === step.value && !isEmptyValue(record.description))
@@ -189,7 +203,8 @@ export default defineComponent({
               description: record.description
             }))
         }))
-        columns.value = result
+
+        columns.value = [ungroupedColumn, ...groupedColumns]
       }
     }
 
