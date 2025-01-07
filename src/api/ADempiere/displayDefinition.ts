@@ -54,3 +54,12 @@ export function displayDefinitionsExists({
     method: 'get'
   })
 }
+
+export function timeLines({
+  id
+}) {
+  return request({
+    url: `/display-definition/timelines/${id}`,
+    method: 'get'
+  })
+}

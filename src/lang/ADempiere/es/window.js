@@ -66,7 +66,8 @@ const window = {
       tab: 'Pestaña',
       tableName: 'Nombre de la Tabla',
       allChanges: 'Ver todos los cambios ',
-      calendar: 'Calendario'
+      calendar: 'Calendario',
+      timeLine: 'Línea de Tiempo'
     },
     notices: {
       user: 'Usuario',

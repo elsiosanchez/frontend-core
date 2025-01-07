@@ -78,7 +78,7 @@ import WorkflowLogs from './Component/workflowLogs'
 import LoadingView from '@/components/ADempiere/LoadingView'
 import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
-
+import TimeLine from '@/views/ADempiere/TimeLineView'
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
 
@@ -143,6 +143,7 @@ export default defineComponent({
     const isLoadingListReference = ref(false)
     const showCalendar = ref(false)
     const showResource = ref(false)
+    const showTimeLine = ref(false)
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
     }
@@ -240,6 +241,15 @@ export default defineComponent({
           show: showCalendar.value,
           isLoading: false,
           component: Calendar
+        },
+        {
+          name: 'TimeLine',
+          title: language.t('window.containerInfo.log.timeLine'),
+          show: showTimeLine.value,
+          svg: true,
+          isLoading: false,
+          iconClass: 'timeline',
+          component: TimeLine
         }
       ]
     })
@@ -268,6 +278,9 @@ export default defineComponent({
         definition.forEach(record => {
           if (record.display_type === 'C') {
             showCalendar.value = true
+          }
+          if (record.display_type === 'T') {
+            showTimeLine.value = true
           }
         })
       }
@@ -590,6 +603,7 @@ export default defineComponent({
       recordsListStoreProduct,
       showCalendar,
       showResource,
+      showTimeLine,
       // Computed
       displayDefinition,
       currentTab,
