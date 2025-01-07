@@ -20,7 +20,7 @@
   <div>
     <span v-show="!isEditSecuence">
       <el-dropdown
-        v-if="storedTab && (showKanban && showKanban.show)"
+        v-if="storedTab && displayOptions"
         split-button
         size="small"
         type="primary"
@@ -34,12 +34,24 @@
             {{ label }}
           </b>
         </span>
-        <el-dropdown-menu v-if="showKanban && showKanban.show" slot="dropdown">
+        <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
+            v-for="(data, index) in displayOptions"
+            :key="index"
             command="newEmptyRecord"
           >
-            <svg-icon icon-class="kanbanMode" />
-            {{ showKanban.title }}
+            <template>
+              <div class="header">
+                <svg-icon icon-class="kanbanMode" />
+                {{ data.name }}
+              </div>
+              <span
+                class="info"
+                style="color: #7e7e7e; display: block; font-size: 12px; border-bottom: 1px solid #d0d7de;"
+              >
+                {{ data.description || $t('data.noDescription') }}
+              </span>
+            </template>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -168,7 +180,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    const showKanban = ref({})
+    const displayOptions = ref({})
     const listAction = computed(() => {
       const tab = props.tabAttributes
       return {
@@ -272,14 +284,8 @@ export default defineComponent({
         })
           .then(response => {
             if (!isEmptyValue(response)) {
-              response.forEach(record => {
-                if (record.display_type === 'K') {
-                  showKanban.value = {
-                    show: true,
-                    title: record.type
-                  }
-                }
-              })
+              const filteredOptions = response.filter(option => option.display_type === 'K')
+              displayOptions.value = filteredOptions
             }
           })
       }
@@ -287,7 +293,7 @@ export default defineComponent({
     searchDisplay()
     return {
       // ref
-      showKanban,
+      displayOptions,
       // computed
       storedTab,
       label,
