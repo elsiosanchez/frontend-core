@@ -550,6 +550,18 @@ export default {
                 id: process.id.toString(),
                 containerUuidAssociated: tabDefinition.parentUuid
               })
+                .finally(() => {
+                  const parentValues = rootGetters.getValuesView({
+                    containerUuid: tabAssociatedUuid,
+                    isOnlyColumns: true,
+                    isOnlyWithValue: true,
+                    format: 'array'
+                  })
+                  dispatch('updateValuesOfContainer', {
+                    containerUuid: process.uuid,
+                    attributes: parentValues
+                  })
+                })
             },
             // TODO: Change to string and import dynamic in component
             componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
