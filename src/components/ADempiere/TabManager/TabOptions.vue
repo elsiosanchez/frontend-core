@@ -20,7 +20,7 @@
   <div>
     <span v-show="!isEditSecuence">
       <el-dropdown
-        v-if="storedTab && displayOptions"
+        v-if="storedTab && (displayOptions && displayOptions.length > 0)"
         split-button
         size="small"
         type="primary"
