@@ -1,5 +1,5 @@
 <template>
-  <div class="kanban-container">
+  <el-card class="kanban-container">
     <div class="tab-options-container">
       <tab-options
         :container-manager="containerManager"
@@ -17,7 +17,17 @@
         :key="index"
         class="kanban-column"
       >
-        <h3>{{ column.title }}</h3>
+        <template>
+          <!-- <svg-icon
+            icon-class="issues"
+            style="font-size: 26px"
+          /> -->
+          <b style="font-size: 16px;padding-left: 10px;">
+            <i>
+              {{ column.title }}
+            </i>
+          </b>
+        </template>
         <draggable
           v-model="column.items"
           v-bind="dragOptions"
@@ -32,13 +42,20 @@
               class="list-group-item"
               @dblclick="showPanel"
             >
-              <i
+              <!-- <i
                 :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
                 aria-hidden="true"
                 @click="element.fixed = !element.fixed"
-              />
-              <strong>{{ element.name }}</strong>
-              <p>{{ element.description }}</p>
+              /> -->
+              <div class="kanban-column-header">
+                <!-- <svg-icon icon-class="issues" class="column-icon" /> -->
+                <span class="column-title">{{ element.name }}</span>
+              </div>
+              <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">
+                <span style="font-size: 12px;">
+                  {{ element.description }}
+                </span>
+              </div>
             </div>
           </template>
           <div v-if="column.items.length < 1" class="empty-placeholder">Suelta aquí una tarjeta</div>
@@ -67,7 +84,7 @@
         :default-opened-tab="defaultNameTab"
       />
     </el-drawer>
-  </div>
+  </el-card>
 </template>
 
 <script>
@@ -219,9 +236,12 @@ export default defineComponent({
 .kanban-container {
   position: relative;
   padding-top: 4rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
 }
 
 .kanban-columns-container {
+  height: calc(100vh - 150px);
   display: flex;
   flex-wrap: nowrap;
   gap: 1.5rem;
@@ -240,6 +260,7 @@ export default defineComponent({
   box-shadow: 0 1px 3px rgba(27, 31, 35, 0.12);
   max-height: calc(100vh - 160px);
   overflow-y: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
 .kanban-column h3 {
@@ -252,22 +273,23 @@ export default defineComponent({
   padding-bottom: 0.5rem;
 }
 
-/* Lista de ítems */
 .list-group {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Ítems */
 .list-group-item {
   cursor: grab;
-  padding: 0.75rem 1rem;
   background-color: #ffffff;
-  border: 1px solid #d0d7de;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d0d7de;
   border-radius: 6px;
   margin-bottom: 0.5rem;
   transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 3px 6px rgba(140,149,159,0.15);
+  padding: 0px 5px;
 }
 
 .list-group-item:hover {
@@ -278,12 +300,12 @@ export default defineComponent({
 .list-group-item i {
   cursor: pointer;
   margin-right: 8px;
-  color: #57606a; /* Íconos estilo GitHub */
+  color: #57606a;
   transition: color 0.2s;
 }
 
 .list-group-item i:hover {
-  color: #24292f; /* Cambia a color más oscuro al pasar el cursor */
+  color: #24292f;
 }
 
 .list-group-item strong {
@@ -293,17 +315,15 @@ export default defineComponent({
 
 .list-group-item p {
   font-size: 0.875rem;
-  color: #57606a; /* Texto secundario */
+  color: #57606a;
   margin: 0.5rem 0 0;
 }
 
-/* Efecto visual al arrastrar */
 .ghost {
   opacity: 0.5;
-  background: #d8e2ec; /* Fondo más oscuro para destacar */
+  background: #d8e2ec;
   border: 2px dashed #c9d1d9;
 }
-/* Estilo para la zona vacía */
 .empty-placeholder {
   min-height: 50px;
   padding: 10px;
@@ -324,7 +344,7 @@ export default defineComponent({
   border-color: #c9d1d9;
 }
 .tab-options-container {
-  position: absolute; /* Fija el componente sobre las columnas */
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -336,5 +356,24 @@ export default defineComponent({
 .list-group-item strong{
   font-size: 12px !important;
   color: #495060;
+}
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.2rem;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-width: 1px 0px;
+  border-style: solid none;
+  border-color: rgb(230, 235, 245) currentcolor;
+}
+
+.column-icon {
+  color: green;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.column-title {
+  font-size: 12px;
 }
 </style>
