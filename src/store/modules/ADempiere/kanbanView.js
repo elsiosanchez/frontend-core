@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { worflows } from '@/api/ADempiere/displayDefinition.ts'
+import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
 const initState = {
   panelKanban: false,
   infoKanban: []
@@ -37,7 +37,7 @@ const kanban = {
       id
     }) {
       return new Promise(resolve => {
-        worflows({
+        kanbans({
           id
         })
           .then(response => {

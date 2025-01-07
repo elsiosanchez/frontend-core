@@ -55,9 +55,6 @@
       <span slot="title">
         <svg-icon icon-class="tab" style="margin-right: 10px;" />
         {{ $t('window.containerInfo.log.tab') }}
-        <span style="color: #606266; font-weight: bold;">
-          {{ 'hola' }}
-        </span>
       </span>
       <panel-info
         v-if="showContainerInfo"
@@ -171,7 +168,8 @@ export default defineComponent({
             .filter(record => record.group_id === step.value && !isEmptyValue(record.description))
             .map(record => ({
               id: record.id,
-              name: record.description
+              name: record.title,
+              description: record.description
             }))
         }))
         columns.value = result
@@ -179,13 +177,16 @@ export default defineComponent({
     }
 
     function searchInfoKanvan() {
-      const { id } = displayDefinition.value
-      store.dispatch('searchPanelKanban', {
-        id
-      })
-        .finally(() => {
-          loadColumns()
+      if (!isEmptyValue(displayDefinition.value)) {
+        const filter = displayDefinition.value.find(display => display.display_type === 'K')
+        const { id } = filter
+        store.dispatch('searchPanelKanban', {
+          id
         })
+          .finally(() => {
+            loadColumns()
+          })
+      }
     }
     // function handleCardMove(event, destinationColumn) {
     //   if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {

@@ -19,11 +19,11 @@
 // Get Instance for connection
 import { request } from '@/utils/ADempiere/request'
 
-export function worflows({
+export function kanbans({
   id
 }) {
   return request({
-    url: `/display-definition/workflows/${id}`,
+    url: `/display-definition/kanbans/${id}`,
     method: 'get'
   })
 }

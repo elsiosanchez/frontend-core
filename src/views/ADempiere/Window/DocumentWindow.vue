@@ -24,7 +24,7 @@
       >
         <record-access />
       </embedded>
-      <Kanban
+      <KanbanView
         v-if="showKanban"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
@@ -80,7 +80,7 @@ import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
 import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-import Kanban from '@/components/ADempiere/Kanban'
+import KanbanView from '@/components/ADempiere/KanbanView'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -96,7 +96,7 @@ export default defineComponent({
     TabManager,
     TabManagerChild,
     LoadingView,
-    Kanban
+    KanbanView
   },
 
   props: {
