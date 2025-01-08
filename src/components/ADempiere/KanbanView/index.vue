@@ -1,6 +1,13 @@
 <template>
-  <el-card class="kanban-container">
+  <el-card v-loading="isLoading" class="kanban-container">
     <div class="tab-options-container">
+      <advanced-tab-query
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :container-manager="containerManager"
+        :id-display-definition="filter.id"
+        style="float: right;"
+      />
       <tab-options
         :container-manager="containerManager"
         :parent-uuid="parentUuid"
@@ -34,13 +41,13 @@
           class="list-group"
           @start="isDragging = true"
           @end="isDragging = false"
+          @change="handleCardMove($event)"
         >
           <template>
             <div
               v-for="element in column.items"
               :key="element.id"
               class="list-group-item"
-              @dblclick="showPanel"
             >
               <!-- <i
                 :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
@@ -49,7 +56,7 @@
               /> -->
               <div class="kanban-column-header">
                 <!-- <svg-icon icon-class="issues" class="column-icon" /> -->
-                <span class="column-title">{{ element.name }}</span>
+                <span class="column-title">{{ element.title }}</span>
               </div>
               <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">
                 <span style="font-size: 12px;">
@@ -94,15 +101,17 @@ import lang from '@/lang'
 
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-
+import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
+import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 export default defineComponent({
   name: 'Kanban',
   components: {
     draggable,
     TabOptions,
-    PanelInfo
+    PanelInfo,
+    AdvancedTabQuery
   },
   props: {
     containerManager: {
@@ -141,6 +150,9 @@ export default defineComponent({
   },
   setup() {
     const columns = ref([])
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingKanban
+    })
     const currentRecordLogs = ref({})
     const defaultNameTab = computed(() => {
       return store.getters.getDefaultOpenedTab
@@ -177,17 +189,21 @@ export default defineComponent({
     const displayDefinition = computed(() => {
       return store.getters.getDefinition
     })
+    const filter = displayDefinition.value.find(display => display.display_type === 'K')
+
+    const info = computed(() => {
+      return store.getters.getInfoKanban
+    })
     function loadColumns() {
-      const info = store.getters.getInfoKanban
-      if (!isEmptyValue(info)) {
-        const { steps, records } = info
+      if (!isEmptyValue(info.value)) {
+        const { steps, records } = info.value
         const ungroupedItems = records
-          .filter(record => !steps.some(step => record.group_id === step.value && !isEmptyValue(record.description)))
-          .map(record => ({
-            id: record.id,
-            name: record.title,
-            description: record.description
-          }))
+          .filter(record => !steps.some(step => record.group_id === step.value))
+          // .map(record => ({
+          //   id: record.id,
+          //   name: record.title,
+          //   description: record.description
+          // }))
         const ungroupedColumn = {
           title: lang.t('form.kanban.noStatus'),
           items: ungroupedItems
@@ -195,41 +211,59 @@ export default defineComponent({
 
         const groupedColumns = steps.map(step => ({
           title: step.name,
+          value: step.value,
           items: records
-            .filter(record => record.group_id === step.value && !isEmptyValue(record.description))
-            .map(record => ({
-              id: record.id,
-              name: record.title,
-              description: record.description
-            }))
+            .filter(record => record.group_id === step.value)
+            // .map(record => ({
+            //   id: record.id,
+            //   name: record.title,
+            //   description: record.description
+            // }))
         }))
 
         columns.value = [ungroupedColumn, ...groupedColumns]
       }
     }
 
-    function searchInfoKanvan() {
-      if (!isEmptyValue(displayDefinition.value)) {
-        const filter = displayDefinition.value.find(display => display.display_type === 'K')
-        const { id } = filter
-        store.dispatch('searchPanelKanban', {
-          id
-        })
-          .finally(() => {
-            loadColumns()
-          })
-      }
-    }
-    // function handleCardMove(event, destinationColumn) {
-    //   if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
-    //     const { id } = event.added.element
+    // function searchInfoKanvan() {
+    //   if (!isEmptyValue(displayDefinition.value)) {
+    //     const filter = displayDefinition.value.find(display => display.display_type === 'K')
+    //     const { id } = filter
+    //     store.dispatch('searchPanelKanban', {
+    //       id,
+    //       filters: { name: [tableName.value] + '_ID', value: recordId.value }
+    //     })
+    //       .finally(() => {
+    //         loadColumns()
+    //       })
     //   }
     // }
+    function handleCardMove(event) {
+      if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
+        const { id, uuid } = event.added.element
+        const columnName = info.value.column_name
+        const { currentTab } = store.getters.getContainerInfo
 
-    searchInfoKanvan()
+        updateEntity({
+          tableName: tableName.value,
+          recordUuid: uuid,
+          recordId: id,
+          tabId: currentTab.id,
+          recordAttributes: {
+            [columnName]: id
+          }
+        })
+      }
+    }
+    watch(info, () => {
+      loadColumns()
+    })
+    loadColumns()
     return {
+      filter,
       // Ref
       currentRecordLogs,
+      isLoading,
       // Constant
       isMobile,
       dragOptions,
@@ -239,9 +273,11 @@ export default defineComponent({
       tableName,
       displayDefinition,
       columns,
+      info,
       //
       showPanel,
-      searchInfoKanvan
+      handleCardMove
+      // searchInfoKanvan
     }
   }
 })

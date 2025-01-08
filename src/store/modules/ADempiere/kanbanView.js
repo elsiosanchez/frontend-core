@@ -19,7 +19,8 @@
 import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
 const initState = {
   panelKanban: false,
-  infoKanban: []
+  infoKanban: [],
+  isLoadingKanban: false
 }
 
 const kanban = {
@@ -30,19 +31,28 @@ const kanban = {
     },
     setInfoKanvan(state, value) {
       state.infoKanban = value
+    },
+    setIsLoadingKanban(state, value) {
+      state.isLoadingKanban = value
     }
   },
   actions: {
     searchPanelKanban({ commit }, {
-      id
+      id,
+      filters
     }) {
+      commit('setIsLoadingKanban', true)
       return new Promise(resolve => {
         kanbans({
-          id
+          id,
+          filters
         })
           .then(response => {
             commit('setInfoKanvan', response)
             resolve(response)
+          })
+          .finally(() => {
+            commit('setIsLoadingKanban', false)
           })
       })
     }
@@ -53,6 +63,9 @@ const kanban = {
     },
     getInfoKanban: (state) => {
       return state.infoKanban
+    },
+    getIsLoadingKanban: (state) => {
+      return state.isLoadingKanban
     }
   }
 }

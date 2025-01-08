@@ -38,7 +38,7 @@
           <el-dropdown-item
             v-for="(data, index) in displayOptions"
             :key="index"
-            command="newEmptyRecord"
+            :command="data"
           >
             <template>
               <div class="header">
@@ -128,7 +128,6 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import language from '@/lang'
 import store from '@/store'
-
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import menuMobile from '@/components/ADempiere/ActionMenu/menuMobile.vue'
@@ -274,9 +273,13 @@ export default defineComponent({
         containerUuid: props.tabAttributes.uuid
       })
     }
-    function handleCommandActions() {
+    function handleCommandActions(data) {
       store.commit('setPanelKanban', true)
+      store.dispatch('searchPanelKanban', {
+        id: data.id
+      })
     }
+
     function searchDisplay() {
       if (storedTab.value) {
         store.dispatch('getDisplayDefinition', {

@@ -17,7 +17,7 @@
  */
 
 const kanban = {
-  noStatus: 'No Status'
+  noStatus: 'Not Assigned'
 }
 
 export default kanban
