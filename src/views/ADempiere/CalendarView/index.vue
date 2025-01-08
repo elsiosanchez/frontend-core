@@ -25,7 +25,7 @@
         </h2>
 
         <ul>
-          <li v-for="event in currentEvents" :key="event.id">
+          <li v-for="event in currentEvents" :key="event.id" @click="goToEventDate(event)">
             <el-card
               shadow="never"
               class="custom-card-calendar"
@@ -37,7 +37,7 @@
               <p style="font-size: 14px;">
                 {{ event.description }}
               </p>
-              <p style="text-align: left;color: gray;font-size: 12px;margin: 0px;">
+              <p v-if="(!isEmptyValue(event.valid_from) && !isEmptyValue(event.valid_to))" style="text-align: left;color: gray;font-size: 12px;margin: 0px;">
                 {{ translateDate({
                   value: event.valid_from,
                   format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
@@ -53,6 +53,7 @@
     </div>
     <div class="demo-app-main">
       <FullCalendar
+        ref="calendarRef"
         class="demo-app-calendar"
         :options="calendarOptions"
       >
@@ -75,7 +76,8 @@ import store from '@/store'
 import router from '@/router'
 import {
   defineComponent,
-  computed
+  computed,
+  ref
 } from '@vue/composition-api'
 
 import FullCalendar from '@fullcalendar/vue'
@@ -101,6 +103,7 @@ export default defineComponent({
     ModalCalendar
   },
   setup() {
+    const calendarRef = ref(null)
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
@@ -214,12 +217,21 @@ export default defineComponent({
         })
       }
     }
+    const goToEventDate = (event) => {
+      const calendarApi = calendarRef.value.getApi()
+      if (event.valid_from) {
+        calendarApi.gotoDate(event.valid_from)
+      }
+    }
     searchListCalendars()
     return {
       currentEvents,
       calendarOptions,
+      calendarRef,
       handleEventClick,
-      translateDate
+      translateDate,
+      isEmptyValue,
+      goToEventDate
     }
   }
 })
@@ -291,5 +303,9 @@ export default defineComponent({
 .fc .fc-more-popover .fc-popover-body{
   overflow-y: scroll;
   height: 250px;
+}
+.fc-view-harness .fc-view-harness-active {
+  overflow: hidden;
+  height: 350px;
 }
 </style>
