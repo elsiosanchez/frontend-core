@@ -406,6 +406,9 @@ export default defineComponent({
         id: props.idDisplayDefinition,
         filters: listFilters
       })
+        .finally(() => {
+          isLoadingSearch.value = false
+        })
       isShowedAdvancedQuery.value = false
     }
 

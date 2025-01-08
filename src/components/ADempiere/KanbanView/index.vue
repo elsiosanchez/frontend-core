@@ -66,7 +66,7 @@
               </div>
             </div>
           </template>
-          <div v-if="column.items.length < 1" class="empty-placeholder">{{ lang.t('form.kanban.dropCard') }}</div>
+          <div v-if="column.items.length < 1" class="empty-placeholder">{{ $t('form.kanban.dropCard') }}</div>
         </draggable>
       </div>
     </div>
