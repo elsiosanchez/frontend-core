@@ -240,6 +240,8 @@ export default defineComponent({
           title: language.t('window.containerInfo.log.calendar'),
           show: showCalendar.value,
           isLoading: false,
+          svg: true,
+          iconClass: 'calendar',
           component: Calendar
         },
         {

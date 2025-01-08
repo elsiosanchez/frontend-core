@@ -86,11 +86,13 @@ export default {
       })
     },
     getListCalendars({ commit }, {
-      id
+      id,
+      filters
     }) {
       return new Promise(resolve => {
         listCalendars({
-          id
+          id,
+          filters
         })
           .then(response => {
             const { records } = response

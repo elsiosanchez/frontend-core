@@ -36,11 +36,15 @@ export function requestListTasks({
 }
 
 export function listCalendars({
-  id
+  id,
+  filters
 }) {
   return request({
     url: `/display-definition/calendars/${id}`,
-    method: 'get'
+    method: 'get',
+    params: {
+      filters: JSON.stringify([filters])
+    }
   })
 }
 

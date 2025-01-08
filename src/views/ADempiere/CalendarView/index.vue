@@ -19,16 +19,6 @@
 <template>
   <div class="demo-app">
     <div class="demo-app-sidebar">
-      <!-- <div class="demo-app-sidebar-section">
-        <label>
-          <input
-            type="checkbox"
-            :checked="calendarOptions.weekends"
-            @change="handleWeekendsToggle"
-          />
-          toggle weekends
-        </label>
-      </div> -->
       <div class="demo-app-sidebar-section">
         <h2 style="padding-left: 10px;padding-top: 10px;">
           {{ $t('component.calendar.allEvents') }} ({{ currentEvents.length }})
@@ -39,10 +29,10 @@
             <el-card
               shadow="never"
               class="custom-card-calendar"
-              :body-style="{ padding: '5px' }"
+              style="padding-left: 0.5rem;"
             >
               <b>
-                <i>{{ '( ' + event.title + ' )' }}</i>
+                <i>{{ event.title }}</i>
               </b>
               <p style="font-size: 14px;">
                 {{ event.description }}
@@ -50,6 +40,9 @@
               <p style="text-align: left;color: gray;font-size: 12px;margin: 0px;">
                 {{ translateDate({
                   value: event.valid_from,
+                  format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
+                }) + ' ~ ' + translateDate({
+                  value: event.valid_to,
                   format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
                 }) }}
               </p>
@@ -63,9 +56,12 @@
         class="demo-app-calendar"
         :options="calendarOptions"
       >
+        <!-- Personalización del contenido del evento -->
         <template v-slot:eventContent="arg">
-          <b>{{ arg.timeText }}</b>
-          <i>{{ arg.event.title }}</i>
+          <div>
+            <b>{{ arg.timeText }}</b>
+            <i>{{ arg.event.title }}</i>
+          </div>
         </template>
       </FullCalendar>
     </div>
@@ -76,13 +72,12 @@
 <script>
 import lang from '@/lang'
 import store from '@/store'
+import router from '@/router'
 import {
   defineComponent,
   computed
-  // ref
 } from '@vue/composition-api'
 
-// Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -106,13 +101,6 @@ export default defineComponent({
     ModalCalendar
   },
   setup() {
-    /**
-     * Ref
-     */
-    // const currentEvents = ref([])
-    /**
-     * Computed
-     */
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
@@ -122,19 +110,18 @@ export default defineComponent({
         plugins: [
           dayGridPlugin,
           timeGridPlugin,
-          interactionPlugin, // needed for dateClick
+          interactionPlugin,
           listPlugin
         ],
         locale: esLocale,
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          // to right buttons, not space
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
         initialView: 'dayGridMonth',
-        events: currentEvents.value.map(list => {
-          const { id, title, description, valid_from, valid_to } = list
+        events: currentEvents.value.map(data => {
+          const { id, title, description, valid_from, valid_to } = data
           return {
             id,
             description,
@@ -157,11 +144,6 @@ export default defineComponent({
         eventClick: handleEventClick
       }
     })
-    const tableName = computed(() => {
-      const { currentTab } = store.getters.getContainerInfo
-      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
-      return ''
-    })
     /**
      * Methods
      */
@@ -169,6 +151,7 @@ export default defineComponent({
       const parts = dateToParse.split('T')[0].split('-')
       return `${parts[0]}-${parts[1]}-${parts[2]}`
     }
+
     const handleEventClick = (info) => {
       store.commit('setSelectedDate', {
         title: info.event.title,
@@ -211,34 +194,32 @@ export default defineComponent({
     const displayDefinition = computed(() => {
       return store.getters.getDefinition
     })
+    const { query, params } = router.app._route
+    const recordId = computed(() => {
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      return -1
+    })
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
     function searchListCalendars() {
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'C')
         store.dispatch('getListCalendars', {
-          id: filter.id
+          id: filter.id,
+          filters: { name: [tableName.value] + '_ID', value: recordId.value }
         })
       }
     }
     searchListCalendars()
     return {
-      // Ref
       currentEvents,
-      // Computed
       calendarOptions,
-      tableName,
-      displayDefinition,
-      // Methods
-      handleDateSelect,
       handleEventClick,
-      handleEvents,
-      translateDate,
-      searchListCalendars,
-      //
-      esLocale,
-      listPlugin,
-      dayGridPlugin,
-      timeGridPlugin,
-      interactionPlugin
+      translateDate
     }
   }
 })
@@ -306,5 +287,9 @@ export default defineComponent({
 .custom-card-calendar:hover {
   background-color: #eaf5fe;
   border: 1px solid #36a3f7;
+}
+.fc .fc-more-popover .fc-popover-body{
+  overflow-y: scroll;
+  height: 250px;
 }
 </style>
