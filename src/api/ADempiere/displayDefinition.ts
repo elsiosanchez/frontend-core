@@ -56,10 +56,14 @@ export function displayDefinitionsExists({
 }
 
 export function timeLines({
-  id
+  id,
+  filters
 }) {
   return request({
     url: `/display-definition/timelines/${id}`,
-    method: 'get'
+    method: 'get',
+    params: {
+      filters: JSON.stringify([filters])
+    }
   })
 }

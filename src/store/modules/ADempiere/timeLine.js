@@ -30,11 +30,13 @@ const timeLine = {
   },
   actions: {
     searchPanelTimeLine({ commit }, {
-      id
+      id,
+      filters
     }) {
       return new Promise(resolve => {
         timeLines({
-          id
+          id,
+          filters
         })
           .then(response => {
             const { records } = response

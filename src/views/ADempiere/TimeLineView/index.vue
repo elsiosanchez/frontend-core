@@ -21,17 +21,35 @@
       <el-timeline-item
         v-for="(info, index) in infoTimeLine"
         :key="info.id"
-        :timestamp="formatDate({ value: info.date })"
+        :timestamp="translateDate(info.date)"
         placement="top"
         :color="getPointColor(index)"
       >
-        <el-card :class="index % 2 === 0 ? 'left-card' : 'right-card'">
-          <div class="container-title">
-            <span>{{ info.title }}</span>
+        <el-card shadow="hover" class="clearfix">
+          <div>
+            <span class="container-title">
+              {{ info.title }}
+            </span>
+            <el-link
+              type="primary"
+              style="float: right;"
+              @click="toggleKey(info.id)"
+            >
+              {{ $t('window.containerInfo.changeDetail') }}
+            </el-link>
           </div>
-          <div class="container-description">
-            <span>{{ info.description }}</span>
-          </div>
+          <el-collapse-transition>
+            <div v-show="currentKey === info.id">
+              <span>
+                <hr class="divider">
+                <el-col style="margin-left: 10px;">
+                  <span style="color: #606266; font-weight: bold; line-height: 1;">
+                    {{ info.description }}
+                  </span>
+                </el-col>
+              </span>
+            </div>
+          </el-collapse-transition>
         </el-card>
       </el-timeline-item>
     </el-timeline>
@@ -40,21 +58,43 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, ref } from '@vue/composition-api'
-import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import router from '@/router'
+import { defineComponent, ref, computed } from '@vue/composition-api'
+import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'TimeLine',
   setup() {
     const infoTimeLine = ref([])
+    const currentKey = ref(null)
+    const { query, params } = router.app._route
 
+    const recordId = computed(() => {
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      return -1
+    })
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
+    const displayDefinition = computed(() => {
+      return store.getters.getDefinition
+    })
     function searchTimeLine() {
-      store.dispatch('searchPanelTimeLine', {
-        id: 1000002
-      })
-        .then(response => {
-          infoTimeLine.value = response
+      if (!isEmptyValue(displayDefinition.value)) {
+        const filter = displayDefinition.value.find(display => display.display_type === 'T')
+        const { id } = filter
+        store.dispatch('searchPanelTimeLine', {
+          id,
+          filters: { name: [tableName.value] + '_ID', value: recordId.value }
         })
+          .then(response => {
+            infoTimeLine.value = response
+          })
+      }
     }
 
     function getPointColor(index) {
@@ -62,13 +102,22 @@ export default defineComponent({
       return colors[index % colors.length]
     }
 
+    function toggleKey(key) {
+      currentKey.value = currentKey.value === key ? null : key
+    }
+
     searchTimeLine()
 
     return {
       infoTimeLine,
+      currentKey,
+      translateDate,
+      recordId,
+      tableName,
+      displayDefinition,
       searchTimeLine,
-      formatDate,
-      getPointColor
+      getPointColor,
+      toggleKey
     }
   }
 })
@@ -79,7 +128,6 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .el-timeline {
@@ -99,10 +147,6 @@ export default defineComponent({
 .container-title {
   font-size: 14px;
   font-weight: bold;
-  padding: 0.5rem 0;
-  padding-right: 12px;
-  padding-left: 12px;
-  border-bottom: 1px solid #d0d7de;
 }
 
 .container-description {
