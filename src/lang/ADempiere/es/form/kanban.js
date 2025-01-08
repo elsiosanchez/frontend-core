@@ -17,7 +17,8 @@
  */
 
 const kanban = {
-  noStatus: 'Sin Asignar'
+  noStatus: 'Sin Asignar',
+  dropCard: 'Suelta Aquí una Tarjeta'
 }
 
 export default kanban

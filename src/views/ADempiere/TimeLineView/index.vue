@@ -89,7 +89,7 @@ export default defineComponent({
         const { id } = filter
         store.dispatch('searchPanelTimeLine', {
           id,
-          filters: { name: [tableName.value] + '_ID', value: recordId.value }
+          filters: { name: [tableName.value] + '_ID', values: recordId.value }
         })
           .then(response => {
             infoTimeLine.value = response

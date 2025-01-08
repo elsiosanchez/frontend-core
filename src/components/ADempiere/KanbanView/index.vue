@@ -65,7 +65,7 @@
               </div>
             </div>
           </template>
-          <div v-if="column.items.length < 1" class="empty-placeholder">Suelta aquí una tarjeta</div>
+          <div v-if="column.items.length < 1" class="empty-placeholder">{{ lang.t('form.kanban.dropCard') }}</div>
         </draggable>
       </div>
     </div>
@@ -262,6 +262,7 @@ export default defineComponent({
     loadColumns()
     return {
       filter,
+      lang,
       // Ref
       currentRecordLogs,
       isLoading,

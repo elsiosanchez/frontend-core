@@ -210,7 +210,7 @@ export default defineComponent({
         const filter = displayDefinition.value.find(display => display.display_type === 'C')
         store.dispatch('getListCalendars', {
           id: filter.id,
-          filters: { name: [tableName.value] + '_ID', value: recordId.value }
+          filters: { name: [tableName.value] + '_ID', values: recordId.value }
         })
       }
     }
