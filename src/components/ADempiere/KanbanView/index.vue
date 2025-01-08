@@ -41,7 +41,7 @@
           class="list-group"
           @start="isDragging = true"
           @end="isDragging = false"
-          @change="handleCardMove($event)"
+          @change="handleCardMove($event, column)"
         >
           <template>
             <div
@@ -238,8 +238,9 @@ export default defineComponent({
     //       })
     //   }
     // }
-    function handleCardMove(event) {
+    function handleCardMove(event, column) {
       if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
+        const { value } = column
         const { id, uuid } = event.added.element
         const columnName = info.value.column_name
         const { currentTab } = store.getters.getContainerInfo
@@ -250,7 +251,7 @@ export default defineComponent({
           recordId: id,
           tabId: currentTab.id,
           recordAttributes: {
-            [columnName]: id
+            [columnName]: value
           }
         })
       }

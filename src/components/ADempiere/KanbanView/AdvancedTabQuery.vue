@@ -229,7 +229,7 @@ export default defineComponent({
       required: false
     },
     idDisplayDefinition: {
-      type: String,
+      type: Number,
       required: true
     }
   },
