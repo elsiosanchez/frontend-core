@@ -129,6 +129,10 @@ export default defineComponent({
     defaultOpenedTab: {
       type: String,
       default: 'getRecordLogs'
+    },
+    recordId: {
+      type: String,
+      default: ''
     }
   },
 
@@ -322,6 +326,9 @@ export default defineComponent({
 
     // Current Record ID
     const currentRecordId = computed(() => {
+      if (!isEmptyValue(props.recordId)) {
+        return props.recordId
+      }
       if (currentTab.value) {
         const { table } = currentTab.value
         const { key_columns, table_name } = table

@@ -48,6 +48,7 @@
               v-for="element in column.items"
               :key="element.id"
               class="list-group-item"
+              @dblclick="showPanel(element.id)"
             >
               <!-- <i
                 :class="element.fixed ? 'fa fa-anchor' : 'glyphicon glyphicon-pushpin'"
@@ -89,6 +90,7 @@
         :tab-uuid="tabUuid"
         :is-accounting-info="isAccountingInfo"
         :default-opened-tab="defaultNameTab"
+        :record-id="recordId"
       />
     </el-drawer>
   </el-card>
@@ -150,6 +152,7 @@ export default defineComponent({
   },
   setup() {
     const columns = ref([])
+    const recordId = ref('')
     const isLoading = computed(() => {
       return store.getters.getIsLoadingKanban
     })
@@ -178,7 +181,8 @@ export default defineComponent({
       return '65%'
     })
 
-    function showPanel() {
+    function showPanel(id) {
+      recordId.value = id
       store.commit('setShowLogs', !showContainerInfo.value)
     }
     const tableName = computed(() => {
@@ -262,10 +266,10 @@ export default defineComponent({
     loadColumns()
     return {
       filter,
-      lang,
       // Ref
       currentRecordLogs,
       isLoading,
+      recordId,
       // Constant
       isMobile,
       dragOptions,
