@@ -365,10 +365,8 @@ export default defineComponent({
 
     function filterRecord(searchText) {
       isLoadingSearch.value = true
-
-      store.dispatch('getEntities', {
-        parentUuid: props.parentUuid,
-        containerUuid: props.containerUuid,
+      store.dispatch('searchPanelKanban', {
+        id: props.idDisplayDefinition,
         searchValue: searchText
       })
         .finally(() => {
@@ -376,7 +374,7 @@ export default defineComponent({
         })
     }
 
-    function searchRecords(params) {
+    function searchRecords() {
       const filters = store.getters.getTabDataFilters({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid

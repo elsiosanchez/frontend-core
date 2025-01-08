@@ -39,13 +39,15 @@ const kanban = {
   actions: {
     searchPanelKanban({ commit }, {
       id,
-      filters
+      filters,
+      searchValue
     }) {
       commit('setIsLoadingKanban', true)
       return new Promise(resolve => {
         kanbans({
           id,
-          filters
+          filters,
+          searchValue
         })
           .then(response => {
             commit('setInfoKanvan', response)

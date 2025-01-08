@@ -21,13 +21,15 @@ import { request } from '@/utils/ADempiere/request'
 
 export function kanbans({
   id,
-  filters
+  filters,
+  searchValue
 }) {
   return request({
     url: `/display-definition/kanbans/${id}`,
     method: 'get',
     params: {
-      filters
+      filters,
+      search_value: searchValue
     }
   })
 }
