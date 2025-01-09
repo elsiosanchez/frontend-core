@@ -27,11 +27,13 @@
 </template>
 
 <script>
-import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
 
+import store from '@/store'
+
 export default defineComponent({
-  name: 'Contact',
+  name: 'ContactField',
+
   setup() {
     const value = computed({
       get() {
@@ -47,5 +49,4 @@ export default defineComponent({
     }
   }
 })
-
 </script>

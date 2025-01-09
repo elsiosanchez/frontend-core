@@ -82,6 +82,12 @@
               :uuid-form="uuidForm"
             />
           </el-col>
+
+          <el-col :span="6">
+            <business-partner-group-field
+              :uuid-form="uuidForm"
+            />
+          </el-col>
         </el-row>
       </el-form>
     </el-collapse-item>
@@ -101,6 +107,7 @@ import {
 } from '@/utils/ADempiere/dictionary/field/search/businessPartner.ts'
 
 // Components and Mixins
+import BusinessPartnerGroupField from './businessPartnerGroupField.vue'
 import ContactField from './contactField.vue'
 import CustomerVendorField from './customerVendorField.vue'
 import EmailField from './emailField.vue'
@@ -116,6 +123,7 @@ export default defineComponent({
   name: 'QueryCriteria',
 
   components: {
+    BusinessPartnerGroupField,
     ContactField,
     CustomerVendorField,
     EmailField,

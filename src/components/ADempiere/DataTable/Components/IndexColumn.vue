@@ -22,7 +22,7 @@
     :index="indexTable"
     label="#"
     class-name="index-column number-align-right"
-    width="35"
+    :width="width"
     min-width="15"
     header-align="center"
   />
@@ -49,6 +49,10 @@ export default defineComponent({
     pageSize: {
       type: Number,
       default: ROWS_OF_RECORDS_BY_PAGE
+    },
+    width: {
+      type: [Number, String],
+      default: 35
     }
   },
 

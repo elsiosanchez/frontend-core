@@ -18,7 +18,7 @@
 
 <template>
   <el-form-item
-    :label="$t('form.businessPartnerInformation.zipCode')"
+    :label="$t('form.businessPartnerInformation.name')"
   >
     <el-input
       v-model="value"
@@ -27,18 +27,20 @@
 </template>
 
 <script>
-import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
 
+import store from '@/store'
+
 export default defineComponent({
-  name: 'ZipCode',
+  name: 'NameField',
+
   setup() {
     const value = computed({
       get() {
-        return store.getters.getZipCode
+        return store.getters.getBusinessPartnerName
       },
       set(newValue) {
-        store.commit('setZipCode', newValue)
+        store.commit('setBusinessPartnerName', newValue)
       }
     })
 
@@ -47,5 +49,4 @@ export default defineComponent({
     }
   }
 })
-
 </script>

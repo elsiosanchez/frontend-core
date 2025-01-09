@@ -18,11 +18,10 @@
 
 <template>
   <el-form-item
-    :label="$t('form.businessPartnerInformation.allOrAny')"
+    :label="$t('field.businessPartner.customer')"
   >
     <el-select
-      v-model="value"
-      clearable
+      v-model="currentValueCustomer"
     >
       <el-option
         v-for="(option, key) in YES_NO_OPTIONS_LIST"
@@ -35,28 +34,31 @@
 </template>
 
 <script>
+import { computed, defineComponent } from '@vue/composition-api'
+
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+
 // Constants
 import { YES_NO_OPTIONS_LIST } from '@/utils/ADempiere/dictionary/field/yesNo'
 
 export default defineComponent({
-  name: 'CustomersOnly',
+  name: 'CustomerField',
+
   setup() {
-    const value = computed({
+    const currentValueCustomer = computed({
       get() {
-        return store.getters.getAllOrAny
+        return store.getters.getIsCustomer
       },
       set(newValue) {
-        store.commit('setAllOrAny', newValue)
+        store.commit('setIsCustomer', newValue)
       }
     })
 
     return {
-      value,
-      YES_NO_OPTIONS_LIST
+      YES_NO_OPTIONS_LIST,
+      //
+      currentValueCustomer
     }
   }
 })
-
 </script>

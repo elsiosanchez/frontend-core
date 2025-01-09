@@ -18,34 +18,47 @@
 
 <template>
   <el-form-item
-    :label="$t('form.businessPartnerInformation.companyName')"
+    :label="$t('field.businessPartner.vendor')"
   >
-    <el-input
-      v-model="value"
-    />
+    <el-select
+      v-model="currentValueVendor"
+    >
+      <el-option
+        v-for="(option, key) in YES_NO_OPTIONS_LIST"
+        :key="key"
+        :value="option.stringValue"
+        :label="option.displayValue"
+      />
+    </el-select>
   </el-form-item>
 </template>
 
 <script>
+import { computed, defineComponent } from '@vue/composition-api'
+
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+
+// Constants
+import { YES_NO_OPTIONS_LIST } from '@/utils/ADempiere/dictionary/field/yesNo'
 
 export default defineComponent({
-  name: 'CompanyName',
+  name: 'VendorField',
+
   setup() {
-    const value = computed({
+    const currentValueVendor = computed({
       get() {
-        return store.getters.getCompanyName
+        return store.getters.getIsVendor
       },
       set(newValue) {
-        store.commit('setCompanyName', newValue)
+        store.commit('setIsVendor', newValue)
       }
     })
 
     return {
-      value
+      YES_NO_OPTIONS_LIST,
+      //
+      currentValueVendor
     }
   }
 })
-
 </script>

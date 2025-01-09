@@ -1,6 +1,6 @@
 /**
  * ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
- * Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+ * Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
  * Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/elsiosanchez
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,22 +16,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const businessPartner = {
+const businessPartnerInformation = {
   title: 'Buscador de Socio del Negocio',
-  code: 'Código',
+  value: 'Código',
   contact: 'Contacto',
+  customer: 'Cliente',
+  vendor: 'Proveedor',
+  group: 'Grupo',
   phone: 'Teléfono',
-  companyName: 'Razón Social',
-  fantasyName: 'Nombre Fantasía',
-  email: 'Email',
+  name: 'Razón Social',
+  email: 'Correo',
   zipCode: 'Código Postal',
-  customersOnly: 'Solo clientes',
-  allOrAny: 'Todos / Cualquiera',
-  currentBalance: 'Saldo Actual',
   businessPartnerGroup: 'Grupo de Socio del Negocio',
-  availableCredit: 'Crédito Disponible',
-  usedCredit: 'Crédito Usado',
-  income: 'Ingresos',
+  openBalance: 'Saldo Actual',
+  creditAvailable: 'Crédito Disponible',
+  creditUsed: 'Crédito Usado',
+  revenue: 'Ingresos',
   titleDialog: 'Información de Contacto y Dirección',
   locationAndAddress: 'Localización / Dirección',
   locations: {
@@ -52,4 +52,4 @@ const businessPartner = {
   }
 }
 
-export default businessPartner
+export default businessPartnerInformation

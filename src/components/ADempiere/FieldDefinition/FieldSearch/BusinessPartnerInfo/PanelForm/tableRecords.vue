@@ -67,7 +67,7 @@
         width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_balance_amount < 0 }">
-          {{ formatQuantity({ value: scope.row.open_balance_amount }) }}
+          {{ scope.row.openBalanceAmountFormated }}
         </span>
       </el-table-column>
 
@@ -78,7 +78,7 @@
         width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_available_amount < 0 }">
-          {{ formatQuantity({ value: scope.row.credit_available_amount }) }}
+          {{ scope.row.creditAvailableAmountFormated }}
         </span>
       </el-table-column>
 
@@ -89,7 +89,7 @@
         width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.credit_used_amount < 0 }">
-          {{ formatQuantity({ value: scope.row.credit_used_amount }) }}
+          {{ scope.row.creditUsedAmountFormated }}
         </span>
       </el-table-column>
 
@@ -100,7 +100,7 @@
         width="135"
       >
         <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.revenue_amount < 0 }">
-          {{ formatQuantity({ value: scope.row.revenue_amount }) }}
+          {{ scope.row.revenueAmountFormated }}
         </span>
       </el-table-column>
 

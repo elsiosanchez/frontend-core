@@ -26,6 +26,7 @@ const businessPartner = {
   onlyCustomer: 'Solo Cliente',
   vendor: 'Proveedor',
   onlyVendor: 'Solo Proveedor',
+  customerVendor: 'Cliente / Proveedor',
   // fields
   value: 'Código',
   name: 'Nombre',

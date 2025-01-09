@@ -16,22 +16,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const businessPartner = {
+const businessPartnerInformation = {
   title: 'Search for Business Partner',
-  code: 'Code',
+  value: 'Value',
   contact: 'Contact',
+  customer: 'Customer',
+  vendor: 'Vendor',
+  group: 'Group',
   phone: 'Phone',
-  companyName: 'Company Name',
-  fantasyName: 'Name Fantasia',
+  name: 'Name',
   email: 'Email',
   zipCode: 'Zip Code',
-  customersOnly: 'Customers only',
-  allOrAny: 'All / Any',
   currentBalance: 'Current Balance',
   businessPartnerGroup: 'Business Partner Group',
-  availableCredit: 'Available Credit',
-  usedCredit: 'Used Credit',
-  income: 'Income',
+  openBalance: 'Open Balance',
+  creditAvailable: 'Credit Avalable',
+  creditUsed: 'Credit Used',
+  revenue: 'Revenue',
   titleDialog: 'Contact and Address Information',
   locationAndAddress: 'Location / Address',
   locations: {
@@ -52,4 +53,4 @@ const businessPartner = {
   }
 }
 
-export default businessPartner
+export default businessPartnerInformation

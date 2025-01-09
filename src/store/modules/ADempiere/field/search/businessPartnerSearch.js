@@ -30,8 +30,10 @@ import { COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/search/businessP
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { generatePageToken } from '@/utils/ADempiere/dataUtils'
+import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 const initState = {
   businessPartnerPopoverList: false,
@@ -62,7 +64,8 @@ const initState = {
       postal_code: undefined,
       value: undefined,
       is_vendor: undefined,
-      is_customer: undefined
+      is_customer: undefined,
+      business_partner_group_id: -1
     }
   },
   businessPartnerData: {},
@@ -250,6 +253,7 @@ const businessPartner = {
           filters.is_customer = undefined
         }
         if (!isEmptyValue(searchValue)) {
+          // TODO: Evaluate this change
           filters = {}
         }
         requestListBusinessPartner({
@@ -275,6 +279,24 @@ const businessPartner = {
               return {
                 [COLUMN_NAME]: row.id,
                 ...row,
+                isCustomerFormated: convertBooleanToTranslationLang(row.is_customer),
+                isVendorFormated: convertBooleanToTranslationLang(row.is_vendor),
+                // open_balance_amount: Number(row.open_balance_amount),
+                openBalanceAmountFormated: formatQuantity({
+                  value: row.open_balance_amount
+                }),
+                // credit_available_amount: Number(row.credit_available_amount),
+                creditAvailableAmountFormated: formatQuantity({
+                  value: row.credit_available_amount
+                }),
+                // credit_used_amount: Number(row.credit_used_amount),
+                creditUsedAmountFormated: formatQuantity({
+                  value: row.credit_used_amount
+                }),
+                // revenue_amount: Number(row.revenue_amount),
+                revenueAmountFormated: formatQuantity({
+                  value: row.revenue_amount
+                }),
                 // datatables app attributes
                 ...ROW_ATTRIBUTES,
                 rowIndex

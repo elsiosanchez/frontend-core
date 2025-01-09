@@ -61,7 +61,7 @@
         <custom-pagination
           style="display: inline-block; vertical-align: middle;"
           :total-records="recordCount"
-          :page-number="pageToken"
+          :page-number="pageNumber"
           :page-size="pageSize"
           :handle-change-page-number="handleChangePage"
           :handle-change-page-size="handleChangeSizePage"
@@ -78,31 +78,46 @@ import lang from '@/lang'
 
 import { defineComponent, computed, watch, ref } from '@vue/composition-api'
 import headerList from './headerList.ts'
-import { parseTime } from '@/utils'
 
 // Component
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import QueryCriteria from '@/components/ADempiere/Form/BusinessPartnerInformation/queryCriteria'
 import Table from '@/components/ADempiere/Form/BusinessPartnerInformation/table'
 import Dialog from '@/components/ADempiere/Form/BusinessPartnerInformation/dialog'
+
+import { parseTime } from '@/utils'
+
 export default defineComponent({
-  name: 'BusinessPartnerInfo',
+  name: 'BusinessPartnerInformation',
+
   components: {
     QueryCriteria,
     Table,
     CustomPagination,
     Dialog
   },
+
   setup() {
     const activeCollapse = ref(['1'])
-    const pageToken = computed(() => {
-      return store.getters.getPageTokenBusinness
+
+    const isLoading = computed({
+      set(newValue) {
+        store.commit('setIsLoading', newValue)
+      },
+      get() {
+        return store.getters.getIsLoadingBusinness || false
+      }
     })
+
     const businessInfo = computed(() => {
       return store.getters.getBusinessPartners
     })
+
     const pageSize = computed(() => {
-      return store.getters.getPageSize
+      return store.getters.getPageSizeBusiness
+    })
+    const pageNumber = computed(() => {
+      return store.getters.getPageNumberBusiness
     })
 
     const recordCount = computed(() => {
@@ -117,20 +132,20 @@ export default defineComponent({
     const phone = computed(() => {
       return store.getters.getPhone
     })
-    const customersOnly = computed(() => {
-      return store.getters.getCustomersOnly
+    const isCustomer = computed(() => {
+      return store.getters.getIsCustomer
     })
-    const companyName = computed(() => {
-      return store.getters.getCompanyName
+    const isVendor = computed(() => {
+      return store.getters.getIsVendor
     })
-    const fantasyName = computed(() => {
-      return store.getters.getFantasyName
+    const groupId = computed(() => {
+      return store.getters.getBusinessPartnerGroupId
+    })
+    const name = computed(() => {
+      return store.getters.getBusinessPartnerName
     })
     const email = computed(() => {
       return store.getters.getEmail
-    })
-    const allOrAny = computed(() => {
-      return store.getters.getAllOrAny
     })
     const zipCode = computed(() => {
       return store.getters.getZipCode
@@ -141,17 +156,15 @@ export default defineComponent({
       search()
     }
     function handleChangePage(value) {
-      let newTokenPage = pageToken.value
-      newTokenPage = newTokenPage.slice(0, -1) + value.toString()
-      store.commit('setPageToken', newTokenPage)
+      store.commit('setPageNumber', value)
       search()
     }
     let timeoutSearch
     function search() {
-      store.commit('setIsLoading', true)
+      isLoading.value = true
       clearTimeout(timeoutSearch)
       timeoutSearch = setTimeout(() => {
-        store.dispatch('gridBusinessParnet', {
+        store.dispatch('loadBusinessPartnerFromServer', {
           tableName: 'C_BPartner',
           columnName: 'C_BPartner_ID',
           contact: contact.value,
@@ -159,12 +172,16 @@ export default defineComponent({
           phone: phone.value,
           postal_code: zipCode.value,
           value: code.value,
-          name: companyName.value,
-          pageToken: pageToken.value,
+          name: name.value,
+          is_customer: isCustomer.value,
+          is_vendor: isVendor.value,
+          business_partner_group_id: groupId.value,
+          pageNumber: pageNumber.value,
           pageSize: pageSize.value
         })
-      }, 1000)
+      }, 500)
     }
+
     function exportExcel() {
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = headerList.map(list => list.label)
@@ -180,6 +197,7 @@ export default defineComponent({
         })
       })
     }
+
     function formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {
         if (j === 'timestamp') {
@@ -193,7 +211,7 @@ export default defineComponent({
       store.commit('setDefaulCriteria')
     }
     watch(
-      [contact, email, phone, zipCode, code, companyName, fantasyName, allOrAny, customersOnly],
+      [contact, email, groupId, isCustomer, isVendor, phone, zipCode, code, name],
       () => {
         search()
       }
@@ -204,17 +222,17 @@ export default defineComponent({
       // Ref
       activeCollapse,
       //
-      pageToken,
+      isLoading,
+      pageNumber,
       pageSize,
       recordCount,
       code,
       contact,
       phone,
-      customersOnly,
-      companyName,
-      fantasyName,
+      isCustomer,
+      isVendor,
+      name,
       email,
-      allOrAny,
       zipCode,
       businessInfo,
       //

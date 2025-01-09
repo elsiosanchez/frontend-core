@@ -26,6 +26,7 @@ const businessPartner = {
   onlyCustomer: 'Only Customer',
   vendor: 'Vendor',
   onlyVendor: 'Only Vendor',
+  customerVendor: 'Customer / Vendor',
   // fields
   value: 'Value',
   name: 'Name',

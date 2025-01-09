@@ -25,6 +25,28 @@ import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
+export function requestListBusinessPartnerGroups({
+  filters,
+  searchValue,
+  //
+  pageToken,
+  pageSize = ROWS_OF_RECORDS_BY_PAGE
+}) {
+  return request({
+    url: `/fields/business-partners/groups`,
+    method: 'get',
+    params: {
+      is_only_active_records: true,
+      //
+      filters,
+      search_value: searchValue,
+      // Page Data
+      page_token: pageToken,
+      page_size: pageSize
+    }
+  })
+}
+
 export function requestListBusinessPartner({
   contextAttributes,
   filters = [],
@@ -47,6 +69,7 @@ export function requestListBusinessPartner({
   value,
   is_vendor,
   is_customer,
+  business_partner_group_id,
   //
   pageToken,
   pageSize = ROWS_OF_RECORDS_BY_PAGE,
@@ -98,6 +121,7 @@ export function requestListBusinessPartner({
       value,
       is_vendor,
       is_customer,
+      business_partner_group_id,
       // Page Data
       page_token: pageToken,
       page_size: pageSize

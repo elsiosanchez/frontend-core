@@ -18,6 +18,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <template>
   <el-tabs
     v-model="activeName"
+    type="border-card"
     @tab-click="selectTabs"
   >
     <el-tab-pane :label="$t('form.businessPartnerInformation.locationAndAddress')" name="location">

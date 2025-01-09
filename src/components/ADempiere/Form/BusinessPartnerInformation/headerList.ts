@@ -18,13 +18,13 @@ import lang from '@/lang'
 
 export default [
   {
-    label: lang.t('form.businessPartnerInformation.code'),
+    label: lang.t('form.businessPartnerInformation.value'),
     columnName: 'value',
     width: '50',
     align: 'left'
   },
   {
-    label: lang.t('form.businessPartnerInformation.companyName'),
+    label: lang.t('form.businessPartnerInformation.name'),
     columnName: 'name',
     width: '60',
     align: 'left'
@@ -42,25 +42,25 @@ export default [
     align: 'left'
   },
   {
-    label: lang.t('form.businessPartnerInformation.currentBalance'),
+    label: lang.t('form.businessPartnerInformation.openBalance'),
     columnName: 'open_balance_amount',
     width: '50',
     align: 'right'
   },
   {
-    label: lang.t('form.businessPartnerInformation.availableCredit'),
+    label: lang.t('form.businessPartnerInformation.creditAvailable'),
     columnName: 'credit_available_amount',
     width: '50',
     align: 'right'
   },
   {
-    label: lang.t('form.businessPartnerInformation.usedCredit'),
+    label: lang.t('form.businessPartnerInformation.creditUsed'),
     columnName: 'credit_used_amount',
     width: '50',
     align: 'right'
   },
   {
-    label: lang.t('form.businessPartnerInformation.income'),
+    label: lang.t('form.businessPartnerInformation.revenue'),
     columnName: 'revenue_amount',
     width: '40',
     align: 'right'

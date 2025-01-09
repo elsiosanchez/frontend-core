@@ -16,27 +16,37 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// api request methods
+// API Request Methods
 import {
   requestListBusinessPartner,
   requestAddressLocations,
   requestContact
 } from '@/api/ADempiere/fields/search/business-partner.ts'
 
+// Constants
+import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
+import { COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/search/businessPartner.ts'
+
+// Utils and Helper Methods
+import { generatePageToken } from '@/utils/ADempiere/dataUtils'
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
+
 const businessPartner = {
   isLoading: false,
   list: [],
   recordCount: 0,
   pageToken: '',
-  pageNumber: 100,
+  pageSize: 100,
+  pageNumber: 1,
   code: '',
   contact: '',
+  groupId: -1,
   phone: '',
-  customersOnly: '',
-  companyName: '',
-  fantasyName: '',
+  isCustomer: '',
+  isVendor: '',
+  name: '',
   email: '',
-  allOrAny: '',
   zipCode: '',
   showDialog: false,
   rowSelect: [],
@@ -54,11 +64,11 @@ const formBusinessPartner = {
       state.code = ''
       state.contact = ''
       state.phone = ''
-      state.customersOnly = ''
-      state.companyName = ''
-      state.fantasyName = ''
+      state.isCustomer = ''
+      state.isVendor = ''
+      state.name = ''
       state.email = ''
-      state.allOrAny = ''
+      state.groupId = -1
       state.zipCode = ''
       state.rowSelect = []
       state.recordLocation = []
@@ -94,20 +104,20 @@ const formBusinessPartner = {
     setPhone(state, phone) {
       state.phone = phone
     },
-    setCustomersOnly(state, customersOnly) {
-      state.customersOnly = customersOnly
+    setIsCustomer(state, isCustomer) {
+      state.isCustomer = isCustomer
     },
-    setCompanyName(state, companyName) {
-      state.companyName = companyName
+    setIsVendor(state, isVendor) {
+      state.isVendor = isVendor
     },
-    setFantasyName(state, fantasyName) {
-      state.fantasyName = fantasyName
+    setBusinessPartnerName(state, name) {
+      state.name = name
+    },
+    setBusinessPartnerGroupId(state, groupId) {
+      state.groupId = groupId
     },
     setEmail(state, email) {
       state.email = email
-    },
-    setAllOrAny(state, allOrAny) {
-      state.allOrAny = allOrAny
     },
     setZipCode(state, zipCode) {
       state.zipCode = zipCode
@@ -124,12 +134,15 @@ const formBusinessPartner = {
     setPageToken(state, pageToken) {
       state.pageToken = pageToken
     },
-    setPageZise(state, pageNumber) {
+    setPageNumber(state, pageNumber) {
       state.pageNumber = pageNumber
+    },
+    setPageZise(state, pageSize) {
+      state.pageSize = pageSize
     }
   },
   actions: {
-    gridBusinessParnet({ commit },
+    loadBusinessPartnerFromServer({ commit },
       fieldId,
       value,
       contact,
@@ -139,10 +152,13 @@ const formBusinessPartner = {
       postal_code,
       is_vendor,
       is_customer,
-      pageToken,
+      business_partner_group_id,
+      pageNumber,
       pageSize
     ) {
       return new Promise(resolve => {
+        const pageToken = generatePageToken({ pageNumber })
+
         requestListBusinessPartner(
           fieldId,
           value,
@@ -153,14 +169,44 @@ const formBusinessPartner = {
           postal_code,
           is_vendor,
           is_customer,
+          business_partner_group_id,
           pageToken,
           pageSize
         )
           .then(response => {
             const { records, next_page_token, record_count } = response
             commit('setPageToken', next_page_token)
-            commit('setRecord', records)
             commit('setRecordCount', record_count)
+
+            const recordsList = records.map((row, rowIndex) => {
+              return {
+                [COLUMN_NAME]: row.id,
+                ...row,
+                isCustomerFormated: convertBooleanToTranslationLang(row.is_customer),
+                isVendorFormated: convertBooleanToTranslationLang(row.is_vendor),
+                // open_balance_amount: Number(row.open_balance_amount),
+                openBalanceAmountFormated: formatQuantity({
+                  value: row.open_balance_amount
+                }),
+                // credit_available_amount: Number(row.credit_available_amount),
+                creditAvailableAmountFormated: formatQuantity({
+                  value: row.credit_available_amount
+                }),
+                // credit_used_amount: Number(row.credit_used_amount),
+                creditUsedAmountFormated: formatQuantity({
+                  value: row.credit_used_amount
+                }),
+                // revenue_amount: Number(row.revenue_amount),
+                revenueAmountFormated: formatQuantity({
+                  value: row.revenue_amount
+                }),
+                // datatables app attributes
+                ...ROW_ATTRIBUTES,
+                rowIndex
+              }
+            })
+            commit('setRecord', recordsList)
+
             resolve()
           })
           .catch(error => {
@@ -225,7 +271,10 @@ const formBusinessPartner = {
     getPageTokenBusinness: (state) => {
       return state.pageToken
     },
-    getPageSize: (state) => {
+    getPageSizeBusiness: (state) => {
+      return state.pageSize
+    },
+    getPageNumberBusiness: (state) => {
       return state.pageNumber
     },
     getCode: (state) => {
@@ -237,20 +286,20 @@ const formBusinessPartner = {
     getPhone: (state) => {
       return state.phone
     },
-    getCustomersOnly: (state) => {
-      return state.customersOnly
+    getIsCustomer: (state) => {
+      return state.isCustomer
     },
-    getCompanyName: (state) => {
-      return state.companyName
+    getIsVendor: (state) => {
+      return state.isVendor
     },
-    getFantasyName: (state) => {
-      return state.fantasyName
+    getBusinessPartnerGroupId: (state) => {
+      return state.groupId
+    },
+    getBusinessPartnerName: (state) => {
+      return state.name
     },
     getEmail: (state) => {
       return state.email
-    },
-    getAllOrAny: (state) => {
-      return state.allOrAny
     },
     getZipCode: (state) => {
       return state.zipCode

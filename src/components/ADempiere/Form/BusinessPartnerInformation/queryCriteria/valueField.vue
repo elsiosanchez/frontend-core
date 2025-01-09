@@ -18,7 +18,7 @@
 
 <template>
   <el-form-item
-    :label="$t('form.businessPartnerInformation.code')"
+    :label="$t('form.businessPartnerInformation.value')"
   >
     <el-input
       v-model="value"
@@ -27,11 +27,13 @@
 </template>
 
 <script>
-import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
 
+import store from '@/store'
+
 export default defineComponent({
-  name: 'Code',
+  name: 'ValueField',
+
   setup() {
     const value = computed({
       get() {
@@ -46,5 +48,4 @@ export default defineComponent({
     }
   }
 })
-
 </script>

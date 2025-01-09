@@ -26,33 +26,40 @@
   >
     <el-form-item>
       <el-row :gutter="10">
-        <el-col :span="8">
-          <Code />
+        <el-col :span="6">
+          <value-field />
         </el-col>
-        <el-col :span="8">
-          <Contact />
+
+        <el-col :span="6">
+          <contact-field />
         </el-col>
-        <el-col :span="8">
-          <Phone />
+
+        <el-col :span="6">
+          <phone-field />
         </el-col>
-        <!-- <el-col :span="6">
-          <CustomersOnly />
-        </el-col> -->
-        <el-col :span="8">
-          <CompanyName />
+
+        <el-col :span="3">
+          <customer-field />
         </el-col>
-        <!-- <el-col :span="6">
-          <FantasyName />
-        </el-col> -->
-        <el-col :span="8">
-          <Email />
+        <el-col :span="3">
+          <vendor-field />
         </el-col>
-        <el-col :span="8">
-          <ZipCode />
+
+        <el-col :span="6">
+          <name-field />
         </el-col>
-        <!-- <el-col :span="6">
-          <AllOrAny />
-        </el-col> -->
+
+        <el-col :span="6">
+          <email-field />
+        </el-col>
+
+        <el-col :span="6">
+          <zip-code-field />
+        </el-col>
+
+        <el-col :span="6">
+          <group-field />
+        </el-col>
       </el-row>
     </el-form-item>
   </el-form>
@@ -61,28 +68,30 @@
 <script>
 import { defineComponent } from '@vue/composition-api'
 
-// Component
-import Code from './code.vue'
-import Contact from './contact.vue'
-import Phone from './phone.vue'
-import CompanyName from './companyName.vue'
-import FantasyName from './fantasyName.vue'
-import Email from './email.vue'
-import ZipCode from './zipCode.vue'
-import CustomersOnly from './customersOnly.vue'
-import AllOrAny from './allOrAny.vue'
+// Components and Mixins
+import ContactField from './contactField.vue'
+import CustomerField from './customerField.vue'
+import EmailField from './emailField.vue'
+import GroupField from './groupField'
+import NameField from './nameField.vue'
+import PhoneField from './phoneField.vue'
+import ValueField from './valueField.vue'
+import VendorField from './vendorField.vue'
+import ZipCodeField from './zipCodeField.vue'
+
 export default defineComponent({
   name: 'QueryCriteria',
+
   components: {
-    Code,
-    Contact,
-    Phone,
-    CompanyName,
-    FantasyName,
-    Email,
-    ZipCode,
-    CustomersOnly,
-    AllOrAny
+    ContactField,
+    CustomerField,
+    EmailField,
+    GroupField,
+    NameField,
+    PhoneField,
+    ValueField,
+    VendorField,
+    ZipCodeField
   }
 })
 </script>
