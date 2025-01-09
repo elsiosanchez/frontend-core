@@ -39,6 +39,7 @@
             v-for="(data, index) in displayOptions"
             :key="index"
             :command="data"
+            :class="{ 'selected-option': selectedOption.id === data.id }"
           >
             <template>
               <div class="header">
@@ -70,7 +71,9 @@
           </b>
         </span>
       </el-button>
-
+      <span v-if="!isEmptyValue(title) || !isEmptyValue(description)" style="font-size: 12px; color: #303133; font-weight: bold;">
+        {{ title + ' - ' + optionDescrip }}
+      </span>
       <change-record
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
@@ -179,7 +182,19 @@ export default defineComponent({
   },
 
   setup(props) {
+    const title = ref('')
+    const optionDescrip = ref('')
     const displayOptions = ref({})
+    const selectedOption = computed(() => {
+      const tabOptions = store.getters.getTabOptions
+      if (!isEmptyValue(tabOptions)) {
+        const { name, description } = tabOptions
+        title.value = name
+        optionDescrip.value = description
+        return tabOptions
+      }
+      return ''
+    })
     const listAction = computed(() => {
       const tab = props.tabAttributes
       return {
@@ -256,6 +271,9 @@ export default defineComponent({
       //   containerUuid: props.containerUuid,
       //   recordsSelected: [tabData.value.currentRowSelect]
       // })
+      title.value = undefined
+      optionDescrip.value = undefined
+      store.commit('setTabOptions', undefined)
       store.commit('setPanelKanban', false)
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
@@ -274,6 +292,7 @@ export default defineComponent({
       })
     }
     function handleCommandActions(data) {
+      store.commit('setTabOptions', data)
       store.commit('setPanelKanban', true)
       store.dispatch('searchPanelKanban', {
         id: data.id
@@ -297,6 +316,9 @@ export default defineComponent({
     return {
       // ref
       displayOptions,
+      selectedOption,
+      title,
+      optionDescrip,
       // computed
       storedTab,
       label,
@@ -315,3 +337,10 @@ export default defineComponent({
 
 })
 </script>
+
+<style scoped>
+.selected-option {
+  background-color: #e6f7ff;
+  font-weight: bold;
+}
+</style>

@@ -21,7 +21,8 @@ import {
 } from '@/api/ADempiere/displayDefinition.ts'
 
 const initState = {
-  definition: []
+  definition: [],
+  tabOptions: []
 }
 
 const displayDefinition = {
@@ -29,6 +30,9 @@ const displayDefinition = {
   mutations: {
     setDisplayDefinition(state, value) {
       state.definition = value
+    },
+    setTabOptions(state, value) {
+      state.tabOptions = value
     }
   },
   actions: {
@@ -58,6 +62,9 @@ const displayDefinition = {
   getters: {
     getDefinition: (state) => {
       return state.definition
+    },
+    getTabOptions: (state) => {
+      return state.tabOptions
     }
   }
 }
