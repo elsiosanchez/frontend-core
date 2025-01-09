@@ -46,7 +46,7 @@
           :key="index"
           :command="process"
         >
-          {{ $t(process.name) }}
+          {{ process.name }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
