@@ -100,7 +100,7 @@
 import draggable from 'vuedraggable'
 import store from '@/store'
 import lang from '@/lang'
-
+import router from '@/router'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
@@ -151,6 +151,7 @@ export default defineComponent({
     }
   },
   setup() {
+    const currentRoute = router.app._route
     const columns = ref([])
     const recordId = ref('')
     const isLoading = computed(() => {
@@ -180,11 +181,27 @@ export default defineComponent({
       }
       return '65%'
     })
-
     function showPanel(id) {
+      const {
+        name,
+        query,
+        params
+      } = currentRoute
+      router.replace({
+        name,
+        query: {
+          ...query,
+          recordId: id
+        },
+        params: {
+          ...params,
+          recordId: id
+        }
+      })
       recordId.value = id
       store.commit('setShowLogs', !showContainerInfo.value)
     }
+
     const tableName = computed(() => {
       const { currentTab } = store.getters.getContainerInfo
       if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
