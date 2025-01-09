@@ -463,8 +463,13 @@ const persistence = {
                   containerUuid
                 })
 
+                let childTabs = tabDefinition.childTabs
+                if (!tabDefinition.isParentTab) {
+                  childTabs = rootGetters.getStoredChildTabs(parentUuid)
+                }
+
                 // update records and logics on child tabs
-                tabDefinition.childTabs.filter(tabItem => {
+                childTabs.filter(tabItem => {
                   const { hasBeenRendered } = rootGetters.getStoredTab(parentUuid, tabItem.uuid)
                   if (hasBeenRendered) {
                     return true

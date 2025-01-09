@@ -52,6 +52,10 @@ export default {
     return state.storedWindows[windowUuid].tabsList
   },
 
+  getStoredChildTabs: (state) => (windowUuid) => {
+    return state.storedWindows[windowUuid].tabsListChild || []
+  },
+
   /**
    * Get tabs list form table name
    * @param {string} parentUuid window uuid
