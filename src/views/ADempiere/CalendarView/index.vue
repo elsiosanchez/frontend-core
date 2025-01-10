@@ -145,6 +145,10 @@ export default defineComponent({
     containerUuid: {
       type: String,
       required: false
+    },
+    currentTabUuid: {
+      type: String,
+      required: false
     }
   },
   setup(props) {
