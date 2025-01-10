@@ -100,11 +100,10 @@
 import draggable from 'vuedraggable'
 import store from '@/store'
 import lang from '@/lang'
-import router from '@/router'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 export default defineComponent({
@@ -151,7 +150,6 @@ export default defineComponent({
     }
   },
   setup() {
-    const currentRoute = router.app._route
     const columns = ref([])
     const recordId = ref('')
     const isLoading = computed(() => {
@@ -182,21 +180,8 @@ export default defineComponent({
       return '65%'
     })
     function showPanel(id) {
-      const {
-        name,
-        query,
-        params
-      } = currentRoute
-      router.replace({
-        name,
-        query: {
-          ...query,
-          recordId: id
-        },
-        params: {
-          ...params,
-          recordId: id
-        }
+      setRecordPath({
+        recordId: id
       })
       recordId.value = id
       store.commit('setShowLogs', !showContainerInfo.value)
