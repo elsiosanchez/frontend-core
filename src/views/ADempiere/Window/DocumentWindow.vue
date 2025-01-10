@@ -24,8 +24,8 @@
       >
         <record-access />
       </embedded>
-      <KanbanView
-        v-if="showKanban"
+      <kanban-view
+        v-if="showKanban && !showCalendar"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
         :container-uuid="currentTabUuid"
@@ -35,8 +35,16 @@
         :actions-manager="actionsManager"
         :style="styleScroll"
       />
+      <calendar-view
+        v-if="showCalendar && !showKanban"
+        :is-panel="false"
+        :container-manager="containerManager"
+        :parent-uuid="windowMetadata.uuid"
+        :container-uuid="currentTabUuid"
+        :current-tab-uuid="currentTabUuid"
+      />
       <tab-manager
-        v-if="!showKanban"
+        v-if="!(showKanban || showCalendar)"
         ref="tab-manager"
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -53,7 +61,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab && !showKanban" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab && !(showKanban || showCalendar)" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -81,6 +89,7 @@ import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import KanbanView from '@/components/ADempiere/KanbanView'
+import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -96,7 +105,8 @@ export default defineComponent({
     TabManager,
     TabManagerChild,
     LoadingView,
-    KanbanView
+    KanbanView,
+    CalendarView
   },
 
   props: {
@@ -140,6 +150,9 @@ export default defineComponent({
      */
     const showKanban = computed(() => {
       return store.getters.getPanelKanban
+    })
+    const showCalendar = computed(() => {
+      return store.getters.getShowCalendar
     })
     const stylePanelHeight = computed(() => {
       let style = 'width: 100% !important;overflow: auto;'
@@ -272,6 +285,8 @@ export default defineComponent({
       allTabsList,
       isLoadWindows,
       index,
+      // Calendar
+      showCalendar,
       // Kanban
       showKanban,
       // Computeds

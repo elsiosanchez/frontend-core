@@ -275,6 +275,7 @@ export default defineComponent({
       optionDescrip.value = undefined
       store.commit('setTabOptions', undefined)
       store.commit('setPanelKanban', false)
+      store.commit('setPanelCalendar', false)
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
         recordsSelected: [row]
@@ -292,11 +293,21 @@ export default defineComponent({
       })
     }
     function handleCommandActions(data) {
+      if (data.display_type === 'K') {
+        store.commit('setPanelCalendar', false)
+        store.commit('setPanelKanban', true)
+        store.dispatch('searchPanelKanban', {
+          id: data.id
+        })
+      }
+      if (data.display_type === 'C') {
+        store.commit('setPanelKanban', false)
+        store.commit('setPanelCalendar', true)
+        store.dispatch('getListTasksFromServer', {
+          id: data.id
+        })
+      }
       store.commit('setTabOptions', data)
-      store.commit('setPanelKanban', true)
-      store.dispatch('searchPanelKanban', {
-        id: data.id
-      })
     }
 
     function searchDisplay() {
@@ -306,7 +317,7 @@ export default defineComponent({
         })
           .then(response => {
             if (!isEmptyValue(response)) {
-              const filteredOptions = response.filter(option => option.display_type === 'K')
+              const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C')
               displayOptions.value = filteredOptions
             }
           })
