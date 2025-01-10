@@ -273,7 +273,7 @@ export default defineComponent({
       // })
       title.value = undefined
       optionDescrip.value = undefined
-      store.commit('setFilters', undefined)
+      store.commit('setFilters', [])
       store.commit('setTabOptions', undefined)
       store.commit('setPanelKanban', false)
       store.commit('setTabSelectionsList', {
