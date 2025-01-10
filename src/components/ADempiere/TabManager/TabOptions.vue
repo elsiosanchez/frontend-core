@@ -71,7 +71,7 @@
           </b>
         </span>
       </el-button>
-      <span v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="font-size: 12px; color: #303133; font-weight: bold;">
+      <span v-if="!isEmptyValue(title) || !isEmptyValue(description)" style="font-size: 12px; color: #303133; font-weight: bold;">
         {{ title + ' - ' + optionDescrip }}
       </span>
       <change-record
