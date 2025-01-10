@@ -187,11 +187,6 @@ export default defineComponent({
         dayMaxEvents: true,
         weekends: true,
         select: handleDateSelect(),
-        // eventClick: handleEventClick(),
-        // eventsSet: handleEvents(),
-        // dateClick: function(info) {
-        //   console.log(info)
-        // },
         eventClick: handleEventClick
       }
     })
@@ -231,16 +226,6 @@ export default defineComponent({
         })
       }
     }
-
-    // function handleEventClick(clickInfo) {
-    //   if (confirm(`${lang.t('component.calendar.deleteEventConfirm')} '${clickInfo.event.title}'`)) {
-    //     clickInfo.event.remove()
-    //   }
-    // }
-
-    // function handleEvents(events) {
-    //   currentEvents.value = events
-    // }
 
     const displayDefinition = computed(() => {
       return store.getters.getDefinition
