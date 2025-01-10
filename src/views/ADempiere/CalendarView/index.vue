@@ -15,61 +15,85 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
-
 <template>
-  <div class="demo-app">
-    <div class="demo-app-sidebar">
-      <div class="demo-app-sidebar-section">
-        <h2 style="padding-left: 10px;padding-top: 10px;">
-          {{ $t('component.calendar.allEvents') }} ({{ currentEvents.length }})
-        </h2>
-
-        <ul>
-          <li v-for="event in currentEvents" :key="event.id" @click="goToEventDate(event)">
-            <el-card
-              shadow="never"
-              class="custom-card-calendar"
-              style="padding-left: 0.5rem;"
+  <div v-loading="isLoading">
+    <div class="tab-options-container-calendar">
+      <advanced-tab-query
+        v-if="!isPanel"
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :container-manager="containerManager"
+        :id-display-definition="filter.id"
+        style="float: right;"
+      />
+      <tab-options
+        v-if="!isPanel"
+        :container-manager="containerManager"
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :current-tab-uuid="currentTabUuid"
+      />
+    </div>
+    <div class="demo-app">
+      <div class="demo-app-sidebar">
+        <div class="demo-app-sidebar-section">
+          <h2 style="padding-left: 10px; padding-top: 10px;">
+            {{ $t('component.calendar.allEvents') }} ({{ currentEvents.length }})
+          </h2>
+          <ul>
+            <li
+              v-for="event in currentEvents"
+              :key="event.id"
+              @click="goToEventDate(event)"
             >
-              <b>
-                <i>{{ event.title }}</i>
-              </b>
-              <p style="font-size: 14px;">
-                {{ event.description }}
-              </p>
-              <p v-if="(!isEmptyValue(event.valid_from) && !isEmptyValue(event.valid_to))" style="text-align: left;color: gray;font-size: 12px;margin: 0px;">
-                {{ translateDate({
-                  value: event.valid_from,
-                  format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
-                }) + ' ~ ' + translateDate({
-                  value: event.valid_to,
-                  format: event.valid_to.length > 10 ? 'short' : 'onlyDate'
-                }) }}
-              </p>
-            </el-card>
-          </li>
-        </ul>
+              <el-card
+                shadow="never"
+                class="custom-card-calendar"
+                style="padding-left: 0.5rem;"
+              >
+                <b><i>{{ event.title }}</i></b>
+                <p style="font-size: 14px;">{{ event.description }}</p>
+                <p
+                  v-if="!isEmptyValue(event.valid_from) && !isEmptyValue(event.valid_to)"
+                  style="text-align: left; color: gray; font-size: 12px; margin: 0px;"
+                >
+                  {{
+                    translateDate({
+                      value: event.valid_from,
+                      format: event.valid_to.length > 10 ? 'short' : 'onlyDate',
+                    }) +
+                      ' ~ ' +
+                      translateDate({
+                        value: event.valid_to,
+                        format: event.valid_to.length > 10 ? 'short' : 'onlyDate',
+                      })
+                  }}
+                </p>
+              </el-card>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="demo-app-main">
+        <FullCalendar
+          ref="calendarRef"
+          class="demo-app-calendar"
+          :options="calendarOptions"
+        >
+          <template v-slot:eventContent="arg">
+            <div>
+              <b>{{ arg.timeText }}</b>
+              <i>{{ arg.event.title }}</i>
+            </div>
+          </template>
+        </FullCalendar>
       </div>
     </div>
-    <div class="demo-app-main">
-      <FullCalendar
-        ref="calendarRef"
-        class="demo-app-calendar"
-        :options="calendarOptions"
-      >
-        <!-- Personalización del contenido del evento -->
-        <template v-slot:eventContent="arg">
-          <div>
-            <b>{{ arg.timeText }}</b>
-            <i>{{ arg.event.title }}</i>
-          </div>
-        </template>
-      </FullCalendar>
-    </div>
+
+    <!-- Modal -->
     <modal-calendar />
   </div>
 </template>
-
 <script>
 import lang from '@/lang'
 import store from '@/store'
@@ -88,7 +112,8 @@ import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import ModalCalendar from './modal.vue'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-
+import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
+import AdvancedTabQuery from '@/views/ADempiere/CalendarView/advancedTabQuery.vue'
 // Constants
 import { createEventId } from './event-utils'
 
@@ -100,10 +125,33 @@ export default defineComponent({
 
   components: {
     FullCalendar,
-    ModalCalendar
+    ModalCalendar,
+    TabOptions,
+    AdvancedTabQuery
   },
-  setup() {
+  props: {
+    isPanel: {
+      type: Boolean,
+      default: true
+    },
+    containerManager: {
+      type: Object,
+      required: false
+    },
+    parentUuid: {
+      type: String,
+      required: false
+    },
+    containerUuid: {
+      type: String,
+      required: false
+    }
+  },
+  setup(props) {
     const calendarRef = ref(null)
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingTasksEvents
+    })
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
@@ -140,7 +188,7 @@ export default defineComponent({
         weekends: true,
         select: handleDateSelect(),
         // eventClick: handleEventClick(),
-        eventsSet: handleEvents(),
+        // eventsSet: handleEvents(),
         // dateClick: function(info) {
         //   console.log(info)
         // },
@@ -190,13 +238,15 @@ export default defineComponent({
     //   }
     // }
 
-    function handleEvents(events) {
-      currentEvents.value = events
-    }
+    // function handleEvents(events) {
+    //   currentEvents.value = events
+    // }
 
     const displayDefinition = computed(() => {
       return store.getters.getDefinition
     })
+    const filter = displayDefinition.value.find(display => display.display_type === 'C')
+
     const { query, params } = router.app._route
     const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
@@ -211,9 +261,14 @@ export default defineComponent({
     function searchListCalendars() {
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'C')
+        let filters
+        if (props.isPanel) {
+          filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
+          filters = JSON.stringify(filters)
+        }
         store.dispatch('getListCalendars', {
           id: filter.id,
-          filters: { name: [tableName.value] + '_ID', values: recordId.value }
+          filters
         })
       }
     }
@@ -225,12 +280,13 @@ export default defineComponent({
     }
     searchListCalendars()
     return {
+      isLoading,
+      filter,
       currentEvents,
       calendarOptions,
       calendarRef,
       handleEventClick,
       translateDate,
-      isEmptyValue,
       goToEventDate
     }
   }
@@ -308,4 +364,14 @@ export default defineComponent({
   overflow: hidden;
   height: 350px;
 }
+.tab-options-container-calendar {
+  position: relative;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #ffffff;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 </style>

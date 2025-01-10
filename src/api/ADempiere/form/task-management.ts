@@ -18,6 +18,7 @@
 
 // Get Instance for connection
 import { request } from '@/utils/ADempiere/request'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export function requestListTasks({
   date
@@ -37,13 +38,19 @@ export function requestListTasks({
 
 export function listCalendars({
   id,
-  filters
+  filters,
+  searchValue
 }) {
+  let filt
+  if (!isEmptyValue(filters)) {
+    filt = filters
+  }
   return request({
     url: `/display-definition/calendars/${id}`,
     method: 'get',
     params: {
-      filters: JSON.stringify([filters])
+      filters: filt,
+      search_value: searchValue
     }
   })
 }

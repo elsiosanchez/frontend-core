@@ -20,7 +20,7 @@
 
 // API Request Methods
 import { requestListTasks, listCalendars } from '@/api/ADempiere/form/task-management.ts'
-import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 // Utils and Helper Methods
 // import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -29,7 +29,9 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 const calendarView = {
   listEvents: [],
   showModal: false,
-  selectedDate: []
+  selectedDate: [],
+  showCalendar: false,
+  isLoadingTasksEvents: false
 }
 
 export default {
@@ -44,6 +46,12 @@ export default {
     },
     setSelectedDate(state, value) {
       state.selectedDate = value
+    },
+    setPanelCalendar(state, value) {
+      state.showCalendar = value
+    },
+    setLoadingTasksEvents(state, value) {
+      state.isLoadingTasksEvents = value
     }
   },
 
@@ -87,12 +95,15 @@ export default {
     },
     getListCalendars({ commit }, {
       id,
-      filters
+      filters,
+      searchValue
     }) {
+      commit('setLoadingTasksEvents', true)
       return new Promise(resolve => {
         listCalendars({
           id,
-          filters
+          filters,
+          searchValue
         })
           .then(response => {
             const { records } = response
@@ -112,6 +123,9 @@ export default {
             })
             resolve({})
           })
+          .finally(() => {
+            commit('setLoadingTasksEvents', false)
+          })
       })
     }
   },
@@ -124,6 +138,12 @@ export default {
     },
     getSelectedDate(state) {
       return state.selectedDate
+    },
+    getShowCalendar(state) {
+      return state.showCalendar
+    },
+    getIsLoadingTasksEvents(state) {
+      return state.isLoadingTasksEvents
     }
   }
 }
