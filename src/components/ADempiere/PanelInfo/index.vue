@@ -131,7 +131,7 @@ export default defineComponent({
       default: 'getRecordLogs'
     },
     recordId: {
-      type: String,
+      type: [String, Number],
       default: ''
     }
   },

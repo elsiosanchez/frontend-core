@@ -180,11 +180,13 @@ export default defineComponent({
       return '65%'
     })
     function showPanel(id) {
-      setRecordPath({
-        recordId: id
-      })
-      recordId.value = id
-      store.commit('setShowLogs', !showContainerInfo.value)
+      if (!isEmptyValue(id)) {
+        setRecordPath({
+          recordId: id
+        })
+        recordId.value = id
+        store.commit('setShowLogs', !showContainerInfo.value)
+      }
     }
 
     const tableName = computed(() => {
