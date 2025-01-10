@@ -100,11 +100,10 @@
 import draggable from 'vuedraggable'
 import store from '@/store'
 import lang from '@/lang'
-
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 export default defineComponent({
@@ -180,11 +179,14 @@ export default defineComponent({
       }
       return '65%'
     })
-
     function showPanel(id) {
+      setRecordPath({
+        recordId: id
+      })
       recordId.value = id
       store.commit('setShowLogs', !showContainerInfo.value)
     }
+
     const tableName = computed(() => {
       const { currentTab } = store.getters.getContainerInfo
       if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
