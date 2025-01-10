@@ -17,10 +17,12 @@
  */
 
 import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
+import { isEmptyValue } from '@/utils/ADempiere'
 const initState = {
   panelKanban: false,
   infoKanban: [],
-  isLoadingKanban: false
+  isLoadingKanban: false,
+  filters: []
 }
 
 const kanban = {
@@ -34,15 +36,25 @@ const kanban = {
     },
     setIsLoadingKanban(state, value) {
       state.isLoadingKanban = value
+    },
+    setFilters(state, value) {
+      state.filters = value
     }
   },
   actions: {
-    searchPanelKanban({ commit }, {
+    searchPanelKanban({ commit, getters }, {
       id,
       filters,
       searchValue
     }) {
       commit('setIsLoadingKanban', true)
+      if (!isEmptyValue(filters)) {
+        commit('setFilters', filters)
+      }
+      if (isEmptyValue(filters)) {
+        const storeFiltrs = getters.getFilters
+        filters = storeFiltrs
+      }
       return new Promise(resolve => {
         kanbans({
           id,
@@ -68,6 +80,9 @@ const kanban = {
     },
     getIsLoadingKanban: (state) => {
       return state.isLoadingKanban
+    },
+    getFilters: (state) => {
+      return state.filters
     }
   }
 }

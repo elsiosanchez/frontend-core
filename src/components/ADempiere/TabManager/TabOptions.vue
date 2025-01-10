@@ -71,7 +71,7 @@
           </b>
         </span>
       </el-button>
-      <span v-if="!isEmptyValue(title) || !isEmptyValue(description)" style="font-size: 12px; color: #303133; font-weight: bold;">
+      <span v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="font-size: 12px; color: #303133; font-weight: bold;">
         {{ title + ' - ' + optionDescrip }}
       </span>
       <change-record
@@ -100,7 +100,7 @@
 
     <action-menu
       :parent-uuid="parentUuid"
-      :container-uuid="tabAttributes.uuid"
+      :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
       :container-manager="containerManager"
       :actions-manager="listAction"
       style="float: right;"
@@ -273,6 +273,7 @@ export default defineComponent({
       // })
       title.value = undefined
       optionDescrip.value = undefined
+      store.commit('setFilters', [])
       store.commit('setTabOptions', undefined)
       store.commit('setPanelKanban', false)
       store.commit('setPanelCalendar', false)
