@@ -71,9 +71,14 @@
           </b>
         </span>
       </el-button>
-      <span v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="font-size: 12px; color: #303133; font-weight: bold;">
-        {{ title + ' - ' + optionDescrip }}
-      </span>
+      <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
+        <span style="font-weight: bold;">
+          {{ title }}
+        </span>
+        <div style="color: rgb(130, 132, 138);">
+          {{ optionDescrip }}
+        </div>
+      </div>
       <change-record
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
