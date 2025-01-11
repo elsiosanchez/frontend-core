@@ -73,3 +73,18 @@ export function timeLines({
     }
   })
 }
+
+export function resources({
+  id,
+  filters,
+  searchValue
+}) {
+  return request({
+    url: `/display-definition/resources/${id}`,
+    method: 'get',
+    params: {
+      search_value: searchValue,
+      filters
+    }
+  })
+}

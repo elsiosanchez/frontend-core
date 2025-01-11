@@ -24,8 +24,8 @@
       >
         <record-access />
       </embedded>
-      <kanban-view
-        v-if="showKanban && !showCalendar"
+      <KanbanView
+        v-if="showKanban"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
         :container-uuid="currentTabUuid"
@@ -43,8 +43,20 @@
         :container-uuid="currentTabUuid"
         :current-tab-uuid="currentTabUuid"
       />
+      <calendar-resorce
+        v-if="showResource"
+        :container-manager="containerManager"
+        :parent-uuid="windowMetadata.uuid"
+        :container-uuid="currentTabUuid"
+        :current-tab-uuid="currentTabUuid"
+        :tabs-list="windowMetadata.tabsListParent"
+        :all-tabs-list="allTabsList"
+        :actions-manager="actionsManager"
+        :style="styleScroll"
+        :resources-info="resources"
+      />
       <tab-manager
-        v-if="!(showKanban || showCalendar)"
+        v-if="!(showKanban || showCalendar || showResource)"
         ref="tab-manager"
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -61,7 +73,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab && !(showKanban || showCalendar)" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab && !showKanban" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -89,7 +101,7 @@ import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import KanbanView from '@/components/ADempiere/KanbanView'
-import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
+import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -103,10 +115,10 @@ export default defineComponent({
     Embedded,
     ModalDialog,
     TabManager,
+    CalendarResorce,
     TabManagerChild,
     LoadingView,
-    KanbanView,
-    CalendarView
+    KanbanView
   },
 
   props: {
@@ -153,6 +165,12 @@ export default defineComponent({
     })
     const showCalendar = computed(() => {
       return store.getters.getShowCalendar
+    })
+    const showResource = computed(() => {
+      return store.getters.getPanelResource
+    })
+    const resources = computed(() => {
+      return store.getters.getInfoResource
     })
     const stylePanelHeight = computed(() => {
       let style = 'width: 100% !important;overflow: auto;'
@@ -289,6 +307,9 @@ export default defineComponent({
       showCalendar,
       // Kanban
       showKanban,
+      // resources
+      resources,
+      showResource,
       // Computeds
       stylePanelHeight,
       isWithChildsTab,

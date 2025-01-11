@@ -313,6 +313,15 @@ export default defineComponent({
           id: data.id
         })
       }
+      if (data.display_type === 'R') {
+        store.commit('setPanelKanban', false)
+        store.commit('setPanelCalendar', false)
+        store.commit('setPanelResource', true)
+        store.dispatch('searchPanelResource', {
+          id: data.id
+        })
+      }
+
       store.commit('setTabOptions', data)
     }
 
@@ -323,7 +332,7 @@ export default defineComponent({
         })
           .then(response => {
             if (!isEmptyValue(response)) {
-              const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C')
+              const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
               displayOptions.value = filteredOptions
             }
           })
