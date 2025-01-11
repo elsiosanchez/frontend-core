@@ -436,5 +436,6 @@ export default defineComponent({
 }
 .column-title {
   font-size: 12px;
+  font-weight: bold;
 }
 </style>
