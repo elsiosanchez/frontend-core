@@ -68,7 +68,7 @@ export default defineComponent({
         case 'ProductSearch':
           form = import('@/components/ADempiere/Form/ProductSearch')
           break
-        case 'businessPartnerInformation':
+        case 'BusinessPartnerSearch':
           form = import('@/components/ADempiere/Form/BusinessPartnerInformation')
           break
         case 'WFActivity':

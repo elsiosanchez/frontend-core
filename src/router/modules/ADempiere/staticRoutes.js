@@ -88,35 +88,29 @@ const staticRoutes = [
     },
     children: [
       {
-        path: '/businessPartnerInformation',
+        path: '/business-partner-search',
         component: () => import('@/views/ADempiere/Form'),
-        name: 'businessPartnerInformation',
         hidden: false,
-        validateToEnable: ({ role, dynamicRoutes }) => {
-          if (isEmptyValue(dynamicRoutes)) {
+        validateToEnable: ({ role }) => {
+          if (!role) {
             return false
           }
-          const menuTree = dynamicRoutes
-          const viewSearch = recursiveTreeSearch({
-            treeData: menuTree,
-            attributeValue: 'window_' + REQUEST_ALL_WINDOW_ID,
-            attributeName: 'meta',
-            secondAttribute: 'containerKey',
-            attributeChilds: 'children'
-          })
-          if (isEmptyValue(viewSearch)) {
-            return false
-          }
-          return true
+          return Boolean(role.is_allow_info_business_partner)
         },
-        meta: {
-          title: language.t('form.businessPartnerInformation.title'),
-          icon: 'user',
-          fileName: 'businessPartnerInformation',
-          isIndex: true,
-          isAll: true,
-          type: 'from'
-        }
+        children: [
+          {
+            path: '/business-partner-search',
+            component: () => import('@/views/ADempiere/Form'),
+            name: 'BusinessPartnerSearch',
+            meta: {
+              title: language.t('form.businessPartnerInformation.title'),
+              icon: 'user',
+              fileName: 'BusinessPartnerSearch',
+              isIndex: true,
+              type: 'from'
+            }
+          }
+        ]
       },
       {
         path: '/Issues/All',

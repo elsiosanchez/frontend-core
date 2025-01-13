@@ -269,8 +269,8 @@ export default defineComponent({
           isLoading: false,
           iconClass: 'workflow',
           component: Worflow
-         },
-         {
+        },
+        {
           name: 'Resource',
           title: language.t('window.containerInfo.log.resource'),
           show: showResource.value,
