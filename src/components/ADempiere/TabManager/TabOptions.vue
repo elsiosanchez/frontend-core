@@ -43,7 +43,7 @@
           >
             <template>
               <div class="header">
-                <svg-icon icon-class="kanbanMode" />
+                <svg-icon :icon-class="getIcon(data.display_type)" />
                 {{ data.name }}
               </div>
               <span
@@ -194,6 +194,7 @@ export default defineComponent({
       const tabOptions = store.getters.getTabOptions
       if (!isEmptyValue(tabOptions)) {
         const { name, description } = tabOptions
+        console.log(tabOptions)
         title.value = name
         optionDescrip.value = description
         return tabOptions
@@ -341,6 +342,14 @@ export default defineComponent({
           })
       }
     }
+    function getIcon(type) {
+      if (type === 'K') return 'kanbanMode'
+
+      if (type === 'C') return 'calendar'
+
+      if (type === 'R') return 'calendar'
+      return ''
+    }
     searchDisplay()
     return {
       // ref
@@ -360,7 +369,8 @@ export default defineComponent({
       // methods
       changeShowedRecords,
       handleCommandActions,
-      searchDisplay
+      searchDisplay,
+      getIcon
     }
   }
 
