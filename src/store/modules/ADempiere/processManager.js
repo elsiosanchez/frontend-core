@@ -140,6 +140,7 @@ const processManager = {
             console.warn(`Error getting print formats: ${error.message}. Code: ${error.code}.`)
           })
           .finally(() => {
+            dispatch('setProcessDefaultValues', { containerUuid })
             dispatch('finishProcess', {
               summary,
               name: processDefinition.name,
