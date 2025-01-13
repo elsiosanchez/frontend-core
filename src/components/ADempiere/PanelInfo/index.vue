@@ -79,8 +79,8 @@ import LoadingView from '@/components/ADempiere/LoadingView'
 import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
 import TimeLine from '@/views/ADempiere/TimeLineView'
+import Worflow from '@/components/ADempiere/WorflowView'
 import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
-
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
 
@@ -104,7 +104,8 @@ export default defineComponent({
     WorkflowLogs,
     RecordDashboard,
     LoadingView,
-    Calendar
+    Calendar,
+    Worflow
   },
 
   props: {
@@ -150,6 +151,7 @@ export default defineComponent({
     const showCalendar = ref(false)
     const showResource = ref(false)
     const showTimeLine = ref(false)
+    const showWorkflow = ref(false)
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
     }
@@ -260,6 +262,15 @@ export default defineComponent({
           component: TimeLine
         },
         {
+          name: 'Workflow',
+          title: language.t('window.containerInfo.log.workflow'),
+          show: true,
+          svg: true,
+          isLoading: false,
+          iconClass: 'workflow',
+          component: Worflow
+         },
+         {
           name: 'Resource',
           title: language.t('window.containerInfo.log.resource'),
           show: showResource.value,
@@ -298,6 +309,9 @@ export default defineComponent({
           }
           if (record.display_type === 'T') {
             showTimeLine.value = true
+          }
+          if (record.display_type === 'W') {
+            showWorkflow.value = true
           }
           if (record.display_type === 'R') {
             showResource.value = true
@@ -627,6 +641,7 @@ export default defineComponent({
       showCalendar,
       showResource,
       showTimeLine,
+      showWorkflow,
       // Computed
       displayDefinition,
       currentTab,

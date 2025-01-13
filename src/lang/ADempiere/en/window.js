@@ -67,6 +67,7 @@ const window = {
       allChanges: 'See all changes',
       calendar: 'Calendar',
       timeLine: 'Time Line',
+      workflow: 'Workflow',
       resource: 'Resources'
     },
     notices: {

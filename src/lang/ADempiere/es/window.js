@@ -68,6 +68,7 @@ const window = {
       allChanges: 'Ver todos los cambios ',
       calendar: 'Calendario',
       timeLine: 'Línea de Tiempo',
+      workflow: 'Flujo de Trabajo',
       resource: 'Recursos'
     },
     notices: {

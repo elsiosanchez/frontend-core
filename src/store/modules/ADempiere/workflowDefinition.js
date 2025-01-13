@@ -21,7 +21,7 @@ import language from '@/lang'
 
 // API Request Methods
 import { requestWorkflowMetadata } from '@/api/ADempiere/workflow'
-
+import { workflowsDisplay } from '@/api/ADempiere/displayDefinition.ts'
 // Utils and Helper Methods
 import { generateWorkflowDiagram } from '@/utils/ADempiere/dictionary/workflow'
 import { showMessage } from '@/utils/ADempiere/notification'
@@ -84,6 +84,18 @@ const workflow = {
               type: 'error'
             })
             console.warn(`Dictionary Workflow - Error ${error.code}: ${error.message}.`)
+          })
+      })
+    },
+    getWorflowDisplay({ commit }, {
+      id
+    }) {
+      return new Promise(resolve => {
+        workflowsDisplay({
+          id
+        })
+          .then(response => {
+            resolve(response)
           })
       })
     }

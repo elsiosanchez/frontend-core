@@ -74,6 +74,14 @@ export function timeLines({
   })
 }
 
+export function workflowsDisplay({
+  id
+}) {
+  return request({
+    url: `/display-definition/workflows/${id}`,
+    method: 'get'
+  })
+}
 export function resources({
   id,
   filters,
