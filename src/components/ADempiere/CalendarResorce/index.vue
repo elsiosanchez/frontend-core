@@ -17,28 +17,34 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <el-card class="box-card">
-    <tab-options
-      :container-manager="containerManager"
-      :parent-uuid="parentUuid"
-      :container-uuid="containerUuid"
-      :current-tab-uuid="currentTabUuid"
-    />
-    <FullCalendar
-      class="demo-app-calendar"
-      :options="calendarOptions"
-    >
-      <template v-slot:eventContent="arg">
-        <b>{{ arg.timeText }}</b>
-        <i>{{ arg.event.title }}</i>
-      </template>
-    </FullCalendar>
-  </el-card>
+  <div v-loading="isLoading">
+    <div v-if="!isPanel" class="tab-options-container-calendar">
+      <tab-options
+        :container-manager="containerManager"
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :current-tab-uuid="currentTabUuid"
+      />
+    </div>
+    <el-card class="box-card">
+      <FullCalendar
+        class="demo-app-calendar"
+        :options="calendarOptions"
+      >
+        <template v-slot:eventContent="arg">
+          <b>{{ arg.timeText }}</b>
+          <i>{{ arg.event.title }}</i>
+        </template>
+      </FullCalendar>
+    </el-card>
+  </div>
 </template>
 
 <script>
 import lang from '@/lang'
 import store from '@/store'
+import router from '@/router'
+
 import {
   defineComponent,
   computed
@@ -70,6 +76,10 @@ export default defineComponent({
   },
 
   props: {
+    isPanel: {
+      type: Boolean,
+      default: true
+    },
     containerManager: {
       type: Object,
       required: false
@@ -108,6 +118,9 @@ export default defineComponent({
     /**
      * Computed
      */
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingResource
+    })
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
@@ -133,6 +146,20 @@ export default defineComponent({
         }
       })
     })
+    const { query, params } = router.app._route
+    const recordId = computed(() => {
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      return -1
+    })
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
+    const displayDefinition = computed(() => {
+      return store.getters.getDefinition
+    })
 
     const calendarOptions = computed(() => {
       return {
@@ -148,6 +175,7 @@ export default defineComponent({
           center: 'title',
           right: 'resourceTimelineMonth,resourceTimelineYear'
         },
+        resourceAreaWidth: '15%',
         initialView: 'resourceTimelineYear',
         scrollTime: '08:00',
         aspectRatio: 1.5,
@@ -198,7 +226,21 @@ export default defineComponent({
       const parts = dateToParse.split('T')[0].split('-')
       return `${parts[0]}-${parts[1]}-${parts[2]}`
     }
-
+    function searchListCalendars() {
+      if (!isEmptyValue(displayDefinition.value)) {
+        const filter = displayDefinition.value.find(display => display.display_type === 'R')
+        let filters
+        if (props.isPanel) {
+          filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
+          filters = JSON.stringify(filters)
+        }
+        store.dispatch('searchPanelResource', {
+          id: filter.id,
+          filters
+        })
+      }
+    }
+    searchListCalendars()
     return {
       // Ref
       currentEvents,
@@ -207,7 +249,9 @@ export default defineComponent({
       groudResource,
       recordsEvents,
       resource,
+      isLoading,
       // Methods
+      searchListCalendars,
       handleDateSelect,
       handleEventClick,
       handleEvents,
@@ -226,7 +270,7 @@ export default defineComponent({
 <style lang='scss'>
 .demo-app {
   display: flex !important;
-  height: 50vh;
+  height: calc(100vh - 180px);
   font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
   font-size: 14px;
 
@@ -242,7 +286,7 @@ export default defineComponent({
 
     ul {
       overflow: auto;
-      height: 89vh;
+      height: calc(100vh - 210px);
       padding: 0px 5px;
       margin: 0;
     }
@@ -291,4 +335,14 @@ export default defineComponent({
   text-align: left;
   height: 85% !important;
 }
+.tab-options-container-calendar {
+  position: relative;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #ffffff;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 </style>

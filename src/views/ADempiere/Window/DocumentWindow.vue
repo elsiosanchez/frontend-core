@@ -24,8 +24,8 @@
       >
         <record-access />
       </embedded>
-      <KanbanView
-        v-if="showKanban"
+      <kanban-view
+        v-if="showKanban && !(showCalendar || showResource)"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
         :container-uuid="currentTabUuid"
@@ -36,7 +36,7 @@
         :style="styleScroll"
       />
       <calendar-view
-        v-if="showCalendar && !showKanban"
+        v-if="showCalendar && !(showKanban || showResource)"
         :is-panel="false"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
@@ -44,7 +44,8 @@
         :current-tab-uuid="currentTabUuid"
       />
       <calendar-resorce
-        v-if="showResource"
+        v-if="showResource && !(showKanban || showCalendar)"
+        :is-panel="false"
         :container-manager="containerManager"
         :parent-uuid="windowMetadata.uuid"
         :container-uuid="currentTabUuid"
@@ -73,7 +74,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab && !showKanban" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab && !(showKanban || showCalendar || showResource)" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -101,6 +102,7 @@ import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import KanbanView from '@/components/ADempiere/KanbanView'
+import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
 import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -118,6 +120,7 @@ export default defineComponent({
     CalendarResorce,
     TabManagerChild,
     LoadingView,
+    CalendarView,
     KanbanView
   },
 

@@ -79,6 +79,8 @@ import LoadingView from '@/components/ADempiere/LoadingView'
 import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
 import TimeLine from '@/views/ADempiere/TimeLineView'
+import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
+
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
 
@@ -256,6 +258,15 @@ export default defineComponent({
           isLoading: false,
           iconClass: 'timeline',
           component: TimeLine
+        },
+        {
+          name: 'Resource',
+          title: language.t('window.containerInfo.log.resource'),
+          show: showResource.value,
+          svg: true,
+          isLoading: false,
+          iconClass: 'calendar',
+          component: CalendarResorce
         }
       ]
     })
@@ -287,6 +298,9 @@ export default defineComponent({
           }
           if (record.display_type === 'T') {
             showTimeLine.value = true
+          }
+          if (record.display_type === 'R') {
+            showResource.value = true
           }
         })
       }

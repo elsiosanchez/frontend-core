@@ -282,6 +282,7 @@ export default defineComponent({
       store.commit('setTabOptions', undefined)
       store.commit('setPanelKanban', false)
       store.commit('setPanelCalendar', false)
+      store.commit('setPanelResource', false)
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
         recordsSelected: [row]
@@ -300,6 +301,7 @@ export default defineComponent({
     }
     function handleCommandActions(data) {
       if (data.display_type === 'K') {
+        store.commit('setPanelResource', false)
         store.commit('setPanelCalendar', false)
         store.commit('setPanelKanban', true)
         store.dispatch('searchPanelKanban', {
@@ -307,6 +309,7 @@ export default defineComponent({
         })
       }
       if (data.display_type === 'C') {
+        store.commit('setPanelResource', false)
         store.commit('setPanelKanban', false)
         store.commit('setPanelCalendar', true)
         store.dispatch('getListTasksFromServer', {
@@ -317,9 +320,9 @@ export default defineComponent({
         store.commit('setPanelKanban', false)
         store.commit('setPanelCalendar', false)
         store.commit('setPanelResource', true)
-        store.dispatch('searchPanelResource', {
-          id: data.id
-        })
+        // store.dispatch('searchPanelResource', {
+        //   id: data.id
+        // })
       }
 
       store.commit('setTabOptions', data)

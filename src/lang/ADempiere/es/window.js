@@ -67,7 +67,8 @@ const window = {
       tableName: 'Nombre de la Tabla',
       allChanges: 'Ver todos los cambios ',
       calendar: 'Calendario',
-      timeLine: 'Línea de Tiempo'
+      timeLine: 'Línea de Tiempo',
+      resource: 'Recursos'
     },
     notices: {
       user: 'Usuario',

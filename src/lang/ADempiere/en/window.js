@@ -66,7 +66,8 @@ const window = {
       tableName: 'Table Name',
       allChanges: 'See all changes',
       calendar: 'Calendar',
-      timeLine: 'Time Line'
+      timeLine: 'Time Line',
+      resource: 'Resources'
     },
     notices: {
       user: 'User',
