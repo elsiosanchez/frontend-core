@@ -69,6 +69,7 @@ const resource = {
                 id: name,
                 title: name,
                 eventColor: color,
+                building: name,
                 children: resources.map(child => {
                   return {
                     id: child.name,

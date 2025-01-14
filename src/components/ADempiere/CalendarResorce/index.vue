@@ -173,26 +173,64 @@ export default defineComponent({
         headerToolbar: {
           left: 'today prev,next',
           center: 'title',
-          right: 'resourceTimelineMonth,resourceTimelineYear'
+          right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear'
         },
-        resourceAreaWidth: '15%',
+        // resourceGroupField: 'group',
+        resourceAreaWidth: '25%',
+        // slotDuration: duration,
+        // slotLabelInterval: labelInterval,
         initialView: 'resourceTimelineYear',
+        resourceGroupField: 'building',
+        eventMinWidth: 90,
         scrollTime: '08:00',
         aspectRatio: 1.5,
         editable: true,
-        resourceAreaHeaderContent: 'MAILING',
+        resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
         resources: groudResource.value,
         events: recordsEvents.value,
+        views: {
+          resourceTimelineDay: {
+            slotDuration: '00:30:00', // Intervalos de 30 minutos
+            slotLabelInterval: '00:30:00' // Etiquetas cada 30 minutos
+          },
+          resourceTimelineWeek: {
+            slotDuration: '01:00:00', // Intervalos de 1 hora
+            slotLabelInterval: '01:00:00' // Etiquetas cada 1 hora
+          },
+          resourceTimelineMonth: {
+            slotDuration: { days: 1 }, // Intervalos de 1 día
+            slotLabelInterval: { days: 1 } // Etiquetas cada día
+          },
+          resourceTimelineYear: {
+            slotDuration: { months: 1 }, // Intervalos de 1 mes
+            slotLabelInterval: { months: 1 } // Etiquetas cada mes
+          }
+        },
         // events: DEFAULT_EVENTS,
-        select: handleDateSelect(),
+        // select: handleDateSelect(info),
+        // eventClick: function(info) {
+        //   console.log('Se hizo clik', { info })
+        //   // Aquí puedes agregar la lógica que desees ejecutar al cambiar la vista
+        // },
         // eventClick: handleEventClick(),
-        eventsSet: handleEvents()
+        // eventsSet: handleEvents(info),
+        datesSet: function(info) {
+          changeRange(info)
+          // console.log('La vista ha cambiado a:', { info }, info.view.type);
+          // Aquí puedes agregar la lógica que desees ejecutar al cambiar la vista
+        }
       }
     })
 
     /**
      * Methods
      */
+
+    function changeRange(params) {
+      if (isEmptyValue(params)) return
+      const { endStr, startStr } = params.view
+      return { endStr, startStr }
+    }
 
     function handleDateSelect(selectInfo) {
       if (!selectInfo) {
@@ -256,6 +294,7 @@ export default defineComponent({
       handleEventClick,
       handleEvents,
       translateDate,
+      changeRange,
       //
       esLocale,
       listPlugin,
@@ -322,6 +361,48 @@ export default defineComponent({
   }
 }
 
+.fc-resource-area {
+  width: 200px; /* Ajusta este valor según sea necesario */
+}
+
+.fc-resource-group {
+  white-space: normal; /* Permite que el texto se ajuste a varias líneas */
+  overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
+  text-overflow: clip; /* Evita el recorte del texto */
+}
+
+.fc-resource-group {
+  white-space: nowrap; /* Evita que el texto se ajuste a varias líneas */
+  overflow: hidden; /* Oculta el desbordamiento */
+  text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto recortado */
+}
+
+.fc .fc-view-harness {
+  flex-grow: 1;
+  position: relative;
+  height: 85ch !important;
+}
+
+// .fc .fc-scroller-harness-liquid {
+//   height: 60% !important;
+// }
+.fc-resource-area {
+  width: 200px; /* Ajusta este valor según sea necesario */
+}
+
+.fc-resource-group {
+  white-space: normal; /* Permite que el texto se ajuste a varias líneas */
+  overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
+  text-overflow: clip; /* Evita el recorte del texto */
+}
+
+.fc-license-message {
+  color: transparent;
+  background: transparent !important;
+  z-index: -1 !important;
+  border: 0px !important;
+}
+
 .custom-card-calendar {
   margin: 0px;
   cursor: pointer;
@@ -329,11 +410,6 @@ export default defineComponent({
 .custom-card-calendar:hover {
   background-color: #eaf5fe;
   border: 1px solid #36a3f7;
-}
-.fc-direction-ltr {
-  direction: ltr;
-  text-align: left;
-  height: 85% !important;
 }
 .tab-options-container-calendar {
   position: relative;

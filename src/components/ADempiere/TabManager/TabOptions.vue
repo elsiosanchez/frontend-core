@@ -194,7 +194,6 @@ export default defineComponent({
       const tabOptions = store.getters.getTabOptions
       if (!isEmptyValue(tabOptions)) {
         const { name, description } = tabOptions
-        console.log(tabOptions)
         title.value = name
         optionDescrip.value = description
         return tabOptions
