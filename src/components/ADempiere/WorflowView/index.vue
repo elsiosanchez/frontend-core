@@ -26,7 +26,7 @@
         style="font-weight: bold;"
       />
     </el-steps>
-    <div style="overflow: scroll; height: calc(100vh - 300px)">
+    <div style="overflow-x: hidden; overflow-y: scroll;  height: calc(100vh - 300px)">
       <el-timeline v-if="!isEmptyValue(listWorkflow.records)">
         <el-timeline-item
           v-for="(worrkflow, keys) in listWorkflow.records"
@@ -48,7 +48,7 @@
             </div>
             <el-collapse-transition>
               <el-scrollbar wrap-class="scroll-child" style="font-size: 12px;">
-                <div v-show="(currentKey === keys)">
+                <div v-show="(currentKey === keys)" style="line-height: 5">
                   <span>
                     {{ worrkflow.description }}
                   </span>
