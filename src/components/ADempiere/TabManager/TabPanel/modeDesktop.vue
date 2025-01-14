@@ -418,7 +418,7 @@ export default defineComponent({
 
 <style>
 #tab-manager .el-tabs--border-card > .el-tabs__content {
-  height: calc(100vh - 175px);
+  height: calc(100vh - 175px) !important
 }
 .el-tabs--border-card > .el-tabs__content {
   /* padding: 15px; */

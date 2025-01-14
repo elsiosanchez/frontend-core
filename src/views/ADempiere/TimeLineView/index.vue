@@ -125,9 +125,9 @@ export default defineComponent({
 
 <style scoped>
 .timeline-container {
+  height: calc(100vh - 300px) !important;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .el-timeline {
