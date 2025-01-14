@@ -88,11 +88,13 @@ const workflow = {
       })
     },
     getWorflowDisplay({ commit }, {
-      id
+      id,
+      filters
     }) {
       return new Promise(resolve => {
         workflowsDisplay({
-          id
+          id,
+          filters
         })
           .then(response => {
             resolve(response)

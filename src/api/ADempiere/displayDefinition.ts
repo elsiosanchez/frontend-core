@@ -75,11 +75,15 @@ export function timeLines({
 }
 
 export function workflowsDisplay({
-  id
+  id,
+  filters
 }) {
   return request({
     url: `/display-definition/workflows/${id}`,
-    method: 'get'
+    method: 'get',
+    params: {
+      filters: JSON.stringify([filters])
+    }
   })
 }
 export function resources({

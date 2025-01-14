@@ -113,7 +113,8 @@ export default defineComponent({
       const filter = displayDefinition.value.find(display => display.display_type === 'W')
       const { id } = filter
       store.dispatch('getWorflowDisplay', {
-        id
+        id,
+        filters: { name: [tableName.value] + '_ID', values: recordId.value }
       })
         .then(response => {
           if (!isEmptyValue(response)) {
