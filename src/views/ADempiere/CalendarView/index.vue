@@ -55,7 +55,7 @@
                 <p style="font-size: 14px;">{{ event.description }}</p>
                 <p
                   v-if="!isEmptyValue(event.valid_from) && !isEmptyValue(event.valid_to)"
-                  style="text-align: left; color: gray; font-size: 12px; margin: 0px;"
+                  style="text-align: left; color: gray; font-size: 12px; margin: 0px; padding-bottom: 10px;"
                 >
                   {{
                     translateDate({
@@ -331,7 +331,7 @@ export default defineComponent({
     margin: 0 auto;
     /* max-width: auto; */
     width: auto;
-    height: 100%;
+    height: 100% !important;
     overflow: auto;
     display: block;
   }
@@ -340,6 +340,7 @@ export default defineComponent({
 .custom-card-calendar {
   margin: 0px;
   cursor: pointer;
+  padding-top: 10px;
 }
 .custom-card-calendar:hover {
   background-color: #eaf5fe;
@@ -362,5 +363,4 @@ export default defineComponent({
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 </style>
