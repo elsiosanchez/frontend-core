@@ -30,9 +30,7 @@
             style="font-size: 26px"
           /> -->
           <b style="font-size: 16px;padding-left: 10px;">
-            <i>
-              {{ column.title }}
-            </i>
+            {{ column.title }}
           </b>
         </template>
         <draggable
