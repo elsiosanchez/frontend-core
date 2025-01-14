@@ -298,7 +298,12 @@ export default defineComponent({
         }, 500)
       }
     })
-
+    function searchDisplay() {
+      store.dispatch('getDisplayDefinition', {
+        tableName
+      })
+    }
+    searchDisplay()
     return {
       // Consts
       containerManager,
@@ -328,7 +333,8 @@ export default defineComponent({
       isViewFullScreenParent,
       sizeTab,
       sizeTabChild,
-      styleScroll
+      styleScroll,
+      searchDisplay
     }
   }
 

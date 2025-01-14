@@ -189,7 +189,11 @@ export default defineComponent({
   setup(props) {
     const title = ref('')
     const optionDescrip = ref('')
-    const displayOptions = ref({})
+    const displayOptions = computed(() => {
+      const response = store.getters.getDefinition
+      const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
+      return filteredOptions
+    })
     const selectedOption = computed(() => {
       const tabOptions = store.getters.getTabOptions
       if (!isEmptyValue(tabOptions)) {
@@ -328,28 +332,15 @@ export default defineComponent({
       store.commit('setTabOptions', data)
     }
 
-    function searchDisplay() {
-      if (storedTab.value) {
-        store.dispatch('getDisplayDefinition', {
-          tableName: tableName.value
-        })
-          .then(response => {
-            if (!isEmptyValue(response)) {
-              const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
-              displayOptions.value = filteredOptions
-            }
-          })
-      }
-    }
     function getIcon(type) {
       if (type === 'K') return 'kanbanMode'
 
       if (type === 'C') return 'calendar'
 
-      if (type === 'R') return 'resources'
+      if (type === 'R') return 'calendar'
       return ''
     }
-    searchDisplay()
+
     return {
       // ref
       displayOptions,
@@ -368,7 +359,6 @@ export default defineComponent({
       // methods
       changeShowedRecords,
       handleCommandActions,
-      searchDisplay,
       getIcon
     }
   }
