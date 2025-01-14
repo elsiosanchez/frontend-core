@@ -178,13 +178,13 @@ export default defineComponent({
       return '65%'
     })
     function showPanel(id) {
-      if (!isEmptyValue(id)) {
+      if (!isEmptyValue(id) && typeof id !== 'function') {
         setRecordPath({
           recordId: id
         })
         recordId.value = id
-        store.commit('setShowLogs', !showContainerInfo.value)
       }
+      store.commit('setShowLogs', !showContainerInfo.value)
     }
 
     const tableName = computed(() => {
@@ -260,6 +260,21 @@ export default defineComponent({
             [columnName]: value
           }
         })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              showClose: true,
+              message: 'OK'
+            })
+          })
+          .catch(error => {
+            loadColumns()
+            this.$message({
+              type: 'error',
+              showClose: true,
+              message: error.message
+            })
+          })
       }
     }
     watch(info, () => {
