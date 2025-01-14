@@ -69,7 +69,7 @@ const staticRoutes = [
         meta: {
           title: language.t('component.calendar.calendarTimeLine'),
           fileName: 'AcctViewer',
-          icon: 'el-icon-date',
+          icon: 'resources',
           noCache: true,
           isIndex: true
         }

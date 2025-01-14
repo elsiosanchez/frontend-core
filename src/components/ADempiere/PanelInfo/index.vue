@@ -276,7 +276,7 @@ export default defineComponent({
           show: showResource.value,
           svg: true,
           isLoading: false,
-          iconClass: 'calendar',
+          iconClass: 'resources',
           component: CalendarResorce
         }
       ]
