@@ -111,7 +111,7 @@ export default {
         this.$store.getters.getStoredSearchValueLookup({
           parentUuid: this.metadata.parentUuid,
           containerUuid: this.metadata.containerUuid,
-          contextColumnNames: this.metadata.contextColumnNames,
+          contextColumnNames: this.metadata.context_column_names,
           uuid: this.metadata.uuid,
           id: this.metadata.internal_id
         })

@@ -1974,8 +1974,10 @@ export const containerManager = {
       parentUuid,
       containerUuid,
       contextColumnNames,
-      fieldUuid: uuid,
       id,
+      fieldId: id,
+      uuid,
+      fieldUuid: uuid,
       //
       columnName,
       value

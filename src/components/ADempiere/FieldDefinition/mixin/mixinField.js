@@ -96,7 +96,7 @@ export default {
       return store.getters.getStoredDefaultValue({
         parentUuid: this.metadata.parentUuid,
         containerUuid: this.metadata.containerUuid,
-        contextColumnNames: this.metadata.contextColumnNames,
+        contextColumnNames: this.metadata.context_column_names,
         //
         uuid: this.metadata.uuid,
         id: this.metadata.internal_id,
@@ -243,7 +243,7 @@ export default {
         return this.containerManager.getDefaultValue({
           parentUuid: this.metadata.parentUuid,
           containerUuid: this.metadata.containerUuid,
-          contextColumnNames: this.metadata.contextColumnNames,
+          contextColumnNames: this.metadata.context_column_names,
           defaultValue: this.metadata.default_value,
           //
           inTable: this.metadata.inTable,

@@ -339,10 +339,10 @@ export const containerManager = {
       parentUuid,
       containerUuid,
       contextColumnNames,
+      id,
       browseFieldId: id,
-      browseFieldUuid: uuid,
       uuid,
-      // id,
+      browseFieldUuid: uuid,
       //
       columnName,
       value

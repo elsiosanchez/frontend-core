@@ -148,7 +148,7 @@ export default function useFieldDefinition({ fieldMetadata, containerManager }) 
     return store.getters.getStoredDefaultValue({
       parentUuid: fieldMetadata.parentUuid,
       containerUuid: fieldMetadata.containerUuid,
-      contextColumnNames: fieldMetadata.contextColumnNames,
+      contextColumnNames: fieldMetadata.context_column_names,
       //
       uuid: fieldMetadata.uuid,
       id: fieldMetadata.internal_id,

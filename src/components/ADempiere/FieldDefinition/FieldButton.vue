@@ -63,7 +63,9 @@ import fieldMixinDisplayColumn from '@/components/ADempiere/FieldDefinition/mixi
 import {
   TRUE_STRING, FALSE_STRING
 } from '@/utils/ADempiere/formatValue/booleanFormat'
-import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
+} from '@/utils/ADempiere/constants/systemColumns'
 import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helpers Methods
@@ -320,7 +322,7 @@ export default {
       const contextAttributesList = getContextAttributes({
         parentUuid: this.metadata.parentUuid,
         containerUuid: this.metadata.containerUuid,
-        contextColumnNames: this.metadata.contextColumnNames,
+        contextColumnNames: this.metadata.context_column_names,
         keyName: 'key'
       })
       return generateContextKey(contextAttributesList, 'key')
@@ -335,14 +337,14 @@ export default {
             containerUuid,
             rowIndex: this.metadata.rowIndex,
             rowUid: this.metadata.rowUid,
-            columnName: 'AD_Table_ID'
+            columnName: COLUMNNAME_AD_Table_ID
           })
           return value
         } else {
           const value = store.getters.getValueOfFieldOnContainer({
             parentUuid: this.metadata.parentUuid,
             containerUuid,
-            columnName: 'AD_Table_ID'
+            columnName: COLUMNNAME_AD_Table_ID
           })
           return value
         }

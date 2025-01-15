@@ -79,12 +79,15 @@ const defaultValueManager = {
       //
       id,
       uuid,
+      fieldId,
       fieldUuid,
       browseFieldId,
       processParameterId,
       processParameterUuid,
       browseFieldUuid,
+      columnId,
       columnUuid,
+      tableName,
       columnName,
       value
     }) {
@@ -139,6 +142,10 @@ const defaultValueManager = {
           key += `|${processParameterUuid}`
         } else if (!isEmptyValue(browseFieldUuid)) {
           key += `|${browseFieldUuid}`
+        } else if (!isEmptyValue(columnUuid)) {
+          key += `|${columnUuid}`
+        } else if (!isEmptyValue(tableName) && !isEmptyValue(columnName)) {
+          key += `|${tableName}-${columnName}`
         }
 
         const contextKey = generateContextKey(contextAttributesList)
@@ -162,7 +169,10 @@ const defaultValueManager = {
 
         requestDefaultValue({
           contextAttributes,
-          id,
+          columnId,
+          tableName,
+          columnName,
+          fieldId,
           browseFieldId,
           processParameterId,
           value
@@ -188,17 +198,19 @@ const defaultValueManager = {
             //   })
             // }
 
-            const displayValue = values.DisplayColumn
+            const {
+              DisplayColumn: displayValue,
+              UUID: uuidValue
+            } = values
 
             commit('setDefaultValue', {
               key,
               clientId,
               contextAttributesList,
-              id, // field id
-              uuid: values.UUID, // record uuid
               // set value of server to parsed if is number as string "101" -> 101
               value: valueOfServer,
               displayedValue: displayValue,
+              uuid: uuidValue, // record uuid
               isActive: is_active,
               reason: 'Successful default value'
             })
@@ -217,19 +229,19 @@ const defaultValueManager = {
                 value: displayValue
               })
             }
-            if (!isEmptyValue(values.UUID)) {
+            if (!isEmptyValue(uuidValue)) {
               commit('updateValueOfField', {
                 parentUuid,
                 containerUuid,
                 columnName: columnName + UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX,
-                value: values.UUID
+                value: uuidValue
               })
             }
 
             resolve({
               displayedValue: displayValue,
               value: valueOfServer,
-              uuid: values.UUID,
+              uuid: uuidValue,
               isActive: is_active,
               reason: 'Successful default value'
             })

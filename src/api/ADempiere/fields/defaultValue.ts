@@ -23,28 +23,32 @@ import { request } from '@/utils/ADempiere/request'
 /**
  * Get default value for a field, parameter or query criteria
  * @param {array} contextAttributesList, key value
- * @param {string} fieldUuid, uuid of window field
- * @param {string} processParameterUuid, uuid of process/report field
- * @param {string} browseFieldUuid, uuid of browser field
- * @param {integer} id, identifier of field
- * @param {string} columnUuid, uuid of column
+ * @param {integer} fieldId, identifier of field
+ * @param {string} processParameterId, uuid of process/report field
+ * @param {string} browseFieldId, uuid of browser field
+ * @param {string} columnId, uuid of column
  * @param {mixed} value, value to overwrite default value on dictionary definition
  */
 export function requestDefaultValue({
-  columnName,
   tableName,
+  columnName,
   columnId,
-  id,
+  //
+  fieldId,
+  //
   processParameterId,
   processParameterToId,
+  //
   browseFieldId,
   browseFieldToId,
+  //
   contextAttributes,
   value
 }) {
-  const column_name = columnName
   const table_name = tableName
+  const column_name = columnName
   const column_id = columnId
+  const field_id = fieldId
   const process_parameter_id = processParameterId
   const process_parameter_to_id = processParameterToId
   const browse_field_id = browseFieldId
@@ -52,14 +56,14 @@ export function requestDefaultValue({
 
   let url
   switch (true) {
-    case (!isEmptyValue(column_name) && isEmptyValue(table_name)):
+    case (!isEmptyValue(table_name) && !isEmptyValue(column_name)):
       url = `/fields/default-value/${table_name}/${column_name}`
       break
     case !isEmptyValue(column_id):
       url = `/fields/default-value/column/${column_id}`
       break
-    case !isEmptyValue(id):
-      url = `/fields/default-value/field/${id}`
+    case !isEmptyValue(field_id):
+      url = `/fields/default-value/field/${field_id}`
       break
     case !isEmptyValue(process_parameter_id):
       url = `/fields/default-value/parameter/${process_parameter_id}`

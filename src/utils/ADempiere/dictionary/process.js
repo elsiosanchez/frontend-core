@@ -280,7 +280,9 @@ export const containerManager = {
       parentUuid,
       containerUuid,
       contextColumnNames,
+      id,
       processParameterId: id,
+      uuid,
       processParameterUuid: uuid,
       //
       columnName,
