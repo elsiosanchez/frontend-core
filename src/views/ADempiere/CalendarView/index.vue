@@ -39,7 +39,7 @@
         :default-opened-tab="defaultNameTab"
       />
     </el-drawer>
-    <div class="tab-options-container-calendar">
+    <div v-if="!isPanel" class="tab-options-container-calendar">
       <advanced-tab-query
         v-if="!isPanel"
         :parent-uuid="parentUuid"
@@ -55,6 +55,15 @@
         :container-uuid="containerUuid"
         :current-tab-uuid="currentTabUuid"
       />
+    </div>
+    <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
+      <svg-icon icon-class="workflow" />
+      <span style="font-weight: bold;">
+        {{ infoTitle }}
+      </span>
+      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
+        {{ infoDescription }}
+      </div>
     </div>
     <div class="demo-app">
       <div class="demo-app-sidebar">
@@ -194,6 +203,8 @@ export default defineComponent({
     const currentRoute = router.app._route
     const currentRecordLogs = ref({})
     const calendarRef = ref(null)
+    const infoTitle = ref('')
+    const infoDescription = ref('')
     const defaultNameTab = computed(() => {
       return store.getters.getDefaultOpenedTab
     })
@@ -310,12 +321,15 @@ export default defineComponent({
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'C')
         let filters
+        const { id, description, name } = filter
+        infoTitle.value = name
+        infoDescription.value = description
         if (props.isPanel) {
           filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
           filters = JSON.stringify(filters)
         }
         store.dispatch('getListCalendars', {
-          id: filter.id,
+          id,
           filters,
           isPanel: props.isPanel
         })
@@ -337,6 +351,8 @@ export default defineComponent({
       isDrawerWidth,
       isLoading,
       filter,
+      infoTitle,
+      infoDescription,
       currentEvents,
       calendarOptions,
       calendarRef,
