@@ -16,6 +16,7 @@
       </div>
       <template #footer>
         <el-button @click="closeModal">Cerrar</el-button>
+        <el-button v-if="!isPanel" @click="showPanel(selection.value )">Detalles</el-button>
       </template>
     </el-dialog>
   </div>
@@ -28,9 +29,16 @@ import {
   computed
 } from '@vue/composition-api'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'ModalCalendar',
+  props: {
+    isPanel: {
+      type: Boolean,
+      default: true
+    }
+  },
   setup() {
     const showModal = computed(() => {
       return store.getters.getShowModal
@@ -41,11 +49,26 @@ export default defineComponent({
     function closeModal() {
       store.commit('setShowModal', false)
     }
+    const showContainerInfo = computed(() => {
+      return store.getters.getShowLogs
+    })
+    function showPanel(id) {
+      if (!isEmptyValue(id) && typeof id !== 'function') {
+        setRecordPath({
+          recordId: id
+        })
+      }
+      closeModal()
+      store.commit('setShowLogs', !showContainerInfo.value)
+    }
+
     return {
+      showContainerInfo,
       showModal,
       selection,
       closeModal,
-      translateDate
+      translateDate,
+      showPanel
     }
   }
 })

@@ -31,7 +31,8 @@ const calendarView = {
   showModal: false,
   selectedDate: [],
   showCalendar: false,
-  isLoadingTasksEvents: false
+  isLoadingTasksEvents: false,
+  tabInfo: []
 }
 
 export default {
@@ -52,6 +53,9 @@ export default {
     },
     setLoadingTasksEvents(state, value) {
       state.isLoadingTasksEvents = value
+    },
+    setTabInfo(state, value) {
+      state.tabInfo = value
     }
   },
 
@@ -96,7 +100,8 @@ export default {
     getListCalendars({ commit }, {
       id,
       filters,
-      searchValue
+      searchValue,
+      isPanel
     }) {
       commit('setLoadingTasksEvents', true)
       return new Promise(resolve => {
@@ -107,7 +112,11 @@ export default {
         })
           .then(response => {
             const { records } = response
-            commit('setListTaks', records)
+            if (isPanel) {
+              commit('setTabInfo', records)
+            } else {
+              commit('setListTaks', records)
+            }
             resolve(response)
           })
           .catch(error => {
@@ -144,6 +153,9 @@ export default {
     },
     getIsLoadingTasksEvents(state) {
       return state.isLoadingTasksEvents
+    },
+    getTabInfo(state) {
+      return state.tabInfo
     }
   }
 }

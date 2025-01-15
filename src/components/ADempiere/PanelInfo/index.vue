@@ -154,6 +154,7 @@ export default defineComponent({
     const showResource = ref(false)
     const showTimeLine = ref(false)
     const showWorkflow = ref(false)
+    const currentRoute = router.app._route
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
     }
@@ -356,9 +357,8 @@ export default defineComponent({
 
     // Current Record ID
     const currentRecordId = computed(() => {
-      if (!isEmptyValue(props.recordId)) {
-        return props.recordId
-      }
+      if (!isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) return Number(currentRoute.query.recordId)
+      if (!isEmptyValue(currentRoute.params) && !isEmptyValue(currentRoute.params.recordId)) return Number(currentRoute.params.recordId)
       if (currentTab.value) {
         const { table } = currentTab.value
         const { key_columns, table_name } = table
@@ -610,7 +610,6 @@ export default defineComponent({
       })
     }
     store.dispatch('findListMailTemplates')
-
     function showAccoutingFacts() {
       if (isEmptyValue(currentRecordId.value)) {
         store.commit('setIsShowAccoutingFacts', false)

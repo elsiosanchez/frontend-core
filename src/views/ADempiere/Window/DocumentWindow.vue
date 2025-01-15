@@ -42,6 +42,10 @@
         :parent-uuid="windowMetadata.uuid"
         :container-uuid="currentTabUuid"
         :current-tab-uuid="currentTabUuid"
+        :tabs-list="windowMetadata.tabsListParent"
+        :all-tabs-list="allTabsList"
+        :actions-manager="actionsManager"
+        :style="styleScroll"
       />
       <calendar-resorce
         v-if="showResource && !(showKanban || showCalendar)"

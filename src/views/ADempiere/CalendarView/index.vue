@@ -17,6 +17,28 @@
 -->
 <template>
   <div v-loading="isLoading">
+    <el-drawer
+      v-if="!isPanel"
+      :visible.sync="showContainerInfo"
+      :with-header="true"
+      :before-close="showPanel"
+      :size="isDrawerWidth"
+      class="drawer-panel-info"
+    >
+      <span slot="title">
+        <svg-icon icon-class="tab" style="margin-right: 10px;" />
+        {{ $t('window.containerInfo.log.tab') }}
+      </span>
+      <panel-info
+        v-if="showContainerInfo"
+        :all-tabs-list="allTabsList"
+        :show-container-info="showContainerInfo"
+        :container-manager="containerManager"
+        :current-record="currentRecordLogs"
+        :is-accounting-info="isAccountingInfo"
+        :default-opened-tab="defaultNameTab"
+      />
+    </el-drawer>
     <div class="tab-options-container-calendar">
       <advanced-tab-query
         v-if="!isPanel"
@@ -38,11 +60,11 @@
       <div class="demo-app-sidebar">
         <div class="demo-app-sidebar-section">
           <h2 style="padding-left: 10px; padding-top: 10px;">
-            {{ $t('component.calendar.allEvents') }} ({{ currentEvents.length }})
+            {{ $t('component.calendar.allEvents') }} ({{ isPanel ? tabCurrentEvents.length : currentEvents.length }})
           </h2>
           <ul>
             <li
-              v-for="event in currentEvents"
+              v-for="event in (isPanel ? tabCurrentEvents : currentEvents)"
               :key="event.id"
               @click="goToEventDate(event)"
             >
@@ -55,7 +77,7 @@
                 <p style="font-size: 14px;">{{ event.description }}</p>
                 <p
                   v-if="!isEmptyValue(event.valid_from) && !isEmptyValue(event.valid_to)"
-                  style="text-align: left; color: gray; font-size: 12px; margin: 0px; padding-bottom: 10px;"
+                  style="text-align: left; color: gray; font-size: 12px; margin: 0px; padding-bottom: 10px !important"
                 >
                   {{
                     translateDate({
@@ -90,8 +112,9 @@
       </div>
     </div>
 
-    <!-- Modal -->
-    <modal-calendar />
+    <modal-calendar
+      :is-panel="isPanel"
+    />
   </div>
 </template>
 <script>
@@ -114,6 +137,7 @@ import ModalCalendar from './modal.vue'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import AdvancedTabQuery from '@/views/ADempiere/CalendarView/advancedTabQuery.vue'
+
 // Constants
 import { createEventId } from './event-utils'
 
@@ -127,7 +151,8 @@ export default defineComponent({
     FullCalendar,
     ModalCalendar,
     TabOptions,
-    AdvancedTabQuery
+    AdvancedTabQuery,
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo')
   },
   props: {
     isPanel: {
@@ -149,17 +174,49 @@ export default defineComponent({
     currentTabUuid: {
       type: String,
       required: false
+    },
+    allTabsList: {
+      type: Array,
+      required: false
+    },
+    tabsList: {
+      type: Array,
+      default: () => []
+    },
+    // used only window
+    isAccountingInfo: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
+    const currentRoute = router.app._route
+    const currentRecordLogs = ref({})
     const calendarRef = ref(null)
+    const defaultNameTab = computed(() => {
+      return store.getters.getDefaultOpenedTab
+    })
     const isLoading = computed(() => {
       return store.getters.getIsLoadingTasksEvents
     })
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
     })
-
+    const tabCurrentEvents = computed(() => {
+      return store.getters.getTabInfo
+    })
+    const showContainerInfo = computed(() => {
+      return store.getters.getShowLogs
+    })
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
+    const isDrawerWidth = computed(() => {
+      if (isMobile.value) {
+        return '100%'
+      }
+      return '65%'
+    })
     const calendarOptions = computed(() => {
       return {
         plugins: [
@@ -175,7 +232,7 @@ export default defineComponent({
           right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
         },
         initialView: 'dayGridMonth',
-        events: currentEvents.value.map(data => {
+        events: (props.isPanel ? tabCurrentEvents.value : currentEvents.value).map(data => {
           const { id, title, description, valid_from, valid_to } = data
           return {
             id,
@@ -207,7 +264,7 @@ export default defineComponent({
         title: info.event.title,
         start: info.event.start,
         end: info.event.end,
-        value: info.event.extendedProps.value,
+        value: info.event.id,
         location: info.event.extendedProps.location,
         description: info.event.extendedProps.description
       })
@@ -236,7 +293,7 @@ export default defineComponent({
     })
     const filter = displayDefinition.value.find(display => display.display_type === 'C')
 
-    const { query, params } = router.app._route
+    const { query, params } = currentRoute
     const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
       if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
@@ -257,7 +314,8 @@ export default defineComponent({
         }
         store.dispatch('getListCalendars', {
           id: filter.id,
-          filters
+          filters,
+          isPanel: props.isPanel
         })
       }
     }
@@ -267,16 +325,26 @@ export default defineComponent({
         calendarApi.gotoDate(event.valid_from)
       }
     }
+    function showPanel() {
+      store.commit('setShowLogs', !showContainerInfo.value)
+    }
     searchListCalendars()
     return {
+      recordId,
+      showContainerInfo,
+      isDrawerWidth,
       isLoading,
       filter,
       currentEvents,
       calendarOptions,
       calendarRef,
+      currentRecordLogs,
+      defaultNameTab,
+      tabCurrentEvents,
       handleEventClick,
       translateDate,
-      goToEventDate
+      goToEventDate,
+      showPanel
     }
   }
 })
@@ -363,4 +431,5 @@ export default defineComponent({
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+
 </style>
