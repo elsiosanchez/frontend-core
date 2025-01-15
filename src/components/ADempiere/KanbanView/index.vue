@@ -6,6 +6,7 @@
         :container-uuid="containerUuid"
         :container-manager="containerManager"
         :id-display-definition="filter.id"
+        :name-list-server="'searchPanelKanban'"
         style="float: right;"
       />
       <tab-options
@@ -147,7 +148,7 @@ export default defineComponent({
       default: false
     }
   },
-  setup() {
+  setup(props) {
     const columns = ref([])
     const recordId = ref('')
     const isLoading = computed(() => {

@@ -96,6 +96,7 @@ export function resources({
     method: 'get',
     params: {
       search_value: searchValue,
+      page_size: 1000,
       filters
     }
   })

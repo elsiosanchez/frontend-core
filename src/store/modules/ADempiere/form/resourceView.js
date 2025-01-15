@@ -18,10 +18,13 @@
 
 import { resources } from '@/api/ADempiere/displayDefinition.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
+import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 const initState = {
   panelResource: false,
   infoResource: {},
   isLoadingResource: false,
+  endStr: getStartAndEndOfCurrentMonth()[1],
+  startStr: getStartAndEndOfCurrentMonth()[0],
   filters: []
 }
 
@@ -34,31 +37,49 @@ const resource = {
     setInfoKResource(state, value) {
       state.infoResource = value
     },
-    setIsLoadingResource(state, value) {
-      state.isLoadingResource = value
+    setIsLoadingResource(state, isLoading) {
+      state.isLoadingResource = isLoading
     },
     setFilters(state, value) {
       state.filters = value
+    },
+    setDateDefaults(state, {
+      startStr,
+      endStr
+    }) {
+      state.startStr = startStr
+      state.endStr = endStr
     }
   },
   actions: {
-    searchPanelResource({ commit, getters }, {
+    searchPanelResource({ state, commit, getters, dispatch }, {
       id,
       filters,
       searchValue
     }) {
       commit('setIsLoadingResource', true)
+      let defaultFilters = ''
+      const currentDefinitions = getters.getTabOptions
+      if (!isEmptyValue(currentDefinitions.valid_to_column)) {
+        defaultFilters += `[{"name":"${currentDefinitions.valid_to_column}","operator":"between","values":["${state.startStr}","${state.endStr}"]}],`
+      }
+      // if (!isEmptyValue(currentDefinitions.valid_to_column)) {
+      //   defaultFilters += `[{"name": "${currentDefinitions.valid_to_column}", "operator":"equal", "value": "${state.startStr}"}]`
+      // }
+      // if (!isEmptyValue(currentDefinitions.valid_from_column)) {
+      //   defaultFilters += `[{"name": "${currentDefinitions.valid_from_column}", "operator":"equal", "value": "${state.endStr}"}]`
+      // }
+      let allFilters
       if (!isEmptyValue(filters)) {
-        commit('setFilters', filters)
+        allFilters = filters + ',' + defaultFilters
+      } else {
+        allFilters = defaultFilters
       }
-      if (isEmptyValue(filters)) {
-        const storeFiltrs = getters.getFilters
-        filters = storeFiltrs
-      }
+
       return new Promise(resolve => {
         resources({
           id,
-          filters,
+          filters: allFilters,
           searchValue
         })
           .then(response => {
@@ -102,6 +123,17 @@ const resource = {
             commit('setIsLoadingResource', false)
           })
       })
+    },
+    setDateDefault({ commit, dispatch, getters }, {
+      startStr,
+      endStr
+    }) {
+      const dateDefaults = getStartAndEndOfCurrentMonth()
+      if (isEmptyValue(startStr)) startStr = dateDefaults[0]
+      if (isEmptyValue(endStr)) endStr = dateDefaults[1]
+      const currentDefinitions = getters.getTabOptions
+      commit('setDateDefaults', { startStr, endStr })
+      dispatch('searchPanelResource', { id: currentDefinitions.id })
     }
   },
   getters: {
@@ -113,9 +145,6 @@ const resource = {
     },
     getIsLoadingResource: (state) => {
       return state.isLoadingResource
-    },
-    getFilters: (state) => {
-      return state.filters
     }
   }
 }

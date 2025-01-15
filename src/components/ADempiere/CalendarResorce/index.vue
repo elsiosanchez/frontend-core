@@ -18,7 +18,35 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <div v-loading="isLoading">
+    <el-drawer
+      :visible.sync="showContainerInfo"
+      :with-header="true"
+      :before-close="closePanel"
+      :size="isDrawerWidth"
+      class="drawer-panel-info"
+    >
+      <span slot="title">
+        <svg-icon icon-class="tab" style="margin-right: 10px;" />
+        {{ $t('window.containerInfo.log.tab') }}
+      </span>
+      <panel-info
+        :all-tabs-list="allTabsList"
+        :show-container-info="showContainerInfo"
+        :container-manager="containerManager"
+        :is-accounting-info="isAccountingInfo"
+        :default-opened-tab="'getRecordLogs'"
+        :record-id="recordId"
+      />
+    </el-drawer>
     <div v-if="!isPanel" class="tab-options-container-calendar">
+      <advanced-tab-query
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :container-manager="containerManager"
+        :id-display-definition="filter.id"
+        :name-list-server="'searchPanelResource'"
+        style="float: right;"
+      />
       <tab-options
         :container-manager="containerManager"
         :parent-uuid="parentUuid"
@@ -31,8 +59,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         class="demo-app-calendar"
         :options="calendarOptions"
       >
-        <template v-slot:eventContent="arg">
-          <b>{{ arg.timeText }}</b>
+        <template
+          v-slot:eventContent="arg"
+        >
+          <b @dblclick="openPanel(12)">{{ arg.timeText }}</b>
           <i>{{ arg.event.title }}</i>
         </template>
       </FullCalendar>
@@ -43,12 +73,11 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <script>
 import lang from '@/lang'
 import store from '@/store'
-import router from '@/router'
 
 import {
   defineComponent,
-  computed
-  // ref
+  computed,
+  ref
 } from '@vue/composition-api'
 
 // Components and Mixins
@@ -60,19 +89,21 @@ import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
-// Constants
-// import { DEFAULT_RESOURCES, DEFAULT_EVENTS } from './data-resource-time'
+import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
+import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 
 // Utils and Helpers Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'ResourceTimelineView',
 
   components: {
+    TabOptions,
     FullCalendar, // make the <FullCalendar> tag available
-    TabOptions
+    PanelInfo,
+    AdvancedTabQuery
   },
 
   props: {
@@ -86,6 +117,10 @@ export default defineComponent({
     },
     parentUuid: {
       type: String,
+      required: false
+    },
+    allTabsList: {
+      type: Array,
       required: false
     },
     containerUuid: {
@@ -107,6 +142,11 @@ export default defineComponent({
     resourcesInfo: {
       type: Object,
       deafult: {}
+    },
+    // used only window
+    isAccountingInfo: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -115,6 +155,7 @@ export default defineComponent({
      * Ref
      */
     // const currentEvents = ref([])
+    const recordId = ref('')
     /**
      * Computed
      */
@@ -123,6 +164,14 @@ export default defineComponent({
     })
     const currentEvents = computed(() => {
       return store.getters.getListTasksEvents
+    })
+
+    const defaultNameTab = computed(() => {
+      return store.getters.getDefaultOpenedTab
+    })
+
+    const showContainerInfo = computed(() => {
+      return store.getters.getShowLogs
     })
 
     const resource = computed(() => {
@@ -146,11 +195,15 @@ export default defineComponent({
         }
       })
     })
-    const { query, params } = router.app._route
-    const recordId = computed(() => {
-      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
-      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
-      return -1
+
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
+    const isDrawerWidth = computed(() => {
+      if (isMobile.value) {
+        return '100%'
+      }
+      return '65%'
     })
     const tableName = computed(() => {
       const { currentTab } = store.getters.getContainerInfo
@@ -175,11 +228,8 @@ export default defineComponent({
           center: 'title',
           right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear'
         },
-        // resourceGroupField: 'group',
         resourceAreaWidth: '25%',
-        // slotDuration: duration,
-        // slotLabelInterval: labelInterval,
-        initialView: 'resourceTimelineYear',
+        initialView: 'resourceTimelineMonth',
         resourceGroupField: 'building',
         eventMinWidth: 90,
         scrollTime: '08:00',
@@ -206,19 +256,10 @@ export default defineComponent({
             slotLabelInterval: { months: 1 } // Etiquetas cada mes
           }
         },
-        // events: DEFAULT_EVENTS,
-        // select: handleDateSelect(info),
-        // eventClick: function(info) {
-        //   console.log('Se hizo clik', { info })
-        //   // Aquí puedes agregar la lógica que desees ejecutar al cambiar la vista
-        // },
-        // eventClick: handleEventClick(),
-        // eventsSet: handleEvents(info),
         datesSet: function(info) {
           changeRange(info)
-          // console.log('La vista ha cambiado a:', { info }, info.view.type);
-          // Aquí puedes agregar la lógica que desees ejecutar al cambiar la vista
-        }
+        },
+        eventClick: openPanel
       }
     })
 
@@ -228,8 +269,23 @@ export default defineComponent({
 
     function changeRange(params) {
       if (isEmptyValue(params)) return
-      const { endStr, startStr } = params.view
+      const { endStr, startStr } = params
+      store.dispatch('setDateDefault', {
+        endStr: endStr.split('T')[0],
+        startStr: startStr.split('T')[0]
+      })
       return { endStr, startStr }
+    }
+
+    const openPanel = (info) => {
+      recordId.value = Number(info.event._def.publicId)
+      setRecordPath({
+        recordId: recordId.value
+      })
+      setTimeout(() => {
+        console.log({ info, recordId: recordId.value })
+        store.commit('setShowLogs', true)
+      }, 500)
     }
 
     function handleDateSelect(selectInfo) {
@@ -264,9 +320,11 @@ export default defineComponent({
       const parts = dateToParse.split('T')[0].split('-')
       return `${parts[0]}-${parts[1]}-${parts[2]}`
     }
+
+    const filter = displayDefinition.value.find(display => display.display_type === 'R')
+
     function searchListCalendars() {
       if (!isEmptyValue(displayDefinition.value)) {
-        const filter = displayDefinition.value.find(display => display.display_type === 'R')
         let filters
         if (props.isPanel) {
           filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
@@ -278,17 +336,29 @@ export default defineComponent({
         })
       }
     }
-    searchListCalendars()
+
+    function closePanel() {
+      store.commit('setShowLogs', false)
+    }
+    // searchListCalendars()
     return {
       // Ref
       currentEvents,
+      recordId,
+      filter,
       // Computed
+      isMobile,
+      defaultNameTab,
+      showContainerInfo,
       calendarOptions,
+      isDrawerWidth,
       groudResource,
       recordsEvents,
       resource,
       isLoading,
       // Methods
+      openPanel,
+      closePanel,
       searchListCalendars,
       handleDateSelect,
       handleEventClick,

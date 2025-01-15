@@ -38,7 +38,6 @@ const kanban = {
       state.infoKanban.records = recordList
     },
     setIsLoadingKanban(state, value) {
-      console.trace(value)
       state.isLoadingKanban = value
     },
     setFilters(state, value) {

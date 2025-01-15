@@ -304,6 +304,7 @@ export default defineComponent({
       })
     }
     function handleCommandActions(data) {
+      store.commit('setTabOptions', data)
       if (data.display_type === 'K') {
         store.commit('setPanelResource', false)
         store.commit('setPanelCalendar', false)
@@ -324,12 +325,10 @@ export default defineComponent({
         store.commit('setPanelKanban', false)
         store.commit('setPanelCalendar', false)
         store.commit('setPanelResource', true)
-        // store.dispatch('searchPanelResource', {
-        //   id: data.id
-        // })
+        store.dispatch('searchPanelResource', {
+          id: data.id
+        })
       }
-
-      store.commit('setTabOptions', data)
     }
 
     function getIcon(type) {

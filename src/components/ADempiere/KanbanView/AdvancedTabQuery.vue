@@ -231,6 +231,10 @@ export default defineComponent({
     idDisplayDefinition: {
       type: Number,
       required: true
+    },
+    nameListServer: {
+      type: String,
+      required: true
     }
   },
 
@@ -402,7 +406,7 @@ export default defineComponent({
         }).toString() + ']'
       }
       isLoadingSearch.value = true
-      store.dispatch('searchPanelKanban', {
+      store.dispatch(props.nameListServer, {
         id: props.idDisplayDefinition,
         filters: listFilters
       })

@@ -105,6 +105,8 @@ export default defineComponent({
     RecordDashboard,
     LoadingView,
     Calendar,
+    TimeLine,
+    CalendarResorce,
     Worflow
   },
 
@@ -119,7 +121,7 @@ export default defineComponent({
     },
     currentRecord: {
       type: Object,
-      required: true
+      required: false
     },
     showContainerInfo: {
       type: Boolean,
