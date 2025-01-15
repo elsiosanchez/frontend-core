@@ -24,7 +24,8 @@ const date = {
   week: 'Semana Pasada',
   currentWeek: 'Semana Actual',
   lastMonth: 'Mes Pasado',
-  currentMonth: 'Mes Actual'
+  currentMonth: 'Mes Actual',
+  seeDetails: 'Ver Detalle'
 }
 
 export default date

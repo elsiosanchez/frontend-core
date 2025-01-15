@@ -102,6 +102,7 @@ const resource = {
             })
             const recordsEvents = records.map(events => {
               return {
+                ...events,
                 id: events.id,
                 title: events.title,
                 start: events.valid_from,

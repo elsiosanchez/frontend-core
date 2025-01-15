@@ -54,19 +54,38 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :current-tab-uuid="currentTabUuid"
       />
     </div>
-    <el-card class="box-card">
+    <el-card
+      class="box-card"
+      :body-style="{ padding: '10px', height: '80vh', overflow: 'hidden' }"
+    >
       <FullCalendar
-        class="demo-app-calendar"
+        class="demo-app-resource"
         :options="calendarOptions"
       >
         <template
           v-slot:eventContent="arg"
         >
-          <b @dblclick="openPanel(12)">{{ arg.timeText }}</b>
-          <i>{{ arg.event.title }}</i>
+          <p
+            style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;margin: 0px;padding: 0px;height: 20px;line-height: 15px;font-size: 10px;"
+            @click="openPanel(arg)"
+          >
+            {{ arg.event.title }}
+          </p>
         </template>
       </FullCalendar>
     </el-card>
+    <el-dialog
+      :title="currentResource.title"
+      :visible.sync="dialogVisible"
+      custom-class="details-resource"
+    >
+      <p><strong><i class="el-icon-info" /> {{ $t('component.attachment.description') }}:  </strong>{{ currentResource.description }}</p>
+      <p><strong><i class="el-icon-date" /> {{ $t('component.date.startDate') }}:  </strong>{{ translateDate({ value: currentResource.start, format:'long'}) }}</p>
+      <p><strong><i class="el-icon-date" /> {{ $t('component.date.endDate') }}:  </strong>{{ translateDate({ value: currentResource.end, format:'long'}) }}</p>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="openRightPanel">{{ $t('component.date.seeDetails') }}</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -77,6 +96,7 @@ import store from '@/store'
 import {
   defineComponent,
   computed,
+  watch,
   ref
 } from '@vue/composition-api'
 
@@ -89,7 +109,7 @@ import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
-import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
+// import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 
 // Utils and Helpers Methods
@@ -97,15 +117,13 @@ import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
-  name: 'ResourceTimelineView',
-
+  name: 'ResourceTime',
   components: {
     TabOptions,
     FullCalendar, // make the <FullCalendar> tag available
-    PanelInfo,
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
     AdvancedTabQuery
   },
-
   props: {
     isPanel: {
       type: Boolean,
@@ -149,13 +167,15 @@ export default defineComponent({
       default: false
     }
   },
-
   setup(props) {
     /**
      * Ref
      */
     // const currentEvents = ref([])
     const recordId = ref('')
+    const currentRecordLogs = ref({})
+    const dialogVisible = ref(false)
+    const currentResource = ref({})
     /**
      * Computed
      */
@@ -214,6 +234,10 @@ export default defineComponent({
       return store.getters.getDefinition
     })
 
+    const info = computed(() => {
+      return store.getters.getInfoKanban
+    })
+
     const calendarOptions = computed(() => {
       return {
         expandRows: true,
@@ -221,7 +245,7 @@ export default defineComponent({
         selectable: true,
         nowIndicator: true,
         dayMaxEvents: true, // allow "more" link when too many
-        timeZone: 'UTC',
+        // timeZone: 'UTC',
         plugins: [resourceTimelinePlugin],
         headerToolbar: {
           left: 'today prev,next',
@@ -232,8 +256,9 @@ export default defineComponent({
         initialView: 'resourceTimelineMonth',
         resourceGroupField: 'building',
         eventMinWidth: 90,
-        scrollTime: '08:00',
-        aspectRatio: 1.5,
+        locale: esLocale,
+        scrollTime: '01:00',
+        aspectRatio: 1,
         editable: true,
         resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
         resources: groudResource.value,
@@ -258,8 +283,8 @@ export default defineComponent({
         },
         datesSet: function(info) {
           changeRange(info)
-        },
-        eventClick: openPanel
+        }
+        // eventClick: openPanel
       }
     })
 
@@ -282,10 +307,8 @@ export default defineComponent({
       setRecordPath({
         recordId: recordId.value
       })
-      setTimeout(() => {
-        console.log({ info, recordId: recordId.value })
-        store.commit('setShowLogs', true)
-      }, 500)
+      currentResource.value = info.event
+      dialogVisible.value = true
     }
 
     function handleDateSelect(selectInfo) {
@@ -304,6 +327,15 @@ export default defineComponent({
       //     allDay: selectInfo.allDay
       //   })
       // }
+    }
+    function openRightPanel() {
+      recordId.value = Number(currentResource.value.id)
+      setRecordPath({
+        recordId: Number(currentResource.value.id)
+      })
+      setTimeout(() => {
+        store.commit('setShowLogs', true)
+      }, 500)
     }
 
     function handleEventClick(clickInfo) {
@@ -340,12 +372,30 @@ export default defineComponent({
     function closePanel() {
       store.commit('setShowLogs', false)
     }
-    // searchListCalendars()
+
+    function loadPanel() {
+      store.commit('setIsLoadingResource', true)
+      setTimeout(() => {
+        store.commit('setIsLoadingResource', false)
+      }, 1000)
+    }
+
+    watch(info, () => {
+      loadPanel()
+      searchListCalendars()
+    })
+    loadPanel()
+
+    searchListCalendars()
     return {
       // Ref
+      currentRecordLogs,
+      dialogVisible,
       currentEvents,
+      currentResource,
       recordId,
       filter,
+      info,
       // Computed
       isMobile,
       defaultNameTab,
@@ -359,6 +409,7 @@ export default defineComponent({
       // Methods
       openPanel,
       closePanel,
+      openRightPanel,
       searchListCalendars,
       handleDateSelect,
       handleEventClick,
@@ -377,15 +428,28 @@ export default defineComponent({
 </script>
 
 <style lang='scss'>
-.demo-app {
-  display: flex !important;
-  height: calc(100vh - 180px);
-  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-  font-size: 14px;
 
-  .demo-app-sidebar {
-    width: 300px;
-    line-height: 1.5;
+.details-resource {
+  padding: 5px;
+  .el-dialog__header {
+    padding: 20px;
+    padding-bottom: 10px;
+    background: #dae6f38c;
+    text-align: center;
+  }
+}
+.demo-app-resource {
+  // display: flex !important;
+  // height: calc(100vh - 180px);
+  // font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
+  font-size: 9px;
+  // overflow-x: scroll !important;
+  height: 90% !important;
+  overflow: hidden;
+
+  .demo-app-resource-sidebar {
+    // width: 300px;
+    // line-height: 1.5;
     background: #eaf9ff;
     border-right: 1px solid #d3e2e8;
     h2 {
@@ -410,14 +474,36 @@ export default defineComponent({
     }
   }
 
-  .demo-app-main {
+  .demo-app-resource-main {
     flex-grow: 1;
     /* padding: 3em; */
     padding: 1em;
 
-    .demo-app-sidebar-section {
+    .demo-app-resource-sidebar-section {
       padding: 2em;
     }
+  }
+
+  .fc-timeline-event .fc-event-main {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0px;
+    // height: 15px;
+  }
+
+  .fc .fc-datagrid-header .fc-datagrid-cell-frame {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+    height: 25px !important;
+    // font-size: 10px;
+  }
+
+  .fc .fc-datagrid-cell-cushion {
+    overflow: hidden;
+    padding: 0px 8px;
+    white-space: nowrap;
   }
 
   .fc { /* the calendar root */
@@ -429,49 +515,72 @@ export default defineComponent({
     overflow: auto;
     display: block;
   }
+  .fc-resource-area {
+    width: 200px; /* Ajusta este valor según sea necesario */
+  }
+
+  .fc-resource-group {
+    white-space: normal; /* Permite que el texto se ajuste a varias líneas */
+    overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
+    text-overflow: clip; /* Evita el recorte del texto */
+  }
+
+  .fc-resource-group {
+    white-space: nowrap; /* Evita que el texto se ajuste a varias líneas */
+    overflow: hidden; /* Oculta el desbordamiento */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto recortado */
+  }
+
+  .fc .fc-view-harness {
+    flex-grow: 1;
+    position: relative;
+    height: 85ch !important;
+  }
+  .fc .fc-scroller-liquid-absolute {
+    inset: 0px;
+    position: absolute;
+    height: 100%;
+  }
+  .fc .fc-scrollgrid-liquid {
+    height: 90% !important;
+  }
+
+  .fc .fc-scroller-harness-liquid {
+    height: 80% !important;
+  }
+
+  .fc-datagrid-cell-frame {
+    height: 20px;
+  }
+  // .fc-resource-area {
+  //   width: 200px; /* Ajusta este valor según sea necesario */
+  // }
+
+  .fc-resource-group {
+    white-space: normal; /* Permite que el texto se ajuste a varias líneas */
+    overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
+    text-overflow: clip; /* Evita el recorte del texto */
+  }
+
+  .fc-license-message {
+    color: transparent;
+    background: transparent !important;
+    z-index: -1 !important;
+    border: 0px !important;
+  }
 }
 
-.fc-resource-area {
-  width: 200px; /* Ajusta este valor según sea necesario */
-}
-
-.fc-resource-group {
-  white-space: normal; /* Permite que el texto se ajuste a varias líneas */
-  overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
-  text-overflow: clip; /* Evita el recorte del texto */
-}
-
-.fc-resource-group {
-  white-space: nowrap; /* Evita que el texto se ajuste a varias líneas */
-  overflow: hidden; /* Oculta el desbordamiento */
-  text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto recortado */
-}
-
-.fc .fc-view-harness {
-  flex-grow: 1;
-  position: relative;
-  height: 85ch !important;
-}
-
-// .fc .fc-scroller-harness-liquid {
-//   height: 60% !important;
+// .fc-resource {
+//   height: 15px !important;
 // }
-.fc-resource-area {
-  width: 200px; /* Ajusta este valor según sea necesario */
-}
 
-.fc-resource-group {
-  white-space: normal; /* Permite que el texto se ajuste a varias líneas */
-  overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
-  text-overflow: clip; /* Evita el recorte del texto */
-}
+// .demo-app-resource .fc-datagrid-cell-frame {
+//   height: 15px !important;
+// }
 
-.fc-license-message {
-  color: transparent;
-  background: transparent !important;
-  z-index: -1 !important;
-  border: 0px !important;
-}
+// .fc .fc-resource-timeline .fc-resource-group:not([rowspan]){
+//   height: 15px !important;
+// }
 
 .custom-card-calendar {
   margin: 0px;
