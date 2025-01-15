@@ -16,43 +16,54 @@
   validateng with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 <template>
-  <div class="timeline-container">
-    <el-timeline style="max-width: 600px">
-      <el-timeline-item
-        v-for="(info, index) in infoTimeLine"
-        :key="info.id"
-        :timestamp="translateDate(info.date)"
-        placement="top"
-        :color="getPointColor(index)"
-      >
-        <el-card shadow="hover" class="clearfix">
-          <div>
-            <span class="container-title">
-              {{ info.title }}
-            </span>
-            <el-link
-              type="primary"
-              style="float: right;"
-              @click="toggleKey(info.id)"
-            >
-              {{ $t('window.containerInfo.changeDetail') }}
-            </el-link>
-          </div>
-          <el-collapse-transition>
-            <div v-show="currentKey === info.id">
-              <span>
-                <hr class="divider">
-                <el-col style="margin-left: 10px;">
-                  <span style="color: #606266; font-weight: bold; line-height: 1;">
-                    {{ info.description }}
-                  </span>
-                </el-col>
+  <div>
+    <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
+      <svg-icon icon-class="timeline" />
+      <span style="font-weight: bold;">
+        {{ infoTitle }}
+      </span>
+      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
+        {{ infoDescription }}
+      </div>
+    </div>
+    <div class="timeline-container">
+      <el-timeline>
+        <el-timeline-item
+          v-for="(info, index) in infoTimeLine"
+          :key="info.id"
+          :timestamp="translateDate(info.date)"
+          placement="top"
+          :color="getPointColor(index)"
+        >
+          <el-card shadow="hover" class="clearfix">
+            <div>
+              <span class="container-title">
+                {{ info.title }}
               </span>
+              <el-link
+                type="primary"
+                style="float: right;"
+                @click="toggleKey(info.id)"
+              >
+                {{ $t('window.containerInfo.changeDetail') }}
+              </el-link>
             </div>
-          </el-collapse-transition>
-        </el-card>
-      </el-timeline-item>
-    </el-timeline>
+            <el-collapse-transition>
+              <div v-show="currentKey === info.id">
+                <span>
+                  <hr class="divider">
+                  <el-col style="margin-left: 10px;">
+                    <span style="color: #606266; font-weight: bold; line-height: 1;">
+                      {{ info.description }}
+                    </span>
+                  </el-col>
+                </span>
+              </div>
+            </el-collapse-transition>
+          </el-card>
+        </el-timeline-item>
+      </el-timeline>
+    </div>
   </div>
 </template>
 
@@ -68,6 +79,8 @@ export default defineComponent({
   setup() {
     const infoTimeLine = ref([])
     const currentKey = ref(null)
+    const infoTitle = ref('')
+    const infoDescription = ref('')
     const { query, params } = router.app._route
 
     const recordId = computed(() => {
@@ -86,7 +99,9 @@ export default defineComponent({
     function searchTimeLine() {
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'T')
-        const { id } = filter
+        const { id, description, name } = filter
+        infoTitle.value = name
+        infoDescription.value = description
         store.dispatch('searchPanelTimeLine', {
           id,
           filters: { name: [tableName.value] + '_ID', values: recordId.value }
@@ -111,6 +126,8 @@ export default defineComponent({
     return {
       infoTimeLine,
       currentKey,
+      infoTitle,
+      infoDescription,
       translateDate,
       recordId,
       tableName,
@@ -127,11 +144,12 @@ export default defineComponent({
 .timeline-container {
   height: calc(100vh - 300px) !important;
   display: flex;
-  justify-content: center;
+  margin-top: 12px;
 }
 
 .el-timeline {
   width: 100%;
+  padding-left: 20px !important;
 }
 
 .left-card {
@@ -156,5 +174,8 @@ export default defineComponent({
   padding-left: 12px;
   font-size: 12px;
   padding: 1rem;
+}
+.el-descriptions-item__label.has-colon::after {
+  content: none !important;
 }
 </style>
