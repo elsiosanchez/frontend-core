@@ -145,7 +145,7 @@ import ChangeRecord from '@/components/ADempiere/DataTable/Components/ChangeReco
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { DisplayDefinition } from '@/utils/ADempiere/dictionary/displayDefinition/readEntry'
+
 export default defineComponent({
   name: 'TabOptions',
 
@@ -304,10 +304,31 @@ export default defineComponent({
       })
     }
     function handleCommandActions(data) {
-      DisplayDefinition.dislayDataWindows({
-        type: data.display_type,
-        id: data.id
-      })
+      if (data.display_type === 'K') {
+        store.commit('setPanelResource', false)
+        store.commit('setPanelCalendar', false)
+        store.commit('setPanelKanban', true)
+        store.dispatch('searchPanelKanban', {
+          id: data.id
+        })
+      }
+      if (data.display_type === 'C') {
+        store.commit('setPanelResource', false)
+        store.commit('setPanelKanban', false)
+        store.commit('setPanelCalendar', true)
+        store.dispatch('getListTasksFromServer', {
+          id: data.id
+        })
+      }
+      if (data.display_type === 'R') {
+        store.commit('setPanelKanban', false)
+        store.commit('setPanelCalendar', false)
+        store.commit('setPanelResource', true)
+        // store.dispatch('searchPanelResource', {
+        //   id: data.id
+        // })
+      }
+
       store.commit('setTabOptions', data)
     }
 
