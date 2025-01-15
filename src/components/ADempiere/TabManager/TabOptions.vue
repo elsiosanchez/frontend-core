@@ -336,7 +336,7 @@ export default defineComponent({
 
       if (type === 'C') return 'calendar'
 
-      if (type === 'R') return 'calendar'
+      if (type === 'R') return 'resources'
       return ''
     }
 
