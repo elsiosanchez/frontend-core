@@ -17,49 +17,60 @@
 -->
 
 <template>
-  <div style="overflow: hidden;">
-    <el-steps :active="activate" align-center finish-status="success">
-      <el-step
-        v-for="(actions, key) in listWorkflow.steps"
-        :key="key"
-        :title="actions.name"
-        style="font-weight: bold;"
-      />
-    </el-steps>
-    <div style="overflow-x: hidden; overflow-y: scroll;  height: calc(100vh - 300px)">
-      <el-timeline v-if="!isEmptyValue(listWorkflow.records)">
-        <el-timeline-item
-          v-for="(worrkflow, keys) in listWorkflow.records"
-          :key="keys"
-          placement="top"
-        >
-          <el-card shadow="hover" class="clearfix" style="padding: 2%">
-            <div>
-              <span style="color: #606266; font-weight: bold; font-size: 14px;">
-                {{ worrkflow.title }} <i class="el-icon-user-solid" />
-              </span>
-              <el-link
-                type="primary"
-                style="float: right;"
-                @click="showkey(keys)"
-              >
-                {{ $t('window.containerInfo.changeDetail') }}
-              </el-link>
-            </div>
-            <el-collapse-transition>
-              <el-scrollbar wrap-class="scroll-child" style="font-size: 12px;">
-                <div v-show="(currentKey === keys)" style="line-height: 5">
-                  <span>
-                    {{ worrkflow.description }}
-                  </span>
-                </div>
-              </el-scrollbar>
-            </el-collapse-transition>
-          </el-card>
-        </el-timeline-item>
-      </el-timeline>
-      <div v-else>
-        <el-empty />
+  <div style="height: calc(100vh - 150px) !important;;">
+    <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
+      <svg-icon icon-class="workflow" />
+      <span style="font-weight: bold;">
+        {{ infoTitle }}
+      </span>
+      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
+        {{ infoDescription }}
+      </div>
+    </div>
+    <div style="overflow: hidden;">
+      <el-steps :active="activate" align-center finish-status="success">
+        <el-step
+          v-for="(actions, key) in listWorkflow.steps"
+          :key="key"
+          :title="actions.name"
+          style="font-weight: bold;"
+        />
+      </el-steps>
+      <div style="overflow-x: hidden; overflow-y: auto;  height: calc(100vh - 300px)">
+        <el-timeline v-if="!isEmptyValue(listWorkflow.records)">
+          <el-timeline-item
+            v-for="(worrkflow, keys) in listWorkflow.records"
+            :key="keys"
+            placement="top"
+          >
+            <el-card shadow="hover" class="clearfix" style="padding: 2%">
+              <div>
+                <span style="color: #606266; font-weight: bold; font-size: 14px;">
+                  {{ worrkflow.title }} <i class="el-icon-user-solid" />
+                </span>
+                <el-link
+                  type="primary"
+                  style="float: right;"
+                  @click="showkey(keys)"
+                >
+                  {{ $t('window.containerInfo.changeDetail') }}
+                </el-link>
+              </div>
+              <el-collapse-transition>
+                <el-scrollbar wrap-class="scroll-child" style="font-size: 12px;">
+                  <div v-show="(currentKey === keys)" style="line-height: 5">
+                    <span>
+                      {{ worrkflow.description }}
+                    </span>
+                  </div>
+                </el-scrollbar>
+              </el-collapse-transition>
+            </el-card>
+          </el-timeline-item>
+        </el-timeline>
+        <div v-else>
+          <el-empty />
+        </div>
       </div>
     </div>
   </div>
@@ -83,6 +94,8 @@ export default defineComponent({
   setup(props) {
     const currentKey = ref(0)
     const typeAction = ref(0)
+    const infoTitle = ref('')
+    const infoDescription = ref('')
     const listWorkflow = ref({})
     const displayDefinition = computed(() => {
       return store.getters.getDefinition
@@ -111,7 +124,9 @@ export default defineComponent({
     })
     function searchWorkflow() {
       const filter = displayDefinition.value.find(display => display.display_type === 'W')
-      const { id } = filter
+      const { id, description, name } = filter
+      infoTitle.value = name
+      infoDescription.value = description
       store.dispatch('getWorflowDisplay', {
         id,
         filters: { name: [tableName.value] + '_ID', values: recordId.value }
@@ -135,6 +150,8 @@ export default defineComponent({
       // Ref
       listWorkflow,
       currentKey,
+      infoTitle,
+      infoDescription,
       // Computed
       displayDefinition,
       recordId,
