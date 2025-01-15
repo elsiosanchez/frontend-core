@@ -134,6 +134,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import ModalCalendar from './modal.vue'
+import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import AdvancedTabQuery from '@/views/ADempiere/CalendarView/advancedTabQuery.vue'
@@ -223,13 +224,14 @@ export default defineComponent({
           dayGridPlugin,
           timeGridPlugin,
           interactionPlugin,
-          listPlugin
+          listPlugin,
+          resourceTimelinePlugin
         ],
         locale: esLocale,
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+          right: 'timeGridDay,timeGridWeek,dayGridMonth,resourceTimelineYear,listWeek'
         },
         initialView: 'dayGridMonth',
         events: (props.isPanel ? tabCurrentEvents.value : currentEvents.value).map(data => {
@@ -399,7 +401,7 @@ export default defineComponent({
     margin: 0 auto;
     /* max-width: auto; */
     width: auto;
-    height: 100% !important;
+    height: calc(80vh) !important;
     overflow: auto;
     display: block;
   }

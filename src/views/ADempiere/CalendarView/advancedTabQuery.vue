@@ -367,7 +367,8 @@ export default defineComponent({
       isLoadingSearch.value = true
       store.dispatch('getListCalendars', {
         id: props.idDisplayDefinition,
-        searchValue: searchText
+        searchValue: searchText,
+        isPanel: false
       })
         .finally(() => {
           isLoadingSearch.value = false
@@ -404,7 +405,8 @@ export default defineComponent({
       isLoadingSearch.value = true
       store.dispatch('getListCalendars', {
         id: props.idDisplayDefinition,
-        filters: listFilters
+        filters: listFilters,
+        isPanel: false
       })
         .finally(() => {
           isLoadingSearch.value = false

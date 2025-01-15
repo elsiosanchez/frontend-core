@@ -101,7 +101,7 @@ export default {
       id,
       filters,
       searchValue,
-      isPanel
+      isPanel = true
     }) {
       commit('setLoadingTasksEvents', true)
       return new Promise(resolve => {

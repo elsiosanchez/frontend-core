@@ -9,14 +9,13 @@
         <span>{{ selection.title }}</span>
       </template>
       <div>
-        <p><strong><i class="el-icon-date" /> Fecha de Inicio:  </strong>{{ translateDate({ value: selection.start, format:'long'}) }}</p>
-        <p><strong><i class="el-icon-date" /> Fecha de Cierre:  </strong>{{ translateDate({ value: selection.end, format:'long'}) }}</p>
-        <p><strong><i class="el-icon-info" /> Descripcion:  </strong>{{ selection.description }}</p>
-        <p><strong><i class="el-icon-info" /> Value:  </strong>{{ selection.value }}</p>
+        <p><strong><i class="el-icon-info" /> {{ $t('component.attachment.description') }}:  </strong>{{ selection.description }}</p>
+        <p><strong><i class="el-icon-date" /> {{ $t('component.date.startDate') }}:  </strong>{{ translateDate({ value: selection.start, format:'long'}) }}</p>
+        <p><strong><i class="el-icon-date" /> {{ $t('component.date.endDate') }}:  </strong>{{ translateDate({ value: selection.end, format:'long'}) }}</p>
       </div>
       <template #footer>
         <el-button @click="closeModal">Cerrar</el-button>
-        <el-button v-if="!isPanel" @click="showPanel(selection.value )">Detalles</el-button>
+        <el-button v-if="!isPanel" @click="showPanel(selection.value )">{{ $t('component.date.seeDetails') }}</el-button>
       </template>
     </el-dialog>
   </div>
