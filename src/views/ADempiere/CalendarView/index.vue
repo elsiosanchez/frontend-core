@@ -57,7 +57,7 @@
       />
     </div>
     <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
-      <svg-icon icon-class="workflow" />
+      <svg-icon icon-class="calendar" />
       <span style="font-weight: bold;">
         {{ infoTitle }}
       </span>
