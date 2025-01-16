@@ -56,12 +56,12 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :current-tab-uuid="currentTabUuid"
       />
     </div>
-    <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
+    <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; margin-right: 10px; margin-left: 5px; padding-bottom: 10px; ">
       <svg-icon icon-class="resources" />
       <span style="font-weight: bold;">
         {{ infoTitle }}
       </span>
-      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
+      <div style="color: rgb(130, 132, 138); margin-left: 18px; border-bottom: 1px solid #d0d7de;">
         {{ infoDescription }}
       </div>
     </div>
@@ -482,7 +482,7 @@ export default defineComponent({
   // display: flex !important;
   // height: calc(100vh - 180px);
   // font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-  font-size: 9px;
+  font-size: 14px;
   // overflow-x: scroll !important;
   height: 90% !important;
   overflow: hidden;
