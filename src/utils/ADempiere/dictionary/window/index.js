@@ -1321,6 +1321,7 @@ export function generateTabs({
       fieldOverwrite: {
         isReadOnlyFromForm: true,
         isShowedFromUser: false,
+        panelType: 'window',
         firstTabUuid
       },
       evaluateDefaultFieldShowed,

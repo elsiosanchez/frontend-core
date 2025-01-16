@@ -425,14 +425,6 @@ export default {
           // set empty value
           this.value = this.blankOption.value
         })
-    },
-    setContainerInformation() {
-      if (!isEmptyValue(this.currentTab)) {
-        this.$store.dispatch('panelInfo', {
-          currentTab: this.currentTab,
-          currentRecord: this.currentRecord
-        })
-      }
     }
   }
 

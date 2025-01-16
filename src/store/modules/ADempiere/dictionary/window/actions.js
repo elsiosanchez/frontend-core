@@ -25,7 +25,7 @@ import { requestWindowMetadata } from '@/api/ADempiere/dictionary/window.ts'
 
 // Constants
 import {
-  CLIENT, DOCUMENT_ACTION, DOCUMENT_STATUS,
+  CLIENT, COLUMNNAME_DocAction, COLUMNNAME_DocStatus,
   COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX, IS_ADVANCED_QUERY } from '@/utils/ADempiere/dictionaryUtils'
@@ -348,10 +348,10 @@ export default {
 
               const documentAction = getters.getValueOfField({
                 containerUuid: process.uuid,
-                columnName: DOCUMENT_ACTION
+                columnName: COLUMNNAME_DocAction
               })
               const parametersList = {}
-              parametersList[DOCUMENT_ACTION] = documentAction
+              parametersList[COLUMNNAME_DocAction] = documentAction
               dispatch('startProcessOfWindows', {
                 parentUuid: tabAssociatedUuid,
                 containerUuid: process.uuid,
@@ -375,7 +375,7 @@ export default {
                 const documentStatus = rootGetters.getValueOfFieldOnContainer({
                   // parentUuid: parentUuid,
                   containerUuid: containerUuid,
-                  columnName: DOCUMENT_STATUS
+                  columnName: COLUMNNAME_DocStatus
                 })
 
                 if (!isEmptyValue(documentStatus)) {
@@ -419,19 +419,19 @@ export default {
               let documentAction = getContext({
                 parentUuid: windowUuid,
                 containerUuid: tabAssociatedUuid,
-                columnName: DOCUMENT_ACTION
+                columnName: COLUMNNAME_DocAction
               })
 
               if (!isEmptyValue(documentAction)) {
                 const documentStatus = store.getters.getValueOfFieldOnContainer({
                   containerUuid: tabAssociatedUuid,
-                  columnName: DOCUMENT_STATUS
+                  columnName: COLUMNNAME_DocStatus
                 })
                 // If None, suggest closing
                 if (!isEndDocumentAction(documentStatus) && documentAction === ACTION_None) {
                   documentAction = 'CL'
                   parentValues.push({
-                    columnName: DOCUMENT_ACTION,
+                    columnName: COLUMNNAME_DocAction,
                     value: documentAction
                   })
                 }
@@ -464,7 +464,7 @@ export default {
           dispatch('setModalDialog', {
             containerUuid: process.uuid,
             title: process.name,
-            doneMethod: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
+            doneMethod: ({ parentUuid: tabAssociatedUuid, containerUuid, uuid }) => {
               // TODO: Get container uuid with multiple tabs and same process
               const recordUuid = rootGetters.getUuidOfContainer(tabAssociatedUuid)
 
@@ -969,7 +969,7 @@ export default {
       if (storedTab.table.is_document) {
         // get displayed value on status
         const fieldDocumentStatus = storedTab.fieldsList.find(field => {
-          return field.column_name === DOCUMENT_STATUS
+          return field.column_name === COLUMNNAME_DocStatus
         })
         if (!isEmptyValue(fieldDocumentStatus)) {
           const value = getDocumentStatusValue({

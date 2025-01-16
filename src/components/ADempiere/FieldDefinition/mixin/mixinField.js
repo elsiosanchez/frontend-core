@@ -460,7 +460,7 @@ export default {
     },
 
     setContainerInformation() {
-      if (!isEmptyValue(this.currentTab)) {
+      if (this.metadata.panelType === 'window' && !isEmptyValue(this.currentTab)) {
         store.dispatch('panelInfo', {
           currentTab: this.currentTab,
           currentRecord: this.currentRecord
