@@ -396,11 +396,8 @@ export default {
           parentUuid: this.parentUuid,
           containerUuid: this.containerUuid
         })
-        if (!this.isDraggable) {
-          return 'border: 1px solid #fff;border-radius: 5px;'
-        }
         if (!isEmptyValue(panel) && panel.isEditSecuence) {
-          return 'dragable-field'
+          return ' dragable-field '
         }
       }
       return ''
@@ -411,6 +408,7 @@ export default {
       }
       if (!this.isDraggable) {
         return ''
+        // return 'border: 1px solid #fff;border-radius: 5px;'
       }
       if (!isEmptyValue(this.field.isChangeSecuence) && this.field.isChangeSecuence) {
         return 'border: 1px solid #a9a9ec;border-radius: 5px;'
