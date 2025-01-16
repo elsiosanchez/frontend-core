@@ -18,15 +18,11 @@
 
 <template>
   <div style="height: calc(100vh - 150px) !important;;">
-    <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
-      <svg-icon icon-class="workflow" />
-      <span style="font-weight: bold;">
-        {{ infoTitle }}
-      </span>
-      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
-        {{ infoDescription }}
-      </div>
-    </div>
+    <options-bar
+      :title="infoTitle"
+      :description="infoDescription"
+      :icon="'workflow'"
+    />
     <div style="overflow: hidden;">
       <el-steps :active="activate" align-center finish-status="success">
         <el-step
@@ -81,10 +77,14 @@ import store from '@/store'
 import router from '@/router'
 
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
 
 import { defineComponent, computed, ref } from '@vue/composition-api'
 export default defineComponent({
   name: 'WorflowView',
+  components: {
+    OptionsBar
+  },
   props: {
     containerUuid: {
       type: [String, Number],
@@ -98,7 +98,7 @@ export default defineComponent({
     const infoDescription = ref('')
     const listWorkflow = ref({})
     const displayDefinition = computed(() => {
-      return store.getters.getDefinition
+      return store.getters.getPanelOptions
     })
     const { query, params } = router.app._route
     const recordId = computed(() => {

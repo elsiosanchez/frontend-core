@@ -1,6 +1,12 @@
 <template>
-  <el-card v-loading="isLoading" class="kanban-container">
-    <div class="tab-options-container">
+  <el-card v-loading="isLoading" class="kanban-container" :style="!isPanel ? { 'padding-top': '4rem'} : {}">
+    <options-bar
+      v-if="isPanel"
+      :title="infoTitle"
+      :description="infoDescription"
+      :icon="'kanbanMode'"
+    />
+    <div v-if="!isPanel" class="tab-options-container">
       <advanced-tab-query
         :parent-uuid="parentUuid"
         :container-uuid="containerUuid"
@@ -70,6 +76,7 @@
       </div>
     </div>
     <el-drawer
+      v-if="!isPanel"
       :visible.sync="showContainerInfo"
       :with-header="true"
       :before-close="showPanel"
@@ -99,19 +106,24 @@
 import draggable from 'vuedraggable'
 import store from '@/store'
 import lang from '@/lang'
+import router from '@/router'
+
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
+import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
+
 export default defineComponent({
   name: 'Kanban',
   components: {
     draggable,
     TabOptions,
     PanelInfo,
-    AdvancedTabQuery
+    AdvancedTabQuery,
+    OptionsBar
   },
   props: {
     containerManager: {
@@ -146,11 +158,23 @@ export default defineComponent({
     isAccountingInfo: {
       type: Boolean,
       default: false
+    },
+    isPanel: {
+      type: Boolean,
+      default: true
     }
   },
   setup(props) {
+    const currentRoute = router.app._route
+    const { query, params } = currentRoute
     const columns = ref([])
-    const recordId = ref('')
+    const recordId = () => {
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      return -1
+    }
+    const infoTitle = ref('')
+    const infoDescription = ref('')
     const isLoading = computed(() => {
       return store.getters.getIsLoadingKanban
     })
@@ -194,6 +218,9 @@ export default defineComponent({
       return ''
     })
     const displayDefinition = computed(() => {
+      if (props.isPanel) {
+        return store.getters.getPanelOptions
+      }
       return store.getters.getDefinition
     })
     const filter = displayDefinition.value.find(display => display.display_type === 'K')
@@ -202,6 +229,9 @@ export default defineComponent({
       return store.getters.getInfoKanban
     })
     function loadColumns() {
+      const { name, description } = filter
+      infoTitle.value = name
+      infoDescription.value = description
       if (!isEmptyValue(info.value)) {
         const { steps, records } = info.value
         const ungroupedItems = records
@@ -232,19 +262,19 @@ export default defineComponent({
       }
     }
 
-    // function searchInfoKanvan() {
-    //   if (!isEmptyValue(displayDefinition.value)) {
-    //     const filter = displayDefinition.value.find(display => display.display_type === 'K')
-    //     const { id } = filter
-    //     store.dispatch('searchPanelKanban', {
-    //       id,
-    //       filters: { name: [tableName.value] + '_ID', value: recordId.value }
-    //     })
-    //       .finally(() => {
-    //         loadColumns()
-    //       })
-    //   }
-    // }
+    function searchInfoKanvan() {
+      if (!isEmptyValue(displayDefinition.value)) {
+        const filter = displayDefinition.value.find(display => display.display_type === 'K')
+        const { id } = filter
+        store.dispatch('searchPanelKanban', {
+          id,
+          filters: { name: [tableName.value] + '_ID', value: recordId.value }
+        })
+          .finally(() => {
+            loadColumns()
+          })
+      }
+    }
     function handleCardMove(event, column) {
       if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
         const { value } = column
@@ -278,16 +308,18 @@ export default defineComponent({
           })
       }
     }
-    watch(info, () => {
-      loadColumns()
-    })
-    loadColumns()
+    // watch(info, () => {
+    //   loadColumns()
+    // })
+    searchInfoKanvan()
     return {
       filter,
       // Ref
       currentRecordLogs,
       isLoading,
       recordId,
+      infoTitle,
+      infoDescription,
       // Constant
       isMobile,
       dragOptions,
@@ -300,8 +332,8 @@ export default defineComponent({
       info,
       //
       showPanel,
-      handleCardMove
-      // searchInfoKanvan
+      handleCardMove,
+      searchInfoKanvan
     }
   }
 })
@@ -310,7 +342,6 @@ export default defineComponent({
 <style>
 .kanban-container {
   position: relative;
-  padding-top: 4rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border-radius: 6px;
 }

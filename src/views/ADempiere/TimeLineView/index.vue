@@ -17,15 +17,11 @@
 -->
 <template>
   <div>
-    <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
-      <svg-icon icon-class="timeline" />
-      <span style="font-weight: bold;">
-        {{ infoTitle }}
-      </span>
-      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
-        {{ infoDescription }}
-      </div>
-    </div>
+    <options-bar
+      :title="infoTitle"
+      :description="infoDescription"
+      :icon="'timeline'"
+    />
     <div class="timeline-container">
       <el-timeline>
         <el-timeline-item
@@ -73,9 +69,13 @@ import router from '@/router'
 import { defineComponent, ref, computed } from '@vue/composition-api'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { isEmptyValue } from '@/utils/ADempiere'
+import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
 
 export default defineComponent({
   name: 'TimeLine',
+  components: {
+    OptionsBar
+  },
   setup() {
     const infoTimeLine = ref([])
     const currentKey = ref(null)
@@ -94,7 +94,7 @@ export default defineComponent({
       return ''
     })
     const displayDefinition = computed(() => {
-      return store.getters.getDefinition
+      return store.getters.getPanelOptions
     })
     function searchTimeLine() {
       if (!isEmptyValue(displayDefinition.value)) {

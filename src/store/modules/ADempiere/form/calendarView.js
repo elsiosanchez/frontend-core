@@ -32,6 +32,7 @@ const calendarView = {
   selectedDate: [],
   showCalendar: false,
   isLoadingTasksEvents: false,
+  currentCalendarsDefinitions: {},
   tabInfo: []
 }
 
@@ -56,6 +57,9 @@ export default {
     },
     setTabInfo(state, value) {
       state.tabInfo = value
+    },
+    setDefinitionsCalendars(state, definition) {
+      state.currentCalendarsDefinitions = definition
     }
   },
 
@@ -136,6 +140,9 @@ export default {
             commit('setLoadingTasksEvents', false)
           })
       })
+    },
+    currentCalendarsDefinitions({ commit }, definitions) {
+      commit('setDefinitionsCalendars', definitions)
     }
   },
   getters: {
@@ -156,6 +163,9 @@ export default {
     },
     getTabInfo(state) {
       return state.tabInfo
+    },
+    getCurrentCalendarsDefinitions(state) {
+      return state.currentCalendarsDefinitions
     }
   }
 }

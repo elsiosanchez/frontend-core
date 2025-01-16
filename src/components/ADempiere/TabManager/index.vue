@@ -784,10 +784,6 @@ export default defineComponent({
       if (!isEmptyValue(options) && typeof options === 'string') {
         store.commit('setDefaultOpenedTab', options)
       }
-      store.dispatch('getDisplayDefinition', {
-        tableName: currentTabTableName.value,
-        onlyeReferences: true
-      })
       store.dispatch('showLogs', {
         show: !showContainerInfo.value
       })
@@ -1114,7 +1110,12 @@ export default defineComponent({
           })
         })
     }
-
+    function displayDefinition() {
+      store.dispatch('getDisplayDefinition', {
+        tableName: currentTabTableName.value,
+        onlyeReferences: true
+      })
+    }
     findRecordLogs(props.allTabsList[0])
 
     setTabNumber(currentTab.value)
@@ -1124,7 +1125,7 @@ export default defineComponent({
     getIssues()
     getIsNotes()
     getDashboard()
-
+    displayDefinition()
     return {
       tabUuid,
       currentTab,
@@ -1179,7 +1180,8 @@ export default defineComponent({
       getReferences,
       getIssues,
       getIsNotes,
-      getDashboard
+      getDashboard,
+      displayDefinition
     }
   }
 

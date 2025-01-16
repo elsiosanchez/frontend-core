@@ -58,7 +58,7 @@
     </div>
     <options-bar
       v-if="isPanel"
-      :title="infoTitle"
+      :title="currentCalendarsDefinitions.name"
       :description="infoDescription"
       :icon="'calendar'"
     />
@@ -218,6 +218,10 @@ export default defineComponent({
     const showContainerInfo = computed(() => {
       return store.getters.getShowLogs
     })
+
+    const currentCalendarsDefinitions = computed(() => {
+      return store.getters.getCurrentCalendarsDefinitions
+    })
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
@@ -329,6 +333,7 @@ export default defineComponent({
           filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
           filters = JSON.stringify(filters)
         }
+        store.dispatch('currentCalendarsDefinitions', filter)
         store.dispatch('getListCalendars', {
           id,
           filters,
@@ -360,6 +365,7 @@ export default defineComponent({
       currentRecordLogs,
       defaultNameTab,
       tabCurrentEvents,
+      currentCalendarsDefinitions,
       handleEventClick,
       translateDate,
       goToEventDate,

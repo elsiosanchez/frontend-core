@@ -69,7 +69,8 @@ const window = {
       calendar: 'Calendario',
       timeLine: 'Línea de Tiempo',
       workflow: 'Flujo de Trabajo',
-      resource: 'Recursos'
+      resource: 'Recursos',
+      kanban: 'Kanban'
     },
     notices: {
       user: 'Usuario',

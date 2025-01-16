@@ -38,19 +38,23 @@
             <span slot="label">
               <svg-icon v-if="tab.svg" :icon-class="tab.iconClass" />
               <i v-else :class="tab.iconClass" />
-              <el-dropdown trigger="click">
+              <span> {{ tab.title }} </span>
+              <el-dropdown v-if="tab.isMenu" trigger="click" @command="handleCommandActions">
                 <span class="el-dropdown-link">
-                  {{ tab.title }}
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
-                <el-dropdown-menu slot="dropdown">
+                <el-dropdown-menu
+                  slot="dropdown"
+                >
                   <el-dropdown-item
-                    v-for="(data, key) in definition"
+                    v-for="(data, key) in filteredDefinition[tab.name]"
                     :key="key"
                     icon-class="calender"
-                    @command="handleCommandActions"
+                    :command="data"
                   >
-                    {{ data.name }}
+                    <span :style="currentOptions(data)">
+                      {{ data.name }}
+                    </span>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -95,6 +99,8 @@ import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
 import TimeLine from '@/views/ADempiere/TimeLineView'
 import Worflow from '@/components/ADempiere/WorflowView'
+import KanbanView from '@/components/ADempiere/KanbanView'
+
 import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
@@ -169,6 +175,7 @@ export default defineComponent({
     const showResource = ref(false)
     const showTimeLine = ref(false)
     const showWorkflow = ref(false)
+    const showKanban = ref(false)
     const currentRoute = router.app._route
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
@@ -185,6 +192,7 @@ export default defineComponent({
           title: language.t('window.containerInfo.log.changeHistory'),
           show: true,
           svg: true,
+          isMenu: false,
           iconClass: 'tree-table',
           isLoading: isLoadingRecordLogsList.value,
           component: RecordLogs
@@ -194,6 +202,7 @@ export default defineComponent({
           title: language.t('window.containerInfo.referenceRecords'),
           show: true,
           svg: false,
+          isMenu: false,
           isLoading: isLoadingListReference.value,
           iconClass: 'el-icon-zoom-in',
           component: ReferenceRecords
@@ -203,6 +212,7 @@ export default defineComponent({
           title: language.t('component.attachment.label'),
           show: true,
           svg: false,
+          isMenu: false,
           isLoading: isLoadingListAttachment.value,
           iconClass: 'el-icon-paperclip',
           component: AttachmentManager
@@ -213,6 +223,7 @@ export default defineComponent({
           show: true,
           svg: true,
           iconClass: 'message',
+          isMenu: false,
           isLoading: isLoadingNotesRecord.value,
           component: RecordNotes
         },
@@ -222,6 +233,7 @@ export default defineComponent({
           show: true,
           svg: true,
           iconClass: 'guide',
+          isMenu: false,
           isLoading: isLoadingIssuessRecord.value,
           component: recordIssues
         },
@@ -232,6 +244,7 @@ export default defineComponent({
           svg: true,
           iconClass: 'tree-table',
           isLoading: false,
+          isMenu: false,
           component: WorkflowLogs
         },
         {
@@ -240,6 +253,7 @@ export default defineComponent({
           title: language.t('window.containerInfo.accountingInformation.title'),
           svg: true,
           isLoading: false,
+          isMenu: false,
           iconClass: 'balance',
           component: AcctViewer // () => import('@/components/ADempiere/Form/AcctViewer')
         },
@@ -249,6 +263,7 @@ export default defineComponent({
           title: language.t('listStoreProduct.title'),
           svg: true,
           isLoading: false,
+          isMenu: false,
           iconClass: 'warehouse',
           component: StoreProduct
         },
@@ -258,6 +273,7 @@ export default defineComponent({
           title: language.t('navbar.dashboard'),
           svg: true,
           isLoading: false,
+          isMenu: false,
           iconClass: 'dashboard',
           component: RecordDashboard
         },
@@ -267,6 +283,7 @@ export default defineComponent({
           show: showCalendar.value,
           isLoading: false,
           svg: true,
+          isMenu: true,
           iconClass: 'calendar',
           component: Calendar
         },
@@ -276,6 +293,7 @@ export default defineComponent({
           show: showTimeLine.value,
           svg: true,
           isLoading: false,
+          isMenu: true,
           iconClass: 'timeline',
           component: TimeLine
         },
@@ -285,6 +303,7 @@ export default defineComponent({
           show: showWorkflow.value,
           svg: true,
           isLoading: false,
+          isMenu: true,
           iconClass: 'workflow',
           component: Worflow
         },
@@ -295,7 +314,18 @@ export default defineComponent({
           svg: true,
           isLoading: false,
           iconClass: 'resources',
+          isMenu: true,
           component: CalendarResorce
+        },
+        {
+          name: 'Kanban',
+          title: language.t('window.containerInfo.log.kanban'),
+          show: showResource.value,
+          svg: true,
+          isLoading: false,
+          iconClass: 'kanbanMode',
+          isMenu: true,
+          component: KanbanView
         }
       ]
     })
@@ -337,12 +367,28 @@ export default defineComponent({
           if (record.display_type === 'R') {
             showResource.value = true
           }
+          if (record.display_type === 'K') {
+            showKanban.value = true
+          }
         })
       }
     }
     function handleCommandActions(data) {
-      console.log(data)
+      if (data.display_type === 'C') {
+        store.dispatch('currentCalendarsDefinitions', data)
+        store.dispatch('getListCalendars', {
+          id: data.id
+        })
+      }
     }
+    const filteredDefinition = computed(() => {
+      return {
+        Resource: definition.value.filter(item => item.display_type === 'R'),
+        Calendar: definition.value.filter(item => item.display_type === 'C'),
+        TimeLine: definition.value.filter(item => item.display_type === 'T'),
+        Workflow: definition.value.filter(item => item.display_type === 'W')
+      }
+    })
     displayDefinition()
     // Container Info
     const containerInfo = computed(() => {
@@ -602,6 +648,15 @@ export default defineComponent({
         })
     }
 
+    const currentCalendarsDefinitions = computed(() => {
+      return store.getters.getCurrentCalendarsDefinitions
+    })
+
+    function currentOptions(data) {
+      if (data.id === currentCalendarsDefinitions.value.id) return 'color: #409eff;'
+      return ''
+    }
+
     /**
      * Watch
      * Information Panel Observers
@@ -684,14 +739,17 @@ export default defineComponent({
       isLoadingListAttachment,
       isLoadingListReference,
       isLoadingRecordLogsList,
+      currentCalendarsDefinitions,
       isLoadingIssuessRecord,
       // methods
       showkey,
+      currentOptions,
       findRecordLogs,
       handleClick,
       findListStoreProduct,
       showAccoutingFacts,
-      handleCommandActions
+      handleCommandActions,
+      filteredDefinition
     }
   }
 

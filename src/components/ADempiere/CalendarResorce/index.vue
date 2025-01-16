@@ -263,6 +263,9 @@ export default defineComponent({
       return ''
     })
     const displayDefinition = computed(() => {
+      if (props.isPanel) {
+        return store.getters.getPanelOptions
+      }
       return store.getters.getDefinition
     })
 

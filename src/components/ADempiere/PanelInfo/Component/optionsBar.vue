@@ -16,8 +16,8 @@
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 <template>
-  <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
-    <span style="line-height: 1.2; font-size: 12px; color: #303133; margin-left: 10px;">
+  <div style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 8px; ">
+    <span style="line-height: 1.2; font-size: 12px; color: #303133; margin-left: 2px;">
       <svg-icon :icon-class="icon" />
       <span style="font-weight: bold;">
         {{ title }}
