@@ -21,6 +21,9 @@
 
 // Constants
 import {
+  FALSE_STRING, TRUE_STRING
+} from '@/utils/ADempiere/formatValue/booleanFormat'
+import {
   DATE, DATE_PLUS_TIME, TIME,
   AMOUNT, COSTS_PLUS_PRICES, NUMBER, QUANTITY,
   CHAR, MEMO, TEXT, TEXT_LONG,
@@ -35,7 +38,9 @@ import { NUMBER_PRECISION } from '@/utils/ADempiere/formatValue/numberFormat.js'
 
 // Utils and Helper Methods
 import { getTypeOfValue, isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { convertBooleanToTranslationLang } from './formatValue/booleanFormat'
+import {
+  convertBooleanToString, convertBooleanToTranslationLang
+} from '@/utils/ADempiere/formatValue/booleanFormat'
 export { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat.js'
 // TODO: Duplicated exported method, removed this
@@ -89,7 +94,6 @@ export function formatField({
   let formattedValue
   switch (displayType) {
     case ACCOUNT_ELEMENT.id:
-    case BUTTON.id:
     case ID.id:
     case LIST.id:
     case LOCATION_ADDRESS.id:
@@ -102,6 +106,23 @@ export function formatField({
       if (isEmptyValue(formattedValue)) {
         // set value
         formattedValue = currentValue
+      }
+      break
+
+    case BUTTON.id:
+      if (!isEmptyValue(displayedValue)) {
+        // is a list/table value
+        formattedValue = displayedValue
+        break
+      }
+      // set value
+      formattedValue = currentValue
+      if (!isEmptyValue(currentValue)) {
+        formattedValue = convertBooleanToString(currentValue, false)
+        if ([TRUE_STRING, FALSE_STRING].includes(formattedValue)) {
+          // is a boolean value
+          formattedValue = convertBooleanToTranslationLang(formattedValue)
+        }
       }
       break
 

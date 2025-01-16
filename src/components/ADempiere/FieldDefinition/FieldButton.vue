@@ -307,11 +307,13 @@ export default {
       return {
         is: 'i',
         'class': 'el-icon-setting',
-        start: () => runProcessOfWindow.runProcessOfWindow({
-          parentUuid: this.parentUuid,
-          containerUuid: this.containerUuid,
-          uuid: this.metadata.process.uuid
-        }),
+        start: () => {
+          runProcessOfWindow.runProcessOfWindow({
+            parentUuid: this.parentUuid,
+            containerUuid: this.containerUuid,
+            uuid: this.metadata.process.uuid
+          })
+        },
         isEnabled: () => generateReportOfWindow.enabled({
           parentUuid: this.parentUuid,
           containerUuid: this.containerUuid
