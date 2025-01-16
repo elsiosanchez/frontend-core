@@ -19,6 +19,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <template>
   <div v-loading="isLoading">
     <el-drawer
+      v-if="!isPanel"
       :visible.sync="showContainerInfo"
       :with-header="true"
       :before-close="closePanel"
@@ -30,6 +31,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         {{ $t('window.containerInfo.log.tab') }}
       </span>
       <panel-info
+        v-if="!isPanel"
         :all-tabs-list="allTabsList"
         :show-container-info="showContainerInfo"
         :container-manager="containerManager"
@@ -53,6 +55,15 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :container-uuid="containerUuid"
         :current-tab-uuid="currentTabUuid"
       />
+    </div>
+    <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; border-bottom: 1px solid #d0d7de; margin-right: 10px; margin-left: 5px; ">
+      <svg-icon icon-class="resources" />
+      <span style="font-weight: bold;">
+        {{ infoTitle }}
+      </span>
+      <div style="color: rgb(130, 132, 138); margin-left: 18px; padding-bottom: 5px;">
+        {{ infoDescription }}
+      </div>
     </div>
     <el-card
       class="box-card"
@@ -174,6 +185,8 @@ export default defineComponent({
     // const currentEvents = ref([])
     const recordId = ref('')
     const currentRecordLogs = ref({})
+    const infoTitle = ref('')
+    const infoDescription = ref('')
     const dialogVisible = ref(false)
     const currentResource = ref({})
     /**
@@ -197,14 +210,32 @@ export default defineComponent({
     const resource = computed(() => {
       return store.getters.getInfoResource
     })
-
+    const tabResource = computed(() => {
+      return store.getters.getTabPanelResource
+    })
     const groudResource = computed(() => {
+      if (props.isPanel) {
+        if (isEmptyValue(tabResource.value) && isEmptyValue(tabResource.value.groupsRecurso)) return []
+        const { groupsRecurso } = tabResource.value
+        return groupsRecurso
+      }
       if (isEmptyValue(resource.value.groupsRecurso)) return []
       const { groupsRecurso } = resource.value
       return groupsRecurso
     })
 
     const recordsEvents = computed(() => {
+      if (props.isPanel) {
+        if (isEmptyValue(tabResource.value) && isEmptyValue(tabResource.value.recordsEvents)) return []
+        const { recordsEvents } = tabResource.value
+        return recordsEvents.map(list => {
+          return {
+            ...list,
+            start: parse(list.start),
+            end: parse(list.end)
+          }
+        })
+      }
       if (isEmptyValue(resource.value.recordsEvents)) return []
       const { recordsEvents } = resource.value
       return recordsEvents.map(list => {
@@ -262,7 +293,7 @@ export default defineComponent({
         editable: true,
         resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
         resources: groudResource.value,
-        events: recordsEvents.value,
+        events: props.isPanel ? tabResource.value : recordsEvents.value,
         views: {
           resourceTimelineDay: {
             slotDuration: '00:30:00', // Intervalos de 30 minutos
@@ -280,10 +311,10 @@ export default defineComponent({
             slotDuration: { months: 1 }, // Intervalos de 1 mes
             slotLabelInterval: { months: 1 } // Etiquetas cada mes
           }
-        },
-        datesSet: function(info) {
-          changeRange(info)
         }
+        // datesSet: function(info) {
+        //   changeRange(info)
+        // }
         // eventClick: openPanel
       }
     })
@@ -333,9 +364,11 @@ export default defineComponent({
       setRecordPath({
         recordId: Number(currentResource.value.id)
       })
-      setTimeout(() => {
-        store.commit('setShowLogs', true)
-      }, 500)
+      dialogVisible.value = false
+      store.commit('setShowLogs', true)
+      // setTimeout(() => {
+      //   store.commit('setShowLogs', true)
+      // }, 500)
     }
 
     function handleEventClick(clickInfo) {
@@ -357,14 +390,18 @@ export default defineComponent({
 
     function searchListCalendars() {
       if (!isEmptyValue(displayDefinition.value)) {
+        const { id, description, name } = filter
+        infoTitle.value = name
+        infoDescription.value = description
         let filters
         if (props.isPanel) {
           filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
           filters = JSON.stringify(filters)
         }
         store.dispatch('searchPanelResource', {
-          id: filter.id,
-          filters
+          id,
+          filters,
+          isPanel: props.isPanel
         })
       }
     }
@@ -382,7 +419,6 @@ export default defineComponent({
 
     watch(info, () => {
       loadPanel()
-      searchListCalendars()
     })
     loadPanel()
 
@@ -406,6 +442,9 @@ export default defineComponent({
       recordsEvents,
       resource,
       isLoading,
+      tabResource,
+      infoTitle,
+      infoDescription,
       // Methods
       openPanel,
       closePanel,

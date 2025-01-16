@@ -20,6 +20,7 @@ import { resources } from '@/api/ADempiere/displayDefinition.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 const initState = {
+  tabPanelResource: {},
   panelResource: false,
   infoResource: {},
   isLoadingResource: false,
@@ -49,13 +50,17 @@ const resource = {
     }) {
       state.startStr = startStr
       state.endStr = endStr
+    },
+    setTabPanelResource(state, value) {
+      state.tabPanelResource = value
     }
   },
   actions: {
     searchPanelResource({ state, commit, getters, dispatch }, {
       id,
       filters,
-      searchValue
+      searchValue,
+      isPanel
     }) {
       commit('setIsLoadingResource', true)
       let defaultFilters = ''
@@ -117,7 +122,11 @@ const resource = {
               recordsEvents,
               ...response
             }
-            commit('setInfoKResource', all)
+            if (isPanel) {
+              commit('setTabPanelResource', all)
+            } else {
+              commit('setInfoKResource', all)
+            }
             resolve(response)
           })
           .finally(() => {
@@ -146,6 +155,9 @@ const resource = {
     },
     getIsLoadingResource: (state) => {
       return state.isLoadingResource
+    },
+    getTabPanelResource: (state) => {
+      return state.tabPanelResource
     }
   }
 }
