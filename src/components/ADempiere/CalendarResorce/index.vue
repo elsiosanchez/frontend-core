@@ -94,6 +94,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       <p><strong><i class="el-icon-date" /> {{ $t('component.date.startDate') }}:  </strong>{{ translateDate({ value: currentResource.start, format:'long'}) }}</p>
       <p><strong><i class="el-icon-date" /> {{ $t('component.date.endDate') }}:  </strong>{{ translateDate({ value: currentResource.end, format:'long'}) }}</p>
       <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">{{ $t('component.date.close') }}</el-button>
         <el-button @click="openRightPanel">{{ $t('component.date.seeDetails') }}</el-button>
       </span>
     </el-dialog>

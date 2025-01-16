@@ -25,7 +25,8 @@ const date = {
   currentWeek: 'Current Week',
   lastMonth: 'Last Month',
   currentMonth: 'Current Month',
-  seeDetails: 'See Details'
+  seeDetails: 'See Details',
+  close: 'Close'
 }
 
 export default date
