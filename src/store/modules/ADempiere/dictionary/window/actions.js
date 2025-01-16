@@ -254,6 +254,11 @@ export default {
                 containerUuid: process.uuid,
                 attributes: parentValues
               })
+
+              // clear values to report associated and set with tab
+              dispatch('setReportDefaultValues', {
+                containerUuid: process.uuid
+              })
             },
             loadData: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
               const reportDefinition = rootGetters.getStoredReport(process.uuid)
@@ -539,6 +544,11 @@ export default {
                 containerUuid: process.uuid,
                 attributes: parentValues
               })
+
+              // clear values to process associated and set with tab
+              dispatch('setProcessDefaultValues', {
+                containerUuid: process.uuid
+              })
             },
             loadData: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
               const processDefinition = rootGetters.getStoredProcess(process.uuid)
@@ -550,18 +560,6 @@ export default {
                 id: process.id.toString(),
                 containerUuidAssociated: tabDefinition.parentUuid
               })
-                .finally(() => {
-                  const parentValues = rootGetters.getValuesView({
-                    containerUuid: tabAssociatedUuid,
-                    isOnlyColumns: true,
-                    isOnlyWithValue: true,
-                    format: 'array'
-                  })
-                  dispatch('updateValuesOfContainer', {
-                    containerUuid: process.uuid,
-                    attributes: parentValues
-                  })
-                })
             },
             // TODO: Change to string and import dynamic in component
             componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
