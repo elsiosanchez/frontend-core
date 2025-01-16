@@ -174,6 +174,7 @@ export default {
    * @param {array}  fieldsList
    */
   setProcessDefaultValues({ dispatch, getters }, {
+    parentUuid,
     containerUuid,
     fieldsList = []
   }) {
@@ -187,6 +188,7 @@ export default {
         isRecord: false
       })
       const defaultAttributes = getters.getParsedDefaultValues({
+        parentUuid,
         containerUuid,
         isSOTrxDictionary: isSalesTransactionContext,
         fieldsList
@@ -194,7 +196,7 @@ export default {
 
       dispatch('updateValuesOfContainer', {
         containerUuid,
-        isOverWriteParent: true,
+        isOverWriteParent: false,
         attributes: defaultAttributes
       })
       if (isEmptyValue(fieldsList)) {

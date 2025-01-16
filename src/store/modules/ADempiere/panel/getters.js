@@ -300,7 +300,10 @@ const getters = {
     const attributesObject = {}
     let attributesList = fieldsList
       .map(fieldItem => {
-        const { id, uuid, columnName, isSameColumnElement, element_name, default_value } = fieldItem
+        const {
+          internal_id: id, uuid, columnName,
+          isSameColumnElement, element_name, default_value
+        } = fieldItem
         let contextColumnNames = fieldItem.contextColumnNames
         if (isEmptyValue(contextColumnNames)) {
           contextColumnNames = fieldItem.context_column_names
@@ -363,7 +366,7 @@ const getters = {
             const optionsList = rootGetters.getStoredLookupAll({
               parentUuid,
               containerUuid,
-              contextColumnNames: fieldItem.context_column_names,
+              contextColumnNames: fieldItem.reference.context_column_names,
               contextColumnNamesByDefaultValue: contextColumnNames,
               id,
               uuid,

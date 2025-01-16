@@ -162,7 +162,7 @@ export function getContextDefaultValue({
 
   const isSpeciaColumn = !isEmptyValue(arrayMatches(ACCOUNTING_COLUMNS, [column_name, element_name]))
   // search value with context
-  if (isSpeciaColumn && String(parsedDefaultValue).trim() !== '-1') {
+  if (isSpeciaColumn && isEmptyValue(default_value)) {
     parsedDefaultValue = getPreference({
       parentUuid,
       containerUuid,

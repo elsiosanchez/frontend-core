@@ -233,7 +233,7 @@ export default {
               const parentValues = rootGetters.getValuesView({
                 containerUuid: tabAssociatedUuid,
                 isOnlyColumns: true,
-                isOnlyWithValue: true,
+                isOnlyWithValue: false,
                 format: 'array'
               })
               // const parentValues = getContextAttributes({
@@ -254,17 +254,17 @@ export default {
                 containerUuid: process.uuid,
                 attributes: parentValues
               })
-
-              // clear values to report associated and set with tab
-              dispatch('setReportDefaultValues', {
-                containerUuid: process.uuid
-              })
             },
             loadData: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
               const reportDefinition = rootGetters.getStoredReport(process.uuid)
               const storedTab = rootGetters.getStoredTab(windowUuid, tabAssociatedUuid)
               const { table_name } = storedTab
               if (!isEmptyValue(reportDefinition)) {
+                // clear values to report associated and set with tab
+                dispatch('setReportDefaultValues', {
+                  parentUuid: tabAssociatedUuid,
+                  containerUuid: process.uuid
+                })
                 // auto run report if without parameters
                 if (!reportDefinition.has_parameters || isEmptyValue(reportDefinition.fieldsList)) {
                   // close modal dialog
@@ -283,20 +283,28 @@ export default {
                 isLegacyReport: true,
                 id: process.id,
                 tableName: table_name
-              }).then(reportDefinitionResponse => {
-                // auto run report if without parameters
-                if (isEmptyValue(reportDefinitionResponse.fieldsList)) {
-                  // close modal dialog
-                  store.commit('setShowedModalDialog', {
-                    containerUuid: process.uuid,
-                    isShowed: false
-                  })
-                  doneMethodByReport({
-                    parentUuid: tabAssociatedUuid,
-                    containerUuid
-                  })
-                }
               })
+                .then(reportDefinitionResponse => {
+                  // auto run report if without parameters
+                  if (isEmptyValue(reportDefinitionResponse.fieldsList)) {
+                    // close modal dialog
+                    store.commit('setShowedModalDialog', {
+                      containerUuid: process.uuid,
+                      isShowed: false
+                    })
+                    doneMethodByReport({
+                      parentUuid: tabAssociatedUuid,
+                      containerUuid
+                    })
+                  }
+                })
+                .finally(() => {
+                  // clear values to report associated and set with tab
+                  dispatch('setReportDefaultValues', {
+                    parentUuid: tabAssociatedUuid,
+                    containerUuid: process.uuid
+                  })
+                })
             },
             // TODO: Change to string and import dynamic in component
             componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
@@ -523,7 +531,7 @@ export default {
               const parentValues = rootGetters.getValuesView({
                 containerUuid: tabAssociatedUuid,
                 isOnlyColumns: true,
-                isOnlyWithValue: true,
+                isOnlyWithValue: false,
                 format: 'array'
               })
               // const parentValues = getContextAttributes({
@@ -544,15 +552,15 @@ export default {
                 containerUuid: process.uuid,
                 attributes: parentValues
               })
-
-              // clear values to process associated and set with tab
-              dispatch('setProcessDefaultValues', {
-                containerUuid: process.uuid
-              })
             },
             loadData: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
               const processDefinition = rootGetters.getStoredProcess(process.uuid)
               if (!isEmptyValue(processDefinition)) {
+                // clear values to process associated and set with tab
+                dispatch('setProcessDefaultValues', {
+                  parentUuid: tabAssociatedUuid,
+                  containerUuid: process.uuid
+                })
                 return Promise.resolve(processDefinition)
               }
 
@@ -560,6 +568,13 @@ export default {
                 id: process.id.toString(),
                 containerUuidAssociated: tabDefinition.parentUuid
               })
+                .finally(() => {
+                  // clear values to process associated and set with tab
+                  dispatch('setProcessDefaultValues', {
+                    parentUuid: tabAssociatedUuid,
+                    containerUuid: process.uuid
+                  })
+                })
             },
             // TODO: Change to string and import dynamic in component
             componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
