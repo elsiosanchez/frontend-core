@@ -104,6 +104,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <script>
 import lang from '@/lang'
 import store from '@/store'
+import router from '@/router'
 
 import {
   defineComponent,
@@ -323,6 +324,13 @@ export default defineComponent({
       }
     })
 
+    const currentRecordId = computed(() => {
+      const { query, params } = router.app._route
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      return -1
+    })
+
     /**
      * Methods
      */
@@ -399,9 +407,10 @@ export default defineComponent({
         infoDescription.value = description
         let filters
         if (props.isPanel) {
-          filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
+          filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
           filters = JSON.stringify(filters)
         }
+        store.dispatch('currentCalendarsDefinitions', filter)
         store.dispatch('searchPanelResource', {
           id,
           filters,
@@ -438,6 +447,7 @@ export default defineComponent({
       info,
       // Computed
       isMobile,
+      currentRecordId,
       defaultNameTab,
       showContainerInfo,
       calendarOptions,

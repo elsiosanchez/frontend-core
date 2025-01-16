@@ -374,10 +374,22 @@ export default defineComponent({
       }
     }
     function handleCommandActions(data) {
+      store.dispatch('currentCalendarsDefinitions', data)
+      let filters = []
       if (data.display_type === 'C') {
-        store.dispatch('currentCalendarsDefinitions', data)
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
         store.dispatch('getListCalendars', {
-          id: data.id
+          id: data.id,
+          filters
+        })
+      }
+      if (data.display_type === 'R') {
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+        store.dispatch('searchPanelResource', {
+          id: data.id,
+          filters
         })
       }
     }
