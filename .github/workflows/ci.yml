@@ -30,14 +30,14 @@ jobs:
   # Build dist application ADempiere-Vue
   build-app:
     name: Build dist adempiere-vue
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Node configuration
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 14.x
           cache: 'yarn'
@@ -64,7 +64,7 @@ jobs:
         run: yarn build:prod
 
       - name: Upload dist app
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: adempiere-vue
           path: dist
