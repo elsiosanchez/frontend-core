@@ -38,7 +38,22 @@
             <span slot="label">
               <svg-icon v-if="tab.svg" :icon-class="tab.iconClass" />
               <i v-else :class="tab.iconClass" />
-              {{ tab.title }}
+              <el-dropdown trigger="click">
+                <span class="el-dropdown-link">
+                  {{ tab.title }}
+                  <i class="el-icon-arrow-down el-icon--right" />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(data, key) in definition"
+                    :key="key"
+                    icon-class="calender"
+                    @command="handleCommandActions"
+                  >
+                    {{ data.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
             </span>
             <component
               :is="tab.component"
@@ -267,7 +282,7 @@ export default defineComponent({
         {
           name: 'Workflow',
           title: language.t('window.containerInfo.log.workflow'),
-          show: true,
+          show: showWorkflow.value,
           svg: true,
           isLoading: false,
           iconClass: 'workflow',
@@ -303,10 +318,13 @@ export default defineComponent({
     const showPanelDashboard = computed(() => {
       return store.getters.getNumberDashboard
     })
+    const definition = computed(() => {
+      return store.getters.getPanelOptions
+    })
+
     function displayDefinition() {
-      const definition = store.getters.getDefinition
-      if (!isEmptyValue(definition)) {
-        definition.forEach(record => {
+      if (!isEmptyValue(definition.value)) {
+        definition.value.forEach(record => {
           if (record.display_type === 'C') {
             showCalendar.value = true
           }
@@ -321,6 +339,9 @@ export default defineComponent({
           }
         })
       }
+    }
+    function handleCommandActions(data) {
+      console.log(data)
     }
     displayDefinition()
     // Container Info
@@ -657,6 +678,7 @@ export default defineComponent({
       currentRecordUuid,
       showPanelDashboard,
       changeTableName,
+      definition,
       // IsLoading
       isLoadingNotesRecord,
       isLoadingListAttachment,
@@ -668,7 +690,8 @@ export default defineComponent({
       findRecordLogs,
       handleClick,
       findListStoreProduct,
-      showAccoutingFacts
+      showAccoutingFacts,
+      handleCommandActions
     }
   }
 

@@ -784,6 +784,10 @@ export default defineComponent({
       if (!isEmptyValue(options) && typeof options === 'string') {
         store.commit('setDefaultOpenedTab', options)
       }
+      store.dispatch('getDisplayDefinition', {
+        tableName: currentTabTableName.value,
+        onlyeReferences: true
+      })
       store.dispatch('showLogs', {
         show: !showContainerInfo.value
       })

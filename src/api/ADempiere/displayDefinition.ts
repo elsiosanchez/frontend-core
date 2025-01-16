@@ -44,11 +44,15 @@ export function worflowsDefinitions({
 }
 
 export function displayDefinitions({
-  tableName
+  tableName,
+  onlyeReferences
 }) {
   return request({
     url: `/display-definition/definitions/${tableName}`,
-    method: 'get'
+    method: 'get',
+    params: {
+      only_references: onlyeReferences
+    }
   })
 }
 

@@ -22,7 +22,8 @@ import {
 
 const initState = {
   definition: [],
-  tabOptions: []
+  tabOptions: [],
+  panelOptions: []
 }
 
 const displayDefinition = {
@@ -33,10 +34,13 @@ const displayDefinition = {
     },
     setTabOptions(state, value) {
       state.tabOptions = value
+    },
+    setPanelOptions(state, value) {
+      state.panelOptions = value
     }
   },
   actions: {
-    getDisplayDefinition({ commit }, {
+    getDisplayDefinitionExists({ dispatch }, {
       tableName
     }) {
       return new Promise(resolve => {
@@ -46,15 +50,30 @@ const displayDefinition = {
           .then(response => {
             const { record_count } = response
             if (record_count > 0) {
-              displayDefinitions({
+              dispatch('getDisplayDefinition', {
                 tableName
               })
-                .then(definition => {
-                  const { records } = definition
-                  commit('setDisplayDefinition', records)
-                  resolve(records)
-                })
             }
+          })
+      })
+    },
+    getDisplayDefinition({ commit }, {
+      tableName,
+      onlyeReferences
+    }) {
+      return new Promise(resolve => {
+        displayDefinitions({
+          tableName,
+          onlyeReferences
+        })
+          .then(definition => {
+            const { records } = definition
+            if (onlyeReferences) {
+              commit('setPanelOptions', records)
+            } else {
+              commit('setDisplayDefinition', records)
+            }
+            resolve(records)
           })
       })
     }
@@ -62,6 +81,9 @@ const displayDefinition = {
   getters: {
     getDefinition: (state) => {
       return state.definition
+    },
+    getPanelOptions: (state) => {
+      return state.panelOptions
     },
     getTabOptions: (state) => {
       return state.tabOptions

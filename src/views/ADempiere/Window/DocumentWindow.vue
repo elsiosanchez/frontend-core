@@ -303,7 +303,7 @@ export default defineComponent({
       }
     })
     function searchDisplay() {
-      store.dispatch('getDisplayDefinition', {
+      store.dispatch('getDisplayDefinitionExists', {
         tableName
       })
     }
