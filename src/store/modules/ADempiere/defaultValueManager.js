@@ -179,6 +179,13 @@ const defaultValueManager = {
         })
           .then(valueResponse => {
             const { values, is_active } = valueResponse
+            if (isEmptyValue(values)) {
+              resolve({
+                ...defaultEmptyResponse,
+                reason: 'Without server value'
+              })
+              return
+            }
             // const values = {
             //   KeyColumn: undefined,
             //   DisplayColumn: undefined,
