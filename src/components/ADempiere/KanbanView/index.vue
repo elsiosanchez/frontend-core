@@ -108,7 +108,7 @@ import lang from '@/lang'
 import router from '@/router'
 
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
-import PanelInfo from '@/components/ADempiere/PanelInfo'
+// import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
@@ -120,7 +120,7 @@ export default defineComponent({
   components: {
     draggable,
     TabOptions,
-    PanelInfo,
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
     AdvancedTabQuery,
     OptionsBar
   },
