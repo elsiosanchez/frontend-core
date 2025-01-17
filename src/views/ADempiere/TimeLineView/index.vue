@@ -22,12 +22,12 @@
       :description="currentTimeLineDefinitions.description"
       :icon="'timeline'"
     />
-    <div class="timeline-container">
+    <div v-if="!isEmptyValue(infoTimeLine)" class="timeline-container">
       <el-timeline>
         <el-timeline-item
           v-for="(info, index) in infoTimeLine"
           :key="info.id"
-          :timestamp="translateDate(info.date)"
+          :timestamp="translateDate({ value: info.date, format:'long' })"
           placement="top"
           :color="getPointColor(index)"
         >
@@ -59,6 +59,9 @@
           </el-card>
         </el-timeline-item>
       </el-timeline>
+    </div>
+    <div v-else>
+      <el-empty />
     </div>
   </div>
 </template>
