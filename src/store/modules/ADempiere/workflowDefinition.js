@@ -29,7 +29,9 @@ import { showMessage } from '@/utils/ADempiere/notification'
 const workflow = {
   state: {
     workflowDefinition: {},
-    currentWorkflowDefinitions: {}
+    currentWorkflowDefinitions: {},
+    isLoading: false,
+    currentDisplayWorkflow: {}
   },
 
   mutations: {
@@ -41,6 +43,12 @@ const workflow = {
     },
     setDefinitionsWorkflow(state, value) {
       state.currentWorkflowDefinitions = value
+    },
+    setIsLoading(state, value) {
+      state.isLoading = value
+    },
+    setCurrentDisplayWorkflow(state, value) {
+      state.currentDisplayWorkflow = value
     }
   },
 
@@ -96,12 +104,17 @@ const workflow = {
       filters
     }) {
       return new Promise(resolve => {
+        commit('setIsLoading', true)
         workflowsDisplay({
           id,
           filters
         })
           .then(response => {
+            commit('setCurrentDisplayWorkflow', response)
             resolve(response)
+          })
+          .finally(() => {
+            commit('setIsLoading', false)
           })
       })
     },
@@ -116,6 +129,12 @@ const workflow = {
     },
     getCurrentWorkflowDefinitions: (state) => {
       return state.currentWorkflowDefinitions
+    },
+    getIsLoadingWorkflow: (state) => {
+      return state.isLoading
+    },
+    getCurrentDisplayWorkflow: (state) => {
+      return state.currentDisplayWorkflow
     }
   }
 }

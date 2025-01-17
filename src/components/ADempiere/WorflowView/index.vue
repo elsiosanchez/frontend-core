@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <div style="height: calc(100vh - 150px) !important;;">
+  <div v-loading="isLoading" style="height: calc(100vh - 150px) !important;">
     <options-bar
       :title="currentWorkflowDefinitions.name"
       :description="currentWorkflowDefinitions.description"
@@ -40,14 +40,14 @@
             placement="top"
           >
             <el-card shadow="hover" class="clearfix" style="padding: 2%">
-              <div>
+              <div style="cursor:pointer" @click="showkey(worrkflow.group_id, keys)">
                 <span style="color: #606266; font-weight: bold; font-size: 14px;">
                   {{ worrkflow.title }} <i class="el-icon-user-solid" />
                 </span>
                 <el-link
                   type="primary"
                   style="float: right;"
-                  @click="showkey(keys)"
+                  @click="showkey(worrkflow.group_id, keys)"
                 >
                   {{ $t('window.containerInfo.changeDetail') }}
                 </el-link>
@@ -92,11 +92,14 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const activate = ref(-1)
     const currentKey = ref(0)
     const typeAction = ref(0)
     const infoTitle = ref('')
     const infoDescription = ref('')
-    const listWorkflow = ref({})
+    const listWorkflow = computed(() => {
+      return store.getters.getCurrentDisplayWorkflow
+    })
     const displayDefinition = computed(() => {
       return store.getters.getPanelOptions
     })
@@ -111,19 +114,12 @@ export default defineComponent({
       if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
       return ''
     })
-    const activate = computed(() => {
-      const getData = store.getters.getTabData({
-        containerUuid: props.containerUuid
-      })
-      if (!isEmptyValue(getData) && !isEmptyValue(listWorkflow.value)) {
-        const { recordsList } = getData
-        const requestTypeIds = recordsList.map(record => record[listWorkflow.value.column_name])
-        const index = listWorkflow.value.steps.findIndex(step => String(step.value) === String(requestTypeIds[0]))
-        return index
-      }
-    })
+
     const currentWorkflowDefinitions = computed(() => {
       return store.getters.getCurrentWorkflowDefinitions
+    })
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingWorkflow
     })
     function searchWorkflow() {
       const filter = displayDefinition.value.find(display => display.display_type === 'W')
@@ -137,13 +133,16 @@ export default defineComponent({
         id,
         filters
       })
-        .then(response => {
-          if (!isEmptyValue(response)) {
-            listWorkflow.value = response
-          }
+        .then(res => {
+          const { records } = res
+          if (isEmptyValue(records)) return
+          const stepIndex = listWorkflow.value.steps.findIndex(step => step.value === String(records[0].group_id))
+          activate.value = stepIndex
         })
     }
-    const showkey = (key, index) => {
+    const showkey = (groupId, key, index) => {
+      const stepIndex = listWorkflow.value.steps.findIndex(step => step.value === String(groupId))
+      activate.value = stepIndex
       if (key === currentKey.value && index === typeAction.value) {
         currentKey.value = 1000
       } else {
@@ -164,6 +163,7 @@ export default defineComponent({
       tableName,
       activate,
       currentWorkflowDefinitions,
+      isLoading,
       //
       searchWorkflow,
       showkey

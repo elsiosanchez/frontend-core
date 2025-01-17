@@ -71,7 +71,7 @@
           </b>
         </span>
       </el-button>
-      <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
+      <div v-if="showKanban && !isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
         <span style="font-weight: bold;">
           {{ title }}
         </span>
