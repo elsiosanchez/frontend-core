@@ -193,6 +193,13 @@ export default defineComponent({
     /**
      * Computed
      */
+    const displayDefinition = computed(() => {
+      if (props.isPanel) {
+        return store.getters.getPanelOptions
+      }
+      // const { currentTab } = store.getters.getContainerInfo
+      return store.getters.getDefinition({ tableName: tableName.value })
+    })
     const currentResourcesDefinitions = computed(() => {
       return store.getters.getCurrentResourcesDefinitions
     })
@@ -264,12 +271,6 @@ export default defineComponent({
       const { currentTab } = store.getters.getContainerInfo
       if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
       return ''
-    })
-    const displayDefinition = computed(() => {
-      if (props.isPanel) {
-        return store.getters.getPanelOptions
-      }
-      return store.getters.getDefinition
     })
 
     const info = computed(() => {

@@ -18,85 +18,124 @@
 
 <template>
   <el-container style="height: 100%;" class="tab-panel">
-    <el-header :style="styleHeadPanel" class="tab-panel-header">
-      <tab-options
-        :parent-uuid="parentUuid"
-        :container-manager="containerManager"
-        :current-tab-uuid="currentTabUuid"
-        :container-uuid="tabAttributes.uuid"
-        :tab-attributes="tabAttributes"
-        :is-child-tab="isChildTab"
-        :is-change-record="!isShowedTableRecords"
-      />
+    <kanban-view
+      v-if="showKanban && !(showCalendar || showResource)"
+      :container-manager="containerManager"
+      :parent-uuid="parentUuid"
+      :container-uuid="tabAttributes.uuid"
+      :current-tab-uuid="tabAttributes.uuid"
+      :tabs-list="tabsList"
+      :all-tabs-list="allTabsList"
+      :actions-manager="actionsManager"
+      :is-panel="false"
+      :style="styleScroll"
+    />
+    <calendar-view
+      v-if="showCalendar && !(showKanban || showResource)"
+      :is-panel="false"
+      :container-manager="containerManager"
+      :parent-uuid="parentUuid"
+      :container-uuid="tabAttributes.uuid"
+      :current-tab-uuid="tabAttributes.uuid"
+      :tabs-list="tabsList"
+      :all-tabs-list="allTabsList"
+      :actions-manager="actionsManager"
+      :style="styleScroll"
+    />
+    <calendar-resorce
+      v-if="showResource && !(showKanban || showCalendar)"
+      :is-panel="false"
+      :container-manager="containerManager"
+      :parent-uuid="parentUuid"
+      :container-uuid="tabAttributes.uuid"
+      :current-tab-uuid="tabAttributes.uuid"
+      :tabs-list="tabsList"
+      :all-tabs-list="allTabsList"
+      :actions-manager="actionsManager"
+      :style="styleScroll"
+      :resources-info="resources"
+    />
+    <span v-if="!(showKanban || showCalendar || showResource)">
+      <el-header :style="styleHeadPanel" class="tab-panel-header">
+        <tab-options
+          :parent-uuid="parentUuid"
+          :container-manager="containerManager"
+          :current-tab-uuid="currentTabUuid"
+          :container-uuid="tabAttributes.uuid"
+          :tab-attributes="tabAttributes"
+          :is-child-tab="isChildTab"
+          :is-change-record="!isShowedTableRecords"
+        />
 
-      <filter-fields
-        v-if="isShowedTableRecords"
-        v-bind="commonFilterFielsProperties"
-        :parent-uuid="parentUuid"
-        :container-uuid="tabAttributes.uuid"
-        :fields-list="containerManager.getFieldsList({ parentUuid, containerUuid: tabAttributes.uuid })"
-        :fields-to-hidden="containerManager.getFieldsToHidden"
-        :is-filter-records="true"
-        :in-table="isShowedTableRecords"
-        :container-manager="containerManager"
-      />
-      <el-collapse
-        v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
-        v-model="activeNames"
-        accordion
-        style="margin-top: 5px;"
-      >
-        <el-collapse-item name="1">
-          <template slot="title">
-            {{ $t('table.dataTable.batchEntry') }}
-            <i class="header-icon el-icon-information" />
-          </template>
-          <el-form
-            label-position="top"
-            size="small"
-          >
-            <batch-entry
-              v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && activeNames === '1'"
-              :parent-uuid="parentUuid"
-              :container-uuid="tabAttributes.uuid"
-              :container-manager="containerManager"
-              :field-list-batch-entry="batchEntry"
-              :table-name="tabAttributes.table_name"
-              :field-list-all="tableHeaders"
-            />
-          </el-form>
-        </el-collapse-item>
-      </el-collapse>
-    </el-header>
-
-    <el-main id="tab-panel-body" class="tab-panel-body">
-      <div style="width: 100%;height: 100%;">
-        <default-table
+        <filter-fields
           v-if="isShowedTableRecords"
-          id="default-table"
-          key="default-table"
+          v-bind="commonFilterFielsProperties"
           :parent-uuid="parentUuid"
           :container-uuid="tabAttributes.uuid"
+          :fields-list="containerManager.getFieldsList({ parentUuid, containerUuid: tabAttributes.uuid })"
+          :fields-to-hidden="containerManager.getFieldsToHidden"
+          :is-filter-records="true"
+          :in-table="isShowedTableRecords"
           :container-manager="containerManager"
-          :header="tableHeaders"
-          :data-table="recordsList"
-          :panel-metadata="tabAttributes"
-          :is-navigation="true"
         />
-        <template v-else>
-          <panel-definition
-            key="panel-definition"
+        <el-collapse
+          v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
+          v-model="activeNames"
+          accordion
+          style="margin-top: 5px;"
+        >
+          <el-collapse-item name="1">
+            <template slot="title">
+              {{ $t('table.dataTable.batchEntry') }}
+              <i class="header-icon el-icon-information" />
+            </template>
+            <el-form
+              label-position="top"
+              size="small"
+            >
+              <batch-entry
+                v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && activeNames === '1'"
+                :parent-uuid="parentUuid"
+                :container-uuid="tabAttributes.uuid"
+                :container-manager="containerManager"
+                :field-list-batch-entry="batchEntry"
+                :table-name="tabAttributes.table_name"
+                :field-list-all="tableHeaders"
+              />
+            </el-form>
+          </el-collapse-item>
+        </el-collapse>
+      </el-header>
+
+      <el-main id="tab-panel-body" class="tab-panel-body">
+        <div style="width: 100%;height: 100%;">
+          <default-table
+            v-if="isShowedTableRecords"
+            id="default-table"
+            key="default-table"
             :parent-uuid="parentUuid"
             :container-uuid="tabAttributes.uuid"
             :container-manager="containerManager"
-            :group-tab="tabAttributes.tabGroup"
-            :style="overflowHeightScrooll"
-            :is-tab-panel="true"
-            :is-filter-records="true"
+            :header="tableHeaders"
+            :data-table="recordsList"
+            :panel-metadata="tabAttributes"
+            :is-navigation="true"
           />
-        </template>
-      </div>
-    </el-main>
+          <template v-else>
+            <panel-definition
+              key="panel-definition"
+              :parent-uuid="parentUuid"
+              :container-uuid="tabAttributes.uuid"
+              :container-manager="containerManager"
+              :group-tab="tabAttributes.tabGroup"
+              :style="overflowHeightScrooll"
+              :is-tab-panel="true"
+              :is-filter-records="true"
+            />
+          </template>
+        </div>
+      </el-main>
+    </span>
 
     <el-footer :style="styleFooterPanel" class="tab-panel-footer">
       <!-- pagination table, set custom or use default change page method -->
@@ -128,7 +167,9 @@ import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
-
+import KanbanView from '@/components/ADempiere/KanbanView'
+import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
+import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // Constants
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
@@ -145,7 +186,10 @@ export default defineComponent({
     FilterFields,
     PanelDefinition,
     TabOptions,
-    BatchEntry
+    BatchEntry,
+    CalendarView,
+    CalendarResorce,
+    KanbanView
   },
 
   props: {
@@ -161,6 +205,18 @@ export default defineComponent({
       type: Object,
       default: () => ({})
     },
+    tabsList: {
+      type: Array,
+      required: true
+    },
+    allTabsList: {
+      type: Array,
+      required: true
+    },
+    actionsManager: {
+      type: Object,
+      required: true
+    },
     // used only window
     isChildTab: {
       type: Boolean,
@@ -170,6 +226,16 @@ export default defineComponent({
 
   setup(props, { root }) {
     const activeNames = ref(['0'])
+
+    const showKanban = computed(() => {
+      return store.getters.getPanelKanban({ tableName: props.tabAttributes.table_name })
+    })
+    const showCalendar = computed(() => {
+      return store.getters.getShowCalendar({ tableName: props.tabAttributes.table_name })
+    })
+    const showResource = computed(() => {
+      return store.getters.getPanelResource({ tableName: props.tabAttributes.table_name })
+    })
 
     const currentTabUuid = props.tabAttributes.uuid
 
@@ -265,6 +331,9 @@ export default defineComponent({
         }), 10)
       }
       return 1
+    })
+    const showFullGridMode = computed(() => {
+      return store.getters['settings/getFullGridMode']
     })
 
     const recordsLength = computed(() => {
@@ -366,6 +435,14 @@ export default defineComponent({
         parentUuid
       })
     }
+    const styleScroll = computed(() => {
+      if (showFullGridMode.value) return 'overflow: auto;'
+      return 'min-height: 84vh !important;'
+    })
+
+    const resources = computed(() => {
+      return store.getters.getInfoResource
+    })
 
     loadOpenWindows()
 
@@ -379,6 +456,12 @@ export default defineComponent({
       currentTab,
       overflowHeightScrooll,
       recordUuid,
+      showKanban,
+      showCalendar,
+      showResource,
+      resources,
+      styleScroll,
+      showFullGridMode,
       // pagination
       styleHeadPanel,
       styleFooterPanel,

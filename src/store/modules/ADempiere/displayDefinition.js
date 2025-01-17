@@ -16,12 +16,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue'
+
 import {
   displayDefinitions, displayDefinitionsExists
 } from '@/api/ADempiere/displayDefinition.ts'
 
 const initState = {
-  definition: [],
+  definition: {},
   tabOptions: [],
   panelOptions: []
 }
@@ -29,8 +31,14 @@ const initState = {
 const displayDefinition = {
   state: initState,
   mutations: {
-    setDisplayDefinition(state, value) {
-      state.definition = value
+    // setDisplayDefinition(state, value) {
+    //   state.definition = value
+    // },
+    setDisplayDefinition(state, {
+      records,
+      tableName
+    }) {
+      Vue.set(state.definition, tableName, records)
     },
     setTabOptions(state, value) {
       state.tabOptions = value
@@ -71,7 +79,7 @@ const displayDefinition = {
             if (onlyeReferences) {
               commit('setPanelOptions', records)
             } else {
-              commit('setDisplayDefinition', records)
+              commit('setDisplayDefinition', { tableName, records })
             }
             resolve(records)
           })
@@ -79,8 +87,8 @@ const displayDefinition = {
     }
   },
   getters: {
-    getDefinition: (state) => {
-      return state.definition
+    getDefinition: (state) => ({ tableName }) => {
+      return state.definition[tableName] || []
     },
     getPanelOptions: (state) => {
       return state.panelOptions

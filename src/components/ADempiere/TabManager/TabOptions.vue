@@ -136,6 +136,7 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import language from '@/lang'
 import store from '@/store'
+import router from '@/router'
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import menuMobile from '@/components/ADempiere/ActionMenu/menuMobile.vue'
@@ -194,7 +195,7 @@ export default defineComponent({
     const title = ref('')
     const optionDescrip = ref('')
     const displayOptions = computed(() => {
-      const response = store.getters.getDefinition
+      const response = store.getters.getDefinition({ tableName: tableName.value })
       const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
       return filteredOptions
     })
@@ -257,6 +258,25 @@ export default defineComponent({
       return language.t('window.multiRecord')
     })
 
+    const currentRoute = router.app._route
+
+    const currentRecordId = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) return Number(currentRoute.query.recordId)
+      if (!isEmptyValue(currentRoute.params) && !isEmptyValue(currentRoute.params.recordId)) return Number(currentRoute.params.recordId)
+      if (currentTab) {
+        const { table } = currentTab
+        const { key_columns, table_name } = table
+        const currentRecord = store.getters.getTabCurrentRow({
+          containerUuid: currentTab.containerUuid
+        })
+        if (!isEmptyValue(currentRecord[table_name + '_ID'])) return currentRecord[table_name + '_ID']
+        if (!isEmptyValue(key_columns)) return currentRecord[key_columns[0]]
+        return 1
+      }
+      return ''
+    })
+
     const showMenuMobile = computed({
       // getter
       get() {
@@ -293,8 +313,14 @@ export default defineComponent({
         tableName: tableName.value,
         show: false
       })
-      store.commit('setPanelCalendar', false)
-      store.commit('setPanelResource', false)
+      store.commit('setPanelCalendar', {
+        tableName: tableName.value,
+        show: false
+      })
+      store.commit('setPanelResource', {
+        tableName: tableName.value,
+        show: false
+      })
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
         recordsSelected: [row]
@@ -314,9 +340,22 @@ export default defineComponent({
     function handleCommandActions(data) {
       store.commit('setTabOptions', data)
       if (data.display_type === 'K') {
+        let filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+        store.dispatch('searchPanelKanban', {
+          id: data.id,
+          isPanel: false,
+          filters
+        })
         store.dispatch('currentKanbanDefinitions', data)
-        store.commit('setPanelResource', false)
-        store.commit('setPanelCalendar', false)
+        store.commit('setPanelResource', {
+          tableName: tableName.value,
+          show: false
+        })
+        store.commit('setPanelCalendar', {
+          tableName: tableName.value,
+          show: false
+        })
         // store.commit('setPanelKanban', true)
         store.commit('setPanelKanban', {
           tableName: tableName.value,
@@ -324,17 +363,24 @@ export default defineComponent({
         })
         store.dispatch('searchPanelKanban', {
           id: data.id,
+          filters,
           isPanel: false
         })
       }
       if (data.display_type === 'C') {
-        store.commit('setPanelResource', false)
+        store.commit('setPanelResource', {
+          tableName: tableName.value,
+          show: false
+        })
         // store.commit('setPanelKanban', false)
         store.commit('setPanelKanban', {
           tableName: tableName.value,
           show: false
         })
-        store.commit('setPanelCalendar', true)
+        store.commit('setPanelCalendar', {
+          tableName: tableName.value,
+          show: true
+        })
         store.dispatch('getListTasksFromServer', {
           id: data.id,
           isPanel: false
@@ -346,8 +392,14 @@ export default defineComponent({
           tableName: tableName.value,
           show: false
         })
-        store.commit('setPanelCalendar', false)
-        store.commit('setPanelResource', true)
+        store.commit('setPanelCalendar', {
+          tableName: tableName.value,
+          show: false
+        })
+        store.commit('setPanelResource', {
+          tableName: tableName.value,
+          show: true
+        })
         store.dispatch('searchPanelResource', {
           id: data.id,
           isPanel: false

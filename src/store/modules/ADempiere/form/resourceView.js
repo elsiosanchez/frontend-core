@@ -16,12 +16,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue'
+
 import { resources } from '@/api/ADempiere/displayDefinition.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 const initState = {
   tabPanelResource: {},
-  panelResource: false,
+  panelResource: {},
   infoResource: {},
   isLoadingResource: false,
   endStr: getStartAndEndOfCurrentMonth()[1],
@@ -33,8 +35,11 @@ const initState = {
 const resource = {
   state: initState,
   mutations: {
-    setPanelResource(state, value) {
-      state.panelResource = value
+    setPanelResource(state, {
+      show,
+      tableName
+    }) {
+      Vue.set(state.panelResource, tableName, show)
     },
     setInfoKResource(state, value) {
       state.infoResource = value
@@ -72,7 +77,7 @@ const resource = {
       commit('setIsLoadingResource', true)
       let defaultFilters = ''
       const currentDefinitions = getters.getTabOptions
-      if (!isEmptyValue(currentDefinitions.valid_to_column)) {
+      if (!isEmptyValue(currentDefinitions) && !isEmptyValue(currentDefinitions.valid_to_column)) {
         defaultFilters += `[{"name":"${currentDefinitions.valid_to_column}","operator":"between","values":["${state.startStr}","${state.endStr}"]}],`
       }
       // if (!isEmptyValue(currentDefinitions.valid_to_column)) {
@@ -155,8 +160,8 @@ const resource = {
     }
   },
   getters: {
-    getPanelResource: (state) => {
-      return state.panelResource
+    getPanelResource: (state) => ({ tableName }) => {
+      return state.panelResource[tableName] || false
     },
     getInfoResource: (state) => {
       return state.infoResource

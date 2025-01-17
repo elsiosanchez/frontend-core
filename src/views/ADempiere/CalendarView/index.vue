@@ -307,10 +307,10 @@ export default defineComponent({
       if (props.isPanel) {
         return store.getters.getPanelOptions
       }
-      return store.getters.getDefinition
+      const { currentTab } = store.getters.getContainerInfo
+      return store.getters.getDefinition({ tableName: currentTab.table_name })
     })
     const filter = displayDefinition.value.find(display => display.display_type === 'C')
-
     const { query, params } = currentRoute
     const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
@@ -376,6 +376,9 @@ export default defineComponent({
 </script>
 
 <style lang='scss'>
+.fc-license-message {
+  display: none !important;
+}
 .demo-app {
   display: flex !important;
   min-height: 100%;

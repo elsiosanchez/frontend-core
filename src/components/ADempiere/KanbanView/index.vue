@@ -25,7 +25,7 @@
     <div v-if="columns.length === 0" class="no-data-placeholder">
       {{ $t('window.nodata') }}
     </div>
-    <div class="kanban-columns-container" :style="!isPanel ? {'height': 'calc(100vh - 150px)'} : {'height': 'calc(100vh - 250px)'}">
+    <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
       <div
         v-for="(column, index) in columns"
         :key="index"
@@ -222,7 +222,8 @@ export default defineComponent({
       if (props.isPanel) {
         return store.getters.getPanelOptions
       }
-      return store.getters.getDefinition
+      const { currentTab } = store.getters.getContainerInfo
+      return store.getters.getDefinition({ tableName: currentTab.table_name })
     })
     const filter = displayDefinition.value.find(display => display.display_type === 'K')
 
@@ -273,10 +274,15 @@ export default defineComponent({
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'K')
         const { id } = filter
+        let filters = []
+        if (props.isPanel) {
+          filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
+          filters = JSON.stringify(filters)
+        }
         store.dispatch('currentKanbanDefinitions', filter)
         store.dispatch('searchPanelKanban', {
           id,
-          filters: { name: [tableName.value] + '_ID', value: recordId.value },
+          filters,
           isPanel: props.isPanel
         })
           .finally(() => {

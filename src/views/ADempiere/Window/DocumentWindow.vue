@@ -24,45 +24,7 @@
       >
         <record-access />
       </embedded>
-      <kanban-view
-        v-if="showKanban && !(showCalendar || showResource)"
-        :container-manager="containerManager"
-        :parent-uuid="windowMetadata.uuid"
-        :container-uuid="currentTabUuid"
-        :current-tab-uuid="currentTabUuid"
-        :tabs-list="windowMetadata.tabsListParent"
-        :all-tabs-list="allTabsList"
-        :actions-manager="actionsManager"
-        :is-panel="false"
-        :style="styleScroll"
-      />
-      <calendar-view
-        v-if="showCalendar && !(showKanban || showResource)"
-        :is-panel="false"
-        :container-manager="containerManager"
-        :parent-uuid="windowMetadata.uuid"
-        :container-uuid="currentTabUuid"
-        :current-tab-uuid="currentTabUuid"
-        :tabs-list="windowMetadata.tabsListParent"
-        :all-tabs-list="allTabsList"
-        :actions-manager="actionsManager"
-        :style="styleScroll"
-      />
-      <calendar-resorce
-        v-if="showResource && !(showKanban || showCalendar)"
-        :is-panel="false"
-        :container-manager="containerManager"
-        :parent-uuid="windowMetadata.uuid"
-        :container-uuid="currentTabUuid"
-        :current-tab-uuid="currentTabUuid"
-        :tabs-list="windowMetadata.tabsListParent"
-        :all-tabs-list="allTabsList"
-        :actions-manager="actionsManager"
-        :style="styleScroll"
-        :resources-info="resources"
-      />
       <tab-manager
-        v-if="!(showKanban || showCalendar || showResource)"
         ref="tab-manager"
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -172,10 +134,10 @@ export default defineComponent({
       return store.getters.getPanelKanban({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
     })
     const showCalendar = computed(() => {
-      return store.getters.getShowCalendar
+      return store.getters.getShowCalendar({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
     })
     const showResource = computed(() => {
-      return store.getters.getPanelResource
+      return store.getters.getPanelResource({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
     })
     const resources = computed(() => {
       return store.getters.getInfoResource

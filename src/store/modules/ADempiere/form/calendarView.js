@@ -17,6 +17,7 @@
  */
 
 // import lang from '@/lang'
+import Vue from 'vue'
 
 // API Request Methods
 import { requestListTasks, listCalendars } from '@/api/ADempiere/form/task-management.ts'
@@ -30,7 +31,7 @@ const calendarView = {
   listEvents: [],
   showModal: false,
   selectedDate: [],
-  showCalendar: false,
+  showCalendar: {},
   isLoadingTasksEvents: false,
   currentCalendarsDefinitions: {},
   tabInfo: []
@@ -49,8 +50,11 @@ export default {
     setSelectedDate(state, value) {
       state.selectedDate = value
     },
-    setPanelCalendar(state, value) {
-      state.showCalendar = value
+    setPanelCalendar(state, {
+      show,
+      tableName
+    }) {
+      Vue.set(state.showCalendar, tableName, show)
     },
     setLoadingTasksEvents(state, value) {
       state.isLoadingTasksEvents = value
@@ -155,8 +159,8 @@ export default {
     getSelectedDate(state) {
       return state.selectedDate
     },
-    getShowCalendar(state) {
-      return state.showCalendar
+    getShowCalendar: (state) => ({ tableName }) => {
+      return state.showCalendar[tableName] || false
     },
     getIsLoadingTasksEvents(state) {
       return state.isLoadingTasksEvents
