@@ -320,7 +320,7 @@ export default defineComponent({
         {
           name: 'Kanban',
           title: language.t('window.containerInfo.log.kanban'),
-          show: showResource.value,
+          show: showKanban.value,
           svg: true,
           isLoading: false,
           iconClass: 'kanbanMode',
