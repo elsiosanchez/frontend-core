@@ -16,7 +16,7 @@
   validateng with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 <template>
-  <div>
+  <div v-loading="isLoading">
     <options-bar
       :title="currentTimeLineDefinitions.name"
       :description="currentTimeLineDefinitions.description"
@@ -77,13 +77,18 @@ export default defineComponent({
     OptionsBar
   },
   setup() {
-    const infoTimeLine = ref([])
+    const infoTimeLine = computed(() => {
+      return store.getters.getInfoTimeLine
+    })
     const currentKey = ref(null)
     const infoTitle = ref('')
     const infoDescription = ref('')
     const { query, params } = router.app._route
     const currentTimeLineDefinitions = computed(() => {
       return store.getters.getCurrentTimeLineDefinitions
+    })
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingTimeLine
     })
     const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
@@ -111,9 +116,6 @@ export default defineComponent({
           id,
           filters
         })
-          .then(response => {
-            infoTimeLine.value = response
-          })
       }
     }
 
@@ -129,6 +131,7 @@ export default defineComponent({
     searchTimeLine()
 
     return {
+      isLoading,
       infoTimeLine,
       currentKey,
       infoTitle,

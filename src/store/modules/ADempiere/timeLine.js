@@ -19,17 +19,21 @@
 import { timeLines } from '@/api/ADempiere/displayDefinition.ts'
 const initState = {
   infoTimeLine: [],
-  currentTimeLineDefinitions: {}
+  currentTimeLineDefinitions: {},
+  isLoading: false
 }
 
 const timeLine = {
   state: initState,
   mutations: {
     setInfoTimeLine(state, value) {
-      state.infotimeLine = value
+      state.infoTimeLine = value
     },
     setDefinitionsTimeLine(state, value) {
       state.currentTimeLineDefinitions = value
+    },
+    setIsLoading(state, value) {
+      state.isLoading = value
     }
   },
   actions: {
@@ -38,6 +42,7 @@ const timeLine = {
       filters
     }) {
       return new Promise(resolve => {
+        commit('setIsLoading', true)
         timeLines({
           id,
           filters
@@ -47,6 +52,9 @@ const timeLine = {
             commit('setInfoTimeLine', records)
             resolve(records)
           })
+          .finally(() => {
+            commit('setIsLoading', false)
+          })
       })
     },
     currentTimeLineDefinitions({ commit }, definitions) {
@@ -55,10 +63,13 @@ const timeLine = {
   },
   getters: {
     getInfoTimeLine: (state) => {
-      return state.infotimeLine
+      return state.infoTimeLine
     },
     getCurrentTimeLineDefinitions: (state) => {
       return state.currentTimeLineDefinitions
+    },
+    getIsLoadingTimeLine: (state) => {
+      return state.isLoading
     }
   }
 }
