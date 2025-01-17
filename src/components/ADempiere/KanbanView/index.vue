@@ -25,7 +25,7 @@
     <div v-if="columns.length === 0" class="no-data-placeholder">
       {{ $t('window.nodata') }}
     </div>
-    <div class="kanban-columns-container">
+    <div class="kanban-columns-container" :style="!isPanel ? {'height': 'calc(100vh - 150px)'} : {'height': 'calc(100vh - 250px)'}">
       <div
         v-for="(column, index) in columns"
         :key="index"
@@ -93,7 +93,6 @@
         :show-container-info="showContainerInfo"
         :container-manager="containerManager"
         :current-record="currentRecordLogs"
-        :tab-uuid="tabUuid"
         :is-accounting-info="isAccountingInfo"
         :default-opened-tab="defaultNameTab"
         :record-id="recordId"
@@ -168,11 +167,11 @@ export default defineComponent({
     const currentRoute = router.app._route
     const { query, params } = currentRoute
     const columns = ref([])
-    const recordId = () => {
+    const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
       if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
       return -1
-    }
+    })
     const currenKanbanDefinitions = computed(() => {
       return store.getters.getCurrentKanbanDefinitions
     })
@@ -210,7 +209,6 @@ export default defineComponent({
         setRecordPath({
           recordId: id
         })
-        recordId.value = id
       }
       store.commit('setShowLogs', !showContainerInfo.value)
     }
@@ -355,7 +353,6 @@ export default defineComponent({
 }
 
 .kanban-columns-container {
-  height: calc(100vh - 150px);
   display: flex;
   flex-wrap: nowrap;
   gap: 1.5rem;
