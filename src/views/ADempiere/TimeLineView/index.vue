@@ -18,8 +18,8 @@
 <template>
   <div>
     <options-bar
-      :title="infoTitle"
-      :description="infoDescription"
+      :title="currentTimeLineDefinitions.name"
+      :description="currentTimeLineDefinitions.description"
       :icon="'timeline'"
     />
     <div class="timeline-container">
@@ -82,7 +82,9 @@ export default defineComponent({
     const infoTitle = ref('')
     const infoDescription = ref('')
     const { query, params } = router.app._route
-
+    const currentTimeLineDefinitions = computed(() => {
+      return store.getters.getCurrentTimeLineDefinitions
+    })
     const recordId = computed(() => {
       if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
       if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
@@ -104,6 +106,7 @@ export default defineComponent({
         infoDescription.value = description
         let filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
         filters = JSON.stringify(filters)
+        store.dispatch('currentTimeLineDefinitions', filter)
         store.dispatch('searchPanelTimeLine', {
           id,
           filters
@@ -129,6 +132,7 @@ export default defineComponent({
       infoTimeLine,
       currentKey,
       infoTitle,
+      currentTimeLineDefinitions,
       infoDescription,
       translateDate,
       recordId,

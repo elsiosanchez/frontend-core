@@ -19,8 +19,8 @@
 <template>
   <div style="height: calc(100vh - 150px) !important;;">
     <options-bar
-      :title="infoTitle"
-      :description="infoDescription"
+      :title="currentWorkflowDefinitions.name"
+      :description="currentWorkflowDefinitions.description"
       :icon="'workflow'"
     />
     <div style="overflow: hidden;">
@@ -122,6 +122,9 @@ export default defineComponent({
         return index
       }
     })
+    const currentWorkflowDefinitions = computed(() => {
+      return store.getters.getCurrentWorkflowDefinitions
+    })
     function searchWorkflow() {
       const filter = displayDefinition.value.find(display => display.display_type === 'W')
       const { id, description, name } = filter
@@ -129,6 +132,7 @@ export default defineComponent({
       infoDescription.value = description
       let filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
       filters = JSON.stringify(filters)
+      store.dispatch('currentWorkflowDefinitions', filter)
       store.dispatch('getWorflowDisplay', {
         id,
         filters
@@ -159,6 +163,7 @@ export default defineComponent({
       recordId,
       tableName,
       activate,
+      currentWorkflowDefinitions,
       //
       searchWorkflow,
       showkey

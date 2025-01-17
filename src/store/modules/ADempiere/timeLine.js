@@ -18,7 +18,8 @@
 
 import { timeLines } from '@/api/ADempiere/displayDefinition.ts'
 const initState = {
-  infoTimeLine: []
+  infoTimeLine: [],
+  currentTimeLineDefinitions: {}
 }
 
 const timeLine = {
@@ -26,6 +27,9 @@ const timeLine = {
   mutations: {
     setInfoTimeLine(state, value) {
       state.infotimeLine = value
+    },
+    setDefinitionsTimeLine(state, value) {
+      state.currentTimeLineDefinitions = value
     }
   },
   actions: {
@@ -44,11 +48,17 @@ const timeLine = {
             resolve(records)
           })
       })
+    },
+    currentTimeLineDefinitions({ commit }, definitions) {
+      commit('setDefinitionsTimeLine', definitions)
     }
   },
   getters: {
     getInfoTimeLine: (state) => {
       return state.infotimeLine
+    },
+    getCurrentTimeLineDefinitions: (state) => {
+      return state.currentTimeLineDefinitions
     }
   }
 }

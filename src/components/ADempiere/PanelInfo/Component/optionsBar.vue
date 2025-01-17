@@ -38,15 +38,15 @@ export default defineComponent({
   props: {
     title: {
       type: String,
-      required: true
+      required: false
     },
     description: {
       type: String,
-      required: true
+      required: false
     },
     icon: {
       type: String,
-      required: true
+      required: false
     }
   }
 })

@@ -28,7 +28,8 @@ import { showMessage } from '@/utils/ADempiere/notification'
 
 const workflow = {
   state: {
-    workflowDefinition: {}
+    workflowDefinition: {},
+    currentWorkflowDefinitions: {}
   },
 
   mutations: {
@@ -37,6 +38,9 @@ const workflow = {
     },
     dictionaryResetCacheWorkflow(state) {
       state.workflow = {}
+    },
+    setDefinitionsWorkflow(state, value) {
+      state.currentWorkflowDefinitions = value
     }
   },
 
@@ -100,12 +104,18 @@ const workflow = {
             resolve(response)
           })
       })
+    },
+    currentWorkflowDefinitions({ commit }, definitions) {
+      commit('setDefinitionsWorkflow', definitions)
     }
   },
 
   getters: {
     getStoredWorkflowByUuid: (state) => (workflowUuid) => {
       return state.workflowDefinition[workflowUuid] || {}
+    },
+    getCurrentWorkflowDefinitions: (state) => {
+      return state.currentWorkflowDefinitions
     }
   }
 }

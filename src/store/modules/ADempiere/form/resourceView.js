@@ -26,7 +26,8 @@ const initState = {
   isLoadingResource: false,
   endStr: getStartAndEndOfCurrentMonth()[1],
   startStr: getStartAndEndOfCurrentMonth()[0],
-  filters: []
+  filters: [],
+  currentResourcesDefinitions: {}
 }
 
 const resource = {
@@ -53,9 +54,15 @@ const resource = {
     },
     setTabPanelResource(state, value) {
       state.tabPanelResource = value
+    },
+    setDefinitionsResources(state, value) {
+      state.currentResourcesDefinitions = value
     }
   },
   actions: {
+    currentResourcesDefinitions({ commit }, definitions) {
+      commit('setDefinitionsResources', definitions)
+    },
     searchPanelResource({ state, commit, getters, dispatch }, {
       id,
       filters,
@@ -159,6 +166,9 @@ const resource = {
     },
     getTabPanelResource: (state) => {
       return state.tabPanelResource
+    },
+    getCurrentResourcesDefinitions: (state) => {
+      return state.currentResourcesDefinitions
     }
   }
 }

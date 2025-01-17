@@ -18,6 +18,12 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <div v-loading="isLoading">
+    <options-bar
+      v-if="isPanel"
+      :title="currentResourcesDefinitions.name"
+      :description="currentResourcesDefinitions.description"
+      :icon="'timeline'"
+    />
     <el-drawer
       v-if="!isPanel"
       :visible.sync="showContainerInfo"
@@ -55,15 +61,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :container-uuid="containerUuid"
         :current-tab-uuid="currentTabUuid"
       />
-    </div>
-    <div v-if="isPanel" style="line-height: 1.2; font-size: 14px; color: #303133; margin-right: 10px; margin-left: 5px; padding-bottom: 10px; ">
-      <svg-icon icon-class="resources" />
-      <span style="font-weight: bold;">
-        {{ infoTitle }}
-      </span>
-      <div style="color: rgb(130, 132, 138); margin-left: 18px; border-bottom: 1px solid #d0d7de;">
-        {{ infoDescription }}
-      </div>
     </div>
     <el-card
       class="box-card"
@@ -124,6 +121,7 @@ import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 // import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
+import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
 
 // Utils and Helpers Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
@@ -135,7 +133,8 @@ export default defineComponent({
     TabOptions,
     FullCalendar, // make the <FullCalendar> tag available
     PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
-    AdvancedTabQuery
+    AdvancedTabQuery,
+    OptionsBar
   },
   props: {
     isPanel: {
@@ -194,6 +193,9 @@ export default defineComponent({
     /**
      * Computed
      */
+    const currentResourcesDefinitions = computed(() => {
+      return store.getters.getCurrentResourcesDefinitions
+    })
     const isLoading = computed(() => {
       return store.getters.getIsLoadingResource
     })
@@ -411,7 +413,7 @@ export default defineComponent({
           filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
           filters = JSON.stringify(filters)
         }
-        store.dispatch('currentCalendarsDefinitions', filter)
+        store.dispatch('currentResourcesDefinitions', filter)
         store.dispatch('searchPanelResource', {
           id,
           filters,
@@ -447,6 +449,7 @@ export default defineComponent({
       filter,
       info,
       // Computed
+      currentResourcesDefinitions,
       isMobile,
       currentRecordId,
       defaultNameTab,

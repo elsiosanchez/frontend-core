@@ -387,6 +387,7 @@ export default defineComponent({
       if (data.display_type === 'R') {
         filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
         filters = JSON.stringify(filters)
+        store.dispatch('currentResourcesDefinitions', data)
         store.dispatch('searchPanelResource', {
           id: data.id,
           filters
@@ -405,7 +406,7 @@ export default defineComponent({
       if (data.display_type === 'T') {
         filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
         filters = JSON.stringify(filters)
-        store.dispatch('currentKanbanDefinitions', data)
+        store.dispatch('currentTimeLineDefinitions', data)
         store.dispatch('searchPanelTimeLine', {
           id: data.id,
           filters
@@ -414,7 +415,7 @@ export default defineComponent({
       if (data.display_type === 'W') {
         filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
         filters = JSON.stringify(filters)
-        store.dispatch('currentKanbanDefinitions', data)
+        store.dispatch('currentWorkflowDefinitions', data)
         store.dispatch('getWorflowDisplay', {
           id: data.id,
           filters
