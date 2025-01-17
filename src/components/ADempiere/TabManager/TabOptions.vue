@@ -71,7 +71,8 @@
           </b>
         </span>
       </el-button>
-      <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
+      {{ showTitlePanel }}
+      <div v-if="showKanban && !isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
         <span style="font-weight: bold;">
           {{ title }}
         </span>
@@ -183,6 +184,10 @@ export default defineComponent({
     isChangeRecord: {
       type: Boolean,
       required: false
+    },
+    showTitlePanel: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -194,6 +199,7 @@ export default defineComponent({
       const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
       return filteredOptions
     })
+
     const selectedOption = computed(() => {
       const tabOptions = store.getters.getTabOptions
       if (!isEmptyValue(tabOptions)) {
@@ -284,7 +290,10 @@ export default defineComponent({
       optionDescrip.value = undefined
       store.commit('setFilters', [])
       store.commit('setTabOptions', undefined)
-      store.commit('setPanelKanban', false)
+      store.commit('setPanelKanban', {
+        tableName: tableName.value,
+        show: false
+      })
       store.commit('setPanelCalendar', false)
       store.commit('setPanelResource', false)
       store.commit('setTabSelectionsList', {
@@ -309,7 +318,11 @@ export default defineComponent({
         store.dispatch('currentKanbanDefinitions', data)
         store.commit('setPanelResource', false)
         store.commit('setPanelCalendar', false)
-        store.commit('setPanelKanban', true)
+        // store.commit('setPanelKanban', true)
+        store.commit('setPanelKanban', {
+          tableName: tableName.value,
+          show: true
+        })
         store.dispatch('searchPanelKanban', {
           id: data.id,
           isPanel: false
@@ -317,7 +330,11 @@ export default defineComponent({
       }
       if (data.display_type === 'C') {
         store.commit('setPanelResource', false)
-        store.commit('setPanelKanban', false)
+        // store.commit('setPanelKanban', false)
+        store.commit('setPanelKanban', {
+          tableName: tableName.value,
+          show: false
+        })
         store.commit('setPanelCalendar', true)
         store.dispatch('getListTasksFromServer', {
           id: data.id,
@@ -325,7 +342,11 @@ export default defineComponent({
         })
       }
       if (data.display_type === 'R') {
-        store.commit('setPanelKanban', false)
+        // store.commit('setPanelKanban', false)
+        store.commit('setPanelKanban', {
+          tableName: tableName.value,
+          show: false
+        })
         store.commit('setPanelCalendar', false)
         store.commit('setPanelResource', true)
         store.dispatch('searchPanelResource', {

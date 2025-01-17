@@ -16,11 +16,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue'
+
 import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 const initState = {
   tabInfoKanban: [],
-  panelKanban: false,
+  panelKanban: {},
   infoKanban: [],
   isLoadingKanban: false,
   filters: [],
@@ -30,9 +32,15 @@ const initState = {
 const kanban = {
   state: initState,
   mutations: {
-    setPanelKanban(state, value) {
-      state.panelKanban = value
+    setPanelKanban(state, {
+      show,
+      tableName
+    }) {
+      Vue.set(state.panelKanban, tableName, show)
     },
+    // setPanelKanban(state, value) {
+    //   state.panelKanban = value
+    // },
     setInfoKanvan(state, value) {
       state.infoKanban = value
     },
@@ -91,8 +99,8 @@ const kanban = {
     }
   },
   getters: {
-    getPanelKanban: (state) => {
-      return state.panelKanban
+    getPanelKanban: (state) => ({ tableName }) => {
+      return state.panelKanban[tableName] || false
     },
     getInfoKanban: (state) => {
       return state.infoKanban

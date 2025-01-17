@@ -169,7 +169,7 @@ export default defineComponent({
      * Computed
      */
     const showKanban = computed(() => {
-      return store.getters.getPanelKanban
+      return store.getters.getPanelKanban({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
     })
     const showCalendar = computed(() => {
       return store.getters.getShowCalendar
