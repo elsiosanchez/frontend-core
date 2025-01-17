@@ -2302,10 +2302,10 @@ export default defineComponent({
         return
       }
       isNewIssues.value = !isNewIssues.value
-      store.dispatch('listRequest', {
-        tableName,
-        recordId
-      })
+      // store.dispatch('listRequest', {
+      //   tableName,
+      //   recordId
+      // })
       // store.dispatch('changeCurrentIssues', issues)
     }
 
@@ -2313,10 +2313,10 @@ export default defineComponent({
       issues.isEdit = !issues.isEdit
       isPanelEditRequest.value = !isPanelEditRequest.value
       updateSummary.value = issues.summary
-      store.dispatch('listRequest', {
-        tableName,
-        recordId
-      })
+      // store.dispatch('listRequest', {
+      //   tableName,
+      //   recordId
+      // })
     }
 
     function removeIssues(issues) {
@@ -2331,10 +2331,10 @@ export default defineComponent({
     function cancelEdit(issues) {
       isNewIssues.value = !isNewIssues.value
       store.dispatch('changeCurrentIssues', issues)
-      store.dispatch('listRequest', {
-        tableName,
-        recordId
-      })
+      // store.dispatch('listRequest', {
+      //   tableName,
+      //   recordId
+      // })
     }
 
     function handleCommand(command) {
