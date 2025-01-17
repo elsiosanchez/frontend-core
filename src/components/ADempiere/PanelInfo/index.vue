@@ -402,6 +402,24 @@ export default defineComponent({
           isPanel: true
         })
       }
+      if (data.display_type === 'T') {
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+        store.dispatch('currentKanbanDefinitions', data)
+        store.dispatch('searchPanelTimeLine', {
+          id: data.id,
+          filters
+        })
+      }
+      if (data.display_type === 'W') {
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+        store.dispatch('currentKanbanDefinitions', data)
+        store.dispatch('getWorflowDisplay', {
+          id: data.id,
+          filters
+        })
+      }
     }
     const filteredDefinition = computed(() => {
       return {

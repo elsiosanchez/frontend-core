@@ -127,9 +127,11 @@ export default defineComponent({
       const { id, description, name } = filter
       infoTitle.value = name
       infoDescription.value = description
+      let filters = [{ name: [tableName.value] + '_ID', values: recordId.value }]
+      filters = JSON.stringify(filters)
       store.dispatch('getWorflowDisplay', {
         id,
-        filters: { name: [tableName.value] + '_ID', values: recordId.value }
+        filters
       })
         .then(response => {
           if (!isEmptyValue(response)) {

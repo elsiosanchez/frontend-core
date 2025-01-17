@@ -73,7 +73,7 @@ export function timeLines({
     url: `/display-definition/timelines/${id}`,
     method: 'get',
     params: {
-      filters: JSON.stringify([filters])
+      filters
     }
   })
 }
@@ -86,7 +86,7 @@ export function workflowsDisplay({
     url: `/display-definition/workflows/${id}`,
     method: 'get',
     params: {
-      filters: JSON.stringify([filters])
+      filters
     }
   })
 }
