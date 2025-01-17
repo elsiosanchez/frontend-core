@@ -59,7 +59,7 @@
     <options-bar
       v-if="isPanel"
       :title="currentCalendarsDefinitions.name"
-      :description="infoDescription"
+      :description="currentCalendarsDefinitions.description"
       :icon="'calendar'"
     />
     <div class="demo-app">

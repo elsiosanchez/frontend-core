@@ -136,14 +136,15 @@ const resource = {
     },
     setDateDefault({ commit, dispatch, getters }, {
       startStr,
-      endStr
+      endStr,
+      isPanel
     }) {
       const dateDefaults = getStartAndEndOfCurrentMonth()
       if (isEmptyValue(startStr)) startStr = dateDefaults[0]
       if (isEmptyValue(endStr)) endStr = dateDefaults[1]
       const currentDefinitions = getters.getTabOptions
       commit('setDateDefaults', { startStr, endStr })
-      dispatch('searchPanelResource', { id: currentDefinitions.id })
+      dispatch('searchPanelResource', { id: currentDefinitions.id, isPanel })
     }
   },
   getters: {

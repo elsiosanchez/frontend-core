@@ -19,10 +19,12 @@
 import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 const initState = {
+  tabInfoKanban: [],
   panelKanban: false,
   infoKanban: [],
   isLoadingKanban: false,
-  filters: []
+  filters: [],
+  currentKanbanDefinitions: {}
 }
 
 const kanban = {
@@ -42,13 +44,20 @@ const kanban = {
     },
     setFilters(state, value) {
       state.filters = value
+    },
+    setTabInfoKanban(state, value) {
+      state.tabInfoKanban = value
+    },
+    setDefinitionsKanban(state, definition) {
+      state.currentKanbanDefinitions = definition
     }
   },
   actions: {
     searchPanelKanban({ commit, getters }, {
       id,
       filters,
-      searchValue
+      searchValue,
+      isPanel = false
     }) {
       commit('setIsLoadingKanban', true)
       if (!isEmptyValue(filters)) {
@@ -65,13 +74,20 @@ const kanban = {
           searchValue
         })
           .then(response => {
-            commit('setInfoKanvan', response)
+            if (isPanel) {
+              commit('setTabInfoKanban', response)
+            } else {
+              commit('setInfoKanvan', response)
+            }
             resolve(response)
           })
           .finally(() => {
             commit('setIsLoadingKanban', false)
           })
       })
+    },
+    currentKanbanDefinitions({ commit }, definitions) {
+      commit('setDefinitionsKanban', definitions)
     }
   },
   getters: {
@@ -86,6 +102,12 @@ const kanban = {
     },
     getFilters: (state) => {
       return state.filters
+    },
+    getTabInfoKanban: (state) => {
+      return state.tabInfoKanban
+    },
+    getCurrentKanbanDefinitions(state) {
+      return state.currentKanbanDefinitions
     }
   }
 }

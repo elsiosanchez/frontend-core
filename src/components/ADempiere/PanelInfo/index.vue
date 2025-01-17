@@ -392,13 +392,24 @@ export default defineComponent({
           filters
         })
       }
+      if (data.display_type === 'K') {
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+        store.dispatch('currentKanbanDefinitions', data)
+        store.dispatch('searchPanelKanban', {
+          id: data.id,
+          filters,
+          isPanel: true
+        })
+      }
     }
     const filteredDefinition = computed(() => {
       return {
         Resource: definition.value.filter(item => item.display_type === 'R'),
         Calendar: definition.value.filter(item => item.display_type === 'C'),
         TimeLine: definition.value.filter(item => item.display_type === 'T'),
-        Workflow: definition.value.filter(item => item.display_type === 'W')
+        Workflow: definition.value.filter(item => item.display_type === 'W'),
+        Kanban: definition.value.filter(item => item.display_type === 'K')
       }
     })
     displayDefinition()
@@ -663,9 +674,13 @@ export default defineComponent({
     const currentCalendarsDefinitions = computed(() => {
       return store.getters.getCurrentCalendarsDefinitions
     })
+    const currentKanbanDefinitions = computed(() => {
+      return store.getters.getCurrentKanbanDefinitions
+    })
 
     function currentOptions(data) {
       if (data.id === currentCalendarsDefinitions.value.id) return 'color: #409eff;'
+      if (data.id === currentKanbanDefinitions.value.id) return 'color: #409eff;'
       return ''
     }
 
@@ -752,6 +767,7 @@ export default defineComponent({
       isLoadingListReference,
       isLoadingRecordLogsList,
       currentCalendarsDefinitions,
+      currentKanbanDefinitions,
       isLoadingIssuessRecord,
       // methods
       showkey,

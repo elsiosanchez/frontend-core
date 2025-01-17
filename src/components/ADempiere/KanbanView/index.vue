@@ -2,8 +2,8 @@
   <el-card v-loading="isLoading" class="kanban-container" :style="!isPanel ? { 'padding-top': '4rem'} : {}">
     <options-bar
       v-if="isPanel"
-      :title="infoTitle"
-      :description="infoDescription"
+      :title="currenKanbanDefinitions.name"
+      :description="currenKanbanDefinitions.description"
       :icon="'kanbanMode'"
     />
     <div v-if="!isPanel" class="tab-options-container">
@@ -110,7 +110,7 @@ import router from '@/router'
 
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 import PanelInfo from '@/components/ADempiere/PanelInfo'
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
@@ -173,6 +173,9 @@ export default defineComponent({
       if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
       return -1
     }
+    const currenKanbanDefinitions = computed(() => {
+      return store.getters.getCurrentKanbanDefinitions
+    })
     const infoTitle = ref('')
     const infoDescription = ref('')
     const isLoading = computed(() => {
@@ -228,12 +231,15 @@ export default defineComponent({
     const info = computed(() => {
       return store.getters.getInfoKanban
     })
+    const tabInfo = computed(() => {
+      return store.getters.getTabInfoKanban
+    })
     function loadColumns() {
       const { name, description } = filter
       infoTitle.value = name
       infoDescription.value = description
-      if (!isEmptyValue(info.value)) {
-        const { steps, records } = info.value
+      if (!isEmptyValue(info.value) || !isEmptyValue(tabInfo.value)) {
+        const { steps, records } = props.isPanel ? tabInfo.value : info.value
         const ungroupedItems = records
           .filter(record => !steps.some(step => record.group_id === step.value))
           // .map(record => ({
@@ -261,14 +267,15 @@ export default defineComponent({
         columns.value = [ungroupedColumn, ...groupedColumns]
       }
     }
-
     function searchInfoKanvan() {
       if (!isEmptyValue(displayDefinition.value)) {
         const filter = displayDefinition.value.find(display => display.display_type === 'K')
         const { id } = filter
+        store.dispatch('currentKanbanDefinitions', filter)
         store.dispatch('searchPanelKanban', {
           id,
-          filters: { name: [tableName.value] + '_ID', value: recordId.value }
+          filters: { name: [tableName.value] + '_ID', value: recordId.value },
+          isPanel: props.isPanel
         })
           .finally(() => {
             loadColumns()
@@ -308,9 +315,9 @@ export default defineComponent({
           })
       }
     }
-    // watch(info, () => {
-    //   loadColumns()
-    // })
+    watch((info, tabInfo), () => {
+      loadColumns()
+    })
     searchInfoKanvan()
     return {
       filter,
@@ -330,6 +337,7 @@ export default defineComponent({
       displayDefinition,
       columns,
       info,
+      currenKanbanDefinitions,
       //
       showPanel,
       handleCardMove,

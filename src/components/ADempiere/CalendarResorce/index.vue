@@ -316,10 +316,10 @@ export default defineComponent({
             slotDuration: { months: 1 }, // Intervalos de 1 mes
             slotLabelInterval: { months: 1 } // Etiquetas cada mes
           }
+        },
+        datesSet: function(info) {
+          changeRange(info)
         }
-        // datesSet: function(info) {
-        //   changeRange(info)
-        // }
         // eventClick: openPanel
       }
     })
@@ -340,7 +340,8 @@ export default defineComponent({
       const { endStr, startStr } = params
       store.dispatch('setDateDefault', {
         endStr: endStr.split('T')[0],
-        startStr: startStr.split('T')[0]
+        startStr: startStr.split('T')[0],
+        isPanel: props.isPanel
       })
       return { endStr, startStr }
     }
