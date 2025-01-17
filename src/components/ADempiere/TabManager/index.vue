@@ -906,6 +906,8 @@ export default defineComponent({
         (isEmptyValue(currentRecordId.value) || currentRecordId.value <= 0))) {
         return
       }
+      countAttachment.value = 0
+      showAttachmentAvailable.value = false
       requestListResources({
         recordId: currentRecordId.value,
         tableName: currentTabTableName.value,
@@ -913,8 +915,10 @@ export default defineComponent({
         containerType: 'attachment'
       })
         .then(response => {
-          countAttachment.value = response.resources.length
-          showAttachmentAvailable.value = !isEmptyValue(response.resources)
+          if (!isEmptyValue(response) && !isEmptyValue(response.resources)) {
+            countAttachment.value = response.resources.length
+            showAttachmentAvailable.value = !isEmptyValue(response.resources)
+          }
         })
         // .catch(error => {
         //   console.warn(`Error getting Count Attachment: ${error.message}. Code: ${error.code}.`)

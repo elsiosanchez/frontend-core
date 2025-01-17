@@ -570,7 +570,7 @@
           </div>
           <i style="font-size: 12px;color: #82848a;">
             {{ $t('issues.isCreated') }}
-            {{ translateDateByLong(currentIssues.created) }}
+            {{ translateDate({ value: currentIssues.created, format: 'long' }) }}
             {{ $t('issues.by') }}
             <issue-avatar :user="currentIssues.user" />
           </i>
@@ -582,7 +582,7 @@
             v-for="(comment, index) in listComments"
             :key="index"
             type="primary"
-            :timestamp="translateDateByLong(comment.created)"
+            :timestamp="translateDate({ value: comment.created, format: 'long' })"
             style="margin-left: 10px;"
           >
             <issue-log
@@ -1306,7 +1306,7 @@
           </div>
           <i style="font-size: 12px;color: #82848a;">
             {{ $t('issues.isCreated') }}
-            {{ translateDateByLong(currentIssues.created) }}
+            {{ translateDate({ value: currentIssues.created, format: 'long' }) }}
             {{ $t('issues.by') }}
             <issue-avatar :user="currentIssues.user" />
           </i>
@@ -1319,7 +1319,7 @@
               v-for="(comment, index) in listComments"
               :key="index"
               type="primary"
-              :timestamp="translateDateByLong(comment.created)"
+              :timestamp="translateDate({ value: comment.created, format: 'long' })"
               style="margin-left: 10px;"
             >
               <issue-log
@@ -1417,7 +1417,7 @@
               v-for="(comment, index) in listComments"
               :key="index"
               type="primary"
-              :timestamp="translateDateByLong(comment.created)"
+              :timestamp="translateDate({ value: comment.created, format: 'long' })"
               style="margin-left: 10px;"
             >
               <issue-log
@@ -1497,12 +1497,14 @@
           </el-timeline>
         </span>
       </el-header>
-      <upload-issue
+
+      <upload-issue-attachment
         v-if="!isPanelEditRequest"
         :number-document="documentNumber"
         :record-id="issueId"
         :subject="currentSubject"
       />
+
       <el-main height="auto" style="height: auto;overflow: auto;padding: 0px 0px 30px !important;">
         <issue-comment-add
           v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest"
@@ -1528,14 +1530,15 @@ import IssueCommentAdd from '@/components/ADempiere/FormDefinition/IssueManageme
 import IssueCommentView from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueCommentView.vue'
 import IssueLog from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueLog.vue'
 import IssueRecordTime from '@/components/ADempiere/FormDefinition/IssueManagement/IssueRecordTime/index.vue'
-import UploadIssue from '@/components/ADempiere/Form/Issues/component/upload.vue'
+import UploadIssueAttachment from '@/components/ADempiere/FormDefinition/IssueManagement/IssueDetail/UploadIssueAttachment.vue'
+
 // Constants
 import { REQUEST_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { translateDateByLong, formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { formatDate, translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 
 // Api Request Methods
@@ -1561,7 +1564,7 @@ export default defineComponent({
     IssueCommentView,
     IssueLog,
     IssueRecordTime,
-    UploadIssue
+    UploadIssueAttachment
   },
 
   props: {
@@ -2732,7 +2735,7 @@ export default defineComponent({
       updateIssuesStatus,
       updateIssuesDateNextAction,
       defaultValueNewIssues,
-      translateDateByLong,
+      translateDate,
       formatDate,
       handleCommand,
       deleteComment,

@@ -29,7 +29,7 @@ import {
   requestDeleteIssueComment
 } from '@/api/ADempiere/user-interface/component/issue'
 
-// Const
+// Constants
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Helper Methods
@@ -127,8 +127,12 @@ export default {
           // refresh with same page
           pageNumber = storedPageNumber
         }
-        if (isEmptyValue(pageSize)) pageSize = issuesData.pageSize
+        if (isEmptyValue(pageSize)) {
+          pageSize = issuesData.pageSize
+        }
         const pageToken = generatePageToken({ pageNumber })
+
+        commit('setNewIssues', false)
         commit('setIsLoadListIssues', true)
         // commit('setIsLoadListIssuesAll', true)
         return requestListIssuesAll({
@@ -216,6 +220,8 @@ export default {
           pageNumber = storedPageNumber
         }
         const pageToken = generatePageToken({ pageNumber })
+
+        commit('setNewIssues', false)
         commit('setIsLoadListIssues', true)
         return requestListIssues({
           tableName,
