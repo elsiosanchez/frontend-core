@@ -229,6 +229,10 @@ export default defineComponent({
     const info = computed(() => {
       return store.getters.getInfoKanban
     })
+
+    const currentKanbanDefinitions = computed(() => {
+      return store.getters.getCurrentKanbanDefinitions
+    })
     const tabInfo = computed(() => {
       return store.getters.getTabInfoKanban
     })
@@ -313,8 +317,19 @@ export default defineComponent({
           })
       }
     }
-    watch((info, tabInfo), () => {
-      loadColumns()
+    // watch(tabInfo, (newValue, oldValue), () => {
+    //   loadColumns()
+    // })
+    watch(tabInfo, (newValue, oldValue) => {
+      // if (newValue) {
+      loadColumns({})
+      // }
+    })
+
+    watch(info, (newValue, oldValue) => {
+      // if (newValue) {
+      loadColumns({})
+      // }
     })
     searchInfoKanvan()
     return {
@@ -324,6 +339,7 @@ export default defineComponent({
       isLoading,
       recordId,
       infoTitle,
+      currentKanbanDefinitions,
       infoDescription,
       // Constant
       isMobile,

@@ -306,11 +306,13 @@ export default defineComponent({
     function handleCommandActions(data) {
       store.commit('setTabOptions', data)
       if (data.display_type === 'K') {
+        store.dispatch('currentKanbanDefinitions', data)
         store.commit('setPanelResource', false)
         store.commit('setPanelCalendar', false)
         store.commit('setPanelKanban', true)
         store.dispatch('searchPanelKanban', {
-          id: data.id
+          id: data.id,
+          isPanel: false
         })
       }
       if (data.display_type === 'C') {
@@ -318,7 +320,8 @@ export default defineComponent({
         store.commit('setPanelKanban', false)
         store.commit('setPanelCalendar', true)
         store.dispatch('getListTasksFromServer', {
-          id: data.id
+          id: data.id,
+          isPanel: false
         })
       }
       if (data.display_type === 'R') {
@@ -326,7 +329,8 @@ export default defineComponent({
         store.commit('setPanelCalendar', false)
         store.commit('setPanelResource', true)
         store.dispatch('searchPanelResource', {
-          id: data.id
+          id: data.id,
+          isPanel: false
         })
       }
     }

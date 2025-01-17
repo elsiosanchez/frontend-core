@@ -33,6 +33,7 @@
         :tabs-list="windowMetadata.tabsListParent"
         :all-tabs-list="allTabsList"
         :actions-manager="actionsManager"
+        :is-panel="false"
         :style="styleScroll"
       />
       <calendar-view
