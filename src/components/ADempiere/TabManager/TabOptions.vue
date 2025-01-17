@@ -196,8 +196,8 @@ export default defineComponent({
     const optionDescrip = ref('')
     const displayOptions = computed(() => {
       const response = store.getters.getDefinition({ tableName: tableName.value })
-      const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
-      return filteredOptions
+      // const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
+      return response
     })
 
     const selectedOption = computed(() => {
