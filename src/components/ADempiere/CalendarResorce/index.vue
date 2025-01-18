@@ -344,7 +344,8 @@ export default defineComponent({
       store.dispatch('setDateDefault', {
         endStr: endStr.split('T')[0],
         startStr: startStr.split('T')[0],
-        isPanel: props.isPanel
+        isPanel: props.isPanel,
+        id: filter.id
       })
       return { endStr, startStr }
     }
