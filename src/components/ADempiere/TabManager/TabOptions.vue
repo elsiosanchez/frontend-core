@@ -71,7 +71,7 @@
           </b>
         </span>
       </el-button>
-      <div v-if="showKanban && !isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
+      <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
         <span style="font-weight: bold;">
           {{ title }}
         </span>
@@ -340,13 +340,13 @@ export default defineComponent({
     function handleCommandActions(data) {
       store.commit('setTabOptions', data)
       if (data.display_type === 'K') {
-        let filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('searchPanelKanban', {
-          id: data.id,
-          isPanel: false,
-          filters
-        })
+        const currentKanbanDefinitions = store.getters.getCurrentKanbanDefinitions
+        if (currentKanbanDefinitions.id !== data.id) {
+          store.dispatch('searchPanelKanban', {
+            id: data.id,
+            isPanel: false
+          })
+        }
         store.dispatch('currentKanbanDefinitions', data)
         store.commit('setPanelResource', {
           tableName: tableName.value,
@@ -360,11 +360,6 @@ export default defineComponent({
         store.commit('setPanelKanban', {
           tableName: tableName.value,
           show: true
-        })
-        store.dispatch('searchPanelKanban', {
-          id: data.id,
-          filters,
-          isPanel: false
         })
       }
       if (data.display_type === 'C') {
@@ -428,6 +423,7 @@ export default defineComponent({
       isMobile,
       listAction,
       isEditSecuence,
+      currentRecordId,
       showMenuMobile,
       isShowedTableRecords,
       tableName,

@@ -19,7 +19,6 @@
 import Vue from 'vue'
 
 import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
-import { isEmptyValue } from '@/utils/ADempiere'
 const initState = {
   tabInfoKanban: [],
   panelKanban: {},
@@ -68,13 +67,13 @@ const kanban = {
       isPanel = false
     }) {
       commit('setIsLoadingKanban', true)
-      if (!isEmptyValue(filters)) {
-        commit('setFilters', filters)
-      }
-      if (isEmptyValue(filters)) {
-        const storeFiltrs = getters.getFilters
-        filters = storeFiltrs
-      }
+      // if (!isEmptyValue(filters)) {
+      //   commit('setFilters', filters)
+      // }
+      // if (isEmptyValue(filters)) {
+      //   const storeFiltrs = getters.getFilters
+      //   filters = storeFiltrs
+      // }
       return new Promise(resolve => {
         kanbans({
           id,
