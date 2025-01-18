@@ -292,9 +292,15 @@ export default defineComponent({
     }
     function handleCardMove(event, column) {
       if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
+        let columnName
+        if (!isEmptyValue(info.value)) {
+          columnName = info.value.column_name
+        }
+        if (!isEmptyValue(tabInfo.value) && isEmptyValue(columnName)) {
+          columnName = tabInfo.value.column_name
+        }
         const { value } = column
         const { id, uuid } = event.added.element
-        const columnName = info.value.column_name
         const { currentTab } = store.getters.getContainerInfo
 
         updateEntity({
