@@ -47,7 +47,7 @@
                 <el-link
                   type="primary"
                   style="float: right;"
-                  @click="showkey(worrkflow.group_id, keys)"
+                  @click.stop="showkey(worrkflow.group_id, keys)"
                 >
                   {{ $t('window.containerInfo.changeDetail') }}
                 </el-link>
@@ -141,14 +141,14 @@ export default defineComponent({
         })
     }
     const showkey = (groupId, key, index) => {
-      const stepIndex = listWorkflow.value.steps.findIndex(step => step.value === String(groupId))
-      activate.value = stepIndex
       if (key === currentKey.value && index === typeAction.value) {
         currentKey.value = 1000
       } else {
         currentKey.value = key
         typeAction.value = index
       }
+      const stepIndex = listWorkflow.value.steps.findIndex(step => step.value === String(groupId))
+      activate.value = stepIndex
     }
     searchWorkflow()
     return {
