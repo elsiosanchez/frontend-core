@@ -341,11 +341,17 @@ export default defineComponent({
     function changeRange(params) {
       if (isEmptyValue(params)) return
       const { endStr, startStr } = params
+      let filters
+      if (props.isPanel) {
+        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        filters = JSON.stringify(filters)
+      }
       store.dispatch('setDateDefault', {
         endStr: endStr.split('T')[0],
         startStr: startStr.split('T')[0],
         isPanel: props.isPanel,
-        id: filter.id
+        id: filter.id,
+        filters
       })
       return { endStr, startStr }
     }

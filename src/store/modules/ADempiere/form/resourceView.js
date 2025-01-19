@@ -150,14 +150,15 @@ const resource = {
       startStr,
       endStr,
       isPanel,
-      id
+      id,
+      filters
     }) {
       const dateDefaults = getStartAndEndOfCurrentMonth()
       if (isEmptyValue(startStr)) startStr = dateDefaults[0]
       if (isEmptyValue(endStr)) endStr = dateDefaults[1]
       // const currentDefinitions = getters.getPanelOptions
       commit('setDateDefaults', { startStr, endStr })
-      dispatch('searchPanelResource', { id, isPanel })
+      dispatch('searchPanelResource', { id, isPanel, filters })
     }
   },
   getters: {
