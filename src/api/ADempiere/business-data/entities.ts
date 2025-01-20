@@ -75,28 +75,19 @@ export function requestCreateEntity({
  */
 export function requestUpdateEntity({
   tableName,
-  recordId,
-  attributesList
+  id,
+  recordAttributes
 }) {
-  attributesList = attributesList.map(parameter => {
-    return {
-      key: parameter.columnName,
-      value: parameter.value
-    }
-  })
-
+  const attributes = {
+    ...recordAttributes
+  }
   return request({
-    url: `/business-data/entities/${tableName}/${recordId}`,
+    url: `/business-data/entities/${tableName}/${id}`,
     method: 'patch',
     data: {
-      attributes: attributesList
+      attributes: attributes
     }
   })
-    .then(entityUpdateResponse => {
-      const { convertEntity } = require('@/utils/ADempiere/apiConverts/persistence.js')
-
-      return convertEntity(entityUpdateResponse)
-    })
 }
 
 /**

@@ -83,6 +83,7 @@ export function createEntity({
  * @param {object} recordAttributes
  * @param {object} keyColumns
  */
+
 export function updateEntity({
   recordId,
   tabId,

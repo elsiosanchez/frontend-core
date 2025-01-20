@@ -111,7 +111,8 @@ import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 // import PanelInfo from '@/components/ADempiere/PanelInfo'
 import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
-import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
+import { requestUpdateEntity } from '@/api/ADempiere/business-data/entities.ts'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
 
@@ -299,15 +300,13 @@ export default defineComponent({
         if (!isEmptyValue(tabInfo.value) && isEmptyValue(columnName)) {
           columnName = tabInfo.value.column_name
         }
+        const { currentTab } = store.getters.getContainerInfo
+        const { firstTabUuid } = currentTab
         const { value } = column
         const { id, uuid } = event.added.element
-        const { currentTab } = store.getters.getContainerInfo
-
-        updateEntity({
+        requestUpdateEntity({
           tableName: tableName.value,
-          recordUuid: uuid,
-          recordId: id,
-          tabId: currentTab.id,
+          id,
           recordAttributes: {
             [columnName]: value
           }
@@ -317,6 +316,12 @@ export default defineComponent({
               type: 'success',
               showClose: true,
               message: 'OK'
+            })
+            refreshRecord.refreshRecord({
+              parentUuid: currentTab.parentUuid,
+              containerUuid: firstTabUuid,
+              recordId: id,
+              recordUuid: uuid
             })
           })
           .catch(error => {
