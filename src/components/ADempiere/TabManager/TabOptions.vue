@@ -339,6 +339,9 @@ export default defineComponent({
     }
     function handleCommandActions(data) {
       store.commit('setTabOptions', data)
+      let isShowKanbanMode = false
+      let isShowCalendarMode = false
+      let isShowResourceMode = false
       if (data.display_type === 'K') {
         const currentKanbanDefinitions = store.getters.getCurrentKanbanDefinitions
         if (currentKanbanDefinitions.id !== data.id) {
@@ -347,67 +350,43 @@ export default defineComponent({
             isPanel: false
           })
         }
-        store.dispatch('currentKanbanDefinitions', data)
-        store.commit('setPanelResource', {
-          tableName: tableName.value,
-          show: false
-        })
-        store.commit('setPanelCalendar', {
-          tableName: tableName.value,
-          show: false
-        })
-        // store.commit('setPanelKanban', true)
-        store.commit('setPanelKanban', {
-          tableName: tableName.value,
-          show: true
-        })
-      }
-      if (data.display_type === 'C') {
-        store.commit('setPanelResource', {
-          tableName: tableName.value,
-          show: false
-        })
-        // store.commit('setPanelKanban', false)
-        store.commit('setPanelKanban', {
-          tableName: tableName.value,
-          show: false
-        })
-        store.commit('setPanelCalendar', {
-          tableName: tableName.value,
-          show: true
-        })
+        isShowKanbanMode = true
+      } else if (data.display_type === 'C') {
         store.dispatch('getListTasksFromServer', {
           id: data.id,
           isPanel: false
         })
-      }
-      if (data.display_type === 'R') {
-        // store.commit('setPanelKanban', false)
-        store.commit('setPanelKanban', {
-          tableName: tableName.value,
-          show: false
-        })
-        store.commit('setPanelCalendar', {
-          tableName: tableName.value,
-          show: false
-        })
-        store.commit('setPanelResource', {
-          tableName: tableName.value,
-          show: true
-        })
+        isShowCalendarMode = true
+      } else if (data.display_type === 'R') {
         store.dispatch('searchPanelResource', {
           id: data.id,
           isPanel: false
         })
+        isShowResourceMode = true
       }
+
+      store.commit('setPanelKanban', {
+        tableName: tableName.value,
+        show: isShowKanbanMode
+      })
+      store.commit('setPanelCalendar', {
+        tableName: tableName.value,
+        show: isShowCalendarMode
+      })
+      store.commit('setPanelResource', {
+        tableName: tableName.value,
+        show: isShowResourceMode
+      })
     }
 
     function getIcon(type) {
-      if (type === 'K') return 'kanbanMode'
-
-      if (type === 'C') return 'calendar'
-
-      if (type === 'R') return 'resources'
+      if (type === 'K') {
+        return 'kanbanMode'
+      } else if (type === 'C') {
+        return 'calendar'
+      } else if (type === 'R') {
+        return 'resources'
+      }
       return ''
     }
 

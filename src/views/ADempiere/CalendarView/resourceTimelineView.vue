@@ -47,6 +47,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
+
 // Constants
 import { DEFAULT_RESOURCES, DEFAULT_EVENTS } from './data-resource-time'
 

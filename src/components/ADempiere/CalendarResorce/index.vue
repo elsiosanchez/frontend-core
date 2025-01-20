@@ -1,19 +1,20 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/ElsioSanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/ElsioSanchez
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -24,6 +25,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       :description="currentResourcesDefinitions.description"
       :icon="'timeline'"
     />
+
     <el-drawer
       v-if="!isPanel"
       :visible.sync="showContainerInfo"
@@ -46,6 +48,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :record-id="recordId"
       />
     </el-drawer>
+
     <div v-if="!isPanel" class="tab-options-container-calendar">
       <advanced-tab-query
         :parent-uuid="parentUuid"
@@ -62,6 +65,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :current-tab-uuid="currentTabUuid"
       />
     </div>
+
     <el-card
       class="box-card"
       :body-style="{ padding: '10px', height: '80vh', overflow: 'hidden' }"
@@ -82,6 +86,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </template>
       </FullCalendar>
     </el-card>
+
     <el-dialog
       :title="currentResource.title"
       :visible.sync="dialogVisible"
@@ -99,10 +104,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import lang from '@/lang'
-import store from '@/store'
-import router from '@/router'
-
 import {
   defineComponent,
   computed,
@@ -110,18 +111,23 @@ import {
   ref
 } from '@vue/composition-api'
 
+import lang from '@/lang'
+import store from '@/store'
+import router from '@/router'
+
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import esLocale from '@fullcalendar/core/locales/es'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
 // import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
 import AdvancedTabQuery from '@/components/ADempiere/KanbanView/AdvancedTabQuery.vue'
 import OptionsBar from '@/components/ADempiere/PanelInfo/Component/optionsBar.vue'
+
+// Constants
+import {
+  DISPLAY_DEFINITION_RESOURCE
+} from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 
 // Utils and Helpers Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
@@ -129,6 +135,7 @@ import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'ResourceTime',
+
   components: {
     TabOptions,
     FullCalendar, // make the <FullCalendar> tag available
@@ -136,6 +143,7 @@ export default defineComponent({
     AdvancedTabQuery,
     OptionsBar
   },
+
   props: {
     isPanel: {
       type: Boolean,
@@ -179,6 +187,7 @@ export default defineComponent({
       default: false
     }
   },
+
   setup(props) {
     /**
      * Ref
@@ -224,38 +233,34 @@ export default defineComponent({
     const tabResource = computed(() => {
       return store.getters.getTabPanelResource
     })
-    const groudResource = computed(() => {
+    const groupedResourcesList = computed(() => {
       if (props.isPanel) {
-        if (isEmptyValue(tabResource.value) && isEmptyValue(tabResource.value.groupsRecurso)) return []
-        const { groupsRecurso } = tabResource.value
-        return groupsRecurso
+        if (isEmptyValue(tabResource.value) && isEmptyValue(tabResource.value.resourcesList)) {
+          return []
+        }
+        const { resourcesList } = tabResource.value
+        return resourcesList
       }
-      if (isEmptyValue(resource.value.groupsRecurso)) return []
-      const { groupsRecurso } = resource.value
-      return groupsRecurso
+      if (isEmptyValue(resource.value.resourcesList)) {
+        return []
+      }
+      const { resourcesList } = resource.value
+      return resourcesList
     })
 
-    const recordsEvents = computed(() => {
+    const resourceEventsList = computed(() => {
       if (props.isPanel) {
-        if (isEmptyValue(tabResource.value) && isEmptyValue(tabResource.value.recordsEvents)) return []
-        const { recordsEvents } = tabResource.value
-        return recordsEvents.map(list => {
-          return {
-            ...list,
-            start: parse(list.start),
-            end: parse(list.end)
-          }
-        })
-      }
-      if (isEmptyValue(resource.value.recordsEvents)) return []
-      const { recordsEvents } = resource.value
-      return recordsEvents.map(list => {
-        return {
-          ...list,
-          start: parse(list.start),
-          end: parse(list.end)
+        if (isEmptyValue(tabResource.value) || isEmptyValue(tabResource.value.eventsList)) {
+          return []
         }
-      })
+        const { eventsList } = tabResource.value
+        return eventsList
+      }
+      if (isEmptyValue(resource.value) || isEmptyValue(resource.value.eventsList)) {
+        return []
+      }
+      const { eventsList } = resource.value
+      return eventsList
     })
 
     const isMobile = computed(() => {
@@ -293,15 +298,15 @@ export default defineComponent({
         },
         resourceAreaWidth: '25%',
         initialView: 'resourceTimelineMonth',
-        resourceGroupField: 'building',
         eventMinWidth: 90,
         locale: esLocale,
         scrollTime: '01:00',
         aspectRatio: 1,
         editable: true,
         resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
-        resources: groudResource.value,
-        events: props.isPanel ? tabResource.value : recordsEvents.value,
+        // resourceGroupField: 'group_name',
+        resources: groupedResourcesList.value,
+        events: resourceEventsList.value,
         views: {
           resourceTimelineDay: {
             slotDuration: '00:30:00', // Intervalos de 30 minutos
@@ -329,8 +334,12 @@ export default defineComponent({
 
     const currentRecordId = computed(() => {
       const { query, params } = router.app._route
-      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) return query.recordId
-      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) return params.recordId
+      if (!isEmptyValue(query) && !isEmptyValue(query.recordId)) {
+        return query.recordId
+      }
+      if (!isEmptyValue(params) && !isEmptyValue(params.recordId)) {
+        return params.recordId
+      }
       return -1
     })
 
@@ -404,12 +413,9 @@ export default defineComponent({
       // currentEvents.value = events
     }
 
-    function parse(dateToParse) {
-      const parts = dateToParse.split('T')[0].split('-')
-      return `${parts[0]}-${parts[1]}-${parts[2]}`
-    }
-
-    const filter = displayDefinition.value.find(display => display.display_type === 'R')
+    const filter = displayDefinition.value.find(display => {
+      return display.display_type === DISPLAY_DEFINITION_RESOURCE
+    })
 
     function searchListCalendars() {
       if (!isEmptyValue(displayDefinition.value)) {
@@ -464,8 +470,8 @@ export default defineComponent({
       showContainerInfo,
       calendarOptions,
       isDrawerWidth,
-      groudResource,
-      recordsEvents,
+      groupedResourcesList,
+      resourceEventsList,
       resource,
       isLoading,
       tabResource,
@@ -480,20 +486,13 @@ export default defineComponent({
       handleEventClick,
       handleEvents,
       translateDate,
-      changeRange,
-      //
-      esLocale,
-      listPlugin,
-      dayGridPlugin,
-      timeGridPlugin,
-      interactionPlugin
+      changeRange
     }
   }
 })
 </script>
 
 <style lang='scss'>
-
 .details-resource {
   padding: 5px;
   .el-dialog__header {
@@ -534,14 +533,15 @@ export default defineComponent({
       padding: 0;
     }
 
-    b { /* used for event dates/times */
+    b {
+      // used for event dates/times
       margin-right: 3px;
     }
   }
 
   .demo-app-resource-main {
     flex-grow: 1;
-    /* padding: 3em; */
+    // padding: 3em;
     padding: 1em;
 
     .demo-app-resource-sidebar-section {
@@ -571,29 +571,30 @@ export default defineComponent({
     white-space: nowrap;
   }
 
-  .fc { /* the calendar root */
-    /* max-width: 1100px; */
+  .fc {
+    // the calendar root
+    // max-width: 1100px;
     margin: 0 auto;
-    /* max-width: auto; */
+    // max-width: auto;
     width: auto;
     height: 50%;
     overflow: auto;
     display: block;
   }
   .fc-resource-area {
-    width: 200px; /* Ajusta este valor según sea necesario */
+    width: 200px; // Ajusta este valor según sea necesario
   }
 
   .fc-resource-group {
-    white-space: normal; /* Permite que el texto se ajuste a varias líneas */
-    overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
-    text-overflow: clip; /* Evita el recorte del texto */
+    white-space: normal; // Permite que el texto se ajuste a varias líneas
+    overflow: visible; // Asegúrate de que el desbordamiento sea visible
+    text-overflow: clip; // Evita el recorte del texto
   }
 
   .fc-resource-group {
-    white-space: nowrap; /* Evita que el texto se ajuste a varias líneas */
-    overflow: hidden; /* Oculta el desbordamiento */
-    text-overflow: ellipsis; /* Muestra puntos suspensivos para el texto recortado */
+    white-space: nowrap; // Evita que el texto se ajuste a varias líneas
+    overflow: hidden; // Oculta el desbordamiento
+    text-overflow: ellipsis; // Muestra puntos suspensivos para el texto recortado
   }
 
   .fc .fc-view-harness {
@@ -618,13 +619,13 @@ export default defineComponent({
     height: 20px;
   }
   // .fc-resource-area {
-  //   width: 200px; /* Ajusta este valor según sea necesario */
+  //   width: 200px; // Ajusta este valor según sea necesario
   // }
 
   .fc-resource-group {
-    white-space: normal; /* Permite que el texto se ajuste a varias líneas */
-    overflow: visible; /* Asegúrate de que el desbordamiento sea visible */
-    text-overflow: clip; /* Evita el recorte del texto */
+    white-space: normal; // Permite que el texto se ajuste a varias líneas
+    overflow: visible; // Asegúrate de que el desbordamiento sea visible
+    text-overflow: clip; // Evita el recorte del texto
   }
 
   .fc-license-message {
@@ -664,5 +665,4 @@ export default defineComponent({
   padding: 1rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
 </style>
