@@ -50,7 +50,6 @@ import {
 import store from '@/store'
 
 // Components and Mixins
-// import Comment from './component/Comment.vue'
 import IssuesList from '@/components/ADempiere/Form/Issues/ListIssues/index.vue'
 import Comment from '@/components/ADempiere/Form/Issues/component/Comment.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'

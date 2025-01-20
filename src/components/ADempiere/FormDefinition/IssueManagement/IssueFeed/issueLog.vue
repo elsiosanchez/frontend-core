@@ -30,24 +30,34 @@
       >
         <template slot="label">
           <label style="color: #606266;padding-right: 5px; font-size: 10px">
-            {{ log.label }}
+            <template v-if="!isEmptyValue(log.label)">
+              {{ log.label }}
+            </template>
+            <template v-else>
+              {{ log.column_name }}
+            </template>
           </label>
-          <!-- ({{ log.column_name }}) -->
         </template>
+
         <span style="font-weight: bold">
           <el-link
-            :type="!isEmptyValue(log.displayed_value) ? 'success' : 'danger'"
-            :style="isEmptyValue(log.displayed_value) ? 'text-decoration:line-through; font-size:10px' : 'font-size:10px'"
+            :type="!isEmptyValue(log.new_value) ? 'success' : 'danger'"
+            :style="isEmptyValue(log.new_value) ? 'text-decoration:line-through; font-size:10px' : 'font-size:10px'"
           >
-            <b v-if="!isEmptyValue(log.new_value) && log.new_value.type === 'date'">
-              {{ isEmptyValue(log.new_value.value) ? 'NULL': translateDate({value:log.new_value.value, format:'onlyDateLatin'}) }}
+            <b v-if="!isEmptyValue(log.new_value)">
+              <template v-if="log.new_value.type === 'date'">
+                {{ isEmptyValue(log.new_value.value) ? 'NULL' : translateDate( {value: log.new_value.value, format:'onlyDateLatin' }) }}
+              </template>
+              <template v-else>
+                {{ !isEmptyValue(log.displayed_value) ? log.displayed_value : log.new_value }}
+              </template>
             </b>
             <b v-else>
-              {{ isEmptyValue(log.displayed_value) ?'NULL': log.displayed_value }}
+              NULL
             </b>
           </el-link>
         </span>
-      </el-descriptions-item>onlyDate
+      </el-descriptions-item>
     </el-descriptions>
   </el-card>
 </template>
@@ -76,6 +86,7 @@ export default defineComponent({
   }
 })
 </script>
+
 <style>
 .el-descriptions--medium:not(.is-bordered) .el-descriptions-item__cell {
   padding-bottom: 0px;

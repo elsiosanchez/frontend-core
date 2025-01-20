@@ -447,20 +447,20 @@ export default {
     changeCurrentIssues({ commit, dispatch }, issues) {
       commit('setCurrentIssues', issues)
       if (!isEmptyValue(issues)) {
-        dispatch('listComments', issues)
+        dispatch('listComments', {
+          issueId: issues.id
+        })
       }
     },
     listComments({ commit }, {
-      id,
-      uuid
+      issueId
     }) {
-      if (isEmptyValue(id)) {
-        return
+      if (isEmptyValue(issueId)) {
+        return []
       }
       return new Promise((resolve, reject) => {
         return requestListIssueComments({
-          issueId: id,
-          issueUuid: uuid
+          issueId
         })
           .then(response => {
             const { records } = response
@@ -482,22 +482,19 @@ export default {
       })
     },
     newIssueComment({ dispatch }, {
-      id,
-      uuid,
+      issueId,
       result,
       dateNextAction
     }) {
       return new Promise((resolve, reject) => {
         return requestCreateIssueComment({
-          issueId: id,
-          issueUuid: uuid,
+          issueId,
           result,
           dateNextAction
         })
           .then(response => {
             dispatch('listComments', {
-              id,
-              uuid
+              issueId
             })
               .then(responselist => {
                 resolve(response)
@@ -512,21 +509,19 @@ export default {
       id,
       uuid,
       result,
-      issuesId,
-      issuesUuid,
+      issueId,
       dateNextAction
     }) {
       return new Promise((resolve, reject) => {
         return requestUpdateIssueComment({
-          issueId: id,
-          issueUuid: uuid,
+          id,
+          issueId,
           result,
           dateNextAction
         })
           .then(response => {
             dispatch('listComments', {
-              id: issuesId,
-              uuid: issuesUuid
+              issueId
             })
             resolve(response)
           })
@@ -538,18 +533,16 @@ export default {
     deleteIssueComment({ dispatch }, {
       id,
       uuid,
-      issuesId,
-      issuesUuid
+      issueId
     }) {
       return new Promise((resolve, reject) => {
         return requestDeleteIssueComment({
-          issueId: id,
-          issueUuid: uuid
+          id,
+          issueId
         })
           .then(response => {
             dispatch('listComments', {
-              id: issuesId,
-              uuid: issuesUuid
+              issueId
             })
             resolve(response)
           })

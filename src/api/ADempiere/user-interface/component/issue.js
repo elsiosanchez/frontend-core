@@ -469,7 +469,6 @@ export function requestDeleteIssue({
  */
 export function requestListIssueComments({
   issueId,
-  issueUuid,
   searchValue
 }) {
   return request({
@@ -477,8 +476,6 @@ export function requestListIssueComments({
     url: `/issue-management/issues/${issueId}/comments`,
     method: 'get',
     params: {
-      issue_id: issueId,
-      issue_uuid: issueUuid,
       search_value: searchValue
     }
   })
@@ -495,7 +492,6 @@ export function requestListIssueComments({
  */
 export function requestCreateIssueComment({
   issueId,
-  issueUuid,
   result
 }) {
   return request({
@@ -503,7 +499,6 @@ export function requestCreateIssueComment({
     method: 'post',
     data: {
       issue_id: issueId,
-      issue_uuid: issueUuid,
       result
     }
   })
@@ -519,16 +514,14 @@ export function requestCreateIssueComment({
   * req.body.result - result
  */
 export function requestUpdateIssueComment({
+  id,
   issueId,
-  issueUuid,
   result
 }) {
   return request({
-    url: `/issue-management/issues/${issueId}/comments`,
+    url: `/issue-management/issues/${issueId}/comments/${id}`,
     method: 'put',
     data: {
-      id: issueId,
-      uuid: issueUuid,
       result
     }
   })
@@ -543,15 +536,11 @@ export function requestUpdateIssueComment({
   * req.body.uuid - uuid of record
  */
 export function requestDeleteIssueComment({
-  issueId,
-  issueUuid
+  id,
+  issueId
 }) {
   return request({
-    url: `/issue-management/issues/${issueId}/comments`,
-    method: 'delete',
-    params: {
-      id: issueId,
-      uuid: issueUuid
-    }
+    url: `/issue-management/issues/${issueId}/comments/${id}`,
+    method: 'delete'
   })
 }

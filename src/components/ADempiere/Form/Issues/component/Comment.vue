@@ -590,74 +590,11 @@
               :comment="comment"
               class="list-comments"
             />
-
-            <el-card v-else class="list-comments">
-              <div slot="header" class="list-comments-clearfix">
-                <issue-avatar :user="comment.user" />
-
-                <el-dropdown trigger="click" style="float: right" @command="handleCommand">
-                  <span class="el-dropdown-link">
-                    <el-button type="text" size="mini" style="color: black;">
-                      <b>
-                        <svg-icon icon-class="more-vertical" />
-                      </b>
-                    </el-button>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item icon="el-icon-edit" :disabled="validateUser(comment)" :command="{comment, option:'edit'}"> {{ $t('issues.edit') }} </el-dropdown-item>
-                    <el-dropdown-item icon="el-icon-delete" :disabled="validateUser(comment)" :command="{comment, option:'delete'}"> {{ $t('issues.delete') }} </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-              <div>
-                <v-md-preview v-if="!comment.isEdit" :text="comment.result" class="previwer-disable" style="padding: 0px" />
-                <span v-else>
-                  <el-card v-if="commentUpdatePreview" shadow="never">
-                    <el-scrollbar wrap-class="scroll-previwer-disable">
-                      <v-md-preview :text="commentUpdate" class="previwer-disable" style="padding: 0px" height="150px" />
-                    </el-scrollbar>
-                  </el-card>
-                  <v-md-editor
-                    v-else
-                    v-model="commentUpdate"
-                    height="150px"
-                    left-toolbar="undo redo clear h bold italic strikethrough quote ul ol table hr link image code save | emoji listMailTemplates"
-                    :toolbar="editorToolbarList"
-                    right-toolbar="sync-scroll fullscreen"
-                    mode="edit"
-                  />
-                  <el-button
-                    type="primary"
-                    icon="el-icon-check"
-                    class="button-base-icon"
-                    style="float: right; margin: 10px;"
-                    @click="updateComment(comment)"
-                  />
-                  <el-button
-                    type="danger"
-                    icon="el-icon-close"
-                    class="button-base-icon"
-                    style="float: right; margin-top: 10px;"
-                    @click="comment.isEdit = !comment.isEdit"
-                  />
-                  <el-button
-                    type="info"
-                    plain
-                    class="button-base-icon"
-                    style="float: right; margin-top: 10px;"
-                    @click="commentUpdate = ''"
-                  >
-                    <svg-icon icon-class="layers-clear" />
-                  </el-button>
-                  <el-checkbox
-                    v-model="commentUpdatePreview"
-                    :label="$t('issues.preview')"
-                    :border="true"
-                    style="float: right; margin-top: 10px;"
-                  />
-                </span>
-              </div>
-            </el-card>
+            <issue-comment
+              v-else
+              :issue-id="currentIssues.id"
+              :comment="comment"
+            />
           </el-timeline-item>
         </el-timeline>
       </el-header>
@@ -1327,87 +1264,11 @@
                 :comment="comment"
                 class="list-comments"
               />
-
-              <el-card v-else class="list-comments">
-                <div slot="header" class="list-comments-clearfix">
-                  <issue-avatar :user="comment.user" />
-
-                  <el-dropdown trigger="click" style="float: right" @command="handleCommand">
-                    <span class="el-dropdown-link">
-                      <el-button type="text" size="mini" style="color: black;">
-                        <b>
-                          <svg-icon icon-class="more-vertical" />
-                        </b>
-                      </el-button>
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit" :disabled="validateUser(comment)" :command="{comment, option:'edit'}"> {{ $t('issues.edit') }} </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" :disabled="validateUser(comment)" :command="{comment, option:'delete'}"> {{ $t('issues.delete') }} </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-                <div>
-                  <span v-if="!comment.isEdit">
-                    <v-md-preview
-                      v-if="comment.issue_comment_type === 'COMMENT'"
-                      :text="comment.result"
-                      class="previwer-disable"
-                      style="padding: 0px"
-                    />
-                    <issue-log
-                      v-else-if="comment.issue_comment_type === 'LOG'"
-                      :comment="comment"
-                      class="list-comments"
-                    />
-                  </span>
-
-                  <span v-else>
-                    <el-card v-if="commentUpdatePreview" shadow="never">
-                      <el-scrollbar wrap-class="scroll-previwer-disable">
-                        <v-md-preview :text="commentUpdate" class="previwer-disable" style="padding: 0px" height="150px" />
-                      </el-scrollbar>
-                    </el-card>
-                    <v-md-editor
-                      v-else
-                      v-model="commentUpdate"
-                      height="150px"
-                      left-toolbar="undo redo clear h bold italic strikethrough quote ul ol table hr link image code save | emoji listMailTemplates"
-                      :toolbar="editorToolbarList"
-                      right-toolbar="sync-scroll fullscreen"
-                      mode="edit"
-                    />
-                    <el-button
-                      type="primary"
-                      icon="el-icon-check"
-                      class="button-base-icon"
-                      style="float: right; margin: 10px;"
-                      @click="updateComment(comment)"
-                    />
-                    <el-button
-                      type="danger"
-                      icon="el-icon-close"
-                      class="button-base-icon"
-                      style="float: right; margin-top: 10px;"
-                      @click="comment.isEdit = !comment.isEdit"
-                    />
-                    <el-button
-                      type="info"
-                      plain
-                      class="button-base-icon"
-                      style="float: right; margin-top: 10px;"
-                      @click="commentUpdate = ''"
-                    >
-                      <svg-icon icon-class="layers-clear" />
-                    </el-button>
-                    <el-checkbox
-                      v-model="commentUpdatePreview"
-                      :label="$t('issues.preview')"
-                      :border="true"
-                      style="float: right; margin-top: 10px;"
-                    />
-                  </span>
-                </div>
-              </el-card>
+              <issue-comment
+                v-else
+                :issue-id="currentIssues.id"
+                :comment="comment"
+              />
             </el-timeline-item>
           </el-timeline>
         </el-scrollbar>
@@ -1425,74 +1286,11 @@
                 :comment="comment"
                 class="list-comments"
               />
-
-              <el-card v-else class="list-comments">
-                <div slot="header" class="list-comments-clearfix">
-                  <issue-avatar :user="comment.user" />
-
-                  <el-dropdown trigger="click" style="float: right" @command="handleCommand">
-                    <span class="el-dropdown-link">
-                      <el-button type="text" size="mini" style="color: black;">
-                        <b>
-                          <svg-icon icon-class="more-vertical" />
-                        </b>
-                      </el-button>
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit" :disabled="validateUser(comment)" :command="{comment, option:'edit'}"> {{ $t('issues.edit') }} </el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-delete" :disabled="validateUser(comment)" :command="{comment, option:'delete'}"> {{ $t('issues.delete') }} </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-                <div>
-                  <v-md-preview v-if="!comment.isEdit" :text="comment.result" class="previwer-disable" style="padding: 0px" />
-                  <span v-else>
-                    <el-card v-if="commentUpdatePreview" shadow="never">
-                      <el-scrollbar wrap-class="scroll-previwer-disable">
-                        <v-md-preview :text="commentUpdate" class="previwer-disable" style="padding: 0px" height="150px" />
-                      </el-scrollbar>
-                    </el-card>
-                    <v-md-editor
-                      v-else
-                      v-model="commentUpdate"
-                      height="150px"
-                      left-toolbar="undo redo clear h bold italic strikethrough quote ul ol table hr link image code save | emoji listMailTemplates"
-                      :toolbar="editorToolbarList"
-                      right-toolbar="sync-scroll fullscreen"
-                      mode="edit"
-                    />
-                    <el-button
-                      type="primary"
-                      icon="el-icon-check"
-                      class="button-base-icon"
-                      style="float: right; margin: 10px;"
-                      @click="updateComment(comment)"
-                    />
-                    <el-button
-                      type="danger"
-                      icon="el-icon-close"
-                      class="button-base-icon"
-                      style="float: right; margin-top: 10px;"
-                      @click="comment.isEdit = !comment.isEdit"
-                    />
-                    <el-button
-                      type="info"
-                      plain
-                      class="button-base-icon"
-                      style="float: right; margin-top: 10px;"
-                      @click="commentUpdate = ''"
-                    >
-                      <svg-icon icon-class="layers-clear" />
-                    </el-button>
-                    <el-checkbox
-                      v-model="commentUpdatePreview"
-                      :label="$t('issues.preview')"
-                      :border="true"
-                      style="float: right; margin-top: 10px;"
-                    />
-                  </span>
-                </div>
-              </el-card>
+              <issue-comment
+                v-else
+                :issue-id="currentIssues.id"
+                :comment="comment"
+              />
             </el-timeline-item>
           </el-timeline>
         </span>
@@ -1527,6 +1325,7 @@ import 'simple-m-editor/dist/simple-m-editor.css'
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 import IssueAvatar from '@/components/ADempiere/FormDefinition/IssueManagement/issueAvatar.vue'
 import IssueCommentAdd from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueCommentAdd.vue'
+import IssueComment from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueComment.vue'
 import IssueCommentView from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueCommentView.vue'
 import IssueLog from '@/components/ADempiere/FormDefinition/IssueManagement/IssueFeed/issueLog.vue'
 import IssueRecordTime from '@/components/ADempiere/FormDefinition/IssueManagement/IssueRecordTime/index.vue'
@@ -1555,12 +1354,13 @@ import {
 } from '@/api/ADempiere/user-interface/component/issue'
 
 export default defineComponent({
-  name: 'IssueComment',
+  name: 'IssueDetail',
 
   components: {
     EmptyOptionSelect,
     IssueAvatar,
     IssueCommentAdd,
+    IssueComment,
     IssueCommentView,
     IssueLog,
     IssueRecordTime,
@@ -1592,9 +1392,7 @@ export default defineComponent({
     const newDateNextAction = ref(new Date())
     const summary = ref('')
     const updateSummary = ref('')
-    const commentUpdate = ref('')
     const markdownContent = ref('')
-    const commentUpdatePreview = ref(false)
     const summaryUpdatePreview = ref(false)
     const summaryNewPreview = ref(false)
     const isPanelNewRequest = ref(false)
@@ -1856,7 +1654,9 @@ export default defineComponent({
       })
         .then(response => {
           store.commit('setCurrentIssues', response)
-          store.dispatch('listComments', response)
+          store.dispatch('listComments', {
+            issueId: response.id
+          })
             .then(response => {
               showMessage({
                 message: 'OK',
@@ -2146,8 +1946,8 @@ export default defineComponent({
       store.dispatch('editIssues', {
         id,
         uuid,
-        subject,
-        summary: issues,
+        subject: subject,
+        summary: updateSummary.value,
         requestTypeId: request_type.id,
         salesRepresentativeId: sales_representative.id,
         priorityValue: priority.value,
@@ -2337,15 +2137,6 @@ export default defineComponent({
       // })
     }
 
-    function handleCommand(command) {
-      const { comment, option } = command
-      if (option === 'delete') {
-        deleteComment(comment)
-        return
-      }
-      editComment(comment)
-    }
-
     function handleCommandIssues(command) {
       const { currentIssues, option } = command
       if (option === 'timeRecord') {
@@ -2362,43 +2153,12 @@ export default defineComponent({
       editIssues(currentIssues)
     }
 
-    function editComment(comment) {
-      comment.isEdit = true
-      commentUpdate.value = comment.result
-    }
-
-    function deleteComment(comment) {
-      const { id, uuid } = comment
-      store.dispatch('deleteIssueComment', {
-        id,
-        uuid,
-        issuesId: currentIssues.value.id,
-        issuesUuid: currentIssues.value.uuid
-      })
-    }
-
-    function updateComment(comment) {
-      const { id, uuid } = comment
-      comment.isEdit = false
-      store.dispatch('updateIssueComment', {
-        id,
-        uuid,
-        issuesId: currentIssues.value.id,
-        issuesUuid: currentIssues.value.uuid,
-        result: commentUpdate.value
-      })
-    }
-
     function newIssues(issues) {
       isPanelNewRequest.value = !isPanelNewRequest.value
     }
 
     function loadListMail() {
       store.dispatch('findListMailTemplates')
-    }
-
-    function validateUser(comment) {
-      return userId.value !== comment.user_id
     }
 
     function zoomIssues(issues) {
@@ -2672,8 +2432,6 @@ export default defineComponent({
       currentDateNextAction,
       newDateNextAction,
       summary,
-      commentUpdate,
-      commentUpdatePreview,
       summaryUpdatePreview,
       summaryNewPreview,
       updateSummary,
@@ -2720,7 +2478,6 @@ export default defineComponent({
       // Methodos
       findTaskStatus,
       remoteMethodTaskStatus,
-      validateUser,
       findSalesReps,
       newIssues,
       findRequestTypes,
@@ -2737,10 +2494,6 @@ export default defineComponent({
       defaultValueNewIssues,
       translateDate,
       formatDate,
-      handleCommand,
-      deleteComment,
-      updateComment,
-      editComment,
       editIssues,
       updateIssuesSummary,
       removeIssues,

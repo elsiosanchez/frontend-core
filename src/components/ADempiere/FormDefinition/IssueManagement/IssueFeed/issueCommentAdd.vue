@@ -102,6 +102,9 @@ import store from '@/store'
 // Components and Mixins
 import 'simple-m-editor/dist/simple-m-editor.css'
 
+// Utils and Helper Methods
+// import { showMessage } from '@/utils/ADempiere/notification'
+
 export default defineComponent({
   name: 'IssueCommentAdd',
 
@@ -141,8 +144,8 @@ export default defineComponent({
     function addNewComments(params) {
       const { id, uuid } = currentIssues.value
       store.dispatch('newIssueComment', {
-        id,
-        uuid,
+        issueId: id,
+        issueIdUuid: uuid,
         result: commentText.value
       })
         .then(response => {
@@ -151,6 +154,13 @@ export default defineComponent({
             // scrollTimeLineTabComments.value.$refs.wrap.scrollTop = 9999999
           })
         })
+        // .catch(error => {
+        //   showMessage({
+        //     type: 'error',
+        //     message: error.message
+        //   })
+        //   console.warn(error)
+        // })
       clearComments()
       isPreview.value = false
     }
