@@ -18,75 +18,73 @@
 
 <template>
   <div>
-    <span v-show="!isEditSecuence">
-      <el-dropdown
-        v-if="storedTab && (displayOptions && displayOptions.length > 0)"
-        split-button
-        size="small"
-        type="primary"
-        style="margin-right: 2px;"
-        @click="changeShowedRecords"
-        @command="handleCommandActions"
-      >
-        <span style="padding: 0px;">
-          <svg-icon icon-class="table" />
-          <b v-show="!isMobile">
-            {{ label }}
-          </b>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            v-for="(data, index) in displayOptions"
-            :key="index"
-            :command="data"
-            :class="{ 'selected-option': selectedOption.id === data.id }"
-          >
-            <template>
-              <div class="header">
-                <svg-icon :icon-class="getIcon(data.display_type)" />
-                {{ data.name }}
-              </div>
-              <span
-                class="info"
-                style="color: #7e7e7e; display: block; font-size: 12px; border-bottom: 1px solid #d0d7de;"
-              >
-                {{ data.description || $t('data.noDescription') }}
-              </span>
-            </template>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-button
-        v-else
-        plain
-        size="small"
-        type="primary"
-        style="margin-right: 2px;"
-        @click="changeShowedRecords"
-      >
-        <span style="padding: 0px;">
-          <svg-icon icon-class="table" />
-          <b v-show="!isMobile">
-            {{ label }}
-          </b>
-        </span>
-      </el-button>
-      <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
-        <span style="font-weight: bold;">
-          {{ title }}
-        </span>
-        <div style="color: rgb(130, 132, 138);">
-          {{ optionDescrip }}
-        </div>
+    <el-dropdown
+      v-if="storedTab && (listOptionsDisplayDefenitions && listOptionsDisplayDefenitions.length > 0)"
+      split-button
+      size="small"
+      type="primary"
+      trigger="click"
+      style="margin-right: 2px;"
+      @click="changeShowedRecords"
+      @command="handleCommandActions"
+    >
+      <span style="padding: 0px;">
+        <svg-icon icon-class="table" />
+        <b v-show="!isMobile">
+          {{ label }}
+        </b>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item
+          v-for="(data, index) in listOptionsDisplayDefenitions"
+          :key="index"
+          :command="data"
+          :class="{ 'selected-option': selectedOption.id === data.id }"
+        >
+          <template>
+            <div class="header">
+              <svg-icon :icon-class="getIcon(data.display_type)" />
+              {{ data.name }}
+            </div>
+            <span
+              class="info"
+              style="color: #7e7e7e; display: block; font-size: 12px; border-bottom: 1px solid #d0d7de;"
+            >
+              {{ data.description || $t('data.noDescription') }}
+            </span>
+          </template>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+    <el-button
+      v-else
+      plain
+      size="small"
+      type="primary"
+      style="margin-right: 2px;"
+      @click="changeShowedRecords"
+    >
+      <span style="padding: 0px;">
+        <svg-icon icon-class="table" />
+        <b v-show="!isMobile">
+          {{ label }}
+        </b>
+      </span>
+    </el-button>
+    <div v-if="!isEmptyValue(title) || !isEmptyValue(optionDescrip)" style="line-height: 1.2; font-size: 12px; color: #303133; position: absolute; top: 17px; left: 180px;">
+      <span style="font-weight: bold;">
+        {{ title }}
+      </span>
+      <div style="color: rgb(130, 132, 138);">
+        {{ optionDescrip }}
       </div>
-      <change-record
-        :parent-uuid="parentUuid"
-        :container-uuid="tabAttributes.uuid"
-        :container-manager="containerManager"
-        :is-change-record="isChangeRecord"
-      />
-    </span>
-
+    </div>
+    <change-record
+      :parent-uuid="parentUuid"
+      :container-uuid="tabAttributes.uuid"
+      :container-manager="containerManager"
+      :is-change-record="isChangeRecord"
+    />
     <convenience-buttons
       :parent-uuid="parentUuid"
       :container-uuid="tabAttributes.uuid"
@@ -237,6 +235,10 @@ export default defineComponent({
       return tabData.value.isEditSecuence
     })
 
+    const listOptionsDisplayDefenitions = computed(() => {
+      return store.getters.getListDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+    })
+
     const tabData = computed(() => {
       return store.getters.getStoredTab(
         props.parentUuid,
@@ -337,45 +339,10 @@ export default defineComponent({
         containerUuid: props.tabAttributes.uuid
       })
     }
-    function handleCommandActions(data) {
-      store.commit('setTabOptions', data)
-      let isShowKanbanMode = false
-      let isShowCalendarMode = false
-      let isShowResourceMode = false
-      if (data.display_type === 'K') {
-        const currentKanbanDefinitions = store.getters.getCurrentKanbanDefinitions
-        if (currentKanbanDefinitions.id !== data.id) {
-          store.dispatch('searchPanelKanban', {
-            id: data.id,
-            isPanel: false
-          })
-        }
-        isShowKanbanMode = true
-      } else if (data.display_type === 'C') {
-        store.dispatch('getListTasksFromServer', {
-          id: data.id,
-          isPanel: false
-        })
-        isShowCalendarMode = true
-      } else if (data.display_type === 'R') {
-        store.dispatch('searchPanelResource', {
-          id: data.id,
-          isPanel: false
-        })
-        isShowResourceMode = true
-      }
-
-      store.commit('setPanelKanban', {
-        tableName: tableName.value,
-        show: isShowKanbanMode
-      })
-      store.commit('setPanelCalendar', {
-        tableName: tableName.value,
-        show: isShowCalendarMode
-      })
-      store.commit('setPanelResource', {
-        tableName: tableName.value,
-        show: isShowResourceMode
+    function handleCommandActions(definition) {
+      store.dispatch('changeTabPanelRightDefinition', {
+        tableName: props.tabAttributes.table_name,
+        definition
       })
     }
 
@@ -402,6 +369,7 @@ export default defineComponent({
       isMobile,
       listAction,
       isEditSecuence,
+      listOptionsDisplayDefenitions,
       currentRecordId,
       showMenuMobile,
       isShowedTableRecords,

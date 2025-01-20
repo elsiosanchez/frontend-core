@@ -41,7 +41,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab && !(showKanban || showCalendar || showResource)" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -252,6 +252,13 @@ export default defineComponent({
       if (showFullGridMode.value) return 'overflow: auto;'
       return 'min-height: 84vh !important;'
     })
+    const displayTabDefinition = computed(() => {
+      return store.getters.getDisplayTabDefinitions({ tableName })
+    })
+
+    const displayPanelRightDefinitions = computed(() => {
+      return store.getters.getDisplayPanelRightDefinitions({ tableName })
+    })
 
     /**
      * Watch
@@ -266,10 +273,18 @@ export default defineComponent({
       }
     })
     function searchDisplay() {
-      store.dispatch('getDisplayDefinitionExists', {
-        tableName
-      })
+      if (isEmptyValue(displayTabDefinition.value)) {
+        store.dispatch('displayTabDefinition', {
+          tableName
+        })
+      }
+      if (isEmptyValue(displayPanelRightDefinitions.value)) {
+        store.dispatch('displayPanelRightDefinitions', {
+          tableName
+        })
+      }
     }
+
     searchDisplay()
     return {
       // Consts
@@ -278,6 +293,9 @@ export default defineComponent({
       allTabsList,
       isLoadWindows,
       index,
+      // Display Definitions
+      displayTabDefinition,
+      displayPanelRightDefinitions,
       // Calendar
       showCalendar,
       // Kanban

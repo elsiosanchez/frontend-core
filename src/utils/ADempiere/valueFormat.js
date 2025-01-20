@@ -227,13 +227,13 @@ export function trimPercentage(stringToParsed) {
 export function getStartAndEndOfCurrentMonth() {
   const currentDate = new Date()
 
-  // Get the first day of the current month
+  // Obtener el primer día del mes actual
   const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
-  const startOfMonthFormatted = startOfMonth.toISOString().split('T')[0] // Format YYYY-MM-DD
+  const startOfMonthFormatted = startOfMonth.toISOString().split('T')[0] // Formato YYYY-MM-DD
 
-  // Get the last day of the current month
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
-  const endOfMonthFormatted = endOfMonth.toISOString().split('T')[0] // Format YYYY-MM-DD
+  // Obtener el primer día del mes siguiente
+  const startOfNextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+  const startOfNextMonthFormatted = startOfNextMonth.toISOString().split('T')[0] // Formato YYYY-MM-DD
 
-  return [startOfMonthFormatted, endOfMonthFormatted]
+  return [startOfMonthFormatted, startOfNextMonthFormatted]
 }

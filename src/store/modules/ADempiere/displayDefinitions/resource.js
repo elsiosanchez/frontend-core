@@ -1,0 +1,331 @@
+/**
+ * ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+ * Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+ * Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+import Vue from 'vue'
+
+// API Request Methods
+import { resources } from '@/api/ADempiere/displayDefinition.ts'
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere'
+import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
+import { showMessage } from '@/utils/ADempiere/notification.js'
+// Constants
+// import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
+
+const initState = {
+  resource: {},
+  resourcePanelRight: {},
+  emtpyResource: {
+    currentResource: {},
+    isLoading: false,
+    endStr: getStartAndEndOfCurrentMonth()[1],
+    startStr: getStartAndEndOfCurrentMonth()[0],
+    columns: [],
+    filters: []
+  }
+}
+
+const resourceDefinition = {
+  state: initState,
+
+  mutations: {
+    setResourceDefinition(state, {
+      currentResource = {},
+      isLoading = false,
+      endStr = getStartAndEndOfCurrentMonth()[1],
+      startStr = getStartAndEndOfCurrentMonth()[0],
+      filters = [],
+      columns = [],
+      tableName
+    }) {
+      Vue.set(state.resource, tableName, {
+        currentResource,
+        isLoading,
+        startStr,
+        filters,
+        columns,
+        endStr
+      })
+    },
+    setCurrentResourceDefinition(state, {
+      currentResource,
+      tableName
+    }) {
+      Vue.set(state.resource[tableName], 'currentResource', currentResource)
+    },
+    setResourceLoading(state, {
+      isLoading,
+      tableName
+    }) {
+      Vue.set(state.resource[tableName], 'isLoading', isLoading)
+    },
+    setResourceFilters(state, {
+      filters,
+      tableName
+    }) {
+      Vue.set(state.resourcePanelRight[tableName], 'filters', filters)
+    },
+    setResourceChangeDate(state, {
+      endStr,
+      isPanel,
+      startStr,
+      tableName
+    }) {
+      if (isPanel) {
+        if (state.resourcePanelRight[tableName]) {
+          Vue.set(state.resourcePanelRight[tableName], 'startStr', startStr)
+          Vue.set(state.resourcePanelRight[tableName], 'endStr', endStr)
+          return
+        }
+      }
+      if (state.resource[tableName]) {
+        Vue.set(state.resource[tableName], 'startStr', startStr)
+        Vue.set(state.resource[tableName], 'endStr', endStr)
+      }
+    },
+    // Panel Right
+    setResourcePanelTabDefinition(state, {
+      startStr = getStartAndEndOfCurrentMonth()[0],
+      endStr = getStartAndEndOfCurrentMonth()[1],
+      currentResource = {},
+      isLoading = false,
+      filters = [],
+      columns = [],
+      tableName
+    }) {
+      Vue.set(state.resourcePanelRight, tableName, {
+        currentResource,
+        isLoading,
+        startStr,
+        filters,
+        columns,
+        endStr
+      })
+    },
+    setCurrentResourceRightDefinition(state, {
+      currentResource,
+      tableName
+    }) {
+      Vue.set(state.resourcePanelRight[tableName], 'currentResource', currentResource)
+    },
+    setResourceRightLoading(state, {
+      isLoading,
+      tableName
+    }) {
+      Vue.set(state.resourcePanelRight[tableName], 'isLoading', isLoading)
+    }
+  },
+
+  actions: {
+    requestResource({ state, commit, getters }, {
+      id,
+      filters = [],
+      recordId,
+      tableName,
+      searchValue,
+      isPanel = false
+    }) {
+      return new Promise(resolve => {
+        if (isPanel) {
+          if (isEmptyValue(state.resourcePanelRight[tableName])) commit('setResourcePanelTabDefinition', { tableName, isLoading: true })
+        } else {
+          if (isEmptyValue(state.resource[tableName])) commit('setResourceDefinition', { tableName, isLoading: true })
+        }
+        let currentDefinition, defaultFilters, startStr, endStr
+        if (isPanel) {
+          currentDefinition = getters.getCurrentDisplayPanelRightDefinitions({ tableName })
+        } else {
+          currentDefinition = getters.getCurrentDisplayTabDefinitions({ tableName })
+        }
+        if (!isEmptyValue(currentDefinition) && !isEmptyValue(currentDefinition.valid_to_column)) {
+          if (isPanel) {
+            endStr = state.resourcePanelRight[tableName].endStr
+            startStr = state.resourcePanelRight[tableName].startStr
+          } else {
+            endStr = state.resource[tableName].endStr
+            startStr = state.resource[tableName].startStr
+          }
+          defaultFilters = [
+            {
+              name: currentDefinition.valid_to_column,
+              operator: 'between',
+              values: [startStr, endStr]
+            }
+          ]
+        }
+
+        const allFilters = filters.concat(defaultFilters)
+
+        if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
+
+        if (isPanel) {
+          commit('setResourceFilters', {
+            tableName,
+            filters: JSON.stringify(allFilters)
+          })
+        }
+
+        resources({
+          id,
+          filters: JSON.stringify(allFilters),
+          searchValue
+        })
+          .then(response => {
+            const { records, groups } = response
+            const groupsRecurso = groups.map(list => {
+              const { color, name, resources } = list
+              return {
+                id: name,
+                title: name,
+                eventColor: color,
+                building: name,
+                children: resources.map(child => {
+                  return {
+                    id: child.name,
+                    title: child.name,
+                    eventColor: child.color
+                  }
+                })
+              }
+            })
+            const recordsEvents = records.map(events => {
+              return {
+                ...events,
+                id: events.id,
+                title: events.title,
+                start: events.valid_from,
+                end: events.valid_to,
+                resourceId: events.name,
+                resourceTitle: events.resource_name,
+                eventColor: events.color
+              }
+            })
+            const all = {
+              groupsRecurso,
+              recordsEvents,
+              ...response
+            }
+            if (isPanel) {
+              commit('setCurrentResourceRightDefinition', {
+                tableName,
+                currentResource: all
+              })
+            } else {
+              commit('setCurrentResourceDefinition', {
+                tableName,
+                currentResource: all
+              })
+            }
+            resolve(all)
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            console.warn(`Error Getting Update Shipment Line: ${error.message}. Code: ${error.code}.`)
+          })
+          .finally(() => {
+            if (isPanel) {
+              commit('setResourceRightLoading', { tableName, isLoading: false })
+            } else {
+              commit('setResourceLoading', { tableName, isLoading: false })
+            }
+          })
+      })
+    },
+    changeDateRange({
+      commit,
+      dispatch,
+      getters
+    }, {
+      isPanel,
+      tableName,
+      recordId,
+      startStr,
+      filters,
+      endStr,
+      id
+    }) {
+      if (isPanel) {
+        filters = [{ name: [tableName] + '_ID', values: recordId }]
+        // filters = JSON.stringify(filters)
+      }
+      commit('setResourceChangeDate', {
+        tableName,
+        startStr,
+        isPanel,
+        endStr
+      })
+      dispatch('requestResource', {
+        id,
+        isPanel,
+        tableName,
+        filters
+      })
+    }
+  },
+
+  getters: {
+    getResourcePanel: (state) => ({
+      tableName,
+      isPanel = false
+    }) => {
+      if (isPanel) return state.resourcePanelRight[tableName]
+      return state.resource[tableName]
+    },
+    getResourceDefinition: (state) => ({ tableName }) => {
+      return state.resource[tableName]
+    },
+    getResourceLoading: (state, getters) => ({ tableName }) => {
+      const resourceDefinition = getters.getResourceDefinition({
+        tableName
+      })
+      if (isEmptyValue(resourceDefinition)) return []
+      return resourceDefinition.isLoading
+    },
+    getCurrentResourceDefinition: (state, getters) => ({ tableName }) => {
+      const resourceDefinition = getters.getResourceDefinition({
+        tableName
+      })
+      if (isEmptyValue(resourceDefinition)) return {}
+      return resourceDefinition.currentResource
+    },
+    // Panel Right
+    getResourcePanelRightDefinitions: (state) => ({ tableName }) => {
+      return state.resourcePanelRight[tableName]
+    },
+    getResourcePanelRightLoading: (state, getters) => ({ tableName }) => {
+      const resourcePanelRightDefinition = getters.getResourcePanelRightDefinitions({
+        tableName
+      })
+      if (isEmptyValue(resourcePanelRightDefinition)) return []
+      return resourcePanelRightDefinition.isLoading
+    },
+    getCurrentResourcePanelRightDefinition: (state, getters) => ({ tableName }) => {
+      const resourcePanelRightDefinition = getters.getResourcePanelRightDefinitions({
+        tableName
+      })
+      if (isEmptyValue(resourcePanelRightDefinition)) return {}
+      return resourcePanelRightDefinition.currentResource
+    }
+  }
+}
+
+export default resourceDefinition

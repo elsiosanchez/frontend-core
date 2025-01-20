@@ -19,7 +19,8 @@
 import Vue from 'vue'
 
 import {
-  displayDefinitions, displayDefinitionsExists
+  // displayDefinitions,
+  displayDefinitionsExists
 } from '@/api/ADempiere/displayDefinition.ts'
 
 const initState = {
@@ -70,19 +71,20 @@ const displayDefinition = {
       onlyeReferences
     }) {
       return new Promise(resolve => {
-        displayDefinitions({
-          tableName,
-          onlyeReferences
-        })
-          .then(definition => {
-            const { records } = definition
-            if (onlyeReferences) {
-              commit('setPanelOptions', records)
-            } else {
-              commit('setDisplayDefinition', { tableName, records })
-            }
-            resolve(records)
-          })
+        // displayDefinitions({
+        //   tableName,
+        //   onlyeReferences
+        // })
+        //   .then(definition => {
+        //     const { records } = definition
+        //     if (onlyeReferences) {
+        //       commit('setPanelOptions', records)
+        //     } else {
+        //       commit('setDisplayDefinition', { tableName, records })
+        //     }
+        //     resolve(records)
+        //   })
+        resolve()
       })
     }
   },

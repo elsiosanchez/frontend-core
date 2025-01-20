@@ -39,6 +39,7 @@ export function requestListTasks({
 export function listCalendars({
   id,
   filters,
+  pageSize,
   searchValue
 }) {
   let filt
@@ -50,6 +51,7 @@ export function listCalendars({
     method: 'get',
     params: {
       filters: filt,
+      page_size: pageSize,
       search_value: searchValue
     }
   })

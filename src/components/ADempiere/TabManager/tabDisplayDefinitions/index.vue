@@ -1,0 +1,243 @@
+<!--
+ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
+<template>
+  <el-container style="height: 100%;" class="tab-panel-definitions">
+    <el-header v-if="!isPanelRight" style="padding: 0px !important;">
+      <MenuActionDefinitions
+        :parent-uuid="parentUuid"
+        :tab-attributes="tabAttributes"
+        :container-uuid="tabAttributes.uuid"
+        :container-manager="containerManager"
+        :actions-manager="actionsManagers"
+        :is-display-menu="!isPanelRight"
+        style="float: left;"
+      />
+      <action-menu
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :container-manager="containerManager"
+        :actions-manager="actionsManagers"
+        style="float: right;"
+      />
+    </el-header>
+    <el-main style="padding: 0px !important;">
+      <component
+        :is="templatePanel"
+        :parent-uuid="parentUuid"
+        :container-manager="containerManager"
+        :tabs-list="tabsList"
+        :all-tabs-list="allTabsList"
+        :current-tab-uuid="tabUuid"
+        :tab-attributes="tabAttributes"
+        :actions-manager="actionsManager"
+        :is-panel-right="isPanelRight"
+        style="height: 100% !important;"
+        :is-open-details="openPanel"
+      />
+    </el-main>
+    <el-drawer
+      :visible.sync="showContainerInfo"
+      :with-header="true"
+      :before-close="showPanel"
+      :size="isDrawerWidth"
+      class="drawer-panel-info"
+    >
+      <span slot="title">
+        <svg-icon icon-class="tab" style="margin-right: 10px;" />
+        {{ $t('window.containerInfo.log.tab') }}
+      </span>
+      <panel-info
+        v-if="showContainerInfo"
+        :all-tabs-list="allTabsList"
+        :show-container-info="showContainerInfo"
+        :container-manager="containerManager"
+        :current-record="{}"
+        :tab-attributes="tabAttributes"
+        :is-accounting-info="false"
+        :default-opened-tab="'getRecordLogs'"
+        :is-panel-right="isPanelRight"
+        :record-id="recordId"
+      />
+    </el-drawer>
+  </el-container>
+</template>
+
+<script>
+import { defineComponent, computed, ref } from '@vue/composition-api'
+import store from '@/store'
+// Components and Mixins
+import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
+// import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
+import MenuActionDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/menuActionDefinitions.vue'
+// Utils and Helper Methods
+import { setRecordPath } from '@/utils/ADempiere/valueUtils'
+
+export default defineComponent({
+  name: 'TabDisplayDefinitions',
+
+  components: {
+    ActionMenu,
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
+    MenuActionDefinitions
+  },
+
+  props: {
+    parentUuid: {
+      type: String,
+      required: false
+    },
+    containerManager: {
+      type: Object,
+      required: true
+    },
+    actionsManager: {
+      type: Object,
+      required: false
+    },
+    currentTabUuid: {
+      type: String,
+      default: ''
+    },
+    tabUuid: {
+      type: String,
+      default: ''
+    },
+    tabAttributes: {
+      type: Object,
+      default: () => ({})
+    },
+    tabsList: {
+      type: Array,
+      required: false
+    },
+    allTabsList: {
+      type: Array,
+      required: false
+    },
+    // used only window
+    isChildTab: {
+      type: Boolean,
+      default: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  setup(props) {
+    // Ref
+    const showContainerInfo = ref(false)
+    const recordId = ref(-1)
+    // Conputed
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
+
+    const isDrawerWidth = computed(() => {
+      if (isMobile.value) {
+        return '100%'
+      }
+      return '65%'
+    })
+
+    const actionsManagers = computed(() => {
+      return {
+        ...props.actionsManager,
+        withoutDefaulAction: true
+      }
+    })
+
+    const currentDisplyDefinitions = computed(() => {
+      if (props.isPanelRight) return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
+      return store.getters.getCurrentDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+    })
+
+    const templatePanel = computed(() => {
+      let panel
+      switch (currentDisplyDefinitions.value.display_type) {
+        case 'K':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/kanban.vue')
+          break
+        case 'C':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/calendar.vue')
+          break
+        case 'R':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/resource.vue')
+          break
+        case 'T':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/timeLine.vue')
+          break
+        case 'W':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/workflow.vue')
+          break
+      }
+      return panel
+    })
+
+    const defaultNameTab = computed(() => {
+      return store.getters.getDefaultOpenedTab
+    })
+
+    // Methods
+
+    function showPanel() {
+      showContainerInfo.value = false
+    }
+
+    function openPanel(element) {
+      recordId.value = element
+      // Set the record path for the panel info component
+      setRecordPath({
+        recordId: element
+      })
+      showContainerInfo.value = true
+      store.commit('setShowLogs', !showContainerInfo.value)
+    }
+
+    return {
+      // Ref
+      recordId,
+      showContainerInfo,
+      // computeds
+      isMobile,
+      isDrawerWidth,
+      templatePanel,
+      defaultNameTab,
+      actionsManagers,
+      currentDisplyDefinitions,
+      // Methods
+      showPanel,
+      openPanel
+    }
+  }
+})
+</script>
+
+<style lang="scss">
+.tab-panel-definitions {
+  height: 100%;
+  .el-header {
+    padding: 0px !important;
+  }
+  .el-main {
+    padding: 0px !important;
+  }
+}
+</style>

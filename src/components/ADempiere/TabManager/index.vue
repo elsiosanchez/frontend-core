@@ -58,6 +58,19 @@
           @click="selectTab(tabsList[parseInt(currentTab)])"
         >
           <tab-panel
+            v-if="isEmptyValue(isDisplayPanelDefinitions)"
+            id="tab-panel"
+            :parent-uuid="parentUuid"
+            :container-manager="containerManager"
+            :tabs-list="tabsList"
+            :all-tabs-list="allTabsList"
+            :tab-uuid="tabUuid"
+            :tab-attributes="tabAttributes"
+            :actions-manager="actionsManager"
+            :style="'height: 100% !important;'"
+          />
+          <tab-display-definitions
+            v-else
             id="tab-panel"
             :parent-uuid="parentUuid"
             :container-manager="containerManager"
@@ -180,6 +193,7 @@
         :container-manager="containerManager"
         :current-record="currentRecordLogs"
         :tab-uuid="tabUuid"
+        :tab-attributes="currentTabPanelInfo"
         :is-accounting-info="isAccountingInfo"
         :default-opened-tab="defaultNameTab"
       />
@@ -201,6 +215,7 @@ import TabLabel from '@/components/ADempiere/TabManager/TabLabel.vue'
 import PanelInfo from '../PanelInfo/index.vue'
 import TabPanel from '@/components/ADempiere/TabManager/TabPanel/index.vue'
 import TabOptions from './TabOptions.vue'
+import TabDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
 
 // Constants
 import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
@@ -227,6 +242,7 @@ export default defineComponent({
   name: 'TabManager',
 
   components: {
+    TabDisplayDefinitions,
     DefaultTable,
     PanelDefinition,
     TabPanel,
@@ -1114,12 +1130,15 @@ export default defineComponent({
           })
         })
     }
-    function displayDefinition() {
-      store.dispatch('getDisplayDefinition', {
-        tableName: currentTabTableName.value,
-        onlyeReferences: true
-      })
-    }
+    const isDisplayPanelDefinitions = computed(() => {
+      return store.getters.getCurrentDisplayTabDefinitions({ tableName: currentTabTableName.value })
+    })
+    // function adisplayDefinition() {
+    //   store.dispatch('getDisplayDefinition', {
+    //     tableName: currentTabTableName.value,
+    //     onlyeReferences: true
+    //   })
+    // }
     findRecordLogs(props.allTabsList[0])
 
     setTabNumber(currentTab.value)
@@ -1129,7 +1148,7 @@ export default defineComponent({
     getIssues()
     getIsNotes()
     getDashboard()
-    displayDefinition()
+    // displayDefinition()
     return {
       tabUuid,
       currentTab,
@@ -1138,6 +1157,7 @@ export default defineComponent({
       recordsList,
       drawer,
       clientUuid,
+      isDisplayPanelDefinitions,
       currentRecordLogs,
       openPanelInfo,
       showChatAvailable,
@@ -1184,8 +1204,8 @@ export default defineComponent({
       getReferences,
       getIssues,
       getIsNotes,
-      getDashboard,
-      displayDefinition
+      getDashboard
+      // displayDefinition
     }
   }
 

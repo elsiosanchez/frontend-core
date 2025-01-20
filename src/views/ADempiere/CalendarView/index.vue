@@ -415,11 +415,11 @@ export default defineComponent({
   .demo-app-main {
     flex-grow: 1;
     /* padding: 3em; */
-    padding: 1em;
+    // padding: 1em;
 
-    .demo-app-sidebar-section {
-      padding: 2em;
-    }
+    // .demo-app-sidebar-section {
+    //   padding: 2em;
+    // }
   }
 
   .fc { /* the calendar root */
@@ -428,7 +428,7 @@ export default defineComponent({
     /* max-width: auto; */
     width: auto;
     height: calc(80vh) !important;
-    overflow: auto;
+    overflow: hidden !important;
     display: block;
   }
 }

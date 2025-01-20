@@ -38,8 +38,8 @@
             <span slot="label">
               <svg-icon v-if="tab.svg" :icon-class="tab.iconClass" />
               <i v-else :class="tab.iconClass" />
-              <span> {{ tab.title }} </span>
-              <el-dropdown v-if="tab.isMenu" trigger="click" @command="handleCommandActions">
+              {{ tab.title }}
+              <el-dropdown v-if="tab.isMenu" @command="handleCommandActions">
                 <span class="el-dropdown-link">
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
@@ -70,6 +70,8 @@
               :record-id="currentRecordId"
               :tab-uuid="currentTab.uuid"
               :is-loading="tab.isLoading"
+              :tab-attributes="tabAttributes"
+              :is-panel-right="true"
               style="height: 95%;"
             />
           </el-tab-pane>
@@ -99,8 +101,9 @@ import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
 import TimeLine from '@/views/ADempiere/TimeLineView'
 import Worflow from '@/components/ADempiere/WorflowView'
-import KanbanView from '@/components/ADempiere/KanbanView'
-
+// import KanbanView from '@/components/ADempiere/KanbanView'
+import PanelDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
+// import resource from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
 import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
@@ -128,7 +131,8 @@ export default defineComponent({
     Calendar,
     TimeLine,
     CalendarResorce,
-    Worflow
+    Worflow,
+    PanelDisplayDefinitions
   },
 
   props: {
@@ -147,6 +151,10 @@ export default defineComponent({
     showContainerInfo: {
       type: Boolean,
       default: false
+    },
+    tabAttributes: {
+      type: Object,
+      default: () => ({})
     },
     tabUuid: {
       type: String,
@@ -285,7 +293,7 @@ export default defineComponent({
           svg: true,
           isMenu: true,
           iconClass: 'calendar',
-          component: Calendar
+          component: PanelDisplayDefinitions
         },
         {
           name: 'TimeLine',
@@ -295,7 +303,7 @@ export default defineComponent({
           isLoading: false,
           isMenu: true,
           iconClass: 'timeline',
-          component: TimeLine
+          component: PanelDisplayDefinitions
         },
         {
           name: 'Workflow',
@@ -305,7 +313,7 @@ export default defineComponent({
           isLoading: false,
           isMenu: true,
           iconClass: 'workflow',
-          component: Worflow
+          component: PanelDisplayDefinitions
         },
         {
           name: 'Resource',
@@ -315,7 +323,7 @@ export default defineComponent({
           isLoading: false,
           iconClass: 'resources',
           isMenu: true,
-          component: CalendarResorce
+          component: PanelDisplayDefinitions
         },
         {
           name: 'Kanban',
@@ -325,7 +333,7 @@ export default defineComponent({
           isLoading: false,
           iconClass: 'kanbanMode',
           isMenu: true,
-          component: KanbanView
+          component: PanelDisplayDefinitions
         }
       ]
     })
@@ -349,7 +357,7 @@ export default defineComponent({
       return store.getters.getNumberDashboard
     })
     const definition = computed(() => {
-      return store.getters.getPanelOptions
+      return store.getters.getListDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
     })
 
     function displayDefinition() {
@@ -373,54 +381,67 @@ export default defineComponent({
         })
       }
     }
-    function handleCommandActions(data) {
-      store.dispatch('currentCalendarsDefinitions', data)
-      let filters = []
-      if (data.display_type === 'C') {
-        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('getListCalendars', {
-          id: data.id,
+    function handleCommandActions(definition) {
+      if (definition.display_type) {
+        const filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        store.dispatch('changeTabPanelRightDefinition', {
+          tableName: props.tabAttributes.table_name,
+          recordId: currentRecordId.value,
+          isPanelRight: true,
+          definition,
           filters
         })
       }
-      if (data.display_type === 'R') {
-        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('currentResourcesDefinitions', data)
-        store.dispatch('searchPanelResource', {
-          id: data.id,
-          filters
-        })
-      }
-      if (data.display_type === 'K') {
-        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('currentKanbanDefinitions', data)
-        store.dispatch('searchPanelKanban', {
-          id: data.id,
-          filters,
-          isPanel: true
-        })
-      }
-      if (data.display_type === 'T') {
-        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('currentTimeLineDefinitions', data)
-        store.dispatch('searchPanelTimeLine', {
-          id: data.id,
-          filters
-        })
-      }
-      if (data.display_type === 'W') {
-        filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-        filters = JSON.stringify(filters)
-        store.dispatch('currentWorkflowDefinitions', data)
-        store.dispatch('getWorflowDisplay', {
-          id: data.id,
-          filters
-        })
-      }
+      // store.dispatch('changeTabPanelRightDefinition', {
+      //   tableName: tableName.value,
+      //   currentDefinition: data
+      // })
+      // let filters = []
+      // if (data.display_type === 'C') {
+      //   filters = [{ name: [tableName.value] + '_ID', values: curdatarentRecordId.value }]
+      //   filters = JSON.stringify(filters)
+      //   store.dispatch('getListCalendars', {
+      //     id: data.id,
+      //     filters
+      //   })
+      // }
+      // if (data.display_type === 'R') {
+      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+      //   filters = JSON.stringify(filters)
+      //   store.dispatch('currentResourcesDefinitions', data)
+      //   store.dispatch('searchPanelResource', {
+      //     id: data.id,
+      //     filters
+      //   })
+      // }
+      // if (data.display_type === 'K') {
+      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+      //   filters = JSON.stringify(filters)
+      //   store.dispatch('currentKanbanDefinitions', data)
+      //   store.dispatch('searchPanelKanban', {
+      //     id: data.id,
+      //     filters,
+      //     isPanel: true
+      //   })
+      // }
+      // if (data.display_type === 'T') {
+      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+      //   filters = JSON.stringify(filters)
+      //   store.dispatch('currentTimeLineDefinitions', data)
+      //   store.dispatch('searchPanelTimeLine', {
+      //     id: data.id,
+      //     filters
+      //   })
+      // }
+      // if (data.display_type === 'W') {
+      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+      //   filters = JSON.stringify(filters)
+      //   store.dispatch('currentWorkflowDefinitions', data)
+      //   store.dispatch('getWorflowDisplay', {
+      //     id: data.id,
+      //     filters
+      //   })
+      // }
     }
     const filteredDefinition = computed(() => {
       return {
@@ -595,6 +616,23 @@ export default defineComponent({
     }
     function handleClick(tab, event) {
       let tabOptions = tab.name
+      // if (
+      //   !isEmptyValue(filteredDefinition.value) &&
+      //   !isEmptyValue(filteredDefinition.value[tab.label])
+      // ) {
+      //   store.dispatch('changeTabPanelRightDefinition', {
+      //     tableName: props.tabAttributes.table_name,
+      //     recordId: currentRecordId.value,
+      //     definition: filteredDefinition.value[tab.label][0]
+      //   })
+      //   // findRecordLogs(tab)
+      //   return
+      // }
+      const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow']
+      if (listDisplayDeninitions.includes(tabOptions)) {
+        handleCommandActions(filteredDefinition.value[tabOptions][0])
+      }
+
       if (tab.name === 'accountingInformation') {
         const { currentTab } = store.getters.getContainerInfo
         const recordId = currentRecordId.value
@@ -694,7 +732,7 @@ export default defineComponent({
       return store.getters.getCurrentCalendarsDefinitions
     })
     const currentKanbanDefinitions = computed(() => {
-      return store.getters.getCurrentKanbanDefinitions
+      return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
     })
 
     function currentOptions(data) {

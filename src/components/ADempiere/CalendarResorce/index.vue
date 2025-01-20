@@ -578,7 +578,7 @@ export default defineComponent({
     // max-width: auto;
     width: auto;
     height: 50%;
-    overflow: auto;
+    overflow: hidden !important;
     display: block;
   }
   .fc-resource-area {

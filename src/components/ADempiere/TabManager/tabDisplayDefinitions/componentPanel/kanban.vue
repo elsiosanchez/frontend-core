@@ -1,0 +1,302 @@
+<!--
+ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
+<template>
+  <span>
+    <div
+      v-if="isPanelRight"
+      class="info-definitions"
+    >
+      <span style="font-weight: bold;">
+        {{ currentDisplyDefinitions.name }}
+      </span>
+      <div style="color: rgb(130, 132, 138);">
+        {{ currentDisplyDefinitions.description }}
+      </div>
+    </div>
+    <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
+      <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
+        <div
+          v-for="(column, index) in columns"
+          :key="index"
+          class="kanban-column"
+        >
+          <template>
+            <b style="font-size: 16px;padding-left: 10px;">
+              {{ column.title }}
+            </b>
+          </template>
+          <draggable
+            v-model="column.items"
+            v-bind="dragOptions"
+            class="list-group"
+            @start="isDragging = true"
+            @end="isDragging = false"
+            @change="handleCardMove($event, column)"
+          >
+            <template>
+              <div
+                v-for="element in column.items"
+                :key="element.id"
+                class="list-group-item"
+                @dblclick="isOpenDetails(element.id)"
+              >
+                <div class="kanban-column-header">
+                  <span class="column-title">{{ element.title }}</span>
+                </div>
+                <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">
+                  <span style="font-size: 12px;">
+                    {{ element.description }}
+                  </span>
+                </div>
+              </div>
+            </template>
+            <div v-if="column.items.length < 1" class="empty-placeholder">{{ $t('form.kanban.dropCard') }}</div>
+          </draggable>
+        </div>
+      </div>
+    </el-card>
+  </span>
+</template>
+
+<script>
+import {
+  defineComponent,
+  computed
+  // watch
+} from '@vue/composition-api'
+import store from '@/store'
+import lang from '@/lang'
+// Components and Mixins
+import draggable from 'vuedraggable'
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
+
+export default defineComponent({
+  name: 'KanbanDefinitions',
+
+  components: {
+    draggable
+  },
+
+  props: {
+    parentUuid: {
+      type: String,
+      required: false
+    },
+    containerManager: {
+      type: Object,
+      required: false
+    },
+    actionsManager: {
+      type: Object,
+      required: false
+    },
+    currentTabUuid: {
+      type: String,
+      default: ''
+    },
+    tabUuid: {
+      type: String,
+      default: ''
+    },
+    tabAttributes: {
+      type: Object,
+      default: () => ({})
+    },
+    tabsList: {
+      type: Array,
+      required: false
+    },
+    allTabsList: {
+      type: Array,
+      required: false
+    },
+    // used only window
+    isPanelRight: {
+      type: Boolean,
+      default: false
+    },
+    isOpenDetails: {
+      type: Function,
+      default: (recordPrevious) => {
+        console.info('implement method Change to Previous Record ', recordPrevious)
+      }
+    }
+  },
+
+  setup(props) {
+    // Computed
+    const currenPanelKanban = computed(() => {
+      return store.getters.getKanbanPanel({
+        tableName: props.tabAttributes.table_name,
+        isPanel: props.isPanelRight
+      })
+    })
+
+    const columns = computed({
+      // getter
+      get() {
+        // const columnsStore = store.getters.getKanbanColumnsDefinition({ tableName: props.tabAttributes.table_name })
+        // if (!isEmptyValue(columnsStore)) return columnsStore
+        if (
+          !isEmptyValue(KanbanDefinitions.value) &&
+          !isEmptyValue(KanbanDefinitions.value.steps) &&
+          !isEmptyValue(KanbanDefinitions.value.records)
+        ) {
+          const { steps, records } = KanbanDefinitions.value
+          const ungroupedItems = records
+            .filter(record => !steps.some(step => record.group_id === step.value))
+          const ungroupedColumn = {
+            title: lang.t('form.kanban.noStatus'),
+            items: ungroupedItems
+          }
+
+          const groupedColumns = steps.map(step => ({
+            title: step.name,
+            value: step.value,
+            items: records
+              .filter(record => record.group_id === step.value)
+          }))
+
+          return [ungroupedColumn, ...groupedColumns]
+        }
+        return []
+      },
+      // setter
+      set(newValue) {
+        store.commit('setKanbanColumns', {
+          tableName: props.tabAttributes.table_name,
+          columns: newValue
+        })
+      }
+    })
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
+
+    const actionsManagers = computed(() => {
+      return {
+        ...props.actionsManager,
+        withoutDefaulAction: true
+      }
+    })
+
+    const currentDisplyDefinitions = computed(() => {
+      if (props.isPanelRight) {
+        return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
+      }
+      return store.getters.getCurrentDisplayTabDefinitions({
+        tableName: props.tabAttributes.table_name
+      })
+    })
+
+    const KanbanDefinitions = computed(() => {
+      if (props.isPanelRight) return store.getters.getCurrentKanbanPanelRightDefinition({ tableName: props.tabAttributes.table_name })
+      return store.getters.getCurrentKanbanDefinition({
+        tableName: props.tabAttributes.table_name
+      })
+    })
+
+    const isLoading = computed(() => {
+      if (props.isPanelRight) return store.getters.getKanbanPanelRightLoading({ tableName: props.tabAttributes.table_name })
+      return store.getters.getKanbanLoading({
+        tableName: props.tabAttributes.table_name
+      })
+    })
+
+    const dragOptions = computed(() => {
+      return {
+        animation: 150,
+        group: 'kanban',
+        disabled: false,
+        ghostClass: 'ghost'
+      }
+    })
+
+    // Mehtods
+
+    function handleCardMove(event, column) {
+      if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
+        const { value } = column
+        const { id, uuid } = event.added.element
+        const columnName = KanbanDefinitions.value.column_name
+        const { currentTab } = store.getters.getContainerInfo
+        loading(true)
+        updateEntity({
+          tableName: props.tabAttributes.table_name,
+          recordUuid: uuid,
+          recordId: id,
+          tabId: currentTab.id,
+          recordAttributes: {
+            [columnName]: value
+          }
+        })
+          .then(() => {
+            this.$message({
+              type: 'success',
+              showClose: true,
+              message: 'OK'
+            })
+          })
+          .catch(error => {
+            this.$message({
+              type: 'error',
+              showClose: true,
+              message: error.message
+            })
+          })
+          .finally(() => {
+            loading(false)
+          })
+      }
+    }
+
+    function loading(load) {
+      if (props.isPanelRight) {
+        store.commit('setKanbanRightLoading', { tableName: props.tabAttributes.table_name, isLoading: load })
+        return
+      }
+      store.commit('setKanbanLoading', { tableName: props.tabAttributes.table_name, isLoading: load })
+    }
+
+    return {
+      // computeds
+      columns,
+      isMobile,
+      isLoading,
+      dragOptions,
+      actionsManagers,
+      currenPanelKanban,
+      KanbanDefinitions,
+      currentDisplyDefinitions,
+      // Mehtods
+      handleCardMove
+    }
+  }
+})
+</script>
+
+<style lang="scss">
+.info-definitions {
+  line-height: 1.2;
+  font-size: 12px;
+  color: #303133;
+}
+</style>
