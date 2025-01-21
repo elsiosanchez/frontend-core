@@ -54,6 +54,11 @@ export class evaluator {
   static PREFERENCE_CONTEXT_PREFIX = 'P|'
 
   /**
+   * Prefix context of tab sequence prefix (0|)
+   */
+  static TAB_CONTEXT_PREFIX = /\d\|/gi
+
+  /**
    * Evaluate logic's
    * @param {string} parentUuid Parent (Window / Process / Smart Browser)
    * @param {function} context

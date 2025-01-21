@@ -116,7 +116,10 @@ const defaultValueManager = {
         // fill context value to continue
         if (!isSameSize(contextColumnNames, Object.values(contextAttributesList))) {
           resolve({
+            parentUuid,
+            containerUuid,
             ...defaultEmptyResponse,
+            contextColumnNames,
             reason: 'Without context'
           })
           return

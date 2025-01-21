@@ -49,6 +49,11 @@ export const ACCOUNTING_CONTEXT_PREFIX = '$' // evaluator.ACCOUNTING_CONTEXT_PRE
 export const PREFERENCE_CONTEXT_PREFIX = 'P|' // evaluator.PREFERENCE_CONTEXT_PREFIX
 
 /**
+ * Prefix context of tab sequence prefix (0|)
+ */
+export const TAB_CONTEXT_PREFIX = /\d\|/gi // evaluator.TAB_CONTEXT_PREFIX
+
+/**
  * Get context state from vuex store
  * @param {string} parentUuid UUID Window
  * @param {string} containerUuid  UUID Tab, Process, SmartBrowser, Report and Form
@@ -66,6 +71,9 @@ export const getContext = ({
   isForceSession = false,
   columnName
 }) => {
+  // TODO: Add correct support to tab sequence
+  columnName = columnName.replace(TAB_CONTEXT_PREFIX, '')
+
   let value
   const isPreferenceValue = columnName.startsWith(ACCOUNTING_CONTEXT_PREFIX) ||
     columnName.startsWith(GLOBAL_CONTEXT_PREFIX) ||
