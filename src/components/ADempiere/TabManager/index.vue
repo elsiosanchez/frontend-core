@@ -54,7 +54,7 @@
           @click="selectTab(tabsList[parseInt(currentTab)])"
         > -->
         <div
-          style="display: contents;"
+          style="display: block;height: 100%;overflow: auto;"
           @click="selectTab(tabsList[parseInt(currentTab)])"
         >
           <tab-panel

@@ -8,7 +8,7 @@
       <keep-alive :include="cachedViews">
         <router-view
           :key="key"
-          style="height: 100% !important;*/width: 100% !important;/*display: contents;*/"
+          style="height: 100% !important;/*display: contents;*/"
         />
       </keep-alive>
     </transition>
@@ -67,8 +67,9 @@ export default {
 <style lang="scss" scoped>
 .app-main {
   /* 50= navbar  50  */
-  // max-height: calc(100vh - 50px);
-  width: 100%;
+  max-height: calc(100vh - 70px);
+  // width: 100%;
+  display: block;
   position: relative;
   overflow: auto;
 }
@@ -85,11 +86,11 @@ export default {
 }
 
 .hasTagsView {
-  .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    // min-height: calc(100vh - 85px);
-    display: contents;
-  }
+  // .app-main {
+  //   /* 84 = navbar + tags-view = 50 + 34 */
+  //   // min-height: calc(100vh - 85px);
+  //   // display: contents;
+  // }
 
   .fixed-header+.app-main {
     padding-top: 84px;
