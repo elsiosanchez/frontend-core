@@ -231,6 +231,7 @@ const defaultValueManager = {
               columnName,
               value: valueOfServer
             })
+
             if (!isEmptyValue(displayValue)) {
               commit('updateValueOfField', {
                 parentUuid,

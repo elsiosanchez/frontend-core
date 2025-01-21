@@ -2011,6 +2011,12 @@ export const containerManager = {
             value: response.displayedValue
           })
         }
+        store.commit('addChangeToPersistenceQueue', {
+          parentUuid,
+          containerUuid,
+          columnName,
+          value: response.value
+        })
       }
       if (!isEmptyValue(default_value) && isContextSQL(default_value)) {
         const field = store.getters.getStoredFieldsFromTab(parentUuid, containerUuid)
