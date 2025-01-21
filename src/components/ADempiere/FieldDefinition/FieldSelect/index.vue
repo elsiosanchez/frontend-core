@@ -265,6 +265,9 @@ export default {
       if (isEmptyValue(value)) {
         this.displayedValue = undefined
         this.uuidValue = undefined
+        if (this.metadata.isGetServerValue) {
+          this.getValueOfLookup()
+        }
         return
       }
 

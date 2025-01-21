@@ -302,13 +302,14 @@ const getters = {
       .map(fieldItem => {
         const {
           internal_id: id, uuid, columnName,
-          isSameColumnElement, element_name, default_value
+          isSameColumnElement, element_name, default_value,
+          isGetServerValue
         } = fieldItem
         let contextColumnNames = fieldItem.contextColumnNames
         if (isEmptyValue(contextColumnNames)) {
           contextColumnNames = fieldItem.context_column_names
         }
-        const isSQL = String(default_value).startsWith('@SQL=') && isGetServer
+        const isSQL = isGetServerValue && isGetServer
 
         let parsedDefaultValue
         if (!isSQL) {
@@ -334,8 +335,8 @@ const getters = {
         }
 
         if (fieldItem.is_range && fieldItem.componentPath !== 'FieldNumber') {
-          const { columnNameTo, elementNameTo, default_value_to } = fieldItem
-          const isSQLTo = String(default_value_to).startsWith('@SQL=') && isGetServer
+          const { columnNameTo, elementNameTo, isGetServerValueTo } = fieldItem
+          const isSQLTo = isGetServerValueTo && isGetServer
 
           let parsedDefaultValueTo
           if (!isSQLTo) {

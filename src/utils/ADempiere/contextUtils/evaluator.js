@@ -59,6 +59,11 @@ export class evaluator {
   static TAB_CONTEXT_PREFIX = /\d\|/gi
 
   /**
+   * Prefix context of sql value prefix (@SQL=) or (@SQL =)
+   */
+  static SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/gi
+
+  /**
    * Evaluate logic's
    * @param {string} parentUuid Parent (Window / Process / Smart Browser)
    * @param {function} context
@@ -321,7 +326,7 @@ export class evaluator {
       return columnsList
     }
 
-    let string = parseString.replace('@SQL=', '')
+    let string = parseString.replace(this.SQL_CONTEXT_PREFIX, '')
     // while we have variables
 
     while (string.includes('@')) {

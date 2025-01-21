@@ -33,6 +33,9 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getTableNameFromReference, isSupportLookup } from '@/utils/ADempiere/references'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
 import {
+  isContextSQL
+} from '@/utils/ADempiere/contextUtils'
+import {
   getContextDefaultValue, getEvaluatedFieldLogics, getParentFields
 } from '@/utils/ADempiere/contextUtils/contextField'
 import { isHiddenField, isLookup } from '@/utils/ADempiere/references'
@@ -108,6 +111,7 @@ export function generateField({
 }) {
   const { column_name: columnName } = fieldToGenerate
   let isGetServerValue = false
+  let isGetServerValueTo = false
   let isColumnReadOnlyForm = false
   let isChangedAllForm = false
   let valueIsReadOnlyForm
@@ -187,7 +191,7 @@ export function generateField({
       isSOTrxDictionary
     })
 
-    if (String(fieldToGenerate.default_value).startsWith('@SQL=')) {
+    if (isContextSQL(fieldToGenerate.default_value)) {
       // isShowedFromUser = true
       isGetServerValue = true
     }
@@ -206,8 +210,8 @@ export function generateField({
         isSOTrxDictionary
       })
 
-      if (String(fieldToGenerate.default_value_to).startsWith('@SQL=')) {
-        isGetServerValue = true
+      if (isContextSQL(fieldToGenerate.default_value_to)) {
+        isGetServerValueTo = true
       }
     }
 
@@ -297,6 +301,7 @@ export function generateField({
     isFixedTableColumn: false,
     valueType: componentReference.valueType, // value type to convert with gGRPC
     isGetServerValue,
+    isGetServerValueTo,
     isGeneratedRange: typeRange,
     // Advanced query
     operator, // current operator

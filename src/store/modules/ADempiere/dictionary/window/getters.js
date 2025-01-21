@@ -228,8 +228,12 @@ export default {
     const attributesObject = {}
     let attributesList = fieldsList
       .map(fieldItem => {
-        const { uuid, id, columnName, default_value, context_column_names, is_parent } = fieldItem
-        const isSQL = String(default_value).startsWith('@SQL=') && isGetServer
+        const {
+          uuid, internal_id: id, columnName,
+          default_value, isGetServerValue,
+          context_column_names, is_parent
+        } = fieldItem
+        const isSQL = isGetServerValue && isGetServer
         const isLinkColumn = !isEmptyValue(link_column_name) && columnName === link_column_name
         const isParentColumn = is_parent || (!isEmptyValue(parent_column_name) && columnName === parent_column_name)
 

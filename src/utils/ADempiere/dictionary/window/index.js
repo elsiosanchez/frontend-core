@@ -43,7 +43,9 @@ import { requestSaveWindowCustomization } from '@/api/ADempiere/user-customizati
 
 // Utils and Helpers Methods
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
-import { getContext, isSalesTransaction } from '@/utils/ADempiere/contextUtils'
+import {
+  getContext, isSalesTransaction, isContextSQL
+} from '@/utils/ADempiere/contextUtils'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 import { generatePanelAndFields } from '@/utils/ADempiere/dictionary/panel.js'
@@ -194,7 +196,7 @@ export function evaluateDefaultFieldShowed({
   if (!isEmptyValue(is_displayed_as_panel)) {
     return convertStringToBoolean(is_displayed_as_panel)
   }
-  if (String(default_value).startsWith('@SQL=')) {
+  if (isContextSQL(default_value)) {
     return true
   }
   if (!isEmptyValue(display_logic)) {
@@ -285,7 +287,7 @@ export function evaluateDefaultColumnShowed({
   if (!isEmptyValue(is_displayed_as_table)) {
     return convertStringToBoolean(is_displayed_as_table)
   }
-  if (String(default_value).startsWith('@SQL=')) {
+  if (isContextSQL(default_value)) {
     return true
   }
 
@@ -2010,7 +2012,7 @@ export const containerManager = {
           })
         }
       }
-      if (!isEmptyValue(default_value) && default_value.startsWith('@SQL=')) {
+      if (!isEmptyValue(default_value) && isContextSQL(default_value)) {
         const field = store.getters.getStoredFieldsFromTab(parentUuid, containerUuid)
           .find(itemField => {
             return itemField.columnName === columnName

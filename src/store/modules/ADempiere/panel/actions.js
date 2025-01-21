@@ -621,7 +621,8 @@ const actions = {
       // TODO: Add support to `default_value_to`
       const {
         internal_id, uuid, column_name, displayColumnName, element_name,
-        default_value, display_type, context_column_names, isSameColumnElement
+        default_value, display_type, context_column_names, isSameColumnElement,
+        isGetServerValue
       } = field
       if (isEmptyValue(default_value)) {
         resolve(resolveValues)
@@ -629,7 +630,7 @@ const actions = {
       }
 
       // default value without sql
-      if (default_value.includes('@') && !default_value.startsWith('@SQL=')) {
+      if (default_value.includes('@') && !isGetServerValue) {
         defaultValue = parseContext({
           parentUuid,
           containerUuid,
@@ -641,7 +642,7 @@ const actions = {
       }
 
       // default value with sql
-      if (!isGetDefaultValue || !default_value.startsWith('@SQL=')) {
+      if (!isGetDefaultValue || !isGetServerValue) {
         resolve(resolveValues)
         return
       }

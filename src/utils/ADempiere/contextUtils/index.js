@@ -54,6 +54,20 @@ export const PREFERENCE_CONTEXT_PREFIX = 'P|' // evaluator.PREFERENCE_CONTEXT_PR
 export const TAB_CONTEXT_PREFIX = /\d\|/gi // evaluator.TAB_CONTEXT_PREFIX
 
 /**
+ * Prefix context of sql value prefix (@SQL=) or (@SQL =)
+ */
+export const SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/gi // evaluator.SQL_CONTEXT_PREFIX
+
+/**
+ * Evaluate if is context string start with `@SQL=` or `@SQL =`
+ * @param {String} contextString
+ * @returns {boolean}
+ */
+export function isContextSQL(contextString) {
+  return SQL_CONTEXT_PREFIX.test(String(contextString))
+}
+
+/**
  * Get context state from vuex store
  * @param {string} parentUuid UUID Window
  * @param {string} containerUuid  UUID Tab, Process, SmartBrowser, Report and Form
@@ -244,7 +258,7 @@ export function parseContext({
       errorsList
     }
   }
-  value = String(value).replace('@SQL=', '')
+  value = String(value).replace(SQL_CONTEXT_PREFIX, '')
   // const instances = value.length - value.replace('@', '').length
   // if ((instances > 0) && (instances % 2) !== 0) { // could be an email address
   //   return value
@@ -269,7 +283,7 @@ export function parseContext({
     const secondIndexTag = inString.indexOf('@') // next @
     // no exists second tag
     if (secondIndexTag < 0) {
-      console.info(`No second tag: ${inString}`)
+      console.info(`No second tag: ${inString}`, { containerUuid, parentUuid, columnName, value })
       return {
         value: undefined,
         isError: true,
