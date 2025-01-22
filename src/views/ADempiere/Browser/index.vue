@@ -23,7 +23,7 @@
     key="browser-loaded"
     class="view-base browser-view"
   >
-    <el-card class="content-collapse card-browser" style="overflow: auto;position: absolute;height: -webkit-fill-available !important;">
+    <el-card class="content-collapse card-browser">
       <div style="display:flex; justify-content: space-between;">
         <div />
         <title-and-help
