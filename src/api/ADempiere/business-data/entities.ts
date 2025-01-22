@@ -75,17 +75,14 @@ export function requestCreateEntity({
  */
 export function requestUpdateEntity({
   tableName,
-  id,
+  recordId,
   recordAttributes
 }) {
-  const attributes = {
-    ...recordAttributes
-  }
   return request({
-    url: `/business-data/entities/${tableName}/${id}`,
+    url: `/business-data/entities/${tableName}/${recordId}`,
     method: 'patch',
     data: {
-      attributes: attributes
+      attributes: recordAttributes
     }
   })
 }

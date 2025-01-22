@@ -23,10 +23,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       class="info-definitions"
     >
       <span style="font-weight: bold;">
-        {{ currentDisplyDefinitions.name }}
+        {{ currentDisplayDefinition.name }}
       </span>
       <div style="color: rgb(130, 132, 138);">
-        {{ currentDisplyDefinitions.description }}
+        {{ currentDisplayDefinition.description }}
       </div>
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
@@ -80,13 +80,19 @@ import {
   computed
   // watch
 } from '@vue/composition-api'
+
 import store from '@/store'
 import lang from '@/lang'
+
 // Components and Mixins
 import draggable from 'vuedraggable'
+
+// API Request Methods
+import { requestUpdateEntity } from '@/api/ADempiere/business-data/entities.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { updateEntity } from '@/api/ADempiere/userInterface/entities.ts'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
 
 export default defineComponent({
   name: 'KanbanDefinitions',
@@ -198,9 +204,11 @@ export default defineComponent({
       }
     })
 
-    const currentDisplyDefinitions = computed(() => {
+    const currentDisplayDefinition = computed(() => {
       if (props.isPanelRight) {
-        return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
+        return store.getters.getCurrentDisplayPanelRightDefinitions({
+          tableName: props.tabAttributes.table_name
+        })
       }
       return store.getters.getCurrentDisplayTabDefinitions({
         tableName: props.tabAttributes.table_name
@@ -208,14 +216,22 @@ export default defineComponent({
     })
 
     const KanbanDefinitions = computed(() => {
-      if (props.isPanelRight) return store.getters.getCurrentKanbanPanelRightDefinition({ tableName: props.tabAttributes.table_name })
+      if (props.isPanelRight) {
+        return store.getters.getCurrentKanbanPanelRightDefinition({
+          tableName: props.tabAttributes.table_name
+        })
+      }
       return store.getters.getCurrentKanbanDefinition({
         tableName: props.tabAttributes.table_name
       })
     })
 
     const isLoading = computed(() => {
-      if (props.isPanelRight) return store.getters.getKanbanPanelRightLoading({ tableName: props.tabAttributes.table_name })
+      if (props.isPanelRight) {
+        return store.getters.getKanbanPanelRightLoading({
+          tableName: props.tabAttributes.table_name
+        })
+      }
       return store.getters.getKanbanLoading({
         tableName: props.tabAttributes.table_name
       })
@@ -232,27 +248,49 @@ export default defineComponent({
 
     // Mehtods
 
+    /**
+     * TODO: Revert when reject update on server
+     * @param event
+     * @param column
+     */
     function handleCardMove(event, column) {
       if (!isEmptyValue(event) && !isEmptyValue(event.added) && !isEmptyValue(event.added.element)) {
-        const { value } = column
+        let { value } = column
+        if (isEmptyValue(value)) {
+          value = null
+        }
         const { id, uuid } = event.added.element
-        const columnName = KanbanDefinitions.value.column_name
-        const { currentTab } = store.getters.getContainerInfo
+        const { table_name } = currentDisplayDefinition.value
+        const { column_name } = KanbanDefinitions.value
+        const recordAttributes = {
+          [column_name]: value
+        }
         loading(true)
-        updateEntity({
-          tableName: props.tabAttributes.table_name,
-          recordUuid: uuid,
+        requestUpdateEntity({
+          tableName: table_name,
           recordId: id,
-          tabId: currentTab.id,
-          recordAttributes: {
-            [columnName]: value
-          }
+          recordAttributes
         })
-          .then(() => {
+          .then(response => {
             this.$message({
               type: 'success',
               showClose: true,
               message: 'OK'
+            })
+            const { currentTab } = store.getters.getContainerInfo
+            const { parentUuid, firstTabUuid } = currentTab
+
+            // const { values } = response
+            // const serverValue = values[column_name]
+            // if (!isSameValues(serverValue, event.added.element.group_id )) {
+            //   event.added.element.group_id = serverValue
+            // }
+
+            refreshRecord.refreshRecord({
+              parentUuid: parentUuid,
+              containerUuid: firstTabUuid,
+              recordId: id,
+              recordUuid: uuid
             })
           })
           .catch(error => {
@@ -270,10 +308,16 @@ export default defineComponent({
 
     function loading(load) {
       if (props.isPanelRight) {
-        store.commit('setKanbanRightLoading', { tableName: props.tabAttributes.table_name, isLoading: load })
+        store.commit('setKanbanRightLoading', {
+          tableName: props.tabAttributes.table_name,
+          isLoading: load
+        })
         return
       }
-      store.commit('setKanbanLoading', { tableName: props.tabAttributes.table_name, isLoading: load })
+      store.commit('setKanbanLoading', {
+        tableName: props.tabAttributes.table_name,
+        isLoading: load
+      })
     }
 
     return {
@@ -285,7 +329,7 @@ export default defineComponent({
       actionsManagers,
       currenPanelKanban,
       KanbanDefinitions,
-      currentDisplyDefinitions,
+      currentDisplayDefinition,
       // Mehtods
       handleCardMove
     }
