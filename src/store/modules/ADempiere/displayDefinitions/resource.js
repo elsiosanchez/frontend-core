@@ -20,10 +20,14 @@ import Vue from 'vue'
 
 // API Request Methods
 import { resources } from '@/api/ADempiere/displayDefinition.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
+import { addGroupEvents, parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
+
 // Constants
 // import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
 
@@ -187,37 +191,64 @@ const resourceDefinition = {
         })
           .then(response => {
             const { records, groups } = response
-            const groupsRecurso = groups.map(list => {
-              const { color, name, resources } = list
+
+            const resourcesList = groups.map(groupItem => {
+              const {
+                color: colorGroup, name: titleGroup, resources
+              } = groupItem
+              const uuidGroup = getUuidv4()
+
+              const resourcesChilds = resources.map(resourceItem => {
+                const {
+                  id, color: colorResource, name: titleResource
+                } = resourceItem
+                return {
+                  id: id,
+                  eventColor: colorResource,
+                  title: titleResource
+                }
+              })
+
               return {
-                id: name,
-                title: name,
-                eventColor: color,
-                building: name,
-                children: resources.map(child => {
-                  return {
-                    id: child.name,
-                    title: child.name,
-                    eventColor: child.color
-                  }
-                })
+                id: uuidGroup,
+                title: titleGroup,
+                color: colorGroup,
+                children: resourcesChilds
               }
             })
-            const recordsEvents = records.map(events => {
+
+            const resourcesEventsList = records.map(eventItem => {
+              const {
+                id, title, name,
+                valid_from, valid_to
+                // group_name
+              } = eventItem
+              let start = valid_from
+              if (isEmptyValue(valid_from) && !isEmptyValue(valid_to)) {
+                start = valid_to
+              }
+              let end = valid_to
+              if (isEmptyValue(valid_to) && !isEmptyValue(valid_from)) {
+                end = valid_from
+              }
               return {
-                ...events,
-                id: events.id,
-                title: events.title,
-                start: events.valid_from,
-                end: events.valid_to,
-                resourceId: events.name,
-                resourceTitle: events.resource_name,
-                eventColor: events.color
+                id,
+                title: title + ' - ' + name,
+                start: parseDate(start),
+                end: parseDate(end),
+                resourceId: id
               }
             })
+
+            let eventsList = []
+            eventsList = resourcesEventsList
+            // Add events on parent
+            const groupEventsList = addGroupEvents(resourcesList, eventsList)
+            eventsList = resourcesEventsList.concat(groupEventsList)
+
             const all = {
-              groupsRecurso,
-              recordsEvents,
+              resourcesList,
+              eventsList,
               ...response
             }
             if (isPanel) {

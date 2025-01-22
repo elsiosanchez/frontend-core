@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -73,19 +73,23 @@ import {
   computed,
   ref
 } from '@vue/composition-api'
-import store from '@/store'
+
 import lang from '@/lang'
+import store from '@/store'
+
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
-// Utils and Helper Methods
 import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
+
+// Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 
 export default defineComponent({
   name: 'ResourceDefinitions',
@@ -152,40 +156,44 @@ export default defineComponent({
         isPanel: props.isPanelRight
       })
     })
-    const groudResource = computed(() => {
+    const groupedResourcesList = computed(() => {
       if (props.isPanelRight) {
-        const { groupsRecurso } = store.getters.getCurrentResourcePanelRightDefinition({ tableName: props.tabAttributes.table_name })
-        if (isEmptyValue(groupsRecurso)) return []
-        return groupsRecurso
+        const { resourcesList } = store.getters.getCurrentResourcePanelRightDefinition({
+          tableName: props.tabAttributes.table_name
+        })
+        if (isEmptyValue(resourcesList)) {
+          return []
+        }
+        return resourcesList
       }
-      const { groupsRecurso } = store.getters.getCurrentResourceDefinition({ tableName: props.tabAttributes.table_name })
-      if (isEmptyValue(groupsRecurso)) return []
-      return groupsRecurso
+
+      const { resourcesList } = store.getters.getCurrentResourceDefinition({
+        tableName: props.tabAttributes.table_name
+      })
+      if (isEmptyValue(resourcesList)) {
+        return []
+      }
+      return resourcesList
     })
 
-    const recordsEvents = computed(() => {
+    const resourceEventsList = computed(() => {
       if (props.isPanelRight) {
-        const { recordsEvents } = store.getters.getCurrentResourcePanelRightDefinition({ tableName: props.tabAttributes.table_name })
-        if (isEmptyValue(recordsEvents)) return []
-        return recordsEvents.map(list => {
-          return {
-            ...list,
-            start: parse(list.start),
-            end: parse(list.end)
-          }
+        const { eventsList } = store.getters.getCurrentResourcePanelRightDefinition({
+          tableName: props.tabAttributes.table_name
         })
+        if (isEmptyValue(eventsList)) {
+          return []
+        }
+        return eventsList
       }
 
-      const { recordsEvents } = store.getters.getCurrentResourceDefinition({ tableName: props.tabAttributes.table_name })
-
-      if (isEmptyValue(recordsEvents)) return []
-      return recordsEvents.map(list => {
-        return {
-          ...list,
-          start: parse(list.start),
-          end: parse(list.end)
-        }
+      const { eventsList } = store.getters.getCurrentResourceDefinition({
+        tableName: props.tabAttributes.table_name
       })
+      if (isEmptyValue(eventsList)) {
+        return []
+      }
+      return eventsList
     })
 
     const calendarOptions = computed(() => {
@@ -204,15 +212,15 @@ export default defineComponent({
         },
         resourceAreaWidth: '30%',
         initialView: 'resourceTimelineMonth',
-        resourceGroupField: 'building',
         eventMinWidth: 90,
         locale: esLocale,
         scrollTime: '01:00',
         // aspectRatio: 1,
         // editable: true,
         resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
-        resources: groudResource.value,
-        events: recordsEvents.value,
+        // resourceGroupField: 'group_name',
+        resources: groupedResourcesList.value,
+        events: resourceEventsList.value,
         views: {
           resourceTimelineDay: {
             slotDuration: '00:30:00', // Intervalos de 30 minutos
@@ -261,23 +269,19 @@ export default defineComponent({
 
     // Mehtods
 
-    function parse(dateToParse) {
-      if (isEmptyValue(dateToParse)) return ''
-      const parts = dateToParse.split('T')[0].split('-')
-      return `${parts[0]}-${parts[1]}-${parts[2]}`
-    }
-
     function changeRange(params) {
       const definition = currentDisplyDefinitions.value
       // if (isEmptyValue(definition)) {
       //   definition = store.getters.getDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name }).currentDefinition
       // }
 
-      if (isEmptyValue(params) || isEmptyValue(definition)) return
+      if (isEmptyValue(params) || isEmptyValue(definition)) {
+        return
+      }
       const { endStr, startStr } = params
       store.dispatch('changeDateRange', {
-        endStr: parse(endStr),
-        startStr: parse(startStr),
+        endStr: parseDate(endStr),
+        startStr: parseDate(startStr),
         isPanel: props.isPanelRight,
         id: definition.id,
         tableName: props.tabAttributes.table_name,
@@ -302,8 +306,8 @@ export default defineComponent({
       isLoading,
       calendarOptions,
       currentDisplyDefinitions,
-      recordsEvents,
-      groudResource,
+      resourceEventsList,
+      groupedResourcesList,
       currentRecord,
       currenPanelResource,
       //
