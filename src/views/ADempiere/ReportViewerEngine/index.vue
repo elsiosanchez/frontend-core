@@ -314,7 +314,6 @@ export default defineComponent({
 	.content {
     width: 100%;
     height: 100%;
-    position: absolute;
     top: 0%;
   }
   .el-table__body-wrapper {
