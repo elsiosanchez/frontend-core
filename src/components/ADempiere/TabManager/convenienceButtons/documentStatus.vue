@@ -163,13 +163,6 @@ export default defineComponent({
       return 400
     })
 
-    // watch(withPopover, (newValue, oldValue) => {
-    //   if (!isSameValues(newValue, oldValue)) {
-    //     const instance = getCurrentInstance()
-    //     instance.proxy.forceUpdate()
-    //   }
-    // })
-
     return {
       isShowedStatus,
       currentDocStatus,

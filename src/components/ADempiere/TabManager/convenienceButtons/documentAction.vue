@@ -50,18 +50,9 @@
             :value="documentAction.value"
             :displayed-value="documentAction.name"
           />
-          <!-- {{ documentAction.name }} -->
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-
-    <!-- <document-status-tag
-      v-else
-      size="medium"
-      :style="isMobile ? 'padding-left: 0px;' : 'padding-left: 5px;'"
-      :value="currentRecordDocumentAction"
-      :displayed-value="currentRecordDocumentActionDisplayValue"
-    /> -->
 
     <el-popover
       ref="popoverDocAction"
@@ -174,23 +165,24 @@ export default defineComponent({
 
   setup(props, { root }) {
     /**
-     * Const
+     * Constants
      */
 
     const containerUuid = props.tabAttributes.uuid
-
-    /**
-     * Ref
-     */
-    const isVisibleDocAction = ref(false)
-    const selectDocActions = ref('')
-    const popoverDocAction = ref(null)
+    const currentRouter = root._route
     const emptyDocAction = {
       name: '',
       value: '',
       description: ''
     }
+
+    /**
+     * Ref
+     */
+    const selectDocActions = ref('')
+    const popoverDocAction = ref(null)
     const isLoadingActions = ref(false)
+    const isVisibleDocAction = ref(false)
 
     /**
      * Computed
@@ -198,7 +190,6 @@ export default defineComponent({
     const recordUuid = computed(() => {
       return store.getters.getUuidOfContainer(containerUuid)
     })
-    const currentRouter = root._route
     const recordId = computed(() => {
       const { params, query } = currentRouter
       let id = store.getters.getIdOfContainer({
@@ -207,7 +198,6 @@ export default defineComponent({
       })
       if (isEmptyValue(id) && !isEmptyValue(params) && !isEmptyValue(params.recordId)) id = currentRouter.params.recordId
       if (isEmptyValue(id) && !isEmptyValue(query) && !isEmptyValue(query.recordId)) id = query.recordId
-
       return id
     })
 
@@ -230,7 +220,6 @@ export default defineComponent({
     const currentRecordDocumentActionDisplayValue = computed(() => {
       return store.getters.getValueOfFieldOnContainer({
         containerUuid: props.parentUuid, // tab uuid
-        // containerUuid,
         columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_DocAction
       })
     })
@@ -323,12 +312,6 @@ export default defineComponent({
       if (!isEnabled) {
         return false
       }
-
-      // const docAction = defaultValue.value
-      // // is None action
-      // if (docAction === '--') {
-      //   return true
-      // }
       const isEmptyDocAction = isEmptyValue(defaultDocumentAction.value)
       if (isEmptyDocAction) {
         // get list first
@@ -442,7 +425,7 @@ export default defineComponent({
           recordUuid: recordUuid.value,
           recordId: recordId.value
         })
-          .then(response => {
+          .then(() => {
             processDocumentWithAction()
           })
           .catch(error => {
@@ -478,20 +461,14 @@ export default defineComponent({
     }
 
     function message() {
-      const selectActions = documentActionsList.value.find(action => {
-        return action.value === selectDocActions.value
-      })
-      if (isEmptyValue(selectActions)) {
-        return defaultDocumentAction.value
-      }
+      const selectActions = documentActionsList.value.find(action => action.value === selectDocActions.value)
+      if (isEmptyValue(selectActions)) return defaultDocumentAction.value
       return selectActions.description
     }
 
     const timeOut = ref(null)
     function loadDocumentActions() {
-      if (isEmptyValue(recordUuid.value) || recordUuid.value === 'create-new') {
-        return
-      }
+      if (isEmptyValue(recordUuid.value) || recordUuid.value === 'create-new') return
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
         store.dispatch('getDocumentActionsListFromServer', {
@@ -511,21 +488,12 @@ export default defineComponent({
       }
     })
 
-    // watch(currentRecordDocumentStatus, (newValue, oldValue) => {
-    //   if (newValue !== oldValue) {
-    //     if (isEmptyValue(defaultDocumentAction.value)) {
-    //       loadDocumentActions()
-    //     }
-    //   }
-    // })
-
-    // if (isEmptyValue(defaultDocumentAction.value)) {
-    //   loadDocumentActions()
-    // }
-
     return {
-      // Ref
+      // Constants
+      containerUuid,
+      currentRouter,
       emptyDocAction,
+      // Ref
       popoverDocAction,
       selectDocActions,
       isLoadingActions,
@@ -535,7 +503,6 @@ export default defineComponent({
       recordUuid,
       getCurrentTab,
       isEnableRunDocumentAction,
-      isRunableDocumentAction,
       currentRecordDocumentStatus,
       currentDocStatusDisplayedValue,
       currentRecordDocumentAction,
@@ -545,6 +512,7 @@ export default defineComponent({
       defaultName,
       defaultValue,
       // Methods
+      isRunableDocumentAction,
       displayDocumentActions,
       handleCommandActions,
       startDocumentAction,

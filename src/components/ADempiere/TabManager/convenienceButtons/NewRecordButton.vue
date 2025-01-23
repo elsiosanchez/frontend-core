@@ -17,20 +17,6 @@
 -->
 
 <template>
-  <!-- old implementation -->
-  <!-- <el-button
-    v-if="isCreateRecord"
-    plain
-    size="small"
-    type="success"
-    class="new-record-button"
-    @click="newRecord()"
-  >
-    <svg-icon icon-class="newRecord" />
-    <span v-if="!isMobile">
-      {{ $t('actionMenu.new') }}
-    </span>
-  </el-button> -->
   <el-dropdown
     v-if="isCreateRecord"
     split-button
@@ -60,13 +46,6 @@
         <i class="el-icon-copy-document" />
         {{ $t('window.copyRecord') }}
       </el-dropdown-item>
-      <!-- <el-dropdown-item
-        command="enabledRecord"
-        divided
-      >
-        <i class="el-icon-copy-document" />
-        {{ $t('Activar Registros') }}
-      </el-dropdown-item> -->
     </el-dropdown-menu>
   </el-dropdown>
 </template>

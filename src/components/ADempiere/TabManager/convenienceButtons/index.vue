@@ -83,28 +83,28 @@ import store from '@/store'
 
 // Components and Mixins
 import AdvancedTabQuery from '@/components/ADempiere/TabManager/AdvancedTabQuery.vue'
+import PrintProcess from '@/components/ADempiere/TabManager/convenienceButtons/PrintProcess.vue'
 import DocumentAction from '@/components/ADempiere/TabManager/convenienceButtons/documentAction.vue'
 import NewRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/NewRecordButton.vue'
 import SaveRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/SaveRecordButton.vue'
 import UndoChangeButton from '@/components/ADempiere/TabManager/convenienceButtons/UndoChangeButton.vue'
-import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
-import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/DeleteRecordButton.vue'
 import OptionsSecuence from '@/components/ADempiere/TabManager/convenienceButtons/OptionsSecuence.vue'
-import PrintProcess from '@/components/ADempiere/TabManager/convenienceButtons/PrintProcess.vue'
+import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/DeleteRecordButton.vue'
+import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
 
 export default defineComponent({
   name: 'ConvenienceButtons',
 
   components: {
-    AdvancedTabQuery,
+    PrintProcess,
     DocumentAction,
     NewRecordButton,
+    OptionsSecuence,
+    AdvancedTabQuery,
     SaveRecordButton,
     UndoChangeButton,
-    RefreshRecordButton,
-    PrintProcess,
     DeleteRecordButton,
-    OptionsSecuence
+    RefreshRecordButton
   },
 
   props: {
@@ -131,9 +131,7 @@ export default defineComponent({
 
     const isDisableOptionsTabChild = computed(() => {
       if (!getCurrentTab.value.isParentTab) {
-        if (store.getters.getUuidOfContainer(getCurrentTab.value.firstTabUuid)) {
-          return true
-        }
+        if (store.getters.getUuidOfContainer(getCurrentTab.value.firstTabUuid)) return true
         return false
       }
       return true
@@ -151,14 +149,7 @@ export default defineComponent({
     })
 
     const isEditSecuence = computed(() => {
-      const tab = store.getters.getStoredTab(
-        props.parentUuid,
-        containerUuid
-      )
-      if (tab) {
-        return tab.isEditSecuence
-      }
-      return props.tabAttributes.isEditSecuence
+      return getCurrentTab.value.isEditSecuence
     })
 
     const isMobile = computed(() => {
@@ -176,25 +167,6 @@ export default defineComponent({
         show: true
       })
     }
-
-    /**
-     * Vuex subscription when record parent change
-     * TODO: Add support to restart or delete timer by flushPersistenceQueue
-     */
-    // const unsubscribeChangeParentRecord = () => {}
-
-    // unsubscribeChangeParentRecord = store.subscribeAction({
-    //   before: (action, state) => {
-    //     if (action.type === 'addKeyPressed' && action.payload && action.payload.containerUuid === containerUuid) {
-    //       // restart timer
-    //     }
-    //   }
-    // })
-
-    // remove susbscriptions
-    // onUnmounted(() => {
-    //   unsubscribeChangeParentRecord()
-    // })
 
     return {
       // Computeds
