@@ -22,25 +22,25 @@
     v-model="displayedValue"
     v-bind="commonsProperties"
     value-key="name"
-    clearable
-    style="width: 100%;"
+    clearablej
     popper-class="custom-field-bpartner-info"
-    :trigger-on-focus="false"
     :fetch-suggestions="localSearch"
     :select-when-unmatched="true"
     :highlight-first-item="true"
+    :trigger-on-focus="false"
+    style="width: 100%;"
     :size="sizeField"
-    @keyup.native="enterKey"
     @select="handleSelect"
     @clear="clearValues"
     @focus="searchFocus"
     @blur="setOldDisplayedValue"
   >
-    <!--
-    @keyup.enter.native="getBPartnerWithEnter"
-      -->
-    <template slot-scope="recordRow">
-      <span :class="{ 'disabled-record': !recordRow.item.is_active }">
+    <template
+      slot-scope="recordRow"
+    >
+      <span
+        class="{ 'disabled-record': !recordRow.item.is_active }"
+      >
         <div class="header">
           {{ recordRow.item.value }}
           -
@@ -55,9 +55,9 @@
 
     <button-list
       slot="append"
+      :is-disabled="isDisabled"
       :parent-metadata="metadata"
       :container-manager="containerManager"
-      :is-disabled="isDisabled"
     />
   </el-autocomplete>
 </template>
@@ -125,77 +125,91 @@ export default {
   },
 
   methods: {
-    enterKey(event) {
-      // TODO: Implement key enter event.
+    keyPressField() {
+      if (!this.isEmptyValue(this.$refs['autocompleteBPartner' + this.metadata.columnName])) this.remoteSearch(this.displayedValue, true)
     },
+    /**
+     * Search Focus
+     * This function is executed when the autocomplete field receives the focus. If there is a value displayed, it selects the text in the input field.
+     */
     searchFocus() {
-      // if (this.recordsList.length <= 1) {
-      //   this.$refs.autocompleteBPartner.close()
-      // } else {
-      //   this.$refs.autocompleteBPartner.getData()
-      // }
+      // Checks if `displayedValue` is not empty
       if (!isEmptyValue(this.displayedValue)) {
         this.$refs.autocompleteBPartner.$el.firstElementChild.firstElementChild.select()
       }
       this.setNewDisplayedValue()
     },
-    keyPressField() {
-      if (!this.isEmptyValue(this.$refs['autocompleteBPartner' + this.metadata.columnName])) {
-        this.remoteSearch(this.displayedValue, true)
-      }
-    },
-    handleSelect(recordSelected) {
-      if (isEmptyValue(recordSelected) || recordSelected[COLUMN_NAME] <= 0) { // || isEmptyValue(recordSelected.UUID)) {
-        // set empty values
-        recordSelected = this.blankValues
-      }
-
-      this.setValues(recordSelected)
-
-      // prevent losing display value with focus
-      this.controlDisplayed = this.generateDisplayedValue(recordSelected)
-      this.$refs.autocompleteBPartner.activated = false
-    },
     remoteSearch(searchValue, isKeyEnterPress) {
+      // Returns a new promise that will resolve with the search results.
       return new Promise(resolve => {
+        // Get the parent UUID from the metadata.
         let parentUuid = this.metadata.parentUuid
-        if (isEmptyValue(parentUuid)) {
-          parentUuid = this.metadata.containerUuid
-        }
 
+        // If parentUuid is empty, assign the containerUuid as its value.
+        if (isEmptyValue(parentUuid)) parentUuid = this.metadata.containerUuid
+
+        // Indicate that data is being loaded.
         this.isLoading = true
+
+        // Call the getSearchRecordsList method of the containerManager to perform the search.
         this.containerManager.getSearchRecordsList({
-          parentUuid,
-          containerUuid: this.metadata.containerUuid,
-          contextColumnNames: this.metadata.reference.context_column_names,
-          tableName: TABLE_NAME,
-          uuid: this.metadata.uuid,
-          id: this.metadata.internal_id,
-          searchValue,
-          pageNumber: 1,
-          pageSize: RECORD_ROWS_BY_LIST
+          parentUuid, // UUID of the parent
+          containerUuid: this.metadata.containerUuid, // UUID of the container
+          contextColumnNames: this.metadata.reference.context_column_names, // Context column names
+          tableName: TABLE_NAME, // Name of the table to search
+          uuid: this.metadata.uuid, // UUID of the record
+          id: this.metadata.internal_id, // Internal ID of the record
+          searchValue, // Search value entered by the user
+          pageNumber: 1, // Page number for pagination
+          pageSize: RECORD_ROWS_BY_LIST // Page size for pagination
         })
           .then(responseRecords => {
+            // If no records are returned, show a message indicating no results.
             if (isEmptyValue(responseRecords)) {
               this.whitOutResultsMessage()
             }
 
+            // Resolve the promise with the obtained records.
             resolve(responseRecords)
           })
           .catch(error => {
+            // If an error occurs during the search, log a warning message to the console.
             console.warn(error.message)
 
+            // Show a message indicating no results.
             this.whitOutResultsMessage()
+
+            // Resolve the promise with an empty array.
             resolve([])
           })
           .finally(() => {
+            // Indicate that loading has finished.
             this.isLoading = false
+
+            // If the Enter key was pressed or if there is only one record in the list, automatically select the first record.
             if (isKeyEnterPress || this.recordsList.length === 1) {
-              const recordSelected = this.recordsList.at()
-              this.handleSelect(recordSelected)
+              const recordSelected = this.recordsList.at() // Get the first record from the list
+              this.handleSelect(recordSelected) // Call handleSelect to manage the selection
             }
           })
       })
+    },
+    handleSelect(recordSelected) {
+      // Checks if the selected record is empty or if its value in the specified column is less than or equal to zero.
+      if (isEmptyValue(recordSelected) || recordSelected[COLUMN_NAME] <= 0) {
+        // If the above condition is true, assigns blank values to the selected record.
+        recordSelected = this.blankValues
+      }
+
+      // Calls the setValues function to set the values of the selected register in the component.
+      this.setValues(recordSelected)
+
+      // Generates a displayed value from the selected record and assigns it to `controlDisplayed`.
+      // This prevents loss of the displayed value when the field receives focus.
+      this.controlDisplayed = this.generateDisplayedValue(recordSelected)
+
+      // Disables autocomplete to prevent it from remaining active after selection.
+      this.$refs.autocompleteBPartner.activated = false
     }
   }
 }

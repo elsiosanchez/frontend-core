@@ -2,6 +2,7 @@
  * ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
  * Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
  * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+ * Contributor(s): Elsio Sanchez ElsioSanchez15@outlook.com https://github.com/ElsioSanchez
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,8 +17,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Importing necessary functions from Vue Composition API
 import { computed, nextTick, ref } from '@vue/composition-api'
-
+// Importing the Vuex store
 import store from '@/store'
 
 // Constants
@@ -38,8 +40,8 @@ import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 
 /**
  * Use Business Partner as mixin
- * @param {*} recordRow
- * @returns
+ * @param {*} recordRow - The record row data
+ * @returns - An object containing various computed properties and methods
  */
 export default ({
   uuidForm = BUSINESS_PARTNERS_LIST_FORM,
@@ -48,7 +50,22 @@ export default ({
   containerManager,
   fieldAttributes
 }) => {
-  const timeOutRecords = ref(null)
+  const timeOutRecords = ref(null) // Reference for timeout to manage record loading
+  /**
+   * Computed Properties
+   * `blankValues` - (valores en blanco)
+   * `infoData` - Computed property for info table
+   * `searchTableName` - Computed property for search table name
+   * `storedReferenceTableName` - Computed property for stored reference table name
+   * `recordCount` - Computed property for record coun
+   * `pageSize` - Computed property for page size
+   * `pageNumber` - Computed property for current page number
+   * `isLoadingRecords` - Computed property to check if records are loading
+   * `isLoadedRecords` - Computed property to check if records are loaded
+   * `currentRow` - Computed property for current row
+   * `showQuery` - Computed property to show or hide query fields
+   * `isSalesTransactionContext` - Computed property to check if the context is a sales transaction
+   */
 
   const blankValues = computed(() => {
     const { column_name, elementColumnName } = fieldAttributes
@@ -68,33 +85,21 @@ export default ({
     }
   })
 
-  const storedReferenceTableName = computed(() => {
-    return store.getters.getTableNameByField({
-      uuid: fieldAttributes.uuid
-    })
-  })
-
-  const searchTableName = computed(() => {
-    if (!isEmptyValue(storedReferenceTableName.value)) {
-      return storedReferenceTableName.value
-    }
-    return fieldAttributes.referenceTableName
-  })
-
   const infoData = computed(() => {
     return store.getters.getBusinessPartnerData({
       containerUuid: uuidForm
     })
   })
 
-  const isLoadedRecords = computed(() => {
-    const { isLoaded } = infoData.value
-    return isLoaded
+  const searchTableName = computed(() => {
+    if (!isEmptyValue(storedReferenceTableName.value)) return storedReferenceTableName.value
+    return fieldAttributes.referenceTableName
   })
 
-  const isLoadingRecords = computed(() => {
-    const { isLoading } = infoData.value
-    return isLoading
+  const storedReferenceTableName = computed(() => {
+    return store.getters.getTableNameByField({
+      uuid: fieldAttributes.uuid
+    })
   })
 
   const recordCount = computed(() => {
@@ -103,38 +108,50 @@ export default ({
     })
   })
 
-  const pageNumber = computed(() => {
-    return infoData.value.pageNumber
+  const pageSize = computed(() => {
+    const { pageSize } = infoData.value
+    return pageSize
   })
 
-  const pageSize = computed(() => {
-    return infoData.value.pageSize
+  const pageNumber = computed(() => {
+    const { pageNumber } = infoData.value
+    return pageNumber
+  })
+
+  const isLoadingRecords = computed(() => {
+    const { isLoading } = infoData.value
+    return isLoading
+  })
+
+  const isLoadedRecords = computed(() => {
+    const { isLoaded } = infoData.value
+    return isLoaded
   })
 
   const currentRow = computed({
+    get() {
+      return store.getters.getBusinessPartnerCurrentRow({
+        containerUuid: uuidForm
+      })
+    },
     set(rowSelected) {
       store.commit('setBusinessPartnerSelectedRow', {
         containerUuid: uuidForm,
         currentRow: rowSelected
       })
-    },
-    get() {
-      return store.getters.getBusinessPartnerCurrentRow({
-        containerUuid: uuidForm
-      })
     }
   })
 
   const showQueryFields = computed({
+    get() {
+      return store.getters.getBusinessPartnerShowQueryFields({
+        containerUuid: uuidForm
+      })
+    },
     set(newValue) {
       store.commit('setBusinessPartnerShowQueryFields', {
         containerUuid: uuidForm,
         showQueryFields: newValue
-      })
-    },
-    get() {
-      return store.getters.getBusinessPartnerShowQueryFields({
-        containerUuid: uuidForm
       })
     }
   })
@@ -146,17 +163,17 @@ export default ({
     })
   })
 
-  function clearValues() {
-    setValues(
-      blankValues.value
-    )
-  }
-
   function closeList() {
     store.commit('setBusinessPartnerShow', {
       containerUuid: uuidForm,
       show: false
     })
+  }
+
+  function clearValues() {
+    setValues(
+      blankValues.value
+    )
   }
 
   function setValues(recordRow) {
@@ -238,8 +255,7 @@ export default ({
     if (isEmptyValue(parentUuid)) {
       parentUuid = fieldAttributes.containerUuid
     }
-
-    // isLoadingRecords.value = true
+    // Clear previous records
     clearTimeout(timeOutRecords.value)
     timeOutRecords.value = setTimeout(() => {
       // search on server
@@ -254,24 +270,8 @@ export default ({
         pageNumber,
         pageSize
       })
-        .then(response => {
-          // store.commit('setFiltersList', {
-          //   containerUuid: uuidForm,
-          //   isSOTrx: this.isSOTrx
-          // })
-          if (isEmptyValue(response)) {
-            // this.$message({
-            //   type: 'warning',
-            //   showClose: true,
-            //   message: this.$t('businessPartner.notFound')
-            // })
-          }
-
-          nextTick(() => {
-            // if (this.$refs.businessPartnerTable) {
-            //   this.$refs.businessPartnerTable.setCurrentRow(this.currentRow)
-            // }
-          })
+        .then(() => {
+          nextTick(() => {})
         })
     }, 500)
   }
@@ -296,17 +296,18 @@ export default ({
   }
 
   return {
-    blankValues,
+    // Computed
     infoData,
+    pageSize,
     currentRow,
+    pageNumber,
+    recordCount,
+    blankValues,
+    showQueryFields,
     isLoadedRecords,
     isLoadingRecords,
     isSalesTransactionContext,
-    pageNumber,
-    pageSize,
-    recordCount,
-    showQueryFields,
-    //
+    // Methods
     clearValues,
     closeList,
     generateDisplayedValue,
