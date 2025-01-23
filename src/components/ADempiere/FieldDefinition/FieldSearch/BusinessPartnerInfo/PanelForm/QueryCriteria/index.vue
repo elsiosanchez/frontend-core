@@ -150,51 +150,44 @@ export default defineComponent({
   },
 
   setup(props) {
-    /**
-     * Constants
-     */
     const ACCORDION_KEY = 'query-criteria'
 
-    /**
-     * Computed
-     */
-
-    const activeAccordion = computed({
-      get() {
-        return showQueryFields.value ? ACCORDION_KEY : null
-      },
-      set(newValue) {
-        showQueryFields.value = !isEmptyValue(newValue)
+    const title = computed(() => {
+      let title = lang.t('form.pos.order.BusinessPartnerCreate.businessPartner')
+      if (!isEmptyValue(props.metadata.panelName) && !isSameValues(props.metadata.panelName, props.metadata.name)) {
+        title += ` (${props.metadata.panelName})`
       }
+      return title
     })
 
     const showQueryFields = computed({
-      get() {
-        return store.getters.getBusinessPartnerShowQueryFields({
-          containerUuid: props.uuidForm
-        })
-      },
       set(newValue) {
         store.commit('setBusinessPartnerShowQueryFields', {
           containerUuid: props.uuidForm,
           showQueryFields: newValue
         })
+      },
+      get() {
+        return store.getters.getBusinessPartnerShowQueryFields({
+          containerUuid: props.uuidForm
+        })
       }
     })
 
-    const title = computed(() => {
-      let title = lang.t('form.pos.order.BusinessPartnerCreate.businessPartner')
-      if (!isEmptyValue(props.metadata.panelName) && !isSameValues(props.metadata.panelName, props.metadata.name)) title += ` (${props.metadata.panelName})`
-      return title
+    const activeAccordion = computed({
+      set(newValue) {
+        showQueryFields.value = !isEmptyValue(newValue)
+      },
+      get() {
+        return showQueryFields.value ? ACCORDION_KEY : null
+      }
     })
 
     return {
-      // Constants
       ACCORDION_KEY,
-      // Computed
-      title,
+      //
       activeAccordion,
-      showQueryFields
+      title
     }
   }
 })
