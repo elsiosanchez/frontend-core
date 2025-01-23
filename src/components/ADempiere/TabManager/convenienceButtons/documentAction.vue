@@ -55,6 +55,7 @@
     </el-dropdown>
 
     <el-popover
+      v-if="!isEmptyValue(displayDocumentActions) && !isEmptyValue(displayDocumentActions(selectDocActions)) "
       ref="popoverDocAction"
       v-model="isVisibleDocAction"
       trigger="click"
