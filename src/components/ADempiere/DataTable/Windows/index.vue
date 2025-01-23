@@ -244,6 +244,13 @@ export default defineComponent({
       return store.state.app.device === 'mobile'
     })
 
+    const getTabRecords = computed(() => {
+      return store.getters.getTabData({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid
+      })
+    })
+
     const selectionsList = computed(() => {
       if (props.containerManager.getSelection) {
         return props.containerManager.getSelection({
@@ -321,6 +328,16 @@ export default defineComponent({
       }
       return {}
     })
+
+    /**
+     * Load Refresh
+     */
+    function handleLoadRefresh() {
+      store.dispatch('getEntities', {
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid
+      })
+    }
 
     /**
      * Handle Selection All
@@ -597,6 +614,8 @@ export default defineComponent({
             currentRow = recordsWithFilter.value.at(0)
           }
 
+          if (isEmptyValue(getTabRecords.value.parentUuid)) return handleLoadRefresh()
+
           // enable edit mode
           currentRow.isEditRow = true
           currentRow.isSelectedRow = true
@@ -732,6 +751,7 @@ export default defineComponent({
       recordsWithFilter,
       currentRowSelect,
       selectionsList,
+      getTabRecords,
       sizeViewTable,
       currentOption,
       defaultSize,

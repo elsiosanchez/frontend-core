@@ -57,64 +57,6 @@
           style="height: 100% !important;"
         />
       </div>
-      <!-- <div
-        v-if="isShowedTableRecords && !isMobile"
-      >
-        <tab-options
-          :parent-uuid="parentUuid"
-          :container-manager="containerManager"
-          :current-tab-uuid="tabUuid"
-          :tabs-list="tabsList"
-          :all-tabs-list="allTabsList"
-          :tab-attributes="tabAttributes"
-        />
-        <br>
-      </div>
-
-      <div
-        v-if="isShowedTabs"
-        style="height: 100% !important;"
-        @click="selectTab(tabsList[parseInt(currentTabNo)])"
-      >
-        <div v-if="isMobile">
-          <tab-panel
-            key="tab-panel"
-            :parent-uuid="parentUuid"
-            :container-manager="containerManager"
-            :tabs-list="tabsList"
-            :all-tabs-list="allTabsList"
-            :current-tab-uuid="tabUuid"
-            :tab-attributes="tabAttributes"
-            :actions-manager="actionsManager"
-          />
-        </div>
-        <div v-else>
-          <default-table
-            v-if="isShowedTableRecords"
-            key="default-table"
-            :parent-uuid="parentUuid"
-            :container-uuid="tabAttributes.uuid"
-            :container-manager="containerManager"
-            :header="tableHeaders"
-            :data-table="recordsList"
-            :panel-metadata="tabAttributes"
-            :is-navigation="true"
-          />
-          <el-scrollbar v-else ref="tabPanel" :vertical="false" class="scroll-tab-panel">
-          <tab-panel
-            v-else
-            key="tab-panel"
-            :parent-uuid="parentUuid"
-            :container-manager="containerManager"
-            :tabs-list="tabsList"
-            :all-tabs-list="allTabsList"
-            :current-tab-uuid="tabUuid"
-            :tab-attributes="tabAttributes"
-            :actions-manager="actionsManager"
-          />
-          </el-scrollbar>
-        </div>
-      </div> -->
     </el-tab-pane>
   </el-tabs>
 </template>
