@@ -121,6 +121,12 @@ export default defineComponent({
       })
     })
 
+    if (isSalesTransactionContext.value) {
+      currentValueCustomer.value = 'Y'
+    } else {
+      currentValueVendor.value = 'Y'
+    }
+
     return {
       YES_NO_OPTIONS_LIST,
       //
