@@ -18,7 +18,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <span class="menu-action-definitions">
-    <p><strong><i class="el-icon-info" /> {{ $t('component.attachment.description') }}:  </strong>{{ currentResource.description }}</p>
+    <p><strong><i class="el-icon-info" /> {{ $t('component.attachment.description') }}:  </strong>{{ currentResource.extendedProps.description }}</p>
     <p><strong><i class="el-icon-date" /> {{ $t('component.date.startDate') }}:  </strong>{{ translateDate({ value: currentResource.start, format:'long'}) }}</p>
     <p><strong><i class="el-icon-date" /> {{ $t('component.date.endDate') }}:  </strong>{{ translateDate({ value: currentResource.end, format:'long'}) }}</p>
     <span slot="footer" class="dialog-footer" style="float: right;">

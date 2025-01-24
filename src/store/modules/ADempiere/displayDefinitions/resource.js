@@ -220,7 +220,8 @@ const resourceDefinition = {
             const resourcesEventsList = records.map(eventItem => {
               const {
                 id, title, name,
-                valid_from, valid_to
+                valid_from, valid_to,
+                description
                 // group_name
               } = eventItem
               let start = valid_from
@@ -236,7 +237,8 @@ const resourceDefinition = {
                 title: title + ' - ' + name,
                 start: parseDate(start),
                 end: parseDate(end),
-                resourceId: id
+                resourceId: id,
+                description
               }
             })
 
