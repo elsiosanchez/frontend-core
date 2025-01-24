@@ -577,7 +577,7 @@
         </el-card>
         <br>
 
-        <el-timeline v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest" style="padding-left: 15px;padding-right: 15px;">
+        <el-timeline v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest" v-loading="isLoadingComments" style="padding-left: 15px;padding-right: 15px;">
           <el-timeline-item
             v-for="(comment, index) in listComments"
             :key="index"
@@ -1250,7 +1250,7 @@
         </el-card>
         <br>
 
-        <el-scrollbar v-if="getFixedHeader" ref="scrollTimeLineTabComments" wrap-class="scroll-timeline-from">
+        <el-scrollbar v-if="getFixedHeader" ref="scrollTimeLineTabComments" v-loading="isLoadingComments" wrap-class="scroll-timeline-from">
           <el-timeline v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest" style="padding-left: 15px;padding-right: 15px;">
             <el-timeline-item
               v-for="(comment, index) in listComments"
@@ -1273,7 +1273,7 @@
           </el-timeline>
         </el-scrollbar>
         <span v-else>
-          <el-timeline v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest" style="padding-left: 15px;padding-right: 15px;">
+          <el-timeline v-if="!isEmptyValue(currentIssues) && !isPanelNewRequest" v-loading="isLoadingComments" style="padding-left: 15px;padding-right: 15px;">
             <el-timeline-item
               v-for="(comment, index) in listComments"
               :key="index"
@@ -1413,7 +1413,9 @@ export default defineComponent({
     const storedMailTemplatesList = computed(() => {
       return store.getters.getListMailTemplates
     })
-
+    const isLoadingComments = computed(() => {
+      return store.getters.getIsLoadingComments
+    })
     const editorToolbarList = computed(() => {
       return {
         listMailTemplates: storedMailTemplatesList.value,
@@ -2459,6 +2461,7 @@ export default defineComponent({
       listGroup,
       listTaskStatus,
       // Computed
+      isLoadingComments,
       isNewIssues,
       isDisabledSave,
       currentIssues,

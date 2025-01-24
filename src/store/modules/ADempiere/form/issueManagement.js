@@ -41,6 +41,7 @@ const initStateIssueManagement = {
   listIssues: [],
   listIssuesAll: [],
   isLoaded: false,
+  isLoadingComments: false,
   isNewIssues: false,
   currentIssues: {},
   listComments: [],
@@ -60,6 +61,9 @@ const initStateIssueManagement = {
 export default {
   state: initStateIssueManagement,
   mutations: {
+    setIsLoadingComments(state, show) {
+      state.isLoadingComments = show
+    },
     setShowUploadImg(state, show) {
       state.showUploadImg = show
     },
@@ -405,8 +409,7 @@ export default {
               dateNextAction: date
             })
             dispatch('listComments', {
-              id,
-              uuid
+              issueId: id
             })
             resolve(response)
           })
@@ -458,6 +461,7 @@ export default {
       if (isEmptyValue(issueId)) {
         return []
       }
+      commit('setIsLoadingComments', true)
       return new Promise((resolve, reject) => {
         return requestListIssueComments({
           issueId
@@ -478,6 +482,9 @@ export default {
           })
           .catch(error => {
             reject(error)
+          })
+          .finally(() => {
+            commit('setIsLoadingComments', false)
           })
       })
     },
@@ -580,6 +587,9 @@ export default {
     },
     getShowUploadImg: (state) => {
       return state.showUploadImg
+    },
+    getIsLoadingComments: (state) => {
+      return state.isLoadingComments
     }
   }
 }
