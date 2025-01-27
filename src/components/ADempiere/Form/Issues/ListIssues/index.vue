@@ -295,6 +295,7 @@
                 :metadata="data"
                 :table-name="tableName"
                 :record-id="recordId"
+                :issue-all="issueAll"
               />
             </span>
             <el-row v-if="isAll">
@@ -422,6 +423,7 @@
                   :metadata="data"
                   :table-name="tableName"
                   :record-id="recordId"
+                  :issue-all="issueAll"
                 />
               </span>
             </el-collapse-item>
@@ -483,6 +485,10 @@ export default defineComponent({
     },
     recordId: {
       type: Number,
+      required: false
+    },
+    issueAll: {
+      type: Boolean,
       required: false
     }
   },

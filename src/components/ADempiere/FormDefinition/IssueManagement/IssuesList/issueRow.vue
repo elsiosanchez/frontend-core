@@ -249,7 +249,7 @@ import IssueRecordTime from '@/components/ADempiere/FormDefinition/IssueManageme
 import ProgressPercentage from '@/components/ADempiere/ContainerOptions/ProgressPercentage.vue'
 import IssueAvatar from '@/components/ADempiere/FormDefinition/IssueManagement/issueAvatar.vue'
 // Constants
-import { REQUEST_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
+import { REQUEST_WINDOW_UUID, REQUEST_ALL_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
 import { TABLE_NAME_C_BPARTNER } from '@/utils/ADempiere/constants/resoucer.ts'
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -278,10 +278,14 @@ export default defineComponent({
     metadata: {
       type: Object,
       required: true
+    },
+    issueAll: {
+      type: Boolean,
+      required: false
     }
   },
 
-  setup() {
+  setup(props) {
     const isNewIssues = computed(() => {
       return store.getters.getNewIssues
     })
@@ -290,15 +294,18 @@ export default defineComponent({
       store.commit('setNewIssues', !isNewIssues.value)
       store.dispatch('changeCurrentIssues', issue)
     }
-
     function zoomIssues(issues) {
+      let uuid = REQUEST_WINDOW_UUID
+      if (props.issueAll) {
+        uuid = REQUEST_ALL_WINDOW_UUID
+      }
       zoomIn({
-        uuid: REQUEST_WINDOW_UUID,
+        uuid,
         params: {
           filters: [
             {
-              columnName: 'UUID',
-              value: issues.uuid
+              columnName: 'R_Request_ID',
+              value: issues.id
             }
           ]
         }
