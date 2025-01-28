@@ -27,7 +27,7 @@ import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
 export function capitalize(str) {
   // str is the argument passed to the helper when called
   str = str || ''
-  return str.slice(0, 1).toUpperCase() + str.slice(1)
+  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase()
 }
 
 /**

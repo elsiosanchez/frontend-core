@@ -49,7 +49,6 @@
                   <el-dropdown-item
                     v-for="(data, key) in filteredDefinition[tab.name]"
                     :key="key"
-                    icon-class="calender"
                     :command="data"
                   >
                     <span :style="currentOptions(data)">
@@ -112,6 +111,8 @@ import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { capitalize } from '@/utils/ADempiere/formatValue/stringFormat'
+
 // import { isDisplayedField } from '@/utils/ADempiere/dictionary/window'
 
 export default defineComponent({
@@ -179,11 +180,6 @@ export default defineComponent({
     const nameTab = ref('getRecordLogs')
     const recordsListStoreProduct = ref([])
     const isLoadingListReference = ref(false)
-    const showCalendar = ref(false)
-    const showResource = ref(false)
-    const showTimeLine = ref(false)
-    const showWorkflow = ref(false)
-    const showKanban = ref(false)
     const currentRoute = router.app._route
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
@@ -288,7 +284,7 @@ export default defineComponent({
         {
           name: 'Calendar',
           title: language.t('window.containerInfo.log.calendar'),
-          show: showCalendar.value,
+          show: !isEmptyValue(listCalendarDefinition.value),
           isLoading: false,
           svg: true,
           isMenu: true,
@@ -298,17 +294,17 @@ export default defineComponent({
         {
           name: 'TimeLine',
           title: language.t('window.containerInfo.log.timeLine'),
-          show: showTimeLine.value,
+          show: !isEmptyValue(listTimeLineDefinition.value),
           svg: true,
           isLoading: false,
           isMenu: true,
-          iconClass: 'timeline',
+          iconClass: 'timeLine',
           component: PanelDisplayDefinitions
         },
         {
           name: 'Workflow',
           title: language.t('window.containerInfo.log.workflow'),
-          show: showWorkflow.value,
+          show: !isEmptyValue(listWorkflowDefinition.value),
           svg: true,
           isLoading: false,
           isMenu: true,
@@ -318,7 +314,7 @@ export default defineComponent({
         {
           name: 'Resource',
           title: language.t('window.containerInfo.log.resource'),
-          show: showResource.value,
+          show: !isEmptyValue(listResourceDefinition.value),
           svg: true,
           isLoading: false,
           iconClass: 'resources',
@@ -328,7 +324,7 @@ export default defineComponent({
         {
           name: 'Kanban',
           title: language.t('window.containerInfo.log.kanban'),
-          show: showKanban.value,
+          show: !isEmptyValue(listKanbanDefinition.value),
           svg: true,
           isLoading: false,
           iconClass: 'kanbanMode',
@@ -360,29 +356,13 @@ export default defineComponent({
       return store.getters.getListDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
     })
 
-    function displayDefinition() {
-      if (!isEmptyValue(definition.value)) {
-        definition.value.forEach(record => {
-          if (record.display_type === 'C') {
-            showCalendar.value = true
-          }
-          if (record.display_type === 'T') {
-            showTimeLine.value = true
-          }
-          if (record.display_type === 'W') {
-            showWorkflow.value = true
-          }
-          if (record.display_type === 'R') {
-            showResource.value = true
-          }
-          if (record.display_type === 'K') {
-            showKanban.value = true
-          }
-        })
-      }
-    }
     function handleCommandActions(definition) {
       if (definition.display_type) {
+        store.commit('setCurrentListDefinition', {
+          tableName: props.tabAttributes.table_name,
+          tabName: definition.type,
+          current: definition
+        })
         const filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
         store.dispatch('changeTabPanelRightDefinition', {
           tableName: props.tabAttributes.table_name,
@@ -391,68 +371,48 @@ export default defineComponent({
           definition,
           filters
         })
+        nameTab.value = capitalize(definition.type)
       }
-      // store.dispatch('changeTabPanelRightDefinition', {
-      //   tableName: tableName.value,
-      //   currentDefinition: data
-      // })
-      // let filters = []
-      // if (data.display_type === 'C') {
-      //   filters = [{ name: [tableName.value] + '_ID', values: curdatarentRecordId.value }]
-      //   filters = JSON.stringify(filters)
-      //   store.dispatch('getListCalendars', {
-      //     id: data.id,
-      //     filters
-      //   })
-      // }
-      // if (data.display_type === 'R') {
-      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-      //   filters = JSON.stringify(filters)
-      //   store.dispatch('currentResourcesDefinitions', data)
-      //   store.dispatch('searchPanelResource', {
-      //     id: data.id,
-      //     filters
-      //   })
-      // }
-      // if (data.display_type === 'K') {
-      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-      //   filters = JSON.stringify(filters)
-      //   store.dispatch('currentKanbanDefinitions', data)
-      //   store.dispatch('searchPanelKanban', {
-      //     id: data.id,
-      //     filters,
-      //     isPanel: true
-      //   })
-      // }
-      // if (data.display_type === 'T') {
-      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-      //   filters = JSON.stringify(filters)
-      //   store.dispatch('currentTimeLineDefinitions', data)
-      //   store.dispatch('searchPanelTimeLine', {
-      //     id: data.id,
-      //     filters
-      //   })
-      // }
-      // if (data.display_type === 'W') {
-      //   filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
-      //   filters = JSON.stringify(filters)
-      //   store.dispatch('currentWorkflowDefinitions', data)
-      //   store.dispatch('getWorflowDisplay', {
-      //     id: data.id,
-      //     filters
-      //   })
-      // }
     }
+    const listKanbanDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Kanban'
+      })
+    })
+    const listWorkflowDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Workflow'
+      })
+    })
+    const listTimeLineDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Timeline'
+      })
+    })
+    const listCalendarDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Calendar'
+      })
+    })
+    const listResourceDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Resource'
+      })
+    })
     const filteredDefinition = computed(() => {
       return {
-        Resource: definition.value.filter(item => item.display_type === 'R'),
-        Calendar: definition.value.filter(item => item.display_type === 'C'),
-        TimeLine: definition.value.filter(item => item.display_type === 'T'),
-        Workflow: definition.value.filter(item => item.display_type === 'W'),
-        Kanban: definition.value.filter(item => item.display_type === 'K')
+        Resource: listResourceDefinition.value,
+        Calendar: listCalendarDefinition.value,
+        TimeLine: listTimeLineDefinition.value,
+        Workflow: listWorkflowDefinition.value,
+        Kanban: listKanbanDefinition.value
       }
     })
-    displayDefinition()
     // Container Info
     const containerInfo = computed(() => {
       const inf = store.getters.getContainerInfo
@@ -571,18 +531,6 @@ export default defineComponent({
         return false
       }
 
-      // const { fieldsList } = currentTab
-      // if (isEmptyValue(fieldsList)) {
-      //   return false
-      // }
-      // const isPostedField = fieldsList.find(field => field.columnName === 'Posted')
-      // if (isEmptyValue(isPostedField)) {
-      //   return false
-      // }
-      // return isDisplayedField({
-      //   ...isPostedField
-      // })
-
       const isShowAccouting = store.getters.getIsShowAccoutingFacts
       return isShowAccouting
     })
@@ -616,23 +564,18 @@ export default defineComponent({
     }
     function handleClick(tab, event) {
       let tabOptions = tab.name
-      // if (
-      //   !isEmptyValue(filteredDefinition.value) &&
-      //   !isEmptyValue(filteredDefinition.value[tab.label])
-      // ) {
-      //   store.dispatch('changeTabPanelRightDefinition', {
-      //     tableName: props.tabAttributes.table_name,
-      //     recordId: currentRecordId.value,
-      //     definition: filteredDefinition.value[tab.label][0]
-      //   })
-      //   // findRecordLogs(tab)
-      //   return
-      // }
       const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow']
-      if (listDisplayDeninitions.includes(tabOptions)) {
-        handleCommandActions(filteredDefinition.value[tabOptions][0])
+      const currentDisplay = store.getters.getCurrentListDisplay({
+        tableName: props.tabAttributes.table_name,
+        tabName: tabOptions.toUpperCase()
+      })
+      if (!isEmptyValue(currentDisplay)) {
+        handleCommandActions(currentDisplay)
+      } else {
+        if (listDisplayDeninitions.includes(tabOptions)) {
+          handleCommandActions(filteredDefinition.value[tabOptions][0])
+        }
       }
-
       if (tab.name === 'accountingInformation') {
         const { currentTab } = store.getters.getContainerInfo
         const recordId = currentRecordId.value
@@ -736,8 +679,13 @@ export default defineComponent({
     })
 
     function currentOptions(data) {
-      if (data.id === currentCalendarsDefinitions.value.id) return 'color: #409eff;'
-      if (data.id === currentKanbanDefinitions.value.id) return 'color: #409eff;'
+      const currentDisplay = store.getters.getCurrentListDisplay({
+        tableName: props.tabAttributes.table_name,
+        tabName: data.type
+      })
+      if (!isEmptyValue(currentDisplay)) {
+        if (data.id === currentDisplay.id) return 'color: #409eff'
+      }
       return ''
     }
 
@@ -799,12 +747,7 @@ export default defineComponent({
       tableName,
       nameTab,
       recordsListStoreProduct,
-      showCalendar,
-      showResource,
-      showTimeLine,
-      showWorkflow,
       // Computed
-      displayDefinition,
       currentTab,
       isLoadLogs,
       storeProduct,
@@ -818,7 +761,7 @@ export default defineComponent({
       showPanelDashboard,
       changeTableName,
       definition,
-      // IsLoading
+      // IsLoadings
       isLoadingNotesRecord,
       isLoadingListAttachment,
       isLoadingListReference,

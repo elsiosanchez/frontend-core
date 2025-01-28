@@ -30,6 +30,14 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 const initState = {
   displayTabDefinitions: {},
   displayPanelRightDefinitions: {},
+  currentListDefinition: [],
+  currentDefinitions: {
+    Kanban: {},
+    Workflow: {},
+    Timeline: {},
+    Calendar: {},
+    Resource: {}
+  },
   emtpyDefinitions: {
     currentDefinition: {},
     listDefinitions: []
@@ -40,6 +48,18 @@ const displayTabDefinition = {
   state: initState,
 
   mutations: {
+    setCurrentDefinition(state, { type, tableName, key, value }) {
+      if (!state.currentDefinitions[type][tableName]) {
+        Vue.set(state.currentDefinitions[type], tableName, { list: [] })
+      }
+      Vue.set(state.currentDefinitions[type][tableName], key, value)
+    },
+    setCurrentListDefinition(state, { tableName, tabName, current }) {
+      if (!state.currentListDefinition[tableName]) {
+        Vue.set(state.currentListDefinition, tableName, {})
+      }
+      Vue.set(state.currentListDefinition[tableName], tabName, current)
+    },
     setDisplayTabDefinition(state, {
       currentDefinition = {},
       listDefinitions = [],
@@ -118,6 +138,17 @@ const displayTabDefinition = {
               tableName,
               listDefinitions: records
             })
+            const displayLists = {
+              Kanban: records.filter(data => data.display_type === 'K'),
+              Timeline: records.filter(data => data.display_type === 'T'),
+              Workflow: records.filter(data => data.display_type === 'W'),
+              Calendar: records.filter(data => data.display_type === 'C'),
+              Resource: records.filter(data => data.display_type === 'R')
+            }
+            Object.entries(displayLists).forEach(([type, list]) => {
+              commit('setCurrentDefinition', { type, tableName, key: 'list', value: list })
+            })
+
             resolve(records)
           })
       })
@@ -208,6 +239,13 @@ const displayTabDefinition = {
         tableName
       })
       return currentDefinition || {}
+    },
+    getCurrentListDisplay: (state, getters) => ({ tableName, tabName }) => {
+      const displayTabDefinitions = state.currentListDefinition[tableName] || {}
+      return displayTabDefinitions[tabName] || null
+    },
+    getListDefinition: (state) => ({ type, tableName }) => {
+      return state.currentDefinitions[type]?.[tableName]?.list || []
     }
   }
 }
