@@ -1,7 +1,7 @@
 /**
  * ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
  * Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
- * Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+ * Contributor(s): Elsio Sanchez ElsioSacnhez15@outlook.com https://github.com/ElsioSacnhez
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,20 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import attachment from './attachment'
-import calendar from './calendar'
-import dashboard from './dashboard'
-import date from './date'
-import sequenceSort from './sequenceSort'
-import displayDefinition from './displayDefinition'
-import tree from './tree'
-
-export default {
-  displayDefinition,
-  sequenceSort,
-  attachment,
-  dashboard,
-  calendar,
-  date,
-  tree
+const displayDefinition = {
+  cardNew: 'New',
+  cardView: 'View',
+  cardEdit: 'Edit',
+  fieldEmpty: 'No Fields Found'
 }
+
+export default displayDefinition

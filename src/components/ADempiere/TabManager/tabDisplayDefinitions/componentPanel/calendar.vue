@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -89,22 +89,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </div>
       <!-- </div> -->
     </el-card>
-    <el-dialog
-      :title="currentResource.title"
-      :visible.sync="dialogVisibleDetails"
-      custom-class="details-resource"
-    >
-      <see-details-calendar
-        :current-resource="currentResource"
-        :is-panel-right="isPanelRight"
-        :close-details="closeDetails"
-      >
-        <template v-slot:footer>
-          <el-button v-if="!isPanelRight" @click="isOpenDetails(currentResource.id),closeDetails()">{{ $t('component.date.seeDetails') }}</el-button>
-        </template>
-      </see-details-calendar>
-
-    </el-dialog>
   </span>
 </template>
 
@@ -114,11 +98,14 @@ import {
   computed,
   ref
 } from '@vue/composition-api'
+
 import store from '@/store'
 import lang from '@/lang'
+
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
+
 // Utils and Helper Methods
 import esLocale from '@fullcalendar/core/locales/es'
 import dayGridPlugin from '@fullcalendar/daygrid'
@@ -180,6 +167,12 @@ export default defineComponent({
       type: Function,
       default: (recordPrevious) => {
         console.info('implement method Change to Previous Record ', recordPrevious)
+      }
+    },
+    actionOption: {
+      type: Function,
+      default: (recordPrevious) => {
+        console.info('implement method Open Action New', recordPrevious)
       }
     }
   },
@@ -305,6 +298,24 @@ export default defineComponent({
       }
     }
 
+    const displayDefinitionFields = computed(() => {
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        return displayDefinitionMetadata.value.fields
+      }
+      return []
+    })
+
+    const displayDefinitionMetadata = computed(() => {
+      return store.getters.getDisplayTabDefinition({
+        id: currentDisplyDefinitions.value.id,
+        recordId: currentResource.value.id
+      })
+      // return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
+    })
+
     function handleDateSelect(selectInfo) {
       if (!selectInfo) {
         return
@@ -326,11 +337,30 @@ export default defineComponent({
     function openDetails(params) {
       dialogVisibleDetails.value = true
       currentResource.value = params.event
+      props.actionOption('view')
     }
 
     function closeDetails() {
       dialogVisibleDetails.value = false
     }
+
+    function handleEventClick(info) {
+      props.actionOption(info)
+      // store.dispatch('changeTabPanelDefinition', {
+      //   name: info,
+      //   id: currentDisplyDefinitions.value.id,
+      //   recordId: currentResource.value.id
+      // })
+      // if (!isEmptyValue(displayDefinitionFields.value)) return
+      // loadFields()
+    }
+
+    // function loadFields() {
+    //   store.dispatch('listDisplayDefinitionFieldsMetadata', {
+    //     id: currentDisplyDefinitions.value.id,
+    //     recordId: currentResource.value.id
+    //   })
+    // }
 
     return {
       // Ref
@@ -344,6 +374,7 @@ export default defineComponent({
       currentDisplyDefinitions,
       recordsEvents,
       currentRecord,
+      displayDefinitionFields,
       currenPanelCalendar,
       //
       esLocale,
@@ -355,6 +386,7 @@ export default defineComponent({
       goToEventDate,
       translateDate,
       handleDateSelect,
+      handleEventClick,
       openDetails,
       changeRange,
       closeDetails

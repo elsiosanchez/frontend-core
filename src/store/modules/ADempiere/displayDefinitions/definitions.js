@@ -20,11 +20,12 @@ import Vue from 'vue'
 
 // API Request Methods
 import {
-  displayDefinitions as listDefinitions, displayDefinitionsExists
+  displayDefinitions as listDefinitions,
+  displayDefinitionsExists
 } from '@/api/ADempiere/displayDefinition.ts'
-import { isEmptyValue } from '@/utils/ADempiere'
-// Constants
-// import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
+
+// Utils and Helpers Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
 const initState = {
   displayTabDefinitions: {},

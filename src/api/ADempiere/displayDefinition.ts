@@ -105,3 +105,67 @@ export function resources({
     }
   })
 }
+
+export function listDisplayDefinitionFieldsMetadata({
+  id
+}) {
+  return request({
+    url: `/display-definition/definitions/${id}/fields`,
+    method: 'get'
+  })
+}
+export function createDataEntry({
+  id,
+  attributes,
+  contextAttributes
+}) {
+  return request({
+    url: `/display-definition/${id}/entries`,
+    method: 'post',
+    data: {
+      attributes,
+      display_definition_id: id,
+      context_attributes: contextAttributes
+    }
+  })
+}
+
+export function readDataEntry({
+  id,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}`,
+    method: 'get',
+    data: {
+      id,
+      display_definition_id: displayDefinitionId
+    }
+  })
+}
+
+export function updateDataEntry({
+  id,
+  attributes,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}`,
+    method: 'patch',
+    data: {
+      id,
+      attributes,
+      display_definition_id: displayDefinitionId
+    }
+  })
+}
+
+export function deleteDataEntry({
+  id,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}`,
+    method: 'delete'
+  })
+}

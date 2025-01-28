@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -55,9 +55,17 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 :key="element.id"
                 class="list-group-item"
                 @dblclick="isOpenDetails(element.id)"
+                @click="hangleChangeRecord(element)"
               >
-                <div class="kanban-column-header">
+                <div
+                  class="kanban-column-header"
+                  style="display: block;"
+                >
                   <span class="column-title">{{ element.title }}</span>
+                  <options-panel
+                    :action-option="actionOption"
+                    style="float: right;"
+                  />
                 </div>
                 <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">
                   <span style="font-size: 12px;">
@@ -86,6 +94,7 @@ import lang from '@/lang'
 
 // Components and Mixins
 import draggable from 'vuedraggable'
+import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
 
 // API Request Methods
 import { requestUpdateEntity } from '@/api/ADempiere/business-data/entities.ts'
@@ -98,7 +107,8 @@ export default defineComponent({
   name: 'KanbanDefinitions',
 
   components: {
-    draggable
+    draggable,
+    optionsPanel
   },
 
   props: {
@@ -143,6 +153,18 @@ export default defineComponent({
       type: Function,
       default: (recordPrevious) => {
         console.info('implement method Change to Previous Record ', recordPrevious)
+      }
+    },
+    hangleChangeRecord: {
+      type: Function,
+      default: (record) => {
+        console.info('implement method Change to Previous Record ', record)
+      }
+    },
+    actionOption: {
+      type: Function,
+      default: (recordPrevious) => {
+        console.info('implement method Open Action New', recordPrevious)
       }
     }
   },
@@ -343,4 +365,10 @@ export default defineComponent({
   font-size: 12px;
   color: #303133;
 }
+.menu-options-display {
+  float: right;
+}
+// .kanban-column-header {
+//   display: block;
+// }
 </style>

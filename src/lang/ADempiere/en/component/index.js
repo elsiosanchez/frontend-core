@@ -16,18 +16,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-import attachment from './attachment'
-import calendar from './calendar'
-import dashboard from './dashboard'
-import date from './date'
+import displayDefinition from './displayDefinitions'
 import sequenceSort from './sequenceSort'
+import attachment from './attachment'
+import dashboard from './dashboard'
+import calendar from './calendar'
+import date from './date'
 import tree from './tree'
 
 export default {
-  attachment,
-  calendar,
-  dashboard,
-  date,
+  displayDefinition,
   sequenceSort,
+  attachment,
+  dashboard,
+  calendar,
+  date,
   tree
 }

@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -49,6 +49,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :is-panel-right="isPanelRight"
         style="height: 100% !important;"
         :is-open-details="openPanel"
+        :hangle-change-record="changeRecord"
+        :action-option="openPanelDisplayDefinition"
       />
     </el-main>
     <el-drawer
@@ -75,26 +77,46 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :record-id="recordId"
       />
     </el-drawer>
+    <el-dialog
+      :visible.sync="isDialogoPanelDifinition"
+      custom-class="modal-display-definition"
+      :modal="false"
+    >
+      <panel-display-definitions
+        :current-display-definition="currentDisplyDefinitions"
+        :container-manager="containerManager"
+        :parent-uuid="parentUuid"
+        :type-panel="typeAction"
+        :current-record="currentRecord"
+        :action-close="openPanelDisplayDefinition"
+      />
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
+
 import store from '@/store'
+
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
-// import PanelInfo from '@/components/ADempiere/PanelInfo/index.vue'
+// src/components/ADempiere/PanelDefinition/PanelDisplayDefinitions.vue
+import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
 import MenuActionDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/menuActionDefinitions.vue'
+
 // Utils and Helper Methods
 import { setRecordPath } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'TabDisplayDefinitions',
 
   components: {
     ActionMenu,
-    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
-    MenuActionDefinitions
+    MenuActionDefinitions,
+    PanelDisplayDefinitions,
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue')
   },
 
   props: {
@@ -135,6 +157,12 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    hangleChangeRecord: {
+      type: Function,
+      default: (recordPrevious) => {
+        console.info('implement method Change to Previous Record ', recordPrevious)
+      }
+    },
     isPanelRight: {
       type: Boolean,
       default: false
@@ -144,7 +172,10 @@ export default defineComponent({
   setup(props) {
     // Ref
     const showContainerInfo = ref(false)
+    const isDialogoPanelDifinition = ref(false)
+    const typeAction = ref('')
     const recordId = ref(-1)
+    const currentRecord = ref({})
     // Conputed
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
@@ -167,6 +198,24 @@ export default defineComponent({
     const currentDisplyDefinitions = computed(() => {
       if (props.isPanelRight) return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
       return store.getters.getCurrentDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+    })
+
+    const displayDefinitionMetadata = computed(() => {
+      return store.getters.getDisplayTabDefinition({
+        id: currentDisplyDefinitions.value.id,
+        recordId: currentRecord.value.id
+      })
+      // return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
+    })
+
+    const displayDefinitionFields = computed(() => {
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        return displayDefinitionMetadata.value.fields
+      }
+      return []
     })
 
     const templatePanel = computed(() => {
@@ -211,18 +260,46 @@ export default defineComponent({
       store.commit('setShowLogs', !showContainerInfo.value)
     }
 
+    function changeRecord(element) {
+      currentRecord.value = element
+    }
+
+    function openPanelDisplayDefinition(type) {
+      store.dispatch('changeTabPanelDefinition', {
+        name: type,
+        id: currentDisplyDefinitions.value.id,
+        recordId: currentRecord.value.id
+      })
+      isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
+      if (!isEmptyValue(displayDefinitionFields.value)) return
+      loadFields()
+    }
+
+    function loadFields() {
+      store.dispatch('listDisplayDefinitionFieldsMetadata', {
+        id: currentDisplyDefinitions.value.id,
+        recordId: currentRecord.value.id
+      })
+    }
+
     return {
       // Ref
       recordId,
+      typeAction,
+      currentRecord,
       showContainerInfo,
+      isDialogoPanelDifinition,
       // computeds
       isMobile,
       isDrawerWidth,
       templatePanel,
       defaultNameTab,
       actionsManagers,
+      displayDefinitionFields,
       currentDisplyDefinitions,
       // Methods
+      openPanelDisplayDefinition,
+      changeRecord,
       showPanel,
       openPanel
     }
@@ -238,6 +315,24 @@ export default defineComponent({
   }
   .el-main {
     padding: 0px !important;
+  }
+}
+.modal-display-definition{
+  .el-dialog {
+    border-radius: 10px;
+    border: 1px solid #e6ebf5;
+  }
+  .el-dialog__header {
+    padding: 0px;
+    padding-bottom: 0px;
+    background: transparent !important;
+    display: none;
+  }
+  .el-dialog__body {
+    padding: 0px;
+    overflow: auto;
+    border-radius: 10px;
+    border: 1px solid #e6ebf5;
   }
 }
 </style>
