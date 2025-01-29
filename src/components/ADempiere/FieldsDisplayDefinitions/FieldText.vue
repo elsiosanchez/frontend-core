@@ -23,16 +23,19 @@
       :placeholder="fieldMetadata.description"
       size="mini"
       style="padding-right: 10px;width: 200px;"
+      @input="saveField(value, fieldMetadata)"
     />
-    <slot name="button-exit" />
-    <el-button
-      v-show="value !== displayValue && !isLoading"
-      style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
-      icon="el-icon-check"
-      type="text"
-      @click="updateField(value, fieldMetadata)"
-    />
-    <i v-if="isLoading" class="el-icon-loading" />
+    <span v-if="!isNewRecord">
+      <slot name="button-exit" />
+      <el-button
+        v-show="value !== displayValue && !isLoading"
+        style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
+        icon="el-icon-check"
+        type="text"
+        @click="updateField(value, fieldMetadata)"
+      />
+      <i v-if="isLoading" class="el-icon-loading" />
+    </span>
   </span>
 </template>
 
@@ -72,6 +75,10 @@ export default defineComponent({
     updateAttribute: {
       type: Function,
       required: false
+    },
+    isNewRecord: {
+      type: Boolean,
+      required: false
     }
   },
 
@@ -80,6 +87,12 @@ export default defineComponent({
     const isLoading = ref(false)
     value.value = props.displayValue || ''
     // Methods
+    function saveField(value, field) {
+      if (props.isNewRecord) {
+        props.updateAttribute(value, props.fieldMetadata)
+        return
+      }
+    }
     function updateField(value, field) {
       isLoading.value = true
       store.dispatch('updateField', {
@@ -103,7 +116,8 @@ export default defineComponent({
       value,
       isLoading,
       // Methods
-      updateField
+      updateField,
+      saveField
     }
   }
 })

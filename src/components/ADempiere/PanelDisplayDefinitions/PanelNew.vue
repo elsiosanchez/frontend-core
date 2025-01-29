@@ -26,21 +26,53 @@
       </p>
     </div>
     <div class="text item">
-      <el-card v-loading="isLoadingDisplayDefinitions" class="box-card" />
+      <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
+      <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
+        <el-descriptions-item
+          v-for="field in fields"
+          :key="field.sequence"
+        >
+          <template slot="label">
+            <b> {{ field.name }} </b>
+          </template>
+          <FieldsDisplayDefinitions
+            :field="field"
+            :current-record="currentRecord"
+            :current-display-definition="currentDisplyDefinitions"
+            :update-field="updateFieldRecord"
+            :is-new-record="true"
+          />
+        </el-descriptions-item>
+      </el-descriptions>
+      <el-button
+        type="primary"
+        class="button-base-icon"
+        icon="el-icon-check"
+        style="float: right; margin-left: 10px;"
+        :loading="isLoading"
+        @click="actionsSave()"
+      />
+      <slot name="footer-buttons" />
     </div>
   </el-card>
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
-
+import { defineComponent, computed, ref } from '@vue/composition-api'
 import store from '@/store'
-
+// import language from '@/lang'
+// Component
+import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitionsNew',
+
+  components: {
+    FieldsDisplayDefinitions
+  },
 
   props: {
     parentUuid: {
@@ -58,16 +90,26 @@ export default defineComponent({
     currentDisplyDefinitions: {
       type: Object,
       required: true
+    },
+    currentRecord: {
+      type: Object,
+      required: false
+    },
+    buttonClosePanel: {
+      type: Function,
+      required: false
     }
   },
 
   setup(props) {
+    const attributes = ref({})
+    const isLoading = ref(false)
     const containerManagerPanel = computed(() => {
       return props.containerManager
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({ id: props.currentDisplyDefinitions.id })
+      return store.getters.getDisplayTabDefinition({ id: props.currentDisplyDefinitions.id, recordId: props.currentRecord.id })
     })
 
     const displayDefinitionFields = computed(() => {
@@ -90,6 +132,17 @@ export default defineComponent({
       return false
     })
 
+    const fields = computed(() => {
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        const fields = displayDefinitionMetadata.value.fields
+        return fields
+      }
+      return []
+    })
+
     /**
      * Get the panel object with all its attributes as well as
      * the fields it contains
@@ -101,13 +154,79 @@ export default defineComponent({
       }) || {}
     })
 
+    function displayValue(field) {
+      if (isEmptyValue(field)) return
+      const { value, display_value } = field
+      if (!isEmptyValue(display_value)) return display_value
+      return value
+    }
+
+    const { currentTab } = store.getters.getContainerInfo
+    function loadDefault() {
+      createNewRecord.createNewRecord({
+        parentUuid: currentTab.parentUuid,
+        containerUuid: currentTab.containerUuid,
+        isCopyValues: false
+      })
+    }
+
+    function updateFieldRecord(value, field) {
+      attributes.value = {
+        ...attributes.value,
+        [field.column_name]: value
+      }
+      props.currentRecord.fields[field.column_name].value = value
+    }
+
+    loadDefault()
+    function actionsSave() {
+      const persistenceAttributes = store.getters.getPersistenceAttributes({
+        containerUuid: currentTab.containerUuid,
+        recordUuid: undefined
+      })
+      const qlq = {}
+      if (!isEmptyValue(persistenceAttributes)) {
+        persistenceAttributes.forEach(element => {
+          qlq[element.columnName] = element.value
+        })
+      }
+      store.dispatch('saveRecord', {
+        id: props.currentDisplyDefinitions.id,
+        attributes: {
+          ...qlq,
+          R_RequestType_ID: 1000003,
+          ...attributes.value
+        }
+      })
+        .then(() => {
+          isLoading.value = false
+          props.buttonClosePanel()
+          store.dispatch('changeTabPanelRightDefinition', {
+            tableName: props.currentDisplyDefinitions.table_name,
+            definition: props.currentDisplyDefinitions
+          })
+        })
+        .catch(() => {
+          isLoading.value = false
+        })
+    }
+
     return {
+      // Ref
+      attributes,
+      isLoading,
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
       displayDefinitionFields,
       containerManagerPanel,
-      panelMetadata
+      panelMetadata,
+      fields,
+      // methods
+      loadDefault,
+      actionsSave,
+      displayValue,
+      updateFieldRecord
     }
   }
 })

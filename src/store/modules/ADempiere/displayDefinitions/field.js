@@ -21,7 +21,8 @@ import Vue from 'vue'
 // API Request Methods
 import {
   listDisplayDefinitionFieldsMetadata,
-  updateDataEntry
+  updateDataEntry,
+  createDataEntry
 } from '@/api/ADempiere/displayDefinition.ts'
 
 // Utils and Helpers Methods
@@ -183,6 +184,36 @@ const displayDefinitionField = {
             resolve(response)
           })
           .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            console.warn(`Error Getting Update Field Display Definition: ${error.message}. Code: ${error.code}.`)
+            reject(error)
+          })
+          .finally(() => {
+            resolve()
+          })
+      })
+    },
+    saveRecord({ commit }, {
+      id,
+      attributes,
+      displayDefinitionId
+    }) {
+      return new Promise((resolve, reject) => {
+        createDataEntry({
+          id,
+          attributes,
+          displayDefinitionId
+        })
+          .then(response => {
+            console.log({ response })
+            resolve(response)
+          })
+          .catch(error => {
+            console.log({ error })
             showMessage({
               type: 'error',
               message: error.message,

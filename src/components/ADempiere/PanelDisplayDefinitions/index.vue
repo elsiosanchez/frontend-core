@@ -43,6 +43,7 @@
             :container-manager="containerManagerPanel"
             :current-record="currentRecord"
             :panel-metadata="panelMetadata"
+            :button-close-panel="actionClose"
           >
             <template v-slot:footer-buttons>
               <el-button

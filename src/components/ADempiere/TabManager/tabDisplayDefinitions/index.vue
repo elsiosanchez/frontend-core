@@ -268,7 +268,7 @@ export default defineComponent({
       store.dispatch('changeTabPanelDefinition', {
         name: type,
         id: currentDisplyDefinitions.value.id,
-        recordId: currentRecord.value.id
+        recordId: type === 'new' ? 0 : currentRecord.value.id
       })
       isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
       if (!isEmptyValue(displayDefinitionFields.value)) return
