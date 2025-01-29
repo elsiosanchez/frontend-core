@@ -39,7 +39,7 @@
               <svg-icon v-if="tab.svg" :icon-class="tab.iconClass" />
               <i v-else :class="tab.iconClass" />
               {{ tab.title }}
-              <el-dropdown v-if="tab.isMenu" @command="handleCommandActions">
+              <el-dropdown v-if="tab.isMenu && !isEmptyValue(filteredDefinition[tab.name]) && filteredDefinition[tab.name].length > 1" @command="handleCommandActions">
                 <span class="el-dropdown-link">
                   <i class="el-icon-arrow-down el-icon--right" />
                 </span>
