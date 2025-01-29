@@ -172,11 +172,22 @@ export default defineComponent({
   setup(props) {
     // Ref
     const showContainerInfo = ref(false)
-    const isDialogoPanelDifinition = ref(false)
+    // const isDialogoPanelDifinition = ref(false)
     const typeAction = ref('')
     const recordId = ref(-1)
     const currentRecord = ref({})
     // Conputed
+    const isDialogoPanelDifinition = computed({
+      get: () => {
+        return store.getters.getShowPanel
+      },
+      set: (value) => {
+        store.commit('setShowPanel', value)
+      }
+    })
+    //   return store.getters.getShowPanel
+    // })
+
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
@@ -201,11 +212,11 @@ export default defineComponent({
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({
-        id: currentDisplyDefinitions.value.id,
-        recordId: currentRecord.value.id
-      })
-      // return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
+      // return store.getters.getDisplayTabDefinition({
+      //   id: currentDisplyDefinitions.value.id,
+      //   recordId: currentRecord.value.id
+      // })
+      return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
     })
 
     const displayDefinitionFields = computed(() => {
@@ -268,7 +279,7 @@ export default defineComponent({
       store.dispatch('changeTabPanelDefinition', {
         name: type,
         id: currentDisplyDefinitions.value.id,
-        recordId: type === 'new' ? 0 : currentRecord.value.id
+        recordId: currentRecord.value.id
       })
       isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
       if (!isEmptyValue(displayDefinitionFields.value)) return
@@ -277,8 +288,7 @@ export default defineComponent({
 
     function loadFields() {
       store.dispatch('listDisplayDefinitionFieldsMetadata', {
-        id: currentDisplyDefinitions.value.id,
-        recordId: currentRecord.value.id
+        id: currentDisplyDefinitions.value.id
       })
     }
 

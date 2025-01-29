@@ -109,7 +109,9 @@ export default defineComponent({
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({ id: props.currentDisplyDefinitions.id, recordId: props.currentRecord.id })
+      return store.getters.getDisplayTabDefinition({
+        id: props.currentDisplyDefinitions.id
+      })
     })
 
     const displayDefinitionFields = computed(() => {

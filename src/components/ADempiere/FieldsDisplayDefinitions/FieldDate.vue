@@ -25,7 +25,7 @@
       :picker-options="pickerOptionsDate"
       size="mini"
       :placeholder="fieldMetadata.description"
-      style="padding-right: 10px;"
+      style="padding-right: 10px;width: 200px;"
       @change="saveField(value, fieldMetadata)"
     />
     <span v-if="!isNewRecord">
@@ -136,9 +136,6 @@ export default defineComponent({
         })
         .finally(() => {
           props.updateAttribute(value, props.fieldMetadata)
-          store.dispatch('listDisplayDefinitionFieldsMetadata', {
-            id: props.currentDisplayDefinition.id
-          })
           isLoading.value = false
         })
     }
@@ -169,13 +166,19 @@ export default defineComponent({
       // Crear un objeto Date a partir de la cadena de fecha
       const fechaObj = new Date(fecha)
 
-      // Obtener el día, mes y año
-      const dia = String(fechaObj.getDate()).padStart(2, '0') // Asegurarse de que el día tenga 2 dígitos
-      const mes = String(fechaObj.getMonth() + 1).padStart(2, '0') // Los meses son 0-indexados
-      const anio = fechaObj.getFullYear()
+      // Obtener el año, mes y día
+      const anio = fechaObj.getUTCFullYear() // Obtener el año en UTC
+      const mes = String(fechaObj.getUTCMonth() + 1).padStart(2, '0') // Mes en UTC (0-indexado)
+      const dia = String(fechaObj.getUTCDate()).padStart(2, '0') // Día en UTC
 
-      // Formatear la fecha en el formato DD/MM/YYYY
-      const fechaFormateada = `${dia}-${mes}-${anio}`
+      // Obtener la hora, minutos, segundos y milisegundos
+      const horas = String(fechaObj.getUTCHours()).padStart(2, '0')
+      const minutos = String(fechaObj.getUTCMinutes()).padStart(2, '0')
+      const segundos = String(fechaObj.getUTCSeconds()).padStart(2, '0')
+      const milisegundos = String(fechaObj.getUTCMilliseconds()).padStart(3, '0')
+
+      // Formatear la fecha en el formato YYYY-MM-DDTHH:mm:ss.sssZ
+      const fechaFormateada = `${anio}-${mes}-${dia}T${horas}:${minutos}:${segundos}.${milisegundos}Z`
 
       return fechaFormateada
     }

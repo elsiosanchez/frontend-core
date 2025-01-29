@@ -309,11 +309,11 @@ export default defineComponent({
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({
-        id: currentDisplyDefinitions.value.id,
-        recordId: currentResource.value.id
-      })
-      // return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
+      // return store.getters.getDisplayTabDefinition({
+      //   id: currentDisplyDefinitions.value.id,
+      //   recordId: currentResource.value.id
+      // })
+      return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
     })
 
     function handleDateSelect(selectInfo) {

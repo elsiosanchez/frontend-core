@@ -136,11 +136,7 @@ export function readDataEntry({
 }) {
   return request({
     url: `/display-definition/${displayDefinitionId}/entries/${id}`,
-    method: 'get',
-    data: {
-      id,
-      display_definition_id: displayDefinitionId
-    }
+    method: 'get'
   })
 }
 

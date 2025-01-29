@@ -28,9 +28,9 @@
       />
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="new" icon="el-icon-plus">
+      <!-- <el-dropdown-item command="new" icon="el-icon-plus">
         {{ $t('component.displayDefinition.cardNew') }}
-      </el-dropdown-item>
+      </el-dropdown-item> -->
       <el-dropdown-item command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
       </el-dropdown-item>

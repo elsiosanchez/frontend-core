@@ -18,17 +18,25 @@
 
 <template>
   <span>
-    <el-input
+    <el-select
       v-model="value"
-      :placeholder="fieldMetadata.description"
+      filterable
       size="mini"
+      :placeholder="fieldMetadata.description"
       style="padding-right: 10px;width: 200px;"
-      @input="saveField(value, fieldMetadata)"
-    />
+      @visible-change="showList"
+    >
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.display_value"
+        :value="item.value"
+      />
+    </el-select>
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
       <el-button
-        v-show="value !== displayValue && !isLoading"
+        v-show="value !== displayValueOld && !isLoading"
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
@@ -51,9 +59,11 @@ import store from '@/store'
 
 // Utils and Helper Methods
 // import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+// API Request Methods
+import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 
 export default defineComponent({
-  name: 'FieldText',
+  name: 'FieldSelect',
 
   props: {
     fieldMetadata: {
@@ -83,9 +93,14 @@ export default defineComponent({
   },
 
   setup(props) {
-    const value = ref('')
+    const value = ref(props.currentRecord.fields[props.fieldMetadata.column_name].value)
+    const displayValueOld = ref(props.currentRecord.fields[props.fieldMetadata.column_name].value)
     const isLoading = ref(false)
-    value.value = props.displayValue || ''
+    const options = ref([
+      props.currentRecord.fields[props.fieldMetadata.column_name]
+    ])
+
+    // value.value = props.currentRecord.fields[props.fieldMetadata.column_name].value || ''
     // Methods
     function saveField(value, field) {
       if (props.isNewRecord) {
@@ -110,12 +125,37 @@ export default defineComponent({
         })
     }
 
+    function showList(isShow) {
+      if (isShow && options.value.length <= 1) loadList()
+    }
+
+    function loadList() {
+      requestLookupList({
+        tableName: props.currentDisplayDefinition.table_name,
+        columnName: props.fieldMetadata.column_name
+      })
+        .then(responseLookupItem => {
+          const { records } = responseLookupItem
+          options.value = records.map(list => {
+            const { id, values } = list
+            return {
+              display_value: values.DisplayColumn,
+              value: id
+            }
+          })
+        })
+    }
+
     return {
       // Ref
       value,
+      options,
       isLoading,
+      displayValueOld,
       // Methods
+      showList,
       updateField,
+      requestLookupList,
       saveField
     }
   }

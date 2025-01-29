@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <el-card class="box-card-display-definition">
+  <el-card v-loading="isLoading" class="box-card-display-definition">
     <div slot="header" class="clearfix">
       <p style="text-align: center;margin-top: 7px;margin-bottom: 0px;">
         <b style="font-size: larger;">
@@ -40,7 +40,7 @@
             <b> {{ field.name }} </b>
           </template>
           <span v-if="!field.is_show_components">
-            {{ displayValue(currentRecord.fields[field.column_name]) }}
+            {{ displayValue(recordMetadata.fields[field.column_name]) }}
             <el-button
               v-show="field.is_update_record && !field.is_show_components"
               style="padding: 0px;"
@@ -52,10 +52,12 @@
           <span v-else>
             <FieldsDisplayDefinitions
               :field="field"
-              :current-record="currentRecord"
+              :current-record="recordMetadata"
+              :field-metadata="recordMetadata.fields[field.column_name]"
               :current-display-definition="currentDisplyDefinitions"
-              :display-value="displayValue(currentRecord.fields[field.column_name])"
+              :display-value="displayValue(recordMetadata.fields[field.column_name])"
               :update-field="updateFieldRecord"
+              :update-record="updateRecord"
             >
               <template v-slot:button>
                 <el-button
@@ -118,17 +120,39 @@ export default defineComponent({
   setup(props) {
     // Ref
     const showButton = ref(false)
+    // const recordMetadata = ref({})
+    // recordMetadata.value = props.currentRecord
     // Computed
+    const recordMetadata = computed(() => {
+      if (!isEmptyValue(getRecordValuesData.value)) return getRecordValuesData.value.data
+      return {
+        isLoading: false,
+        data: {}
+      }
+    })
     const title = computed(() => {
-      return props.currentRecord.title || ''
+      return recordMetadata.value.title || ''
+    })
+
+    const getRecordValuesData = computed(() => {
+      return store.getters.getRecordValuesData({
+        recordId: props.currentRecord.id
+      })
+    })
+
+    const isLoading = computed(() => {
+      if (!isEmptyValue(getRecordValuesData.value)) return getRecordValuesData.value.isLoading
+      return false
     })
 
     const description = computed(() => {
-      return props.currentRecord.description || ''
+      return recordMetadata.value.description || ''
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({ id: props.currentDisplyDefinitions.id, recordId: props.currentRecord.id })
+      return store.getters.getDisplayTabDefinition({
+        id: props.currentDisplyDefinitions.id
+      })
     })
 
     const fields = computed(() => {
@@ -136,8 +160,7 @@ export default defineComponent({
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        const fields = displayDefinitionMetadata.value.fields
-        return fields
+        return displayDefinitionMetadata.value.fields
       }
       return []
     })
@@ -145,7 +168,9 @@ export default defineComponent({
     function displayValue(field) {
       if (isEmptyValue(field)) return
       const { value, display_value } = field
-      if (!isEmptyValue(display_value)) return display_value
+      if (!isEmptyValue(field.display_value) && field.display_value !== 'null') {
+        return display_value
+      }
       return value
     }
 
@@ -158,19 +183,27 @@ export default defineComponent({
     }
 
     function updateFieldRecord(value, field) {
-      props.currentRecord.fields[field.column_name].value = value
+      // recordMetadata.value.fields[field.column_name].value = value
       hiddenFieldComponent(field)
     }
 
+    function updateRecord(attributes, field) {
+      // recordMetadata.value = attributes
+      hiddenFieldComponent(field)
+    }
     return {
       // Ref
       showButton,
+      recordMetadata,
       // Computeds
       title,
       fields,
+      isLoading,
+      getRecordValuesData,
       displayDefinitionMetadata,
       description,
       // Methods
+      updateRecord,
       displayValue,
       updateFieldRecord,
       ShowFieldComponent,

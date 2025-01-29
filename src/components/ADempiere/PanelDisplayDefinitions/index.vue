@@ -120,6 +120,14 @@ export default defineComponent({
 
     })
 
+    const getCurrentRecord = computed(() => {
+      const record = store.getters.getRecordValuesData({
+        recordId: props.currentRecord.id
+      })
+      if (record) return record.data
+      return props.currentRecord
+    })
+
     const containerManagerPanel = computed(() => {
       return props.containerManager
     })
@@ -173,6 +181,7 @@ export default defineComponent({
       currentab,
       // computeds
       listTabs,
+      getCurrentRecord,
       containerManagerPanel,
       panelMetadata,
       componentRender,

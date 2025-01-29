@@ -21,6 +21,7 @@ import Vue from 'vue'
 // API Request Methods
 import {
   listDisplayDefinitionFieldsMetadata,
+  readDataEntry,
   updateDataEntry,
   createDataEntry
 } from '@/api/ADempiere/displayDefinition.ts'
@@ -32,13 +33,18 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const initState = {
   currentTabDefinition: '',
-  displayDefinitionFields: {}
+  displayDefinitionFields: {},
+  panelView: {},
+  showPanel: false
 }
 
 const displayDefinitionField = {
   state: initState,
 
   mutations: {
+    setShowPanel(state, show) {
+      state.showPanel = show
+    },
     setCurrentTabPanelDefinition(state, name) {
       state.currentTabDefinition = name
     },
@@ -46,11 +52,10 @@ const displayDefinitionField = {
     setDisplayTabDefinitionMetadata(state, {
       id,
       fields = [],
-      recordId = 0,
       isLoading = false,
       isErrorLoad = false
     }) {
-      Vue.set(state.displayDefinitionFields, [id + '_' + recordId], {
+      Vue.set(state.displayDefinitionFields, id, {
         fields,
         isLoading,
         isErrorLoad
@@ -58,48 +63,48 @@ const displayDefinitionField = {
     },
     setDisplayTabDefinitionLoading(state, {
       id,
-      recordId = 0,
       isLoading = false
     }) {
-      Vue.set(state.displayDefinitionFields[id + '_' + recordId], 'isLoading', isLoading)
+      Vue.set(state.displayDefinitionFields[id], 'isLoading', isLoading)
     },
     setDisplayTabDefinitionFields(state, {
       id,
-      recordId = 0,
       fields = []
     }) {
-      Vue.set(state.displayDefinitionFields[id + '_' + recordId], 'fields', fields)
+      Vue.set(state.displayDefinitionFields[id], 'fields', fields)
     },
-    // Display Definition Record Data
-    setDisplayTabDefinitionRecord(state, {
-      id,
+    // Get Record Data
+    setRecordValuesData(state, {
       recordId,
-      fields = [],
+      data = {},
       isLoading = false
     }) {
-      Vue.set(state.displayDefinitionFields[id], recordId, {
-        fields,
+      Vue.set(state.panelView, recordId, {
+        data,
         isLoading
       })
     },
-    setDisplayTabDefinitionRecordLoading(state, {
-      id,
+    setRecordDate(state, {
+      recordId,
+      data = {}
+    }) {
+      Vue.set(state.panelView[recordId], 'data', data)
+    },
+    setRecordDataLoading(state, {
       recordId,
       isLoading = false
     }) {
-      Vue.set(state.displayDefinitionFields[id][recordId], 'isLoading', isLoading)
+      Vue.set(state.panelView[recordId], 'isLoading', isLoading)
     }
   },
 
   actions: {
     listDisplayDefinitionFieldsMetadata({ commit, getters }, {
-      id,
-      recordId
+      id
     }) {
       return new Promise(resolve => {
         commit('setDisplayTabDefinitionMetadata', {
           id,
-          recordId,
           isLoading: true
         })
         listDisplayDefinitionFieldsMetadata({
@@ -121,14 +126,13 @@ const displayDefinitionField = {
             }
             commit('setDisplayTabDefinitionFields', {
               id,
-              recordId,
               fields: listFields
             })
+            resolve(listFields)
           })
           .catch(error => {
             commit('setDisplayTabDefinitionFields', {
               id,
-              recordId,
               fields: []
             })
             showMessage({
@@ -141,14 +145,12 @@ const displayDefinitionField = {
           .finally(() => {
             commit('setDisplayTabDefinitionLoading', {
               id,
-              recordId,
               isLoading: false
             })
           })
       })
     },
     changeTabPanelDefinition({
-      state,
       commit,
       getters,
       dispatch
@@ -157,16 +159,50 @@ const displayDefinitionField = {
       recordId,
       name
     }) {
+      const getRecordValuesData = getters.getRecordValuesData({ recordId })
       commit('setCurrentTabPanelDefinition', name)
-      const currentDefinition = getters.getDisplayTabDefinition({
-        id,
-        recordId
+      if (!isEmptyValue(getRecordValuesData)) return
+      if (typeof recordId !== 'number') return
+      dispatch('readRecordData', {
+        recordId,
+        displayDefinitionId: id
       })
-      if (!isEmptyValue(currentDefinition)) return
-      dispatch('listDisplayDefinitionFieldsMetadata', {
-        id,
-        name,
-        recordId: name === 'new' ? 0 : recordId
+    },
+    readRecordData({ commit }, {
+      recordId,
+      displayDefinitionId
+    }) {
+      return new Promise((resolve, reject) => {
+        if (isEmptyValue(recordId)) return resolve()
+        commit('setRecordValuesData', {
+          recordId,
+          isLoading: true
+        })
+        readDataEntry({
+          id: recordId,
+          displayDefinitionId
+        })
+          .then(responseData => {
+            commit('setRecordValuesData', {
+              recordId,
+              data: responseData
+            })
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            console.warn(`Error in Opting for Registry Data: ${error.message}. Code: ${error.code}.`)
+            reject(error)
+          })
+          .finally(() => {
+            commit('setRecordDataLoading', {
+              recordId,
+              isLoading: false
+            })
+          })
       })
     },
     updateField({ commit }, {
@@ -181,6 +217,10 @@ const displayDefinitionField = {
           displayDefinitionId
         })
           .then(response => {
+            commit('setRecordValuesData', {
+              recordId: id,
+              data: response
+            })
             resolve(response)
           })
           .catch(error => {
@@ -230,21 +270,20 @@ const displayDefinitionField = {
   },
 
   getters: {
-    getCurrentDisplayDefinitions: (state, getters) => ({ tableName, isPanelRight }) => {
-      let panelDefinitions
-      if (isPanelRight) {
-        panelDefinitions = getters.getCurrentDisplayPanelRightDefinitions({ tableName })
-      } else {
-        panelDefinitions = getters.getCurrentDisplayTabDefinitions({ tableName })
-      }
-      return panelDefinitions.currentDefinition || {}
+    getShowPanel: (state) => {
+      return state.showPanel
     },
     getCurrentTabPanelDefinition: (state) => {
       return state.currentTabDefinition
     },
-    getDisplayTabDefinition: (state) => ({ id, recordId }) => {
-      // return state.displayDefinitionFields[id]
-      return state.displayDefinitionFields[id + '_' + recordId]
+    getDisplayTabDefinition: (state) => ({ id }) => {
+      return state.displayDefinitionFields[id] || []
+    },
+    getRecordValuesData: (state) => ({ recordId }) => {
+      return state.panelView[recordId] && state.panelView[recordId] || {}
+    },
+    getRecordLoading: (state) => ({ recordId }) => {
+      return state.panelView[recordId] && state.panelView[recordId].isLoading || false
     }
   }
 }

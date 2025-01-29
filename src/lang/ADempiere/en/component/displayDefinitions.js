@@ -18,7 +18,7 @@
 
 const displayDefinition = {
   cardNew: 'New',
-  cardView: 'View',
+  cardView: 'See Details',
   cardEdit: 'Edit',
   fieldEmpty: 'No Fields Found'
 }
