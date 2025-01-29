@@ -185,8 +185,7 @@ export default defineComponent({
         // if (!isEmptyValue(columnsStore)) return columnsStore
         if (
           !isEmptyValue(KanbanDefinitions.value) &&
-          !isEmptyValue(KanbanDefinitions.value.steps) &&
-          !isEmptyValue(KanbanDefinitions.value.records)
+          !isEmptyValue(KanbanDefinitions.value.steps)
         ) {
           const { steps, records } = KanbanDefinitions.value
           const ungroupedItems = records
