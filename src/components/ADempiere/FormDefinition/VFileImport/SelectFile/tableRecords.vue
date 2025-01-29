@@ -25,7 +25,7 @@
     border
     highlight-current-row
     style="width: 100%"
-    height="350"
+    height="27vh"
     class="table-data-file-import-loader"
     :element-loading-text="$t('notifications.loading')"
     element-loading-background="rgba(255, 255, 255, 0.8)"
@@ -40,6 +40,7 @@
       v-for="(item) in formatFieldsList"
       :key="item.uuid"
       :label="item.name"
+      :min-width="item.name.length * 12 + 'px'"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': item.data_type === ROW_TYPE_NUMBER }">

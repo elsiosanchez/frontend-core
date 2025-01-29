@@ -19,7 +19,7 @@
 
 <template>
   <div class="main-configure-file-import">
-    <el-card class="box-card" :body-style="{ height: '50vh' }">
+    <el-card class="box-card" :body-style="{ height: '40vh' }">
       <el-card>
         <el-row :gutter="24">
           <el-form
@@ -273,7 +273,7 @@ export default defineComponent({
 //     cursor: not-allowed;
 // }
 .scroll-list-field {
-  max-height: 30vh;
+  max-height: 25vh;
   padding-bottom: 15px;
 }
 .main-configure-file-import {
