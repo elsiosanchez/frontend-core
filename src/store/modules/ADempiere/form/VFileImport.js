@@ -277,7 +277,7 @@ export default {
             const { records } = response
             const recordsList = records.map((row, index) => {
               return {
-                ...row.values,
+                ...row,
                 rowIndex: index
               }
             })
@@ -290,7 +290,7 @@ export default {
             commit('updateAttributeVFileImport', {
               attribute: 'file',
               criteria: 'header',
-              value: recordsList[0]
+              value: recordsList.at()
             })
             commit('updateAttributeVFileImport', {
               attribute: 'file',
