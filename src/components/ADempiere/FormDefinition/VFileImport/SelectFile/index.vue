@@ -19,7 +19,7 @@
 
 <template>
   <div class="main-configure-file-import">
-    <el-card class="box-card" :body-style="{ height: '45vh' }">
+    <el-card class="box-card" :body-style="{ height: '50vh' }">
       <el-card>
         <el-row :gutter="24">
           <el-form
@@ -129,22 +129,6 @@
           {{ importFormat.description }}
         </p>
       </div>
-      <!-- <el-card
-        shadow="never"
-      >
-        <p
-          style="font-size: 18px;text-align: center;margin: 5px;"
-        >
-          <b>
-            {{ importFormat.name }}
-          </b>
-        </p>
-        <p
-          style="font-size: 14px;text-align: center;margin: 5px;"
-        >
-          {{ importFormat.description }}
-        </p>
-      </el-card> -->
 
       <el-scrollbar wrap-class="scroll-list-field">
         <import-format-fields />
@@ -293,8 +277,10 @@ export default defineComponent({
   padding-bottom: 15px;
 }
 .main-configure-file-import {
-  height: 100%;
-
+  height: calc(100vh - 180px) !important;
+  .el-card__body{
+    padding-top: 0px !important;
+  }
   .import-format-dropdown {
     .el-button-group {
       // light blue style of the drop down menu section

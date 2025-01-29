@@ -18,7 +18,7 @@
 -->
 
 <template>
-  <el-row :gutter="10">
+  <el-row :gutter="4">
     <el-form
       ref="import-format-fields"
       label-position="top"
@@ -28,7 +28,7 @@
       <el-col
         v-for="(fieldFormat) in formatFieldsList"
         :key="fieldFormat.sequence"
-        :span="6"
+        :span="8"
       >
         <el-form-item
           :label="fieldFormat.name"
@@ -39,6 +39,7 @@
             :value="formatValue(fieldFormat, currentLine)"
             disabled
             style="width: 100%;"
+            size="mini"
           />
 
           <el-input-number
@@ -48,6 +49,7 @@
             disabled
             style="width: 100%;"
             :precision="numberPrecision(fieldFormat)"
+            size="mini"
           />
 
           <el-date-picker
@@ -56,6 +58,7 @@
             type="datetime"
             disabled
             style="width: 100%;"
+            size="mini"
           />
 
           <el-input
@@ -63,6 +66,7 @@
             :value="formatValue(fieldFormat, currentLine)"
             disabled
             style="width: 100%;"
+            size="mini"
           />
         </el-form-item>
       </el-col>
@@ -112,3 +116,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.form-base .el-form-item--medium .el-form-item__label {
+  line-height: 2px !important
+}
+</style>

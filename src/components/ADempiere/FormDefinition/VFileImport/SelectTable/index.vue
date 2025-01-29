@@ -249,93 +249,12 @@ export default defineComponent({
     margin: 0px;
   }
 }
-:root {
-  --scroll-list-max-height: 55vh;
-  --scroll-current-max-height: 55vh;
-  --el-table-height-height:20vh;
+.scroll-current-tables {
+  height: calc(100vh - 380px)
 }
-
-@media screen and (min-height: 500px) {
-  :root{
-    --el-table-height-height:10vh;
-  }
-  .scroll-list-tables {
-    max-height: var(--scroll-list-max-height);
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-  .el-table{
-    max-height: var(--el-table-height-height);
-  }
+.scroll-list-tables {
+  height: calc(100vh - 380px)
 }
-
-@media screen and (min-height: 720px) {
-  :root {
-    --scroll-list-max-height: 65vh;
-    --scroll-current-max-height: 50vh;
-    --el-table-height-height:10vh;
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-  .el-table{
-    max-height: var(--el-table-height-height);
-  }
-}
-@media screen and (min-height: 800px) {
-  :root {
-    --scroll-list-max-height: 65vh;
-    --scroll-current-max-height: 50vh;
-    --el-table-height-height:15vh;
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-  .el-table{
-    max-height: var(--el-table-height-height);
-  }
-}
-
-@media screen and (min-height: 1080px) {
-  :root {
-    --scroll-list-max-height: 75vh;
-    --scroll-current-max-height: 65vh;
-  }
-  .scroll-list-tables {
-    max-height: var(--scroll-list-max-height);
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-}
-
-@media screen and (min-height: 2200px) {
-  :root {
-    --scroll-list-max-height: 85vh;
-    --scroll-current-max-height: 70vh;
-  }
-  .scroll-list-tables {
-    max-height: var(--scroll-list-max-height);
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-}
-
-@media screen and (min-height: 2400px) {
-  :root {
-    --scroll-list-max-height: 100vh;
-    --scroll-current-max-height: 100vh;
-  }
-  .scroll-list-tables {
-    max-height: var(--scroll-list-max-height);
-  }
-  .scroll-current-tables {
-    max-height: var(--scroll-current-max-height);
-  }
-}
-
 .custom-card-select {
   margin: 0.5px;
   cursor: pointer;
