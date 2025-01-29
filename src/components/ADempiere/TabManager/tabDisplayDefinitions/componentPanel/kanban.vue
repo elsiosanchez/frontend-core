@@ -65,6 +65,9 @@
                   <options-panel
                     :action-option="actionOption"
                     style="float: right;"
+                    :current-display-definition="currentDisplayDefinition"
+                    :current-record="element"
+                    :tab-attributes="tabAttributes"
                   />
                 </div>
                 <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">

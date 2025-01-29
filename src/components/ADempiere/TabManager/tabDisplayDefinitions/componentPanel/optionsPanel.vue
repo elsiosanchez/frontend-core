@@ -20,7 +20,7 @@
   <el-dropdown
     trigger="click"
     class="options-crud"
-    @command="actionOption"
+    @command="handleCommand"
   >
     <span class="el-dropdown-link">
       <svg-icon
@@ -28,11 +28,11 @@
       />
     </span>
     <el-dropdown-menu slot="dropdown">
-      <!-- <el-dropdown-item command="new" icon="el-icon-plus">
-        {{ $t('component.displayDefinition.cardNew') }}
-      </el-dropdown-item> -->
       <el-dropdown-item command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
+      </el-dropdown-item>
+      <el-dropdown-item command="delete" icon="el-icon-delete">
+        {{ $t('component.displayDefinition.cardDelete') }}
       </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
@@ -43,7 +43,7 @@ import {
   defineComponent
   // computed
 } from '@vue/composition-api'
-
+import store from '@/store'
 // Utils and Helper Methods
 
 export default defineComponent({
@@ -63,6 +63,40 @@ export default defineComponent({
       default: (recordPrevious) => {
         console.info('implement method Open Action New', recordPrevious)
       }
+    },
+    currentDisplayDefinition: {
+      type: Object,
+      required: false
+    },
+    currentRecord: {
+      type: Object,
+      required: false
+    },
+    tabAttributes: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  setup(props) {
+    function handleCommand(command) {
+      if (command === 'view') {
+        props.actionOption(props.currentResource)
+      }
+      if (command === 'delete') {
+        handleDelete()
+      }
+    }
+    function handleDelete() {
+      store.dispatch('deleteRecord', {
+        id: props.currentRecord.id,
+        displayDefinition: props.currentDisplayDefinition,
+        tableName: props.tabAttributes.table_name,
+        isPanelRight: props.isPanelRight
+      })
+    }
+    return {
+      handleCommand,
+      handleDelete
     }
   }
 })

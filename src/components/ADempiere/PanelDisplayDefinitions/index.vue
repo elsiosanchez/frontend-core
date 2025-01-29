@@ -46,13 +46,20 @@
             :button-close-panel="actionClose"
           >
             <template v-slot:footer-buttons>
-              <el-button
-                type="danger"
-                class="button-base-icon"
-                icon="el-icon-close"
-                style="float: right;"
-                @click="actionClose('')"
-              />
+              <div style="display: flex; justify-content: flex-end;">
+                <el-button
+                  type="danger"
+                  class="button-base-icon button-base-delete"
+                  icon="el-icon-delete"
+                  @click="handleDelete()"
+                />
+                <el-button
+                  type="danger"
+                  class="button-base-icon"
+                  icon="el-icon-close"
+                  @click="actionClose('')"
+                />
+              </div>
             </template>
           </component>
         </el-card>
@@ -73,7 +80,7 @@ import lang from '@/lang'
 import store from '@/store'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -175,7 +182,19 @@ export default defineComponent({
       })
       // currentab.value = tab.name
     }
-
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
+    function handleDelete() {
+      store.dispatch('deleteRecord', {
+        id: props.currentRecord.id,
+        displayDefinition: props.currentDisplayDefinition,
+        tableName: tableName.value,
+        isPanelRight: props.isPanelRight
+      })
+    }
     return {
       // Ref
       currentab,
@@ -186,7 +205,8 @@ export default defineComponent({
       panelMetadata,
       componentRender,
       // Methods
-      handleTabClick
+      handleTabClick,
+      handleDelete
     }
   }
 })
@@ -196,6 +216,16 @@ export default defineComponent({
 .box-card-panel-display-definition {
   .el-card__body {
     padding: 5px !important;
+  }
+}
+.button-base-delete{
+  background: #f8eeee;
+  color: #ff1e1e;
+  border-color: #eba1a1;
+  &:hover {
+    background: #ff1e1e;
+    border-color: #ff1e1e;
+    color: #fff;
   }
 }
 </style>

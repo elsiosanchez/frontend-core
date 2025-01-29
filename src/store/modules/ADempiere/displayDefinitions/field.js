@@ -23,7 +23,8 @@ import {
   listDisplayDefinitionFieldsMetadata,
   readDataEntry,
   updateDataEntry,
-  createDataEntry
+  createDataEntry,
+  deleteDataEntry
 } from '@/api/ADempiere/displayDefinition.ts'
 
 // Utils and Helpers Methods
@@ -238,22 +239,18 @@ const displayDefinitionField = {
       })
     },
     saveRecord({ commit }, {
-      id,
       attributes,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
         createDataEntry({
-          id,
           attributes,
           displayDefinitionId
         })
           .then(response => {
-            console.log({ response })
             resolve(response)
           })
           .catch(error => {
-            console.log({ error })
             showMessage({
               type: 'error',
               message: error.message,
@@ -263,6 +260,39 @@ const displayDefinitionField = {
             reject(error)
           })
           .finally(() => {
+            resolve()
+          })
+      })
+    },
+    deleteRecord({ dispatch }, {
+      id,
+      displayDefinition,
+      tableName,
+      isPanelRight
+    }) {
+      return new Promise((resolve, reject) => {
+        deleteDataEntry({
+          id,
+          displayDefinitionId: displayDefinition.id
+        })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            console.warn(`Error Getting Update Field Display Definition: ${error.message}. Code: ${error.code}.`)
+            reject(error)
+          })
+          .finally(() => {
+            dispatch('changeTabPanelRightDefinition', {
+              tableName,
+              definition: displayDefinition,
+              isPanelRight
+            })
             resolve()
           })
       })

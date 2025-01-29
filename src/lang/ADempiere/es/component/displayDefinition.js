@@ -20,6 +20,7 @@ const displayDefinition = {
   cardNew: 'Crear',
   cardView: 'Ver Detalle',
   cardEdit: 'Editar',
+  cardDelete: 'Eliminar',
   fieldEmpty: 'No se Encontraron Campos'
 }
 

@@ -115,16 +115,16 @@ export function listDisplayDefinitionFieldsMetadata({
   })
 }
 export function createDataEntry({
-  id,
   attributes,
-  contextAttributes
+  contextAttributes,
+  displayDefinitionId
 }) {
   return request({
-    url: `/display-definition/${id}/entries`,
+    url: `/display-definition/${displayDefinitionId}/entries`,
     method: 'post',
     data: {
       attributes,
-      display_definition_id: id,
+      display_definition_id: displayDefinitionId,
       context_attributes: contextAttributes
     }
   })

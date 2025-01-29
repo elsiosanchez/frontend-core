@@ -193,7 +193,7 @@ export default defineComponent({
         })
       }
       store.dispatch('saveRecord', {
-        id: props.currentDisplyDefinitions.id,
+        displayDefinitionId: props.currentDisplyDefinitions.id,
         attributes: {
           ...qlq,
           R_RequestType_ID: 1000003,
