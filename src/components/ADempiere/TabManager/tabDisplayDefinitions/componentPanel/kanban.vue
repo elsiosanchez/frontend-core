@@ -66,7 +66,7 @@
                   class="kanban-column-header"
                   style="display: block;"
                 >
-                  <span class="column-title">{{ element.title }}</span>
+                  <span class="column-title-kanban">{{ element.title }}</span>
                   <options-panel
                     :action-option="actionOption"
                     :current-resource="element"
@@ -75,8 +75,8 @@
                     style="float: right;"
                   />
                 </div>
-                <div style="padding-left: 5px; padding-right: 5px; color: rgb(130, 132, 138); line-height: 1.2; padding-bottom: 1rem;">
-                  <span style="font-size: 12px;">
+                <div class="column-description-kanban">
+                  <span style="font-size: 12px; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                     {{ element.description }}
                   </span>
                 </div>
@@ -375,6 +375,23 @@ export default defineComponent({
 .menu-options-display {
   float: right;
 }
+.column-title-kanban {
+  font-size: 12px;
+  font-weight: bold;
+  width: 90%;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.column-description-kanban {
+  font-size: 12px;
+  // display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 // .kanban-column-header {
 //   display: block;
 // }
