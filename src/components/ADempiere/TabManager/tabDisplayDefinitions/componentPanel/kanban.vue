@@ -85,6 +85,7 @@
                     :current-resource="element"
                     :is-option-edit="true"
                     :is-option-delete="true"
+                    :display-definition="currentDisplayDefinition"
                     style="float: right;"
                   />
                 </div>

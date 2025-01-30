@@ -15,7 +15,6 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
-
 <template>
   <el-dropdown
     trigger="click"
@@ -23,9 +22,7 @@
     @command="actionOption"
   >
     <span class="el-dropdown-link">
-      <svg-icon
-        icon-class="more-vertical"
-      />
+      <svg-icon icon-class="more-vertical" />
     </span>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item v-if="isOptionNew" command="new" icon="el-icon-plus">
@@ -34,20 +31,53 @@
       <el-dropdown-item v-if="isOptionEdit" command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
       </el-dropdown-item>
-      <el-dropdown-item v-if="isOptionDelete" command="delete" icon="el-icon-delete" :disabled="isDisableDelete">
-        {{ $t('actionMenu.deleteRecord') }}
-      </el-dropdown-item>
+      <el-popover
+        v-model="showPanel"
+        tigger="click"
+        placement="top"
+        width="450"
+        :content="title"
+        :title="$t('window.confirmDeleteRecord')"
+      >
+        <el-dropdown-item
+          v-if="isOptionDelete"
+          slot="reference"
+          icon="el-icon-delete"
+          :disabled="isDisableDelete"
+          @click="showPanel = true"
+        >
+          {{ $t('actionMenu.deleteRecord') }}
+        </el-dropdown-item>
+        {{ title }}
+        <div style="text-align: right; margin: 0; margin-top: 5px;">
+          <el-button
+            type="danger"
+            class="button-base-icon"
+            icon="el-icon-close"
+            @click="showPanel = false"
+          />
+          <el-button
+            type="primary"
+            class="button-base-icon"
+            icon="el-icon-check"
+            @click="removerRecord()"
+          />
+        </div>
+      </el-popover>
     </el-dropdown-menu>
   </el-dropdown>
 </template>
-
 <script>
+import store from '@/store'
+
 import {
   defineComponent,
-  computed
+  computed,
+  ref
 } from '@vue/composition-api'
 // import store from '@/store'
 // Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'OptionsPanel',
@@ -78,15 +108,33 @@ export default defineComponent({
     isOptionDelete: {
       type: Boolean,
       default: false
+    },
+    displayDefinition: {
+      type: Object,
+      required: false
     }
   },
   setup(props) {
+    const showPanel = ref(false)
+    const title = ref(props.currentResource ? props.currentResource.title : '')
     const isDisableDelete = computed(() => {
-      return props.currentResource.is_read_only
-      // return false
+      if (!isEmptyValue(props.currentResource)) {
+        return props.currentResource.is_read_only
+      }
+      return false
     })
+    function removerRecord() {
+      showPanel.value = false
+      store.dispatch('removerRecord', {
+        recordId: props.currentResource.id,
+        displayDefinitionId: props.displayDefinition.id
+      })
+    }
     return {
-      isDisableDelete
+      isDisableDelete,
+      showPanel,
+      title,
+      removerRecord
     }
   }
 })

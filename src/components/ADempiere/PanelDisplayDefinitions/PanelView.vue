@@ -73,21 +73,46 @@
         </el-descriptions-item>
       </el-descriptions>
       <slot name="footer-buttons" />
-      <el-button
-        type="danger"
-        class="button-base-icon button-base-delete"
-        icon="el-icon-delete"
-        style="float: right;"
-        :loading="isLoadingDelete"
-        :disabled="recordMetadata.is_read_only"
-        @click="deleteRecord"
-      />
+      <el-popover
+        v-model="localShowDeleteConfirmation"
+        trigger="manual"
+        placement="top"
+        width="450"
+        :title="$t('window.confirmDeleteRecord')"
+      >
+        <el-button
+          slot="reference"
+          type="danger"
+          class="button-base-icon button-base-delete"
+          icon="el-icon-delete"
+          style="float: right;"
+          :loading="isLoadingDelete"
+          :disabled="recordMetadata.is_read_only"
+          @click="showDelete(true)"
+        />
+        <div
+          style="text-align: right; margin: 0;margin-top: 5px;"
+        >
+          <el-button
+            type="danger"
+            class="button-base-icon"
+            icon="el-icon-close"
+            @click="showDelete(false)"
+          />
+          <el-button
+            type="primary"
+            class="button-base-icon"
+            icon="el-icon-check"
+            @click="removerRecord()"
+          />
+        </div>
+      </el-popover>
     </div>
   </el-card>
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 
 import store from '@/store'
 
@@ -139,9 +164,13 @@ export default defineComponent({
     // Ref
     const showButton = ref(false)
     const isLoadingDelete = ref(false)
+    const localShowDeleteConfirmation = ref(false)
     // const recordMetadata = ref({})
     // recordMetadata.value = props.currentRecord
     // Computed
+    const showDeleteConfirmation = computed(() => {
+      return store.getters.getShowDeleteConfirmation
+    })
     const recordMetadata = computed(() => {
       if (!isEmptyValue(getRecordValuesData.value)) return getRecordValuesData.value.data
       return {
@@ -218,8 +247,8 @@ export default defineComponent({
       // recordMetadata.value = attributes
       hiddenFieldComponent(field)
     }
-
-    function deleteRecord() {
+    function removerRecord() {
+      showDelete(false)
       isLoadingDelete.value = true
       store.dispatch('removerRecord', {
         recordId: props.currentRecord.id,
@@ -234,7 +263,11 @@ export default defineComponent({
         })
         .finally(() => {
           isLoadingDelete.value = false
+          store.commit('setShowPanel', false)
         })
+    }
+    function deleteRecord() {
+      showDelete(true)
     }
 
     if (isEmptyValue(recordMetadata.value)) {
@@ -243,11 +276,17 @@ export default defineComponent({
         displayDefinitionId: props.currentDisplyDefinitions.id
       })
     }
-
+    function showDelete(show = true) {
+      store.commit('setShowDeleteConfirmation', show)
+    }
+    watch(showDeleteConfirmation, (newValue) => {
+      localShowDeleteConfirmation.value = newValue
+    })
     return {
       // Ref
       showButton,
       recordMetadata,
+      localShowDeleteConfirmation,
       // Computeds
       title,
       fields,
@@ -256,13 +295,16 @@ export default defineComponent({
       getRecordValuesData,
       displayDefinitionMetadata,
       description,
+      showDeleteConfirmation,
       // Methods
       deleteRecord,
       updateRecord,
       displayValue,
       updateFieldRecord,
       ShowFieldComponent,
-      hiddenFieldComponent
+      hiddenFieldComponent,
+      removerRecord,
+      showDelete
     }
   }
 })

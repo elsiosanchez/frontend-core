@@ -174,11 +174,16 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    buttonClosePanel: {
+      type: Function,
+      required: false
     }
   },
 
   setup(props) {
     // Ref
+    const isLoading = ref(false)
     const showContainerInfo = ref(false)
     const detailsTitle = ref('')
     // const isDialogoPanelDifinition = ref(false)
@@ -289,37 +294,43 @@ export default defineComponent({
     function changeRecord(element) {
       currentRecord.value = element
     }
-
-    function openPanelDisplayDefinition(type, display) {
-      if (!isEmptyValue(display)) {
-        detailsTitle.value = display.title
-      }
-      if (!isEmptyValue(display) && !isEmptyValue(display.id)) {
-        currentRecord.value.id = display.id
-      }
-      if (type === 'delete') {
-        store.dispatch('removerRecord', {
-          displayDefinitionId: currentDisplyDefinitions.value.id,
-          recordId: currentRecord.value.id
-        })
-          .then(() => {
-            store.dispatch('changeTabPanelRightDefinition', {
-              tableName: currentDisplyDefinitions.value.table_name,
-              definition: currentDisplyDefinitions.value
-            })
-          })
-        return
-      }
-      store.dispatch('changeTabPanelDefinition', {
-        type: type,
-        id: currentDisplyDefinitions.value.id,
+    function removeRecord() {
+      isLoading.value = true
+      store.commit('setShowPanel', false)
+      store.dispatch('removerRecord', {
+        displayDefinitionId: currentDisplyDefinitions.value.id,
         recordId: currentRecord.value.id
       })
-      isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
-      if (!isEmptyValue(displayDefinitionFields.value)) {
-        return
+        .then(() => {
+          store.dispatch('changeTabPanelRightDefinition', {
+            tableName: currentDisplyDefinitions.value.table_name,
+            definition: currentDisplyDefinitions.value
+          })
+        })
+        .finally(() => {
+          isLoading.value = false
+        })
+      return
+    }
+    function openPanelDisplayDefinition(type, display) {
+      if (!isEmptyValue(type)) {
+        if (!isEmptyValue(display)) {
+          detailsTitle.value = display.title
+        }
+        if (!isEmptyValue(display) && !isEmptyValue(display.id)) {
+          currentRecord.value.id = display.id
+        }
+        store.dispatch('changeTabPanelDefinition', {
+          type: type,
+          id: currentDisplyDefinitions.value.id,
+          recordId: currentRecord.value.id
+        })
+        isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
+        if (!isEmptyValue(displayDefinitionFields.value)) return
+        loadFields()
+      } else {
+        isDialogoPanelDifinition.value = false
       }
-      loadFields()
     }
 
     function loadFields() {
@@ -336,6 +347,7 @@ export default defineComponent({
       showContainerInfo,
       isDialogoPanelDifinition,
       detailsTitle,
+      isLoading,
       // computeds
       isMobile,
       isDrawerWidth,
@@ -348,7 +360,8 @@ export default defineComponent({
       openPanelDisplayDefinition,
       changeRecord,
       showPanel,
-      openPanel
+      openPanel,
+      removeRecord
     }
   }
 })

@@ -33,6 +33,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const initState = {
+  showDeleteConfirmation: false,
   currentTabDefinition: {},
   displayDefinitionFields: {},
   panelView: {},
@@ -43,6 +44,9 @@ const displayDefinitionField = {
   state: initState,
 
   mutations: {
+    setShowDeleteConfirmation(state, show) {
+      state.showDeleteConfirmation = show
+    },
     setShowPanel(state, show) {
       state.showPanel = show
     },
@@ -320,6 +324,9 @@ const displayDefinitionField = {
     },
     getRecordLoading: (state) => ({ recordId }) => {
       return state.panelView[recordId] && state.panelView[recordId].isLoading || false
+    },
+    getShowDeleteConfirmation: (state) => {
+      return state.showDeleteConfirmation
     }
   }
 }
