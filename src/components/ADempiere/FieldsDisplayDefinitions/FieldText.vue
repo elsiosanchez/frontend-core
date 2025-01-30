@@ -69,7 +69,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: String,
+      type: [String, Boolean],
       required: false
     },
     updateAttribute: {

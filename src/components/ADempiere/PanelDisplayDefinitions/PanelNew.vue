@@ -62,7 +62,10 @@
         icon="el-icon-check"
         style="float: right; margin-left: 10px;"
         :loading="isLoading"
-        :disabled="validateAttributes(fields, attributes)"
+        :disabled="containerManagerFieldDefinition.validateMandatoryFieldsEmpty({
+          fieldList: fields,
+          attributes
+        }) || isLoading"
         @click="actionsSave()"
       />
       <slot name="footer-buttons" />
@@ -78,7 +81,7 @@ import store from '@/store'
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitionsNew',
@@ -115,26 +118,15 @@ export default defineComponent({
   },
 
   setup(props) {
+    // Ref
     const attributes = ref({})
     const isLoading = ref(false)
-    const containerManagerPanel = computed(() => {
-      return props.containerManager
-    })
 
+    // Computed
     const displayDefinitionMetadata = computed(() => {
       return store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
-    })
-
-    const displayDefinitionFields = computed(() => {
-      if (
-        !isEmptyValue(displayDefinitionMetadata.value) &&
-        !isEmptyValue(displayDefinitionMetadata.value.fields)
-      ) {
-        return displayDefinitionMetadata.value.fields
-      }
-      return []
     })
 
     const isLoadingDisplayDefinitions = computed(() => {
@@ -152,27 +144,15 @@ export default defineComponent({
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        const fields = displayDefinitionMetadata.value.fields
-        return fields
+        return displayDefinitionMetadata.value.fields
       }
       return []
     })
 
-    // const isDisabledSave = computed(() => {
-    //   cons is
-    // })
+    // Constants
+    const { currentTab } = store.getters.getContainerInfo
 
-    /**
-     * Get the panel object with all its attributes as well as
-     * the fields it contains
-     */
-    const panelMetadata = computed(() => {
-      return containerManagerPanel.value.getPanel({
-        parentUuid: props.parentUuid,
-        containerUuid: props.containerUuid
-      }) || {}
-    })
-
+    // Methods
     function displayValue(field) {
       if (isEmptyValue(field)) return
       const { value, display_value } = field
@@ -180,84 +160,40 @@ export default defineComponent({
       return value
     }
 
-    const { currentTab } = store.getters.getContainerInfo
-    function loadDefault() {
-      createNewRecord.createNewRecord({
-        parentUuid: currentTab.parentUuid,
-        containerUuid: currentTab.containerUuid,
-        isCopyValues: false
-      })
-    }
-
     function updateFieldRecord(value, field) {
       attributes.value = {
         ...attributes.value,
         [field.column_name]: value
       }
-      // props.currentRecord.fields[field.column_name].value = value
     }
 
     function isDisplayField(field) {
-      const { is_displayed, is_insert_record } = field
-      return is_displayed && is_insert_record
+      return containerManagerFieldDefinition.isDisplayedField({
+        ...field,
+        isNewRecord: true
+      })
     }
 
-    function validateAttributes(listField, attributes) {
-      // Filter the required fields
-      const mandatoryFields = listField.filter(field => field.is_mandatory)
-
-      // Create an array to store missing fields
-      const missingFields = []
-
-      // We check if each required field is present in attributes
-      for (const field of mandatoryFields) {
-        const columnName = field.column_name
-        if (!(columnName in attributes)) {
-          missingFields.push(field.field_name) // We add the name of the missing field
-        }
-      }
-
-      // We return the array of missing fields
-      if (missingFields.length > 0) return true
-      return false
+    function validateMandatory() {
+      return containerManagerFieldDefinition.validateMandatoryFieldsEmpty({
+        fieldList: fields.value,
+        attributes: attributes.value
+      })
     }
 
-    loadDefault()
-    function actionsSave() {
-      const persistence = store.getters.getPersistenceAttributes({
-        containerUuid: currentTab.containerUuid,
-        recordUuid: undefined
-      })
-      const persistenceAttributes = {}
-      if (!isEmptyValue(persistence)) {
-        persistence.forEach(element => {
-          const { columnName, value } = element
-          if (
-            !isEmptyValue(columnName) &&
-            !isEmptyValue(value)
-          ) {
-            persistenceAttributes[columnName] = value
-          }
+    async function actionsSave() {
+      isLoading.value = true
+      try {
+        isLoading.value = true
+        containerManagerFieldDefinition.createNewRecord({
+          displayDefinitionId: props.currentDisplyDefinitions.id,
+          attributes: attributes.value,
+          currentTab
         })
+        isLoading.value = false
+      } catch (error) {
+        isLoading.value = false
       }
-      store.dispatch('saveRecord', {
-        displayDefinitionId: props.currentDisplyDefinitions.id,
-        attributes: {
-          ...persistenceAttributes,
-          ...attributes.value
-        }
-      })
-        .then(() => {
-          isLoading.value = false
-          props.buttonClosePanel()
-          store.dispatch('changeTabPanelRightDefinition', {
-            tableName: props.currentDisplyDefinitions.table_name,
-            definition: props.currentDisplyDefinitions
-          })
-        })
-        .catch(() => {
-          isLoading.value = false
-        })
     }
 
     return {
@@ -267,17 +203,14 @@ export default defineComponent({
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
-      displayDefinitionFields,
-      containerManagerPanel,
-      panelMetadata,
       fields,
       // methods
-      loadDefault,
       actionsSave,
       displayValue,
       isDisplayField,
+      validateMandatory,
       updateFieldRecord,
-      validateAttributes
+      containerManagerFieldDefinition
     }
   }
 })

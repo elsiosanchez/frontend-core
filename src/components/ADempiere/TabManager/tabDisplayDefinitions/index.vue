@@ -199,8 +199,6 @@ export default defineComponent({
         store.commit('setShowPanel', value)
       }
     })
-    //   return store.getters.getShowPanel
-    // })
 
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
@@ -226,10 +224,6 @@ export default defineComponent({
     })
 
     const displayDefinitionMetadata = computed(() => {
-      // return store.getters.getDisplayTabDefinition({
-      //   id: currentDisplyDefinitions.value.id,
-      //   recordId: currentRecord.value.id
-      // })
       return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
     })
 
