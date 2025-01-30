@@ -40,7 +40,7 @@
             <b> {{ field.name }} </b>
           </template>
           <span v-if="!field.is_show_components">
-            {{ displayValue(recordMetadata.fields[field.column_name]) }}
+            {{ displayValue(recordMetadata.fields, field.column_name) }}
             <el-button
               v-show="field.is_update_record && !field.is_show_components"
               style="padding: 0px;"
@@ -51,11 +51,12 @@
           </span>
           <span v-else>
             <FieldsDisplayDefinitions
+              v-if="!isEmptyValue(recordMetadata.fields) && !isEmptyValue(field.column_name) && !isEmptyValue(recordMetadata.fields[field.column_name])"
               :field="field"
               :current-record="recordMetadata"
               :field-metadata="recordMetadata.fields[field.column_name]"
               :current-display-definition="currentDisplyDefinitions"
-              :display-value="displayValue(recordMetadata.fields[field.column_name])"
+              :display-value="displayValue(recordMetadata.fields, field.column_name)"
               :update-field="updateFieldRecord"
               :update-record="updateRecord"
             >
@@ -72,6 +73,15 @@
         </el-descriptions-item>
       </el-descriptions>
       <slot name="footer-buttons" />
+      <el-button
+        type="danger"
+        class="button-base-icon button-base-delete"
+        icon="el-icon-delete"
+        style="float: right;"
+        :loading="isLoadingDelete"
+        :disabled="recordMetadata.is_read_only"
+        @click="deleteRecord"
+      />
     </div>
   </el-card>
 </template>
@@ -114,12 +124,17 @@ export default defineComponent({
     currentRecord: {
       type: Object,
       required: false
+    },
+    buttonClosePanel: {
+      type: Function,
+      required: false
     }
   },
 
   setup(props) {
     // Ref
     const showButton = ref(false)
+    const isLoadingDelete = ref(false)
     // const recordMetadata = ref({})
     // recordMetadata.value = props.currentRecord
     // Computed
@@ -165,14 +180,29 @@ export default defineComponent({
       return []
     })
 
-    function displayValue(field) {
-      if (isEmptyValue(field)) return
-      const { value, display_value } = field
-      if (!isEmptyValue(field.display_value) && field.display_value !== 'null') {
-        return display_value
+    function displayValue(field, column_name) {
+      if (
+        !isEmptyValue(field) &&
+        !isEmptyValue(field[column_name])
+      ) {
+        const { value, display_value } = field[column_name]
+        if (!isEmptyValue(display_value) && display_value !== 'null') {
+          return display_value
+        }
+        return value
       }
-      return value
+      return ''
+      // return value === undefined || value === null || value === ''
     }
+
+    // function displayValue(field) {
+    //   if (isEmptyValue(field)) return
+    //   const { value, display_value } = field
+    //   if (!isEmptyValue(field.display_value) && field.display_value !== 'null') {
+    //     return display_value
+    //   }
+    //   return value
+    // }
 
     function ShowFieldComponent(field) {
       field.is_show_components = true
@@ -191,6 +221,32 @@ export default defineComponent({
       // recordMetadata.value = attributes
       hiddenFieldComponent(field)
     }
+
+    function deleteRecord() {
+      isLoadingDelete.value = true
+      store.dispatch('removerRecord', {
+        recordId: props.currentRecord.id,
+        displayDefinitionId: props.currentDisplyDefinitions.id
+      })
+        .then(() => {
+          props.buttonClosePanel('')
+          isLoadingDelete.value = false
+        })
+        .catch(() => {
+          isLoadingDelete.value = false
+        })
+        .finally(() => {
+          isLoadingDelete.value = false
+        })
+    }
+
+    if (isEmptyValue(recordMetadata.value)) {
+      store.dispatch('readRecordData', {
+        recordId: props.currentRecord.id,
+        displayDefinitionId: props.currentDisplyDefinitions.id
+      })
+    }
+
     return {
       // Ref
       showButton,
@@ -199,10 +255,12 @@ export default defineComponent({
       title,
       fields,
       isLoading,
+      isLoadingDelete,
       getRecordValuesData,
       displayDefinitionMetadata,
       description,
       // Methods
+      deleteRecord,
       updateRecord,
       displayValue,
       updateFieldRecord,

@@ -182,6 +182,9 @@ export default defineComponent({
         return store.getters.getShowPanel
       },
       set: (value) => {
+        if (!value) {
+          currentRecord.value = {}
+        }
         store.commit('setShowPanel', value)
       }
     })
@@ -275,17 +278,24 @@ export default defineComponent({
       currentRecord.value = element
     }
 
-    function openPanelDisplayDefinition(type, recordId) {
-      if (isEmptyValue(recordId)) {
-        recordId = currentRecord.value.id
-      } else {
-        currentRecord.value.id = recordId
+    function openPanelDisplayDefinition(type) {
+      if (type === 'delete') {
+        store.dispatch('removerRecord', {
+          displayDefinitionId: currentDisplyDefinitions.value.id,
+          recordId: currentRecord.value.id
+        })
+          .then(() => {
+            store.dispatch('changeTabPanelRightDefinition', {
+              tableName: currentDisplyDefinitions.value.table_name,
+              definition: currentDisplyDefinitions.value
+            })
+          })
+        return
       }
-
       store.dispatch('changeTabPanelDefinition', {
         name: type,
         id: currentDisplyDefinitions.value.id,
-        recordId
+        recordId: currentRecord.value.id
       })
       isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
       if (!isEmptyValue(displayDefinitionFields.value)) return

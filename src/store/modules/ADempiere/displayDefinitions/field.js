@@ -162,7 +162,7 @@ const displayDefinitionField = {
     }) {
       const getRecordValuesData = getters.getRecordValuesData({ recordId })
       commit('setCurrentTabPanelDefinition', name)
-      if (!isEmptyValue(getRecordValuesData)) return
+      if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) return
       if (typeof recordId !== 'number') return
       dispatch('readRecordData', {
         recordId,
@@ -264,16 +264,14 @@ const displayDefinitionField = {
           })
       })
     },
-    deleteRecord({ dispatch }, {
-      id,
-      displayDefinition,
-      tableName,
-      isPanelRight
+    removerRecord({ commit }, {
+      recordId,
+      displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
         deleteDataEntry({
-          id,
-          displayDefinitionId: displayDefinition.id
+          id: recordId,
+          displayDefinitionId
         })
           .then(response => {
             resolve(response)
@@ -284,15 +282,10 @@ const displayDefinitionField = {
               message: error.message,
               showClose: true
             })
-            console.warn(`Error Getting Update Field Display Definition: ${error.message}. Code: ${error.code}.`)
+            console.warn(`Error Delete Record Display Definition: ${error.message}. Code: ${error.code}.`)
             reject(error)
           })
           .finally(() => {
-            dispatch('changeTabPanelRightDefinition', {
-              tableName,
-              definition: displayDefinition,
-              isPanelRight
-            })
             resolve()
           })
       })

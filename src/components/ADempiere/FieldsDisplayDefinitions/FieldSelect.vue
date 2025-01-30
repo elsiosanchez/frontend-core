@@ -19,12 +19,13 @@
 <template>
   <span>
     <el-select
-      v-model="value"
+      v-model="fieldValue"
       filterable
       size="mini"
       :placeholder="fieldMetadata.description"
       style="padding-right: 10px;width: 200px;"
       @visible-change="showList"
+      @change="saveField"
     >
       <el-option
         v-for="item in options"
@@ -62,6 +63,7 @@ import store from '@/store'
 
 // API Request Methods
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -94,14 +96,20 @@ export default defineComponent({
   },
 
   setup(props) {
-    const value = ref(props.currentRecord.fields[props.fieldMetadata.column_name].value)
-    const displayValueOld = ref(props.currentRecord.fields[props.fieldMetadata.column_name].value)
+    const fieldValue = ref('')
+    const displayValueOld = ref('')
     const isLoading = ref(false)
-    const options = ref([
-      props.currentRecord.fields[props.fieldMetadata.column_name]
-    ])
+    const options = ref([])
+    if (!isEmptyValue(props.currentRecord)) {
+      fieldValue.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
+      displayValueOld.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
+      options.value = [props.currentRecord.fields[props.fieldMetadata.column_name]]
+    }
+    if (props.isNewRecord) {
+      fieldValue.value = ''
+      options.value = []
+    }
 
-    // value.value = props.currentRecord.fields[props.fieldMetadata.column_name].value || ''
     // Methods
     function saveField(value, field) {
       if (props.isNewRecord) {
@@ -127,8 +135,9 @@ export default defineComponent({
     }
 
     function showList(isShow) {
-      if (isShow && options.value.length <= 1) {
+      if (isShow && options.value.length <= 1 || !isEmptyValue(options.value)) {
         loadList()
+        return
       }
     }
 
@@ -150,7 +159,7 @@ export default defineComponent({
 
     return {
       // Ref
-      value,
+      fieldValue,
       options,
       isLoading,
       displayValueOld,

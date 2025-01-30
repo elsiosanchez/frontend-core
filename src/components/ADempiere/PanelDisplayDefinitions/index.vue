@@ -27,6 +27,7 @@
       v-for="tab in listTabs"
     >
       <el-tab-pane
+        v-if="tab.isShow"
         :key="tab.name"
         :name="tab.name"
         :label="tab.label"
@@ -46,21 +47,13 @@
             :button-close-panel="actionClose"
           >
             <template v-slot:footer-buttons>
-              <div style="display: flex; justify-content: flex-end;">
-                <el-button
-                  type="danger"
-                  class="button-base-icon button-base-delete"
-                  icon="el-icon-delete"
-                  @click="handleDelete()"
-                />
-                <el-button
-                  :disabled="!isEmptyValue(currentRecord) && currentRecord.is_read_only"
-                  type="danger"
-                  class="button-base-icon"
-                  icon="el-icon-close"
-                  @click="actionClose('')"
-                />
-              </div>
+              <el-button
+                type="danger"
+                class="button-base-icon"
+                icon="el-icon-close"
+                style="float: right;margin-left: 10px;"
+                @click="actionClose('')"
+              />
             </template>
           </component>
         </el-card>
@@ -142,8 +135,8 @@ export default defineComponent({
 
     const listTabs = computed(() => {
       return [
-        { label: lang.t('component.displayDefinition.cardNew'), name: 'new', icon: 'el-icon-plus' },
-        { label: lang.t('component.displayDefinition.cardView'), name: 'view', icon: 'el-icon-news' }
+        { label: lang.t('component.displayDefinition.cardNew'), name: 'new', icon: 'el-icon-plus', isShow: true },
+        { label: lang.t('component.displayDefinition.cardView'), name: 'view', icon: 'el-icon-news', isShow: !isEmptyValue(props.currentRecord) }
       ]
     })
 
@@ -178,7 +171,7 @@ export default defineComponent({
       store.dispatch('changeTabPanelDefinition', {
         name: tab.name,
         id: props.currentDisplayDefinition.id,
-        recordId: props.currentRecord
+        recordId: props.currentRecord.id
 
       })
       // currentab.value = tab.name

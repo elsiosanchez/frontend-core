@@ -20,7 +20,7 @@
   <el-dropdown
     trigger="click"
     class="options-crud"
-    @command="handleCommand"
+    @command="actionOption"
   >
     <span class="el-dropdown-link">
       <svg-icon
@@ -28,11 +28,14 @@
       />
     </span>
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="view" icon="el-icon-news">
+      <el-dropdown-item v-if="isOptionNew" command="new" icon="el-icon-plus">
+        {{ $t('component.displayDefinition.cardNew') }}
+      </el-dropdown-item>
+      <el-dropdown-item v-if="isOptionEdit" command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
       </el-dropdown-item>
-      <el-dropdown-item :disabled="!isEmptyValue(currentRecord) && currentRecord.is_read_only" command="delete" icon="el-icon-delete">
-        {{ $t('component.displayDefinition.cardDelete') }}
+      <el-dropdown-item v-if="isOptionDelete" command="delete" icon="el-icon-delete" :disabled="isDisableDelete">
+        {{ $t('actionMenu.deleteRecord') }}
       </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
@@ -40,10 +43,10 @@
 
 <script>
 import {
-  defineComponent
-  // computed
+  defineComponent,
+  computed
 } from '@vue/composition-api'
-import store from '@/store'
+// import store from '@/store'
 // Utils and Helper Methods
 
 export default defineComponent({
@@ -64,39 +67,26 @@ export default defineComponent({
         console.info('implement method Open Action New', recordPrevious)
       }
     },
-    currentDisplayDefinition: {
-      type: Object,
-      required: false
+    isOptionNew: {
+      type: Boolean,
+      default: false
     },
-    currentRecord: {
-      type: Object,
-      required: false
+    isOptionEdit: {
+      type: Boolean,
+      default: false
     },
-    tabAttributes: {
-      type: Object,
-      default: () => ({})
+    isOptionDelete: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
-    function handleCommand(command) {
-      if (command === 'view') {
-        props.actionOption(props.currentResource)
-      }
-      if (command === 'delete') {
-        handleDelete()
-      }
-    }
-    function handleDelete() {
-      store.dispatch('deleteRecord', {
-        id: props.currentRecord.id,
-        displayDefinition: props.currentDisplayDefinition,
-        tableName: props.tabAttributes.table_name,
-        isPanelRight: props.isPanelRight
-      })
-    }
+    const isDisableDelete = computed(() => {
+      return props.currentResource.is_read_only
+      // return false
+    })
     return {
-      handleCommand,
-      handleDelete
+      isDisableDelete
     }
   }
 })

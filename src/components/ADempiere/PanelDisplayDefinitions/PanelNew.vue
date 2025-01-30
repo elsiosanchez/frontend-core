@@ -28,21 +28,33 @@
     <div class="text item">
       <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
       <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-        <el-descriptions-item
+        <template
           v-for="field in fields"
-          :key="field.sequence"
         >
-          <template slot="label">
-            <b> {{ field.name }} </b>
-          </template>
-          <FieldsDisplayDefinitions
-            :field="field"
-            :current-record="currentRecord"
-            :current-display-definition="currentDisplyDefinitions"
-            :update-field="updateFieldRecord"
-            :is-new-record="true"
-          />
-        </el-descriptions-item>
+          <el-descriptions-item
+            v-if="isDisplayField(field)"
+            :key="field.sequence"
+          >
+            <template slot="label">
+              <b>
+                <span
+                  v-show="field.is_mandatory"
+                  style="color: red;"
+                >
+                  *
+                </span>
+                {{ field.name }}
+              </b>
+            </template>
+            <FieldsDisplayDefinitions
+              :field="field"
+              :current-record="currentRecord"
+              :current-display-definition="currentDisplyDefinitions"
+              :update-field="updateFieldRecord"
+              :is-new-record="true"
+            />
+          </el-descriptions-item>
+        </template>
       </el-descriptions>
       <el-button
         type="primary"
@@ -50,6 +62,7 @@
         icon="el-icon-check"
         style="float: right; margin-left: 10px;"
         :loading="isLoading"
+        :disabled="validateAttributes(fields, attributes)"
         @click="actionsSave()"
       />
       <slot name="footer-buttons" />
@@ -145,6 +158,10 @@ export default defineComponent({
       return []
     })
 
+    // const isDisabledSave = computed(() => {
+    //   cons is
+    // })
+
     /**
      * Get the panel object with all its attributes as well as
      * the fields it contains
@@ -177,26 +194,56 @@ export default defineComponent({
         ...attributes.value,
         [field.column_name]: value
       }
-      props.currentRecord.fields[field.column_name].value = value
+      // props.currentRecord.fields[field.column_name].value = value
+    }
+
+    function isDisplayField(field) {
+      const { is_displayed, is_insert_record } = field
+      return is_displayed && is_insert_record
+    }
+
+    function validateAttributes(listField, attributes) {
+      // Filter the required fields
+      const mandatoryFields = listField.filter(field => field.is_mandatory)
+
+      // Create an array to store missing fields
+      const missingFields = []
+
+      // We check if each required field is present in attributes
+      for (const field of mandatoryFields) {
+        const columnName = field.column_name
+        if (!(columnName in attributes)) {
+          missingFields.push(field.field_name) // We add the name of the missing field
+        }
+      }
+
+      // We return the array of missing fields
+      if (missingFields.length > 0) return true
+      return false
     }
 
     loadDefault()
     function actionsSave() {
-      const persistenceAttributes = store.getters.getPersistenceAttributes({
+      const persistence = store.getters.getPersistenceAttributes({
         containerUuid: currentTab.containerUuid,
         recordUuid: undefined
       })
-      const qlq = {}
-      if (!isEmptyValue(persistenceAttributes)) {
-        persistenceAttributes.forEach(element => {
-          qlq[element.columnName] = element.value
+      const persistenceAttributes = {}
+      if (!isEmptyValue(persistence)) {
+        persistence.forEach(element => {
+          const { columnName, value } = element
+          if (
+            !isEmptyValue(columnName) &&
+            !isEmptyValue(value)
+          ) {
+            persistenceAttributes[columnName] = value
+          }
         })
       }
       store.dispatch('saveRecord', {
         displayDefinitionId: props.currentDisplyDefinitions.id,
         attributes: {
-          ...qlq,
-          R_RequestType_ID: 1000003,
+          ...persistenceAttributes,
           ...attributes.value
         }
       })
@@ -228,7 +275,9 @@ export default defineComponent({
       loadDefault,
       actionsSave,
       displayValue,
-      updateFieldRecord
+      isDisplayField,
+      updateFieldRecord,
+      validateAttributes
     }
   }
 })

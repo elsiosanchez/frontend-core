@@ -40,6 +40,11 @@
             <b style="font-size: 16px;padding-left: 10px;">
               {{ column.title }}
             </b>
+            <options-panel
+              :action-option="actionOption"
+              :is-option-new="true"
+              style="float: right;"
+            />
           </template>
           <draggable
             v-model="column.items"
@@ -64,6 +69,9 @@
                   <span class="column-title">{{ element.title }}</span>
                   <options-panel
                     :action-option="actionOption"
+                    :current-resource="element"
+                    :is-option-edit="true"
+                    :is-option-delete="true"
                     style="float: right;"
                     :current-display-definition="currentDisplayDefinition"
                     :current-record="element"
