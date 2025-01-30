@@ -29,7 +29,8 @@ export function kanbans({
     method: 'get',
     params: {
       filters,
-      search_value: searchValue
+      search_value: searchValue,
+      page_size: 1000
     }
   })
 }
@@ -73,7 +74,8 @@ export function timeLines({
     url: `/display-definition/timelines/${id}`,
     method: 'get',
     params: {
-      filters
+      filters,
+      page_size: 1000
     }
   })
 }
@@ -86,7 +88,8 @@ export function workflowsDisplay({
     url: `/display-definition/workflows/${id}`,
     method: 'get',
     params: {
-      filters
+      filters,
+      page_size: 1000
     }
   })
 }

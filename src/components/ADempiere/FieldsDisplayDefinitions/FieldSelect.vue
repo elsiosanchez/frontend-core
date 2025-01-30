@@ -82,7 +82,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: [String, Number],
+      type: [String, Number, Boolean],
       required: false
     },
     updateAttribute: {
@@ -100,7 +100,7 @@ export default defineComponent({
     const displayValueOld = ref('')
     const isLoading = ref(false)
     const options = ref([])
-    if (!isEmptyValue(props.currentRecord)) {
+    if (!isEmptyValue(props.currentRecord) && !isEmptyValue(props.currentRecord.fields)) {
       fieldValue.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
       displayValueOld.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
       options.value = [props.currentRecord.fields[props.fieldMetadata.column_name]]

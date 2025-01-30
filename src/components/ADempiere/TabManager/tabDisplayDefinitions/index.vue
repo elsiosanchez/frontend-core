@@ -282,18 +282,18 @@ export default defineComponent({
       currentRecord.value = element
     }
 
-    function openPanelDisplayDefinition(type, recordId) {
+    function openPanelDisplayDefinition(type, display) {
       tabView.value = type
-      if (isEmptyValue(recordId)) {
-        recordId = currentRecord.value.id
-      } else {
-        currentRecord.value.id = recordId.id
-        detailsTitle.value = recordId.title
+      if (!isEmptyValue(display)) {
+        detailsTitle.value = display.title
+      }
+      if (!isEmptyValue(display) && !isEmptyValue(display.id)) {
+        currentRecord.value.id = display.id
       }
       if (type === 'delete') {
         store.dispatch('removerRecord', {
           displayDefinitionId: currentDisplyDefinitions.value.id,
-          recordId
+          recordId: currentRecord.value.id
         })
           .then(() => {
             store.dispatch('changeTabPanelRightDefinition', {

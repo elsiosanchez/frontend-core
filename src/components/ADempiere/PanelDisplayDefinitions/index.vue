@@ -75,7 +75,7 @@ import lang from '@/lang'
 import store from '@/store'
 
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -185,20 +185,6 @@ export default defineComponent({
       })
       // currentab.value = tab.name
     }
-    const tableName = computed(() => {
-      const { currentTab } = store.getters.getContainerInfo
-      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
-      return ''
-    })
-    function handleDelete() {
-      store.dispatch('deleteRecord', {
-        id: props.currentRecord.id,
-        displayDefinition: props.currentDisplayDefinition,
-        tableName: tableName.value,
-        isPanelRight: props.isPanelRight
-      })
-      props.actionClose('')
-    }
     return {
       // Ref
       currentab,
@@ -209,8 +195,7 @@ export default defineComponent({
       panelMetadata,
       componentRender,
       // Methods
-      handleTabClick,
-      handleDelete
+      handleTabClick
     }
   }
 })

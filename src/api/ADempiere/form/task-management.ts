@@ -51,8 +51,7 @@ export function listCalendars({
     method: 'get',
     params: {
       filters: filt,
-      page_size: pageSize,
-      search_value: searchValue
+      page_size: 1000
     }
   })
 }
