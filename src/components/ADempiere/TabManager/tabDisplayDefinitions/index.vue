@@ -1,19 +1,19 @@
 <!--
-  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-  Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
+ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+Contributor(s): Elsio Sanchez elsiosanchez@gmail.com https://github.com/elsiosanchez
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <https:www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -27,6 +27,14 @@
         :actions-manager="actionsManagers"
         :is-display-menu="!isPanelRight"
         style="float: left;"
+      />
+      <advanced-tab-query
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :container-manager="containerManager"
+        :name-list-server="'searchPanelResource'"
+        style="float: right;"
+        :current-disply-definitions="currentDisplyDefinitions"
       />
       <action-menu
         :parent-uuid="parentUuid"
@@ -98,15 +106,13 @@
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
-
 import store from '@/store'
-
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 // src/components/ADempiere/PanelDefinition/PanelDisplayDefinitions.vue
+import AdvancedTabQuery from '@/components/ADempiere/TabManager/AdvancedTabQuery.vue'
 import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
 import MenuActionDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/menuActionDefinitions.vue'
-
 // Utils and Helper Methods
 import { setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { isEmptyValue } from '@/utils/ADempiere'
@@ -118,6 +124,7 @@ export default defineComponent({
     ActionMenu,
     MenuActionDefinitions,
     PanelDisplayDefinitions,
+    AdvancedTabQuery,
     PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue')
   },
 

@@ -228,6 +228,10 @@ export default defineComponent({
     containerManager: {
       type: Object,
       required: false
+    },
+    currentDisplyDefinitions: {
+      type: Object,
+      required: false
     }
   },
 
@@ -372,7 +376,11 @@ export default defineComponent({
           isLoadingSearch.value = false
         })
     }
-
+    const tableName = computed(() => {
+      const { currentTab } = store.getters.getContainerInfo
+      if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
+      return ''
+    })
     function searchRecords(params) {
       const filters = store.getters.getTabDataFilters({
         parentUuid: props.parentUuid,
@@ -383,18 +391,46 @@ export default defineComponent({
       if (!isEmptyValue(query) && !isEmptyValue(query.filters)) {
         delete query.filters
       }
-
       isLoadingSearch.value = true
-      store.dispatch('getEntities', {
-        parentUuid: props.parentUuid,
-        containerUuid: props.containerUuid,
-        filters,
-        isAdvancedQuery: true
-      })
-        .finally(() => {
-          router.replace({ query: {}})
-          isLoadingSearch.value = false
+      if (!isEmptyValue(props.currentDisplyDefinitions)) {
+        let listFilters
+        if (!isEmptyValue(filters)) {
+          listFilters = filters.map(parameter => {
+            const {
+              columnName,
+              operator,
+              value,
+              valueTo,
+              values
+            } = parameter
+            return {
+              name: columnName,
+              operator,
+              values: !isEmptyValue(values) ? values : !isEmptyValue(valueTo) ? [value, valueTo] : value
+            }
+          })
+        }
+        store.dispatch('changeTabPanelRightDefinition', {
+          tableName: tableName.value,
+          definition: props.currentDisplyDefinitions,
+          filters: listFilters
         })
+          .finally(() => {
+            router.replace({ query: {}})
+            isLoadingSearch.value = false
+          })
+      } else {
+        store.dispatch('getEntities', {
+          parentUuid: props.parentUuid,
+          containerUuid: props.containerUuid,
+          filters,
+          isAdvancedQuery: true
+        })
+          .finally(() => {
+            router.replace({ query: {}})
+            isLoadingSearch.value = false
+          })
+      }
       isShowedAdvancedQuery.value = false
     }
 
@@ -431,6 +467,7 @@ export default defineComponent({
       isSeeAll,
       // Const
       IS_ADVANCED_QUERY,
+      tableName,
       // Computeds
       containerManagerAdvancedQuery,
       valueToSearch,

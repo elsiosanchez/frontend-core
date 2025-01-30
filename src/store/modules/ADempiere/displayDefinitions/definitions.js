@@ -31,6 +31,7 @@ const initState = {
   displayTabDefinitions: {},
   displayPanelRightDefinitions: {},
   currentListDefinition: [],
+  displayFilters: {},
   currentDefinitions: {
     Kanban: {},
     Workflow: {},
@@ -48,6 +49,17 @@ const displayTabDefinition = {
   state: initState,
 
   mutations: {
+    setDisplayFilters(state, {
+      tableName,
+      filters = []
+    }) {
+      if (!state.displayFilters[tableName]) {
+        Vue.set(state.displayFilters, tableName, { filters: [] })
+      }
+      Vue.set(state.displayFilters, tableName, {
+        filters
+      })
+    },
     setCurrentDefinition(state, { type, tableName, key, value }) {
       if (!state.currentDefinitions[type][tableName]) {
         Vue.set(state.currentDefinitions[type], tableName, { list: [] })
@@ -153,7 +165,7 @@ const displayTabDefinition = {
           })
       })
     },
-    changeTabPanelRightDefinition({ commit, dispatch }, {
+    changeTabPanelRightDefinition({ commit, dispatch, getters }, {
       filters,
       recordId,
       tableName,
@@ -170,13 +182,20 @@ const displayTabDefinition = {
           tableName,
           currentDefinition: definition
         })
+        if (!isEmptyValue(filters)) {
+          commit('setDisplayFilters', {
+            tableName,
+            filters
+          })
+        }
       }
+      const listFilters = getters.getDisplayFilters({ tableName })
       if (definition.display_type === 'K') {
         dispatch('requestKanban', {
           id: definition.id,
           isPanel: isPanelRight,
           tableName,
-          filters
+          filters: listFilters
         })
       }
       if (definition.display_type === 'R') {
@@ -184,7 +203,7 @@ const displayTabDefinition = {
           id: definition.id,
           isPanel: isPanelRight,
           tableName,
-          filters
+          filters: listFilters
         })
       }
       if (definition.display_type === 'C') {
@@ -193,21 +212,21 @@ const displayTabDefinition = {
           isPanel: isPanelRight,
           tableName,
           recordId,
-          filters
+          filters: listFilters
         })
       }
       if (definition.display_type === 'T') {
         dispatch('requestTimeLine', {
           id: definition.id,
           tableName,
-          filters
+          filters: listFilters
         })
       }
       if (definition.display_type === 'W') {
         dispatch('requestWorkflow', {
           id: definition.id,
           tableName,
-          filters
+          filters: listFilters
         })
       }
     }
@@ -254,6 +273,13 @@ const displayTabDefinition = {
     },
     getListDefinition: (state) => ({ type, tableName }) => {
       return state.currentDefinitions[type]?.[tableName]?.list || []
+    },
+    getDisplayFilters: (state) => ({ tableName }) => {
+      if (state.displayFilters[tableName]) {
+        const { filters } = state.displayFilters[tableName]
+        return filters || {}
+      }
+      return {}
     }
   }
 }
