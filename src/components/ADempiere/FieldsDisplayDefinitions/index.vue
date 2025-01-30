@@ -83,7 +83,9 @@ export default defineComponent({
         case 'FieldDate':
           fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldDate.vue')
           break
+        case 'FieldSearch':
         case 'FieldSelect':
+        case 'FieldWarehouseLocator':
           fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldSelect.vue')
           break
         case 'FieldYesNo':
