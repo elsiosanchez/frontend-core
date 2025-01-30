@@ -1,0 +1,127 @@
+<!--
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
+<template>
+  <span>
+    <el-switch
+      v-model="fieldValue"
+      :placeholder="fieldMetadata.description"
+      :active-text="$t('components.switchActiveText')"
+      :inactive-text="$t('components.switchInactiveText')"
+      size="mini"
+      @change="saveField(fieldValue, fieldMetadata)"
+    />
+
+    <span v-if="!isNewRecord">
+      <slot name="button-exit" />
+      <el-button
+        v-show="fieldValue !== displayValue && !isLoading"
+        style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
+        icon="el-icon-check"
+        type="text"
+        @click="updateField(fieldValue, fieldMetadata)"
+      />
+      <i v-if="isLoading" class="el-icon-loading" />
+    </span>
+  </span>
+</template>
+
+<script>
+import {
+  defineComponent,
+  // computed
+  ref
+} from '@vue/composition-api'
+
+import store from '@/store'
+
+// Utils and Helper Methods
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
+
+export default defineComponent({
+  name: 'FieldYesNo',
+
+  props: {
+    fieldMetadata: {
+      type: Object,
+      required: true
+    },
+    currentDisplayDefinition: {
+      type: Object,
+      required: false
+    },
+    currentRecord: {
+      type: Object,
+      required: false
+    },
+    displayValue: {
+      type: String,
+      required: false
+    },
+    updateAttribute: {
+      type: Function,
+      required: false
+    },
+    isNewRecord: {
+      type: Boolean,
+      required: false
+    }
+  },
+
+  setup(props) {
+    const fieldValue = ref(
+      convertStringToBoolean(
+        props.displayValue
+      )
+    )
+    const isLoading = ref(false)
+
+    // Methods
+    function saveField(value, field) {
+      if (props.isNewRecord) {
+        props.updateAttribute(value, props.fieldMetadata)
+        return
+      }
+    }
+
+    function updateField(value, field) {
+      isLoading.value = true
+      store.dispatch('updateField', {
+        id: props.currentRecord.id,
+        attributes: {
+          [field.column_name]: value
+        },
+        displayDefinitionId: props.currentDisplayDefinition.id
+      })
+        .then(response => {
+          props.updateAttribute(response, field)
+        })
+        .finally(() => {
+          isLoading.value = false
+        })
+    }
+
+    return {
+      fieldValue,
+      isLoading,
+      saveField,
+      updateField
+    }
+  }
+})
+</script>

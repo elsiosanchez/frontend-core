@@ -86,6 +86,9 @@ export default defineComponent({
         case 'FieldSelect':
           fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldSelect.vue')
           break
+        case 'FieldYesNo':
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldYesNo.vue')
+          break
       }
 
       return fieldComponent
