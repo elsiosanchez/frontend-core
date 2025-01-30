@@ -82,7 +82,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: String,
+      type: [String, Number],
       required: false
     },
     updateAttribute: {

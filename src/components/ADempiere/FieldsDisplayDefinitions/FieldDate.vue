@@ -77,7 +77,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: String,
+      type: [String, Date],
       required: false
     },
     updateAttribute: {

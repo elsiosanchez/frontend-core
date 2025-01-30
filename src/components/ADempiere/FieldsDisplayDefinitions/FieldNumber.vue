@@ -18,23 +18,23 @@
 
 <template>
   <span>
-    <el-switch
-      v-model="fieldValue"
+    <el-input-number
+      v-model="value"
+      controls-position="right"
       :placeholder="fieldMetadata.description"
-      :active-text="$t('components.switchActiveText')"
-      :inactive-text="$t('components.switchInactiveText')"
       size="mini"
-      @change="saveField(fieldValue, fieldMetadata)"
+      class="field-number"
+      style="margin-right: 5px; width: 200px;"
+      @input="saveField(value, fieldMetadata)"
     />
-
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
       <el-button
-        v-show="fieldValue !== displayValue && !isLoading"
+        v-show="value !== displayValue && !isLoading"
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
-        @click="updateField(fieldValue, fieldMetadata)"
+        @click="updateField(value, fieldMetadata)"
       />
       <i v-if="isLoading" class="el-icon-loading" />
     </span>
@@ -48,13 +48,14 @@ import {
   ref
 } from '@vue/composition-api'
 
+// import lang from '@/lang'
 import store from '@/store'
 
 // Utils and Helper Methods
-import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
+// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'FieldYesNo',
+  name: 'FieldText',
 
   props: {
     fieldMetadata: {
@@ -70,7 +71,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: [String, Boolean],
+      type: [String, Number],
       required: false
     },
     updateAttribute: {
@@ -84,13 +85,9 @@ export default defineComponent({
   },
 
   setup(props) {
-    const fieldValue = ref(
-      convertStringToBoolean(
-        props.displayValue
-      )
-    )
+    const value = ref(null)
     const isLoading = ref(false)
-
+    value.value = props.displayValue || null
     // Methods
     function saveField(value, field) {
       if (props.isNewRecord) {
@@ -98,7 +95,6 @@ export default defineComponent({
         return
       }
     }
-
     function updateField(value, field) {
       isLoading.value = true
       store.dispatch('updateField', {
@@ -117,11 +113,23 @@ export default defineComponent({
     }
 
     return {
-      fieldValue,
+      // Ref
+      value,
       isLoading,
-      saveField,
-      updateField
+      // Methods
+      updateField,
+      saveField
     }
   }
 })
 </script>
+
+<style scope lang="scss">
+.field-number {
+  &.el-input-number, &.el-input {
+    .el-input__inner {
+      text-align-last: end !important;
+    }
+  }
+}
+</style>

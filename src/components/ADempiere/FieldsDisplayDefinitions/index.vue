@@ -60,7 +60,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: String,
+      type: [String, Number, Date, Boolean],
       required: false
     },
     updateField: {
@@ -82,6 +82,9 @@ export default defineComponent({
           break
         case 'FieldDate':
           fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldDate.vue')
+          break
+        case 'FieldNumber':
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldNumber.vue')
           break
         case 'FieldSearch':
         case 'FieldSelect':
