@@ -19,7 +19,7 @@
 <template>
   <el-card class="box-card-display-definition" :body-style="{ padding: '0px' }">
     <div slot="header" class="clearfix">
-      <p style="text-align: center;margin-top: 7px;margin-bottom: 7px;">
+      <p style="text-align: center;margin-top: 0px;margin-bottom: 5px;background: #e8f4ffa8;">
         <b style="font-size: larger;">
           {{ currentDisplyDefinitions.name }}
         </b>
@@ -236,6 +236,9 @@ export default defineComponent({
   height: 100%;
   overflow: auto;
   .el-card__header {
+    padding: 0px;
+  }
+  .el-card__body {
     padding: 0px;
   }
 }

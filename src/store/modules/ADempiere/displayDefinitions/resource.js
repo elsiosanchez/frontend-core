@@ -172,8 +172,13 @@ const resourceDefinition = {
             }
           ]
         }
-
-        const allFilters = filters.concat(defaultFilters)
+        let allFilters
+        if (isEmptyValue(filters)) {
+          allFilters = defaultFilters
+        }
+        if (!isEmptyValue(filters) && !isEmptyValue(defaultFilters)) {
+          allFilters = filters.concat(defaultFilters)
+        }
 
         if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
 

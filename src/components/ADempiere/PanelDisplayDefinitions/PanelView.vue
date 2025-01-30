@@ -17,16 +17,24 @@
 -->
 
 <template>
-  <el-card v-loading="isLoading" class="box-card-display-definition">
+  <el-card
+    v-loading="isLoading"
+    class="box-card-display-definition"
+    :body-style="{ padding: '0px' }"
+  >
     <div slot="header" class="clearfix">
-      <p style="text-align: center;margin-top: 7px;margin-bottom: 0px;">
+      <p style="text-align: center;margin-top: 0px;margin-bottom: 0px;background: #e8f4ffa8;">
         <b style="font-size: larger;">
           {{ title }}
         </b>
         <br>
-        <span style="text-align: center;margin: 0px;font-size: 12px;">
-          {{ description }}
-        </span>
+      </p>
+      <p v-show="!isEmptyValue(description)" style="padding: 0px 10px;margin: 0px;">
+        <text-truncation
+          :full-text="description"
+          :max-words="15"
+          :max-lines="4"
+        />
       </p>
     </div>
     <div>
@@ -39,8 +47,14 @@
           <template slot="label">
             <b> {{ field.name }} </b>
           </template>
-          <span v-if="!field.is_show_components">
-            {{ displayValue(recordMetadata.fields, field.column_name) }}
+          <span v-if="!field.is_show_components" style="display: flex;">
+            <!-- {{ displayValue(recordMetadata.fields, field.column_name) }} -->
+            <text-truncation
+              :full-text="displayValue(recordMetadata.fields, field.column_name)"
+              :max-words="3"
+              :max-lines="1.5"
+              style="display: flex;"
+            />
             <el-button
               v-show="field.is_update_record && !field.is_show_components"
               style="padding: 0px;"
@@ -118,7 +132,7 @@ import store from '@/store'
 
 // Component
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
-
+import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextTruncation'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
@@ -126,7 +140,8 @@ export default defineComponent({
   name: 'PanelDisplayDefinitions',
 
   components: {
-    FieldsDisplayDefinitions
+    FieldsDisplayDefinitions,
+    TextTruncation
   },
 
   props: {

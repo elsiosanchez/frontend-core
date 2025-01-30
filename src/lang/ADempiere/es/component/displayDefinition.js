@@ -21,6 +21,8 @@ const displayDefinition = {
   cardView: 'Ver Detalle',
   cardEdit: 'Editar',
   cardDelete: 'Eliminar',
+  seeMore: 'Ver más',
+  seeLess: 'Ver menos',
   fieldEmpty: 'No se Encontraron Campos'
 }
 

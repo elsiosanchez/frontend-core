@@ -198,14 +198,15 @@ const displayTabDefinition = {
           filters: listFilters
         })
       }
-      if (definition.display_type === 'R') {
-        dispatch('requestResource', {
-          id: definition.id,
-          isPanel: isPanelRight,
-          tableName,
-          filters: listFilters
-        })
-      }
+      // if (definition.display_type === 'R') {
+      //   dispatch('requestResource', {
+      //     id: definition.id,
+      //     isPanel: isPanelRight,
+      //     tableName,
+      //     recordId,
+      //     filters: listFilters
+      //   })
+      // }
       if (definition.display_type === 'C') {
         dispatch('changeDateCalendar', {
           id: definition.id,

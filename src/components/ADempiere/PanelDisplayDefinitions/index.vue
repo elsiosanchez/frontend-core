@@ -17,51 +17,29 @@
 -->
 
 <template>
-  <!-- <el-card shadow="never"> -->
-  <el-tabs
-    v-model="currentab"
-    type="card"
-    @tab-click="handleTabClick"
-  >
-    <template
-      v-for="tab in listTabs"
+  <el-card class="box-card-panel-display-definition" :body-style="{ padding: '0px' }" shadow="never">
+    <component
+      :is="componentRender"
+      :parent-uuid="parentUuid"
+      :container-uuid="containerUuid"
+      :current-disply-definitions="currentDisplayDefinition"
+      :container-manager="containerManagerPanel"
+      :current-record="currentRecord"
+      :panel-metadata="panelMetadata"
+      :button-close-panel="actionClose"
+      :details-title="detailsTitle"
     >
-      <el-tab-pane
-        v-if="tab.name === currentab"
-        :key="tab.name"
-        :name="tab.name"
-        :label="tab.label"
-      >
-        <span slot="label">
-          <i :class="tab.icon" /> {{ tab.label }}
-        </span>
-        <el-card class="box-card-panel-display-definition" shadow="never">
-          <component
-            :is="componentRender"
-            :parent-uuid="parentUuid"
-            :container-uuid="containerUuid"
-            :current-disply-definitions="currentDisplayDefinition"
-            :container-manager="containerManagerPanel"
-            :current-record="currentRecord"
-            :panel-metadata="panelMetadata"
-            :button-close-panel="actionClose"
-            :details-title="detailsTitle"
-          >
-            <template v-slot:footer-buttons>
-              <el-button
-                type="danger"
-                class="button-base-icon"
-                icon="el-icon-close"
-                style="float: right;margin-left: 10px;"
-                @click="actionClose('')"
-              />
-            </template>
-          </component>
-        </el-card>
-      </el-tab-pane>
-    </template>
-  </el-tabs>
-  <!-- </el-card> -->
+      <template v-slot:footer-buttons>
+        <el-button
+          type="danger"
+          class="button-base-icon"
+          icon="el-icon-close"
+          style="float: right;margin-left: 10px;"
+          @click="actionClose('')"
+        />
+      </template>
+    </component>
+  </el-card>
 </template>
 
 <script>
@@ -199,7 +177,8 @@ export default defineComponent({
 <style lang="scss">
 .box-card-panel-display-definition {
   .el-card__body {
-    padding: 5px !important;
+    padding: 2px !important;
+    margin-top: 5px !important;
   }
 }
 .button-base-delete{

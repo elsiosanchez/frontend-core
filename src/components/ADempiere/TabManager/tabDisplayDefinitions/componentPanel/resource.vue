@@ -132,6 +132,12 @@ export default defineComponent({
       default: (recordPrevious) => {
         console.info('implement method Open Action New', recordPrevious)
       }
+    },
+    hangleChangeRecord: {
+      type: Function,
+      default: (record) => {
+        console.info('implement method Change to Previous Record ', record)
+      }
     }
   },
 
@@ -271,21 +277,34 @@ export default defineComponent({
       if (isEmptyValue(params) || isEmptyValue(definition)) {
         return
       }
+      let listFilters = []
+      if (props.isPanelRight) {
+        listFilters = store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
+      }
       const { endStr, startStr } = params
       store.dispatch('changeDateRange', {
         endStr: parseDate(endStr),
         startStr: parseDate(startStr),
         isPanel: props.isPanelRight,
         id: definition.id,
+        filters: listFilters,
         tableName: props.tabAttributes.table_name,
         recordId: currentRecord.value[props.tabAttributes.table_name + '_ID']
       })
     }
 
     function openDetails(params) {
-      dialogVisibleDetails.value = true
-      currentResource.value = params.event
-      props.actionOption('view', params.event)
+      if (isNumber(params.event.id)) {
+        props.hangleChangeRecord({
+          ...params.event,
+          id: Number(params.event.id)
+        })
+        props.actionOption('view')
+      }
+    }
+
+    function isNumber(value) {
+      return !isNaN(parseFloat(value)) && isFinite(value)
     }
 
     function closeDetails() {
