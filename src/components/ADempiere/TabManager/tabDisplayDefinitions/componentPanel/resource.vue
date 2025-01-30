@@ -231,6 +231,9 @@ export default defineComponent({
         },
         datesSet: function(info, event) {
           changeRange(info)
+        },
+        dateClick: function(info) {
+          props.actionOption('')
         }
       }
     })
@@ -282,7 +285,7 @@ export default defineComponent({
     function openDetails(params) {
       dialogVisibleDetails.value = true
       currentResource.value = params.event
-      props.actionOption('view', params.event.id)
+      props.actionOption('view', params.event)
     }
 
     function closeDetails() {

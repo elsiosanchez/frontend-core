@@ -128,6 +128,10 @@ export default defineComponent({
     buttonClosePanel: {
       type: Function,
       required: false
+    },
+    detailsTitle: {
+      type: String,
+      required: false
     }
   },
 
@@ -146,6 +150,9 @@ export default defineComponent({
       }
     })
     const title = computed(() => {
+      if (!isEmptyValue(props.detailsTitle)) {
+        return props.detailsTitle
+      }
       return recordMetadata.value.title || ''
     })
 
@@ -192,17 +199,7 @@ export default defineComponent({
         return value
       }
       return ''
-      // return value === undefined || value === null || value === ''
     }
-
-    // function displayValue(field) {
-    //   if (isEmptyValue(field)) return
-    //   const { value, display_value } = field
-    //   if (!isEmptyValue(field.display_value) && field.display_value !== 'null') {
-    //     return display_value
-    //   }
-    //   return value
-    // }
 
     function ShowFieldComponent(field) {
       field.is_show_components = true

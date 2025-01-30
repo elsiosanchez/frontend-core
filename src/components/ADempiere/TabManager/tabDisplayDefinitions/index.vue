@@ -89,6 +89,8 @@
         :type-panel="typeAction"
         :current-record="currentRecord"
         :action-close="openPanelDisplayDefinition"
+        :tab-view="tabView"
+        :details-title="detailsTitle"
       />
     </el-dialog>
   </el-container>
@@ -172,10 +174,12 @@ export default defineComponent({
   setup(props) {
     // Ref
     const showContainerInfo = ref(false)
+    const detailsTitle = ref('')
     // const isDialogoPanelDifinition = ref(false)
     const typeAction = ref('')
     const recordId = ref(-1)
     const currentRecord = ref({})
+    const tabView = ref('view')
     // Conputed
     const isDialogoPanelDifinition = computed({
       get: () => {
@@ -278,11 +282,18 @@ export default defineComponent({
       currentRecord.value = element
     }
 
-    function openPanelDisplayDefinition(type) {
+    function openPanelDisplayDefinition(type, recordId) {
+      tabView.value = type
+      if (isEmptyValue(recordId)) {
+        recordId = currentRecord.value.id
+      } else {
+        currentRecord.value.id = recordId.id
+        detailsTitle.value = recordId.title
+      }
       if (type === 'delete') {
         store.dispatch('removerRecord', {
           displayDefinitionId: currentDisplyDefinitions.value.id,
-          recordId: currentRecord.value.id
+          recordId
         })
           .then(() => {
             store.dispatch('changeTabPanelRightDefinition', {
@@ -315,6 +326,8 @@ export default defineComponent({
       currentRecord,
       showContainerInfo,
       isDialogoPanelDifinition,
+      tabView,
+      detailsTitle,
       // computeds
       isMobile,
       isDrawerWidth,

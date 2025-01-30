@@ -236,7 +236,10 @@ export default defineComponent({
         selectMirror: true,
         dayMaxEvents: true,
         weekends: true,
-        select: handleDateSelect()
+        select: handleDateSelect(),
+        dateClick: function(info) {
+          props.actionOption('new')
+        }
       }
     })
 
@@ -337,7 +340,7 @@ export default defineComponent({
     function openDetails(params) {
       dialogVisibleDetails.value = true
       currentResource.value = params.event
-      props.actionOption('view', params.event.id)
+      props.actionOption('view', params.event)
     }
 
     function closeDetails() {

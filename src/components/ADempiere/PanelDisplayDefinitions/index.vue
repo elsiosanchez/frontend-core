@@ -27,7 +27,7 @@
       v-for="tab in listTabs"
     >
       <el-tab-pane
-        v-if="tab.isShow"
+        v-if="tab.name === tabView"
         :key="tab.name"
         :name="tab.name"
         :label="tab.label"
@@ -45,6 +45,7 @@
             :current-record="currentRecord"
             :panel-metadata="panelMetadata"
             :button-close-panel="actionClose"
+            :details-title="detailsTitle"
           >
             <template v-slot:footer-buttons>
               <el-button
@@ -107,6 +108,14 @@ export default defineComponent({
     currentRecord: {
       type: Object,
       required: false
+    },
+    tabView: {
+      type: String,
+      default: 'view'
+    },
+    detailsTitle: {
+      type: String,
+      required: false
     }
   },
 
@@ -135,8 +144,8 @@ export default defineComponent({
 
     const listTabs = computed(() => {
       return [
-        { label: lang.t('component.displayDefinition.cardNew'), name: 'new', icon: 'el-icon-plus', isShow: true },
-        { label: lang.t('component.displayDefinition.cardView'), name: 'view', icon: 'el-icon-news', isShow: !isEmptyValue(props.currentRecord) }
+        { label: lang.t('component.displayDefinition.cardNew'), name: 'new', icon: 'el-icon-plus' },
+        { label: lang.t('component.displayDefinition.cardView'), name: 'view', icon: 'el-icon-news' }
       ]
     })
 
