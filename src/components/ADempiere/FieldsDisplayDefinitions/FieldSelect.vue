@@ -59,6 +59,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 // import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 // API Request Methods
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 
@@ -126,21 +127,22 @@ export default defineComponent({
     }
 
     function showList(isShow) {
-      if (isShow && options.value.length <= 1) loadList()
+      if (isShow && options.value.length <= 1) {
+        loadList()
+      }
     }
 
     function loadList() {
       requestLookupList({
-        tableName: props.currentDisplayDefinition.table_name,
-        columnName: props.fieldMetadata.column_name
+        displayDefinitionFieldId: props.fieldMetadata.internal_id
       })
         .then(responseLookupItem => {
           const { records } = responseLookupItem
           options.value = records.map(list => {
-            const { id, values } = list
+            const { values } = list
             return {
               display_value: values.DisplayColumn,
-              value: id
+              value: values.KeyColumn
             }
           })
         })

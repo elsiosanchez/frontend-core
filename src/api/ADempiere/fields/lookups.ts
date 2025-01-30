@@ -40,8 +40,9 @@ export function requestLookupList({
   processParameterId,
   browseFieldId,
   fieldId,
+  displayDefinitionFieldId,
   //
-  referenceUuid,
+  referenceId,
   searchValue,
   //
   tableName,
@@ -66,6 +67,9 @@ export function requestLookupList({
     case !isEmptyValue(browseFieldId):
       url = `/fields/lookups/query-criteria/${browseFieldId}`
       break
+    case !isEmptyValue(displayDefinitionFieldId):
+      url = `/fields/lookups/display-definition/${displayDefinitionFieldId}`
+      break
     default:
       url = `/fields/lookups/${tableName}/${columnName}`
       break
@@ -79,7 +83,7 @@ export function requestLookupList({
       is_without_validation: isWithoutValidation,
       is_only_active_records: true,
       //
-      reference_uuid: referenceUuid,
+      reference_id: referenceId,
       search_value: searchValue,
       //
       table_name: tableName,
