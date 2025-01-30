@@ -179,6 +179,14 @@ const displayTabDefinition = {
           filters
         })
       }
+      if (definition.display_type === 'R') {
+        dispatch('requestResource', {
+          id: definition.id,
+          isPanel: isPanelRight,
+          tableName,
+          filters
+        })
+      }
       if (definition.display_type === 'C') {
         dispatch('changeDateCalendar', {
           id: definition.id,

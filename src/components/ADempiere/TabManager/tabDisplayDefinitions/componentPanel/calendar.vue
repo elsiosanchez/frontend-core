@@ -337,7 +337,7 @@ export default defineComponent({
     function openDetails(params) {
       dialogVisibleDetails.value = true
       currentResource.value = params.event
-      props.actionOption('view')
+      props.actionOption('view', params.event.id)
     }
 
     function closeDetails() {

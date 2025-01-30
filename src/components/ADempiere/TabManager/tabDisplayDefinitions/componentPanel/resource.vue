@@ -48,22 +48,6 @@
         </FullCalendar>
       </div>
     </el-card>
-    <el-dialog
-      :title="currentResource.title"
-      :visible.sync="dialogVisibleDetails"
-      custom-class="details-resource"
-    >
-      <see-details-calendar
-        :current-resource="currentResource"
-        :is-panel-right="isPanelRight"
-        :close-details="closeDetails"
-      >
-        <template v-slot:footer>
-          <el-button v-if="!isPanelRight" @click="isOpenDetails(currentResource.id),closeDetails()">{{ $t('component.date.seeDetails') }}</el-button>
-        </template>
-      </see-details-calendar>
-
-    </el-dialog>
   </span>
 </template>
 
@@ -141,6 +125,12 @@ export default defineComponent({
       type: Function,
       default: (recordPrevious) => {
         console.info('implement method Change to Previous Record ', recordPrevious)
+      }
+    },
+    actionOption: {
+      type: Function,
+      default: (recordPrevious) => {
+        console.info('implement method Open Action New', recordPrevious)
       }
     }
   },
@@ -292,6 +282,7 @@ export default defineComponent({
     function openDetails(params) {
       dialogVisibleDetails.value = true
       currentResource.value = params.event
+      props.actionOption('view', params.event.id)
     }
 
     function closeDetails() {

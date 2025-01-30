@@ -54,6 +54,7 @@
                   @click="handleDelete()"
                 />
                 <el-button
+                  :disabled="!isEmptyValue(currentRecord) && currentRecord.is_read_only"
                   type="danger"
                   class="button-base-icon"
                   icon="el-icon-close"
@@ -194,6 +195,7 @@ export default defineComponent({
         tableName: tableName.value,
         isPanelRight: props.isPanelRight
       })
+      props.actionClose('')
     }
     return {
       // Ref

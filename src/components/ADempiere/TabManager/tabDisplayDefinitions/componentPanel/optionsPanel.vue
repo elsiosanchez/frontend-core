@@ -31,7 +31,7 @@
       <el-dropdown-item command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
       </el-dropdown-item>
-      <el-dropdown-item command="delete" icon="el-icon-delete">
+      <el-dropdown-item :disabled="!isEmptyValue(currentRecord) && currentRecord.is_read_only" command="delete" icon="el-icon-delete">
         {{ $t('component.displayDefinition.cardDelete') }}
       </el-dropdown-item>
     </el-dropdown-menu>

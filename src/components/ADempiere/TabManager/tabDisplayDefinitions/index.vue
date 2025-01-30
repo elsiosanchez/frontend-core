@@ -275,11 +275,17 @@ export default defineComponent({
       currentRecord.value = element
     }
 
-    function openPanelDisplayDefinition(type) {
+    function openPanelDisplayDefinition(type, recordId) {
+      if (isEmptyValue(recordId)) {
+        recordId = currentRecord.value.id
+      } else {
+        currentRecord.value.id = recordId
+      }
+
       store.dispatch('changeTabPanelDefinition', {
         name: type,
         id: currentDisplyDefinitions.value.id,
-        recordId: currentRecord.value.id
+        recordId
       })
       isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
       if (!isEmptyValue(displayDefinitionFields.value)) return
