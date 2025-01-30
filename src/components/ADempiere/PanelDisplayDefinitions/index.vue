@@ -27,7 +27,7 @@
       v-for="tab in listTabs"
     >
       <el-tab-pane
-        v-if="tab.name === tabView"
+        v-if="tab.name === currentab"
         :key="tab.name"
         :name="tab.name"
         :label="tab.label"
@@ -109,10 +109,6 @@ export default defineComponent({
       type: Object,
       required: false
     },
-    tabView: {
-      type: String,
-      default: 'view'
-    },
     detailsTitle: {
       type: String,
       required: false
@@ -124,10 +120,9 @@ export default defineComponent({
     const currentab = computed({
       // store.getters.getCurrentTabPanelDefinition
       get() {
-        return store.getters.getCurrentTabPanelDefinition
+        return store.getters.getCurrentTabPanelDefinition.type
       },
       set() {}
-
     })
 
     const getCurrentRecord = computed(() => {
@@ -178,7 +173,7 @@ export default defineComponent({
 
     function handleTabClick(tab) {
       store.dispatch('changeTabPanelDefinition', {
-        name: tab.name,
+        type: tab.name,
         id: props.currentDisplayDefinition.id,
         recordId: props.currentRecord.id
 

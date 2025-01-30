@@ -129,6 +129,13 @@ export default defineComponent({
       })
     })
 
+    const additionalAttributes = computed(() => {
+      if (isEmptyValue(store.getters.getCurrentTabPanelDefinition)) {
+        return {}
+      }
+      return store.getters.getCurrentTabPanelDefinition.additionalAttributes || {}
+    })
+
     const isLoadingDisplayDefinitions = computed(() => {
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
@@ -154,9 +161,13 @@ export default defineComponent({
 
     // Methods
     function displayValue(field) {
-      if (isEmptyValue(field)) return
+      if (isEmptyValue(field)) {
+        return
+      }
       const { value, display_value } = field
-      if (!isEmptyValue(display_value)) return display_value
+      if (!isEmptyValue(display_value)) {
+        return display_value
+      }
       return value
     }
 
@@ -184,10 +195,12 @@ export default defineComponent({
     async function actionsSave() {
       isLoading.value = true
       try {
-        isLoading.value = true
         containerManagerFieldDefinition.createNewRecord({
           displayDefinitionId: props.currentDisplyDefinitions.id,
-          attributes: attributes.value,
+          attributes: {
+            ...additionalAttributes.value,
+            ...attributes.value
+          },
           currentTab
         })
         isLoading.value = false
@@ -204,6 +217,7 @@ export default defineComponent({
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
       fields,
+      additionalAttributes,
       // methods
       actionsSave,
       displayValue,

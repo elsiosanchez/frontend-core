@@ -350,7 +350,7 @@ export default defineComponent({
     function handleEventClick(info) {
       props.actionOption(info)
       // store.dispatch('changeTabPanelDefinition', {
-      //   name: info,
+      //   type: info,
       //   id: currentDisplyDefinitions.value.id,
       //   recordId: currentResource.value.id
       // })

@@ -33,7 +33,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const initState = {
-  currentTabDefinition: '',
+  currentTabDefinition: {},
   displayDefinitionFields: {},
   panelView: {},
   showPanel: false
@@ -46,8 +46,11 @@ const displayDefinitionField = {
     setShowPanel(state, show) {
       state.showPanel = show
     },
-    setCurrentTabPanelDefinition(state, name) {
-      state.currentTabDefinition = name
+    setCurrentTabPanelDefinition(state, { type, additionalAttributes = {}}) {
+      state.currentTabDefinition = {
+        type,
+        additionalAttributes
+      }
     },
     // Display Definitions Fields
     setDisplayTabDefinitionMetadata(state, {
@@ -158,12 +161,20 @@ const displayDefinitionField = {
     }, {
       id,
       recordId,
-      name
+      type,
+      additionalAttributes = {}
     }) {
       const getRecordValuesData = getters.getRecordValuesData({ recordId })
-      commit('setCurrentTabPanelDefinition', name)
-      if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) return
-      if (typeof recordId !== 'number') return
+      commit('setCurrentTabPanelDefinition', {
+        type,
+        additionalAttributes
+      })
+      if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) {
+        return
+      }
+      if (typeof recordId !== 'number') {
+        return
+      }
       dispatch('readRecordData', {
         recordId,
         displayDefinitionId: id
@@ -174,7 +185,9 @@ const displayDefinitionField = {
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
-        if (isEmptyValue(recordId)) return resolve()
+        if (isEmptyValue(recordId)) {
+          return resolve()
+        }
         commit('setRecordValuesData', {
           recordId,
           isLoading: true
@@ -297,7 +310,7 @@ const displayDefinitionField = {
       return state.showPanel
     },
     getCurrentTabPanelDefinition: (state) => {
-      return state.currentTabDefinition
+      return state.currentTabDefinition || {}
     },
     getDisplayTabDefinition: (state) => ({ id }) => {
       return state.displayDefinitionFields[id] || []

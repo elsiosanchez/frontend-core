@@ -32,7 +32,7 @@
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
       <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
         <div
-          v-for="(column, index) in columns"
+          v-for="(column, index) in columnsList"
           :key="index"
           class="kanban-column"
         >
@@ -40,11 +40,24 @@
             <b style="font-size: 16px;padding-left: 10px;">
               {{ column.title }}
             </b>
+
+            <el-button
+              plain
+              circle
+              type="success"
+              style="padding: 5px 5px; float: right;"
+              :title="$t('component.displayDefinition.cardNew')"
+              @click="newEntry(column)"
+            >
+              <el-icon class="el-icon-plus" />
+            </el-button>
+            <!--
             <options-panel
               :action-option="actionOption"
               :is-option-new="true"
               style="float: right;"
             />
+            -->
           </template>
           <draggable
             v-model="column.items"
@@ -186,33 +199,58 @@ export default defineComponent({
       })
     })
 
-    const columns = computed({
+    const kanbanDefinition = computed(() => {
+      if (props.isPanelRight) {
+        return store.getters.getCurrentKanbanPanelRightDefinition({
+          tableName: props.tabAttributes.table_name
+        })
+      }
+      return store.getters.getCurrentKanbanDefinition({
+        tableName: props.tabAttributes.table_name
+      })
+    })
+
+    const columnsList = computed({
       // getter
       get() {
         // const columnsStore = store.getters.getKanbanColumnsDefinition({ tableName: props.tabAttributes.table_name })
         // if (!isEmptyValue(columnsStore)) return columnsStore
         if (
-          !isEmptyValue(KanbanDefinitions.value) &&
-          !isEmptyValue(KanbanDefinitions.value.steps)
+          isEmptyValue(kanbanDefinition.value) ||
+          isEmptyValue(kanbanDefinition.value.steps)
         ) {
-          const { steps, records } = KanbanDefinitions.value
-          const ungroupedItems = records
-            .filter(record => !steps.some(step => record.group_id === step.value))
-          const ungroupedColumn = {
-            title: lang.t('form.kanban.noStatus'),
-            items: ungroupedItems
-          }
+          return []
+        }
+        const { steps, records, column_name } = kanbanDefinition.value
+        const ungroupedItems = records
+          .filter(record => {
+            return !steps.some(step => {
+              return record.group_id === step.value
+            })
+          })
+        const ungroupedColumn = {
+          title: lang.t('form.kanban.noStatus'),
+          column_name,
+          value: null,
+          items: ungroupedItems
+        }
 
-          const groupedColumns = steps.map(step => ({
+        const groupedColumns = steps.map(step => {
+          return {
             title: step.name,
+            column_name,
             value: step.value,
             items: records
-              .filter(record => record.group_id === step.value)
-          }))
+              .filter(record => {
+                return record.group_id === step.value
+              })
+          }
+        })
 
-          return [ungroupedColumn, ...groupedColumns]
-        }
-        return []
+        return [
+          ungroupedColumn,
+          ...groupedColumns
+        ]
       },
       // setter
       set(newValue) {
@@ -244,15 +282,20 @@ export default defineComponent({
       })
     })
 
-    const KanbanDefinitions = computed(() => {
-      if (props.isPanelRight) {
-        return store.getters.getCurrentKanbanPanelRightDefinition({
-          tableName: props.tabAttributes.table_name
-        })
-      }
-      return store.getters.getCurrentKanbanDefinition({
-        tableName: props.tabAttributes.table_name
+    const displayDefinitionMetadata = computed(() => {
+      return store.getters.getDisplayTabDefinition({
+        id: currentDisplayDefinition.value.id
       })
+    })
+
+    const displayDefinitionFields = computed(() => {
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        return displayDefinitionMetadata.value.fields
+      }
+      return []
     })
 
     const isLoading = computed(() => {
@@ -290,7 +333,7 @@ export default defineComponent({
         }
         const { id, uuid } = event.added.element
         const { table_name } = currentDisplayDefinition.value
-        const { column_name } = KanbanDefinitions.value
+        const { column_name } = kanbanDefinition.value
         const recordAttributes = {
           [column_name]: value
         }
@@ -349,18 +392,50 @@ export default defineComponent({
       })
     }
 
+    function newEntry(currentColumn) {
+      const { value, column_name } = currentColumn
+      let groupValue = null
+      if (!isEmptyValue(value)) {
+        groupValue = value
+      }
+      // Add group/column value
+      const additionalAttributes = {
+        [column_name]: groupValue
+      }
+
+      store.dispatch('changeTabPanelDefinition', {
+        type: 'new',
+        id: currentDisplayDefinition.value.id,
+        recordId: -1,
+        additionalAttributes
+      })
+
+      store.commit('setShowPanel', true)
+      if (!isEmptyValue(displayDefinitionFields.value)) {
+        return
+      }
+      loadFields()
+    }
+
+    function loadFields() {
+      store.dispatch('listDisplayDefinitionFieldsMetadata', {
+        id: currentDisplayDefinition.value.id
+      })
+    }
+
     return {
-      // computeds
-      columns,
+      // Computeds
+      columnsList,
       isMobile,
       isLoading,
       dragOptions,
       actionsManagers,
       currenPanelKanban,
-      KanbanDefinitions,
+      kanbanDefinition,
       currentDisplayDefinition,
       // Mehtods
-      handleCardMove
+      handleCardMove,
+      newEntry
     }
   }
 })

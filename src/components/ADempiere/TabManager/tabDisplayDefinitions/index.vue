@@ -97,7 +97,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :type-panel="typeAction"
         :current-record="currentRecord"
         :action-close="openPanelDisplayDefinition"
-        :tab-view="tabView"
         :details-title="detailsTitle"
       />
     </el-dialog>
@@ -186,7 +185,7 @@ export default defineComponent({
     const typeAction = ref('')
     const recordId = ref(-1)
     const currentRecord = ref({})
-    const tabView = ref('view')
+
     // Conputed
     const isDialogoPanelDifinition = computed({
       get: () => {
@@ -219,12 +218,20 @@ export default defineComponent({
     })
 
     const currentDisplyDefinitions = computed(() => {
-      if (props.isPanelRight) return store.getters.getCurrentDisplayPanelRightDefinitions({ tableName: props.tabAttributes.table_name })
-      return store.getters.getCurrentDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+      if (props.isPanelRight) {
+        return store.getters.getCurrentDisplayPanelRightDefinitions({
+          tableName: props.tabAttributes.table_name
+        })
+      }
+      return store.getters.getCurrentDisplayTabDefinitions({
+        tableName: props.tabAttributes.table_name
+      })
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({ id: currentDisplyDefinitions.value.id })
+      return store.getters.getDisplayTabDefinition({
+        id: currentDisplyDefinitions.value.id
+      })
     })
 
     const displayDefinitionFields = computed(() => {
@@ -284,7 +291,6 @@ export default defineComponent({
     }
 
     function openPanelDisplayDefinition(type, display) {
-      tabView.value = type
       if (!isEmptyValue(display)) {
         detailsTitle.value = display.title
       }
@@ -305,12 +311,14 @@ export default defineComponent({
         return
       }
       store.dispatch('changeTabPanelDefinition', {
-        name: type,
+        type: type,
         id: currentDisplyDefinitions.value.id,
         recordId: currentRecord.value.id
       })
       isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
-      if (!isEmptyValue(displayDefinitionFields.value)) return
+      if (!isEmptyValue(displayDefinitionFields.value)) {
+        return
+      }
       loadFields()
     }
 
@@ -327,7 +335,6 @@ export default defineComponent({
       currentRecord,
       showContainerInfo,
       isDialogoPanelDifinition,
-      tabView,
       detailsTitle,
       // computeds
       isMobile,
