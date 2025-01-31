@@ -44,7 +44,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         style="float: right;"
       />
     </el-header>
-    <el-main style="padding: 0px !important;">
+    <el-main
+      :style="isPanelRight ? {} : {height: 'calc(100vh - 400px)'}"
+      style="padding: 0px !important; "
+    >
       <component
         :is="templatePanel"
         :parent-uuid="parentUuid"
@@ -55,7 +58,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :tab-attributes="tabAttributes"
         :actions-manager="actionsManager"
         :is-panel-right="isPanelRight"
-        style="height: 100% !important;"
         :is-open-details="openPanel"
         :hangle-change-record="changeRecord"
         :action-option="openPanelDisplayDefinition"

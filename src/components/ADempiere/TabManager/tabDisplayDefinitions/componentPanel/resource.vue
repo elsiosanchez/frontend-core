@@ -29,8 +29,8 @@
         {{ currentDisplyDefinitions.description }}
       </div>
     </div>
-    <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
-      <div class="kanban-columns-container" style="display: block;">
+    <el-card v-loading="isLoading" :body-style="{ padding: '10px', height: '10px' }" style="height: calc(100vh - 280px) !important">
+      <div style="display: block; height: 100% !important">
         <FullCalendar
           class="demo-app-resource"
           :options="calendarOptions"
@@ -343,5 +343,8 @@ export default defineComponent({
   line-height: 1.2;
   font-size: 12px;
   color: #303133;
+}
+.demo-app-resource{
+  height: calc(100vh - 300px) !important
 }
 </style>
