@@ -196,13 +196,18 @@ export default defineComponent({
     // Conputed
     const isDialogoPanelDifinition = computed({
       get: () => {
-        return store.getters.getShowPanel
+        return store.getters.getShowPanel({
+          id: currentDisplyDefinitions.value.id
+        })
       },
       set: (value) => {
         if (!value) {
           currentRecord.value = {}
         }
-        store.commit('setShowPanel', value)
+        store.commit('setShowPanel', {
+          id: currentDisplyDefinitions.value.id,
+          show: value
+        })
       }
     })
 
@@ -298,7 +303,11 @@ export default defineComponent({
     }
     function removeRecord() {
       isLoading.value = true
-      store.commit('setShowPanel', false)
+      // store.commit('setShowPanel', false)
+      store.commit('setShowPanel', {
+        id: currentDisplyDefinitions.value.id,
+        show: false
+      })
       store.dispatch('removerRecord', {
         displayDefinitionId: currentDisplyDefinitions.value.id,
         recordId: currentRecord.value.id

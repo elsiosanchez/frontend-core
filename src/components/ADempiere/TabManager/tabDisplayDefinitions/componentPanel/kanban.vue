@@ -410,8 +410,10 @@ export default defineComponent({
         recordId: -1,
         additionalAttributes
       })
-
-      store.commit('setShowPanel', true)
+      store.commit('setShowPanel', {
+        id: currentDisplayDefinition.value.id,
+        show: true
+      })
       if (!isEmptyValue(displayDefinitionFields.value)) {
         return
       }

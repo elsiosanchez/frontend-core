@@ -37,7 +37,7 @@ const initState = {
   currentTabDefinition: {},
   displayDefinitionFields: {},
   panelView: {},
-  showPanel: false
+  showPanel: {}
 }
 
 const displayDefinitionField = {
@@ -47,8 +47,11 @@ const displayDefinitionField = {
     setShowDeleteConfirmation(state, show) {
       state.showDeleteConfirmation = show
     },
-    setShowPanel(state, show) {
-      state.showPanel = show
+    setShowPanel(state, {
+      id,
+      show
+    }) {
+      Vue.set(state.showPanel, id, show)
     },
     setCurrentTabPanelDefinition(state, { type, additionalAttributes = {}}) {
       state.currentTabDefinition = {
@@ -168,14 +171,14 @@ const displayDefinitionField = {
       type,
       additionalAttributes = {}
     }) {
-      const getRecordValuesData = getters.getRecordValuesData({ recordId })
+      // const getRecordValuesData = getters.getRecordValuesData({ recordId })
       commit('setCurrentTabPanelDefinition', {
         type,
         additionalAttributes
       })
-      if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) {
-        return
-      }
+      // if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) {
+      //   return
+      // }
       if (typeof recordId !== 'number') {
         return
       }
@@ -310,8 +313,8 @@ const displayDefinitionField = {
   },
 
   getters: {
-    getShowPanel: (state) => {
-      return state.showPanel
+    getShowPanel: (state) => ({ id }) => {
+      return state.showPanel[id] || false
     },
     getCurrentTabPanelDefinition: (state) => {
       return state.currentTabDefinition || {}

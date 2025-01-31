@@ -60,7 +60,7 @@ import {
 
 import lang from '@/lang'
 import store from '@/store'
-
+import router from '@/router'
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
@@ -277,10 +277,18 @@ export default defineComponent({
       if (isEmptyValue(params) || isEmptyValue(definition)) {
         return
       }
-      let listFilters = []
+      let listFilters, recordId
+
+      recordId = currentRecord.value[props.tabAttributes.table_name + '_ID']
+
+      if (isEmptyValue(recordId)) {
+        const currentRoute = router.app._route.query
+        recordId = currentRoute.recordId
+      }
       if (props.isPanelRight) {
         listFilters = store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
       }
+
       const { endStr, startStr } = params
       store.dispatch('changeDateRange', {
         endStr: parseDate(endStr),
@@ -289,7 +297,7 @@ export default defineComponent({
         id: definition.id,
         filters: listFilters,
         tableName: props.tabAttributes.table_name,
-        recordId: currentRecord.value[props.tabAttributes.table_name + '_ID']
+        recordId
       })
     }
 

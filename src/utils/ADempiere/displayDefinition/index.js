@@ -105,7 +105,10 @@ export const containerManagerFieldDefinition = {
           name: '',
           id: displayDefinitionId
         })
-        store.commit('setShowPanel', false)
+        store.commit('setShowPanel', {
+          id: displayDefinitionId,
+          show: false
+        })
       })
   },
   async loadRecord({
@@ -126,7 +129,10 @@ export const containerManagerFieldDefinition = {
       displayDefinitionId
     })
       .then(() => {
-        store.commit('setShowPanel', false)
+        store.commit('setShowPanel', {
+          id: displayDefinitionId,
+          show: false
+        })
       })
   }
 }
