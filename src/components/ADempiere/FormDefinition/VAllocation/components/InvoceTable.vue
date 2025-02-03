@@ -23,8 +23,8 @@
     v-loading="isLoadingInvoices"
     :data="listInvoces"
     size="mini"
+    height="calc(100vh - 550px)"
     border
-    style="width: 100%;height: 85%;"
     :element-loading-text="$t('notifications.loading')"
     element-loading-background="rgba(255, 255, 255, 0.8)"
     @select="selectionInvoces"
