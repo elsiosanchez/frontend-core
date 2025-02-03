@@ -172,6 +172,12 @@ const displayTabDefinition = {
       definition,
       isPanelRight = false
     }) {
+      if (!isEmptyValue(filters)) {
+        commit('setDisplayFilters', {
+          tableName,
+          filters
+        })
+      }
       if (isPanelRight) {
         commit('setCurrentPanelRightDefinition', {
           tableName,
@@ -182,20 +188,16 @@ const displayTabDefinition = {
           tableName,
           currentDefinition: definition
         })
-        if (!isEmptyValue(filters)) {
-          commit('setDisplayFilters', {
-            tableName,
-            filters
-          })
-        }
       }
-      const listFilters = getters.getDisplayFilters({ tableName })
+      const filtersList = getters.getDisplayFilters({
+        tableName
+      })
       if (definition.display_type === 'K') {
         dispatch('requestKanban', {
           id: definition.id,
           isPanel: isPanelRight,
           tableName,
-          filters: listFilters
+          filters: filtersList
         })
       }
       // if (definition.display_type === 'R') {
@@ -204,7 +206,7 @@ const displayTabDefinition = {
       //     isPanel: isPanelRight,
       //     tableName,
       //     recordId,
-      //     filters: listFilters
+      //     filters: filtersList
       //   })
       // }
       if (definition.display_type === 'C') {
@@ -213,21 +215,21 @@ const displayTabDefinition = {
           isPanel: isPanelRight,
           tableName,
           recordId,
-          filters: listFilters
+          filters: filtersList
         })
       }
       if (definition.display_type === 'T') {
         dispatch('requestTimeLine', {
           id: definition.id,
           tableName,
-          filters: listFilters
+          filters: filtersList
         })
       }
       if (definition.display_type === 'W') {
         dispatch('requestWorkflow', {
           id: definition.id,
           tableName,
-          filters: listFilters
+          filters: filtersList
         })
       }
     }
