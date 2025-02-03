@@ -20,9 +20,13 @@
   <span>
     <el-select
       v-model="fieldValue"
-      filterable
+      remote
       size="mini"
+      filterable
+      reserve-keyword
       :placeholder="fieldMetadata.description"
+      :remote-method="remoteMethod"
+      :loading="isLoadingSearch"
       style="padding-right: 10px;width: 200px;"
       @visible-change="showList"
       @change="saveFieldValue"
@@ -99,7 +103,11 @@ export default defineComponent({
     const fieldValue = ref('')
     const displayValueOld = ref('')
     const isLoading = ref(false)
+    const isLoadingSearch = ref(false)
     const options = ref([])
+    const timeOut = ref(null)
+
+    // Watchers
     if (!isEmptyValue(props.currentRecord) && !isEmptyValue(props.currentRecord.fields)) {
       fieldValue.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
       displayValueOld.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
@@ -137,35 +145,68 @@ export default defineComponent({
 
     function showList(isShow) {
       if (isShow && options.value.length <= 1 || !isEmptyValue(options.value)) {
-        loadList()
+        remoteMethod()
         return
       }
     }
 
-    function loadList() {
-      requestLookupList({
-        displayDefinitionFieldId: props.fieldMetadata.internal_id
-      })
-        .then(responseLookupItem => {
-          const { records } = responseLookupItem
-          options.value = records.map(list => {
-            const { values } = list
-            return {
-              display_value: values.DisplayColumn,
-              value: values.KeyColumn
-            }
-          })
+    // function loadList() {
+    //   requestLookupList({
+    //     displayDefinitionFieldId: props.fieldMetadata.internal_id
+    //   })
+    //     .then(responseLookupItem => {
+    //       const { records } = responseLookupItem
+    //       options.value = records.map(list => {
+    //         const { values } = list
+    //         return {
+    //           display_value: values.DisplayColumn,
+    //           value: values.KeyColumn
+    //         }
+    //       })
+    //     })
+    // }
+
+    function remoteMethod(searchValue) {
+      if (isEmptyValue(searchValue) && !isEmptyValue(options.value)) return
+      clearTimeout(timeOut.value)
+      timeOut.value = setTimeout(() => {
+        isLoadingSearch.value = true
+        requestLookupList({
+          searchValue,
+          pageSize: 10,
+          displayDefinitionFieldId: props.fieldMetadata.internal_id
         })
+          .then(responseLookupItem => {
+            const { records } = responseLookupItem
+            options.value = records.map(list => {
+              const { values } = list
+              return {
+                display_value: values.DisplayColumn,
+                value: values.KeyColumn
+              }
+            })
+          })
+          .finally(() => {
+            isLoadingSearch.value = false
+          })
+      }, 500)
     }
+
+    // function findList(searchValue) {
+    //   return options.value.find(list => list.display_value.includes(searchValue) )
+    // }
 
     return {
       // Ref
       fieldValue,
       options,
       isLoading,
+      timeOut,
+      isLoadingSearch,
       displayValueOld,
       // Methods
       showList,
+      remoteMethod,
       updateFieldValue,
       requestLookupList,
       saveFieldValue
