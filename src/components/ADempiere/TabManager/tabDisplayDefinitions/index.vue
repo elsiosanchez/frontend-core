@@ -326,10 +326,8 @@ export default defineComponent({
     }
     function openPanelDisplayDefinition(type, display) {
       if (!isEmptyValue(type)) {
-        if (!isEmptyValue(display)) {
-          detailsTitle.value = display.title
-        }
         if (!isEmptyValue(display) && !isEmptyValue(display.id)) {
+          detailsTitle.value = display.title
           currentRecord.value.id = display.id
         }
         store.dispatch('changeTabPanelDefinition', {

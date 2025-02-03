@@ -242,10 +242,35 @@ export default defineComponent({
         selectMirror: true,
         dayMaxEvents: true,
         weekends: true,
-        select: handleDateSelect(),
-        dateClick: function(info) {
+        // select: handleDateSelect(),
+        select: function(info) {
+          const start = {
+            [currentDisplyDefinitions.value.valid_from_column]: {
+              type: 'date',
+              value: info.startStr
+            }
+          }
+          const end = {
+            [currentDisplyDefinitions.value.valid_to_column]: {
+              type: 'date',
+              value: info.endStr
+            }
+          }
+          const attributes = {
+            ...start,
+            ...end
+          }
           props.actionOption('new')
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            id: currentDisplyDefinitions.value.id,
+            recordId: -1,
+            additionalAttributes: attributes
+          })
         }
+        // dateClick: function(info) {
+        //   props.actionOption('new')
+        // }
       }
     })
 

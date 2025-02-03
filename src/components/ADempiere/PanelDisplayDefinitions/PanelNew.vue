@@ -140,7 +140,10 @@ export default defineComponent({
       if (isEmptyValue(store.getters.getCurrentTabPanelDefinition)) {
         return {}
       }
-      return store.getters.getCurrentTabPanelDefinition.additionalAttributes || {}
+      const attributes = store.getters.getCurrentTabPanelDefinition.additionalAttributes
+      return {
+        ...attributes
+      }
     })
 
     const isLoadingDisplayDefinitions = computed(() => {
