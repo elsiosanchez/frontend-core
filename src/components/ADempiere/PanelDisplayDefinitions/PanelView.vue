@@ -135,6 +135,7 @@ import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextT
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -172,6 +173,10 @@ export default defineComponent({
     detailsTitle: {
       type: String,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -231,6 +236,9 @@ export default defineComponent({
       return []
     })
 
+    // Constants
+    const { currentTab } = store.getters.getContainerInfo
+
     function displayValue(field, column_name) {
       if (
         !isEmptyValue(field) &&
@@ -268,20 +276,14 @@ export default defineComponent({
     function removerRecord() {
       showDelete(false)
       isLoadingDelete.value = true
-      store.dispatch('removerRecord', {
+      containerManagerFieldDefinition.deleteRecord({
         recordId: props.currentRecord.id,
-        displayDefinitionId: props.currentDisplyDefinitions.id
+        currentTab,
+        isPanelRight: props.isPanelRight,
+        displyDefinitions: props.currentDisplyDefinitions
       })
-        .then(() => {
-          props.buttonClosePanel('')
-          isLoadingDelete.value = false
-        })
-        .catch(() => {
-          isLoadingDelete.value = false
-        })
         .finally(() => {
           isLoadingDelete.value = false
-          store.commit('setShowPanel', false)
         })
     }
     function deleteRecord() {

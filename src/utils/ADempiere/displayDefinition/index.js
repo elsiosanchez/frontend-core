@@ -265,9 +265,15 @@ const functionMap = {
   RESOURCE: addNewRecordToListResource
 }
 
+const functionMaDelete = {
+  CALENDAR: addNewRecordToListCalendar,
+  RESOURCE: addNewRecordToListResource
+}
+
 // Separate function to handle post-save actions
 const handlePostSaveActions = ({
   response,
+  isDelete = false,
   displyDefinitions,
   isPanelRight,
   currentTab,
@@ -275,7 +281,18 @@ const handlePostSaveActions = ({
   attributes
 }) => {
   const actionType = displyDefinitions.type?.toUpperCase()
-  const functionToCall = functionMap[actionType]
+  let functionToCall
+  if (isDelete) {
+    functionToCall = functionMaDelete[actionType]
+    functionToCall({
+      isPanelRight,
+      currentTab,
+      keyAttribute,
+      displayDefinition: displyDefinitions
+    })
+    return
+  }
+  functionToCall = functionMap[actionType]
 
   if (functionToCall) {
     functionToCall({
@@ -385,20 +402,24 @@ export const containerManagerFieldDefinition = {
   },
   async deleteRecord({
     recordId,
-    displayDefinitionId
+    currentTab,
+    isPanelRight,
+    displyDefinitions
   }) {
     store.dispatch('removerRecord', {
       recordId,
-      displayDefinitionId
+      displayDefinitionId: displyDefinitions.id
     })
       .then(() => {
         store.commit('setShowPanel', {
-          id: displayDefinitionId,
+          id: displyDefinitions.id,
           show: false
         })
-        store.commit('setShowPanel', {
-          id: displayDefinitionId,
-          show: false
+        handlePostSaveActions({
+          isPanelRight,
+          isDelete: true,
+          currentTab,
+          displyDefinitions
         })
       })
   }

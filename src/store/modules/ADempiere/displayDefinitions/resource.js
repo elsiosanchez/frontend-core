@@ -181,7 +181,7 @@ const resourceDefinition = {
           allFilters = filters.concat(defaultFilters)
         }
 
-        if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
+        // if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
 
         if (isPanel) {
           commit('setResourceFilters', {
