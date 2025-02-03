@@ -22,6 +22,8 @@
       v-model="value"
       :placeholder="fieldMetadata.description"
       size="mini"
+      :rows="4"
+      :type="typeTextBox"
       style="padding-right: 10px;width: 200px;"
       @input="saveField(value, fieldMetadata)"
     />
@@ -42,12 +44,15 @@
 <script>
 import {
   defineComponent,
-  // computed
+  computed,
   ref
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
 import store from '@/store'
+
+// Constants
+import { TEXT } from '@/utils/ADempiere/references'
 
 // Utils and Helper Methods
 // import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -86,6 +91,20 @@ export default defineComponent({
     const value = ref('')
     const isLoading = ref(false)
     value.value = props.displayValue || ''
+
+    const typeTextBox = computed(() => {
+      // String, Url, FileName...
+      let typeInput = 'text'
+      // Display Type 'Text' (14)
+      if (props.fieldMetadata.display_type === TEXT.id) {
+        typeInput = 'textarea'
+      }
+      if (props.fieldMetadata.is_encrypted) {
+        typeInput = 'password'
+      }
+      return typeInput
+    })
+
     // Methods
     function saveField(value, field) {
       if (props.isNewRecord) {
@@ -114,6 +133,8 @@ export default defineComponent({
       // Ref
       value,
       isLoading,
+      // Computeds
+      typeTextBox,
       // Methods
       updateField,
       saveField

@@ -46,12 +46,12 @@
                 {{ field.name }}
               </b>
             </template>
-            <FieldsDisplayDefinitions
+            <fields-display-definitions
               :field="field"
               :current-record="currentRecord"
               :current-display-definition="currentDisplyDefinitions"
               :update-field="updateFieldRecord"
-              :is-new-record="true"
+              :is-new-record="false"
             />
           </el-descriptions-item>
         </template>
@@ -75,10 +75,13 @@
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
+
 import store from '@/store'
 // import language from '@/lang'
-// Component
+
+// Components and Mixins
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'

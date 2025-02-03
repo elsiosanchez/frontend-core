@@ -38,8 +38,10 @@ import {
   computed
   // ref
 } from '@vue/composition-api'
+
 // import lang from '@/lang'
 // import store from '@/store'
+
 // Utils and Helper Methods
 // import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
@@ -60,7 +62,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: [String, Number, Date, Boolean],
+      type: [String, Date, Number],
       required: false
     },
     updateField: {

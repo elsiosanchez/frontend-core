@@ -17,11 +17,15 @@
 <script>
 
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 import lang from '@/lang'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'TextTruncation',
+
   props: {
     fullText: {
       type: String,
@@ -36,6 +40,7 @@ export default defineComponent({
       default: 2 // Número de líneas a mostrar
     }
   },
+
   setup(props) {
     // Ref
     const isExpanded = ref(false)
