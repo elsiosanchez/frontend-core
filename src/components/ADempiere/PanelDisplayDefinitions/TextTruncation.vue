@@ -17,13 +17,15 @@
 <script>
 
 import { defineComponent, computed, ref } from '@vue/composition-api'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 import lang from '@/lang'
 export default defineComponent({
   name: 'TextTruncation',
   props: {
     fullText: {
       type: String,
-      required: true
+      required: false
     },
     maxWords: {
       type: Number,
@@ -39,9 +41,15 @@ export default defineComponent({
     const isExpanded = ref(false)
 
     // Computed
-    const displayedText = computed(() => isExpanded.value ? props.fullText : truncateText(props.fullText))
+    const displayedText = computed(() => {
+      if (isEmptyValue(props.fullText)) return ''
+      return isExpanded.value ? props.fullText : truncateText(props.fullText)
+    })
     const buttonText = computed(() => isExpanded.value ? lang.t('component.displayDefinition.seeLess') : lang.t('component.displayDefinition.seeMore'))
-    const isTruncated = computed(() => props.fullText.split(' ').length > props.maxWords)
+    const isTruncated = computed(() => {
+      if (isEmptyValue(props.fullText)) return false
+      return props.fullText.split(' ').length > props.maxWords
+    })
     const textContainerStyle = computed(() => ({
       maxHeight: isExpanded.value ? 'none' : `${props.maxLines * 1.2}em`, // Ajusta la altura máxima para mostrar el número de líneas
       overflow: 'hidden'

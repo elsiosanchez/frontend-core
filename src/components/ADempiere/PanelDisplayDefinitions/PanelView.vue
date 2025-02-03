@@ -48,7 +48,6 @@
             <b> {{ field.name }} </b>
           </template>
           <span v-if="!field.is_show_components" style="display: flex;">
-            <!-- {{ displayValue(recordMetadata.fields, field.column_name) }} -->
             <text-truncation
               :full-text="displayValue(recordMetadata.fields, field.column_name)"
               :max-words="3"
@@ -135,6 +134,7 @@ import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefini
 import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextTruncation'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -236,11 +236,14 @@ export default defineComponent({
         !isEmptyValue(field) &&
         !isEmptyValue(field[column_name])
       ) {
-        const { value, display_value } = field[column_name]
+        const { value: info, display_value } = field[column_name]
+        if (!isEmptyValue(info) && typeof info === 'object' && info.type === 'date') {
+          return formatDate({ value: info.value })
+        }
         if (!isEmptyValue(display_value) && display_value !== 'null') {
           return display_value
         }
-        return value
+        return info
       }
       return ''
     }
