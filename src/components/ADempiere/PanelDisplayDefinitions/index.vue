@@ -28,6 +28,7 @@
       :panel-metadata="panelMetadata"
       :button-close-panel="actionClose"
       :details-title="detailsTitle"
+      :is-panel-right="isPanelRight"
     >
       <template v-slot:footer-buttons>
         <el-button
@@ -90,6 +91,10 @@ export default defineComponent({
     detailsTitle: {
       type: String,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 

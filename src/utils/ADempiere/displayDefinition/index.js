@@ -24,6 +24,276 @@ import store from '@/store'
 
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
+import { parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
+import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
+/**
+ * Add New Record to Panel
+ */
+
+function addNewRecordToListKanban({
+  isPanelRight,
+  newRecord,
+  keyAttribute,
+  currentTab,
+  displayDefinition
+}) {
+  const {
+    table_name,
+    group_column
+  } = displayDefinition
+
+  let currentkanban
+  if (isPanelRight) {
+    currentkanban = store.getters.getCurrentKanbanPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentkanban = store.getters.getCurrentKanbanDefinition({
+      tableName: table_name
+    })
+  }
+  const list = [
+    {
+      ...newRecord,
+      group_id: keyAttribute[group_column]
+    }
+  ]
+  currentkanban.records.push(...list)
+  if (isPanelRight) {
+    store.commit('setCurrentKanbanRightDefinition', {
+      tableName: currentTab.table_name,
+      currentkanban: currentkanban
+    })
+    return
+  }
+  store.commit('setCurrentKanbanDefinition', {
+    tableName: table_name,
+    currentkanban: currentkanban
+  })
+}
+
+/**
+ * Resource
+ */
+// function getCurrentDateInISOFormat() {
+//   const now = new Date() // Obtiene la fecha y hora actual
+//   return now.toISOString() // Convierte la fecha a formato ISO 8601
+// }
+
+export function transformEvents({
+  records
+}) {
+  return records.map(({ id, title, name, valid_from, valid_to, description }) => {
+    const start = isEmptyValue(valid_from) ? valid_to : valid_from
+    const end = isEmptyValue(valid_to) ? valid_from : valid_to
+
+    return {
+      id,
+      title: `${title} - ${name}`,
+      start: parseDate(start),
+      end: parseDate(end),
+      resourceId: id,
+      description
+    }
+  })
+}
+
+/**
+ * Transforms an array of groups into a structured resource list.
+ * Each group becomes an object with a unique ID, a title, a color and a list of child resources.
+ *
+ * @param {Array} groups - Array of groups, where each group contains a color, a name and a list of resources.
+ * @returns {Array} - Array of transformed objects, where each object represents a group with its child resources.
+ */
+
+export function transformResources({
+  groups
+}) {
+  return groups.map(({ color: colorGroup, name: titleGroup, resources }) => {
+    // Generates a unique ID for the group
+    const uuidGroup = getUuidv4()
+
+    // Transforms each resource within the group
+    const resourcesChilds = resources.map(({ id, color: colorResource, name: titleResource }) => ({
+      id, // ID del recurso
+      eventColor: colorResource, // resource color
+      title: titleResource // resource title
+    }))
+
+    // Return the transformed group
+    return {
+      id: uuidGroup, // Unique group ID
+      title: titleGroup, // Group title
+      color: colorGroup, // Group color
+      children: resourcesChilds // List of child resources
+    }
+  })
+}
+function addNewRecordToListResource({
+  isPanelRight,
+  newRecord,
+  keyAttribute,
+  currentTab,
+  attributes,
+  displayDefinition
+}) {
+  const {
+    table_name
+    // group_column
+  } = displayDefinition
+
+  let currentResource
+  if (isPanelRight) {
+    currentResource = store.getters.getCurrentResourcePanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentResource = store.getters.getResourceDefinition({
+      tableName: table_name
+    })
+  }
+  return currentResource
+  // const list = [
+  //   {
+  //     ...newRecord,
+  //     group_id: getCurrentDateInISOFormat
+  //   }
+  // ]
+  // currentkanban.eventsList.push(...list)
+  // if (isPanelRight) {
+  //   store.commit('setCurrentResourceRightDefinition', {
+  //     tableName: currentTab.table_name,
+  //     currentkanban: currentkanban
+  //   })
+  //   return
+  // }
+  // store.commit('setCurrentResourceDefinition', {
+  //   tableName: table_name,
+  //   currentkanban: currentkanban
+  // })
+}
+
+function addNewRecordToListCalendar({
+  displayDefinition,
+  isPanelRight,
+  currentTab
+}) {
+  const {
+    table_name
+    // group_column
+  } = displayDefinition
+
+  let currentCalendar
+  if (isPanelRight) {
+    currentCalendar = store.getters.getCalendarPanelRightDefinitions({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentCalendar = store.getters.getCalendarDefinition({
+      tableName: table_name
+    })
+  }
+  return currentCalendar
+  // const list = [
+  //   {
+  //     ...newRecord,
+  //     group_id: getCurrentDateInISOFormat
+  //   }
+  // ]
+  // currentkanban.eventsList.push(...list)
+  // if (isPanelRight) {
+  //   store.commit('setCurrentResourceRightDefinition', {
+  //     tableName: currentTab.table_name,
+  //     currentkanban: currentkanban
+  //   })
+  //   return
+  // }
+  // store.commit('setCurrentResourceDefinition', {
+  //   tableName: table_name,
+  //   currentkanban: currentkanban
+  // })
+}
+
+function closeModalDefinition({
+  displyDefinitions,
+  show = false,
+  name = ''
+}) {
+  store.dispatch('changeTabPanelDefinition', {
+    displayDefinitionId: displyDefinitions.id,
+    name
+  })
+  store.commit('setShowPanel', {
+    id: displyDefinitions.id,
+    show
+  })
+}
+
+// Reusable helper for filtering valid attributes
+const filterValidAttributes = (items) => {
+  return items.reduce((acc, { columnName, value }) => {
+    if (!isEmptyValue(columnName) && !isEmptyValue(value)) {
+      acc[columnName] = value
+    }
+    return acc
+  }, {})
+}
+
+// Function to Obtain Default Attributes
+const getDefaultAttributes = ({ currentTab }) => {
+  const { parentUuid, containerUuid } = currentTab
+  const { fieldsList } = store.getters.getStoredTab(parentUuid, containerUuid)
+
+  const isSOTrx = isSalesTransaction({
+    parentUuid,
+    containerUuid,
+    isRecord: false
+  })
+
+  const parsedDefaults = store.getters.getTabParsedDefaultValue({
+    parentUuid,
+    containerUuid,
+    isSOTrxDictionary: isSOTrx,
+    fieldsList
+  })
+
+  return filterValidAttributes(parsedDefaults)
+}
+
+// Mapa de funciones
+const functionMap = {
+  KANBAN: addNewRecordToListKanban,
+  CALENDAR: addNewRecordToListCalendar,
+  RESOURCE: addNewRecordToListResource
+}
+
+// Separate function to handle post-save actions
+const handlePostSaveActions = ({
+  response,
+  displyDefinitions,
+  isPanelRight,
+  currentTab,
+  keyAttribute
+}) => {
+  const actionType = displyDefinitions.type?.toUpperCase()
+  const functionToCall = functionMap[actionType]
+
+  if (functionToCall) {
+    functionToCall({
+      isPanelRight,
+      newRecord: {
+        id: response.id,
+        ...response
+      },
+      currentTab,
+      keyAttribute,
+      displayDefinition: displyDefinitions
+    })
+  }
+
+  closeModalDefinition({ displyDefinitions })
+}
 
 /**
  * Container Manage the Field Definition
@@ -72,44 +342,35 @@ export const containerManagerFieldDefinition = {
         })
     })
   },
-  async createNewRecord({
-    displayDefinitionId,
+  createNewRecord({
+    displyDefinitions,
     attributes = {},
-    currentTab
+    isPanelRight,
+    currentTab,
+    keyAttribute
   }) {
-    store.dispatch('setTabDefaultValues', {
-      parentUuid: currentTab.parentUuid,
-      containerUuid: currentTab.containerUuid,
-      overwriteValues: {}
-    })
+    return new Promise((resolve) => {
+      const persistenceAttributes = getDefaultAttributes({ currentTab })
 
-    const persistence = store.getters.getPersistenceAttributes({
-      containerUuid: currentTab.containerUuid
-    })
-
-    const persistenceAttributes = persistence.reduce((element, { columnName, value }) => {
-      if (!isEmptyValue(columnName) && !isEmptyValue(value)) {
-        element[columnName] = value
-      }
-      return element
-    }, {}) || {}
-    store.dispatch('saveRecord', {
-      displayDefinitionId,
-      attributes: {
-        ...persistenceAttributes,
-        ...attributes
-      }
-    })
-      .then(() => {
-        store.dispatch('changeTabPanelDefinition', {
-          name: '',
-          id: displayDefinitionId
-        })
-        store.commit('setShowPanel', {
-          id: displayDefinitionId,
-          show: false
-        })
+      store.dispatch('saveRecord', {
+        displayDefinitionId: displyDefinitions.id,
+        attributes: { ...persistenceAttributes, ...attributes }
       })
+        .then(response => {
+          handlePostSaveActions({
+            response,
+            displyDefinitions,
+            isPanelRight,
+            currentTab,
+            attributes,
+            keyAttribute
+          })
+          resolve()
+        })
+        .finally(() => {
+          resolve()
+        })
+    })
   },
   async loadRecord({
     recordId,
@@ -129,6 +390,10 @@ export const containerManagerFieldDefinition = {
       displayDefinitionId
     })
       .then(() => {
+        store.commit('setShowPanel', {
+          id: displayDefinitionId,
+          show: false
+        })
         store.commit('setShowPanel', {
           id: displayDefinitionId,
           show: false

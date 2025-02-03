@@ -114,6 +114,10 @@ export default defineComponent({
     buttonClosePanel: {
       type: Function,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -194,19 +198,20 @@ export default defineComponent({
 
     async function actionsSave() {
       isLoading.value = true
-      try {
-        containerManagerFieldDefinition.createNewRecord({
-          displayDefinitionId: props.currentDisplyDefinitions.id,
-          attributes: {
-            ...additionalAttributes.value,
-            ...attributes.value
-          },
-          currentTab
+      containerManagerFieldDefinition.createNewRecord({
+        displayDefinitionId: props.currentDisplyDefinitions.id,
+        displyDefinitions: props.currentDisplyDefinitions,
+        attributes: {
+          ...additionalAttributes.value,
+          ...attributes.value
+        },
+        keyAttribute: additionalAttributes.value,
+        isPanelRight: props.isPanelRight,
+        currentTab
+      })
+        .finally(() => {
+          isLoading.value = false
         })
-        isLoading.value = false
-      } catch (error) {
-        isLoading.value = false
-      }
     }
 
     return {

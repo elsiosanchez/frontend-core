@@ -202,7 +202,7 @@ export default defineComponent({
         // timeZone: 'UTC',
         plugins: [resourceTimelinePlugin],
         headerToolbar: {
-          left: 'today prev,next',
+          left: 'today prev,next,myCustomButton',
           center: 'title',
           right: 'resourceTimelineDay,resourceTimelineWeek,resourceTimelineMonth,resourceTimelineYear'
         },
@@ -239,7 +239,14 @@ export default defineComponent({
           changeRange(info)
         },
         dateClick: function(info) {
-          props.actionOption('')
+        },
+        customButtons: {
+          myCustomButton: {
+            text: lang.t('window.newRecord'),
+            click: function() {
+              props.actionOption('new')
+            }
+          }
         }
       }
     })
