@@ -15,13 +15,9 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
-
 <template>
   <span>
-    <div
-      v-if="isPanelRight"
-      class="info-definitions"
-    >
+    <div v-if="isPanelRight" class="info-definitions">
       <span style="font-weight: bold;">
         {{ currentDisplayDefinition.name }}
       </span>
@@ -31,34 +27,22 @@
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
       <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
-        <div
-          v-for="(column, index) in columnsList"
-          :key="index"
-          class="kanban-column"
-        >
-          <template>
-            <b style="font-size: 16px;padding-left: 10px;">
+        <div v-for="(column, index) in columnsList" :key="index" class="kanban-column">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <b style="font-size: 16px; padding-left: 10px;">
               {{ column.title }}
             </b>
-
             <el-button
               plain
               circle
               type="success"
-              style="padding: 5px 5px; float: right;"
+              style="padding: 5px 5px;"
               :title="$t('component.displayDefinition.cardNew')"
               @click="newEntry(column)"
             >
               <el-icon class="el-icon-plus" />
             </el-button>
-            <!--
-            <options-panel
-              :action-option="actionOption"
-              :is-option-new="true"
-              style="float: right;"
-            />
-            -->
-          </template>
+          </div>
           <draggable
             v-model="column.items"
             v-bind="dragOptions"
@@ -75,10 +59,7 @@
                 @dblclick="isOpenDetails(element.id)"
                 @click="hangleChangeRecord(element)"
               >
-                <div
-                  class="kanban-column-header"
-                  style="display: block;"
-                >
+                <div class="kanban-column-header" style="display: block;">
                   <span class="column-title-kanban">{{ element.title }}</span>
                   <options-panel
                     :action-option="actionOption"
@@ -103,7 +84,6 @@
     </el-card>
   </span>
 </template>
-
 <script>
 import {
   defineComponent,
