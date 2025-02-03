@@ -25,7 +25,7 @@
       :rows="4"
       :type="typeTextBox"
       style="padding-right: 10px;width: 200px;"
-      @input="saveField(value, fieldMetadata)"
+      @input="saveFieldValue(value, fieldMetadata)"
     />
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
@@ -34,7 +34,7 @@
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
-        @click="updateField(value, fieldMetadata)"
+        @click="updateFieldValue(value, fieldMetadata)"
       />
       <i v-if="isLoading" class="el-icon-loading" />
     </span>
@@ -77,7 +77,7 @@ export default defineComponent({
       type: [String, Boolean],
       required: false
     },
-    updateAttribute: {
+    updateField: {
       type: Function,
       required: false
     },
@@ -106,13 +106,14 @@ export default defineComponent({
     })
 
     // Methods
-    function saveField(value, field) {
+    function saveFieldValue(value, field) {
       if (props.isNewRecord) {
-        props.updateAttribute(value, props.fieldMetadata)
+        props.updateField(value, props.fieldMetadata)
         return
       }
     }
-    function updateField(value, field) {
+
+    function updateFieldValue(value, field) {
       isLoading.value = true
       store.dispatch('updateField', {
         id: props.currentRecord.id,
@@ -122,7 +123,7 @@ export default defineComponent({
         displayDefinitionId: props.currentDisplayDefinition.id
       })
         .then(response => {
-          props.updateAttribute(response, field)
+          props.updateField(response, field)
         })
         .finally(() => {
           isLoading.value = false
@@ -136,8 +137,8 @@ export default defineComponent({
       // Computeds
       typeTextBox,
       // Methods
-      updateField,
-      saveField
+      updateFieldValue,
+      saveFieldValue
     }
   }
 })

@@ -24,7 +24,7 @@
       :active-text="$t('components.switchActiveText')"
       :inactive-text="$t('components.switchInactiveText')"
       size="mini"
-      @change="saveField(fieldValue, fieldMetadata)"
+      @change="saveFieldValue(fieldValue, fieldMetadata)"
     />
 
     <span v-if="!isNewRecord">
@@ -34,7 +34,7 @@
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
-        @click="updateField(fieldValue, fieldMetadata)"
+        @click="updateFieldValue(fieldValue, fieldMetadata)"
       />
       <i v-if="isLoading" class="el-icon-loading" />
     </span>
@@ -73,7 +73,7 @@ export default defineComponent({
       type: [String, Boolean],
       required: false
     },
-    updateAttribute: {
+    updateField: {
       type: Function,
       required: false
     },
@@ -92,14 +92,14 @@ export default defineComponent({
     const isLoading = ref(false)
 
     // Methods
-    function saveField(value, field) {
+    function saveFieldValue(value, field) {
       if (props.isNewRecord) {
-        props.updateAttribute(value, props.fieldMetadata)
+        props.updateField(value, props.fieldMetadata)
         return
       }
     }
 
-    function updateField(value, field) {
+    function updateFieldValue(value, field) {
       isLoading.value = true
       store.dispatch('updateField', {
         id: props.currentRecord.id,
@@ -109,7 +109,7 @@ export default defineComponent({
         displayDefinitionId: props.currentDisplayDefinition.id
       })
         .then(response => {
-          props.updateAttribute(response, field)
+          props.updateField(response, field)
         })
         .finally(() => {
           isLoading.value = false
@@ -119,8 +119,8 @@ export default defineComponent({
     return {
       fieldValue,
       isLoading,
-      saveField,
-      updateField
+      saveFieldValue,
+      updateFieldValue
     }
   }
 })

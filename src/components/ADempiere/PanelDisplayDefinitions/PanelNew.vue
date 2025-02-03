@@ -51,7 +51,7 @@
               :current-record="currentRecord"
               :current-display-definition="currentDisplyDefinitions"
               :update-field="updateFieldRecord"
-              :is-new-record="false"
+              :is-new-record="true"
             />
           </el-descriptions-item>
         </template>

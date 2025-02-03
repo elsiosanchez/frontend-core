@@ -23,7 +23,7 @@
     :current-record="currentRecord"
     :display-value="displayValue"
     :current-display-definition="currentDisplayDefinition"
-    :update-attribute="updateField"
+    :update-field="updateField"
     :is-new-record="isNewRecord"
   >
     <template v-slot:button-exit>

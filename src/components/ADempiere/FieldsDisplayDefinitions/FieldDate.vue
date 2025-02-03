@@ -26,7 +26,7 @@
       size="mini"
       :placeholder="fieldMetadata.description"
       style="padding-right: 10px;width: 200px;"
-      @change="saveField(value, fieldMetadata)"
+      @change="saveFieldValue(value, fieldMetadata)"
     />
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
@@ -35,7 +35,7 @@
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
-        @click="updateField(value, fieldMetadata)"
+        @click="updateFieldValue(value, fieldMetadata)"
       />
       <i v-if="isLoading" class="el-icon-loading" />
     </span>
@@ -80,7 +80,7 @@ export default defineComponent({
       type: [String, Date, Boolean],
       required: false
     },
-    updateAttribute: {
+    updateField: {
       type: Function,
       required: false
     },
@@ -93,7 +93,7 @@ export default defineComponent({
   setup(props) {
     const value = ref('')
     const isLoading = ref(false)
-    value.value = convertirFecha(props.displayValue)
+    value.value = convertStringDate(props.displayValue)
 
     // Computed
     const pickerOptionsDate = computed(() => {
@@ -104,20 +104,20 @@ export default defineComponent({
 
     // Methods
 
-    function saveField(value, field) {
+    function saveFieldValue(value, field) {
       if (props.isNewRecord) {
         const dateParse = {
           type: 'date',
-          value: convertirFechaSend(value)
+          value: dateToSend(value)
         }
-        props.updateAttribute(dateParse, props.fieldMetadata)
+        props.updateField(dateParse, props.fieldMetadata)
         return
       }
     }
 
-    function updateField(value, field) {
+    function updateFieldValue(value, field) {
       if (props.isNewRecord) {
-        props.updateAttribute(convertirFechaSend(value), props.fieldMetadata)
+        props.updateField(dateToSend(value), props.fieldMetadata)
         return
       }
       isLoading.value = true
@@ -126,7 +126,7 @@ export default defineComponent({
         attributes: {
           [field.column_name]: {
             type: 'date',
-            value: convertirFechaSend(value)
+            value: dateToSend(value)
           }
         },
         displayDefinitionId: props.currentDisplayDefinition.id
@@ -135,13 +135,15 @@ export default defineComponent({
           isLoading.value = false
         })
         .finally(() => {
-          props.updateAttribute(value, props.fieldMetadata)
+          props.updateField(value, props.fieldMetadata)
           isLoading.value = false
         })
     }
 
-    function convertirFecha(fecha) {
-      if (isEmptyValue(fecha) || typeof fecha !== 'string') return
+    function convertStringDate(fecha) {
+      if (isEmptyValue(fecha) || typeof fecha !== 'string') {
+        return
+      }
       // Dividir la fecha en partes
       const partes = fecha.split('/')
 
@@ -161,8 +163,10 @@ export default defineComponent({
       return nuevaFecha
     }
 
-    function convertirFechaSend(fecha) {
-      if (isEmptyValue(fecha)) return
+    function dateToSend(fecha) {
+      if (isEmptyValue(fecha)) {
+        return
+      }
       // Crear un objeto Date a partir de la cadena de fecha
       const fechaObj = new Date(fecha)
 
@@ -190,8 +194,8 @@ export default defineComponent({
       // Computed
       pickerOptionsDate,
       // Methods
-      updateField,
-      saveField
+      updateFieldValue,
+      saveFieldValue
     }
   }
 })
