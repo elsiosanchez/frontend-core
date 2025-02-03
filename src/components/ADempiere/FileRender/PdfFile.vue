@@ -21,7 +21,6 @@
     class="pdf-content"
     :src="output"
     :type="mimeType"
-    style="height:1000px;width:100%; position:relative;"
   >
 </template>
 
@@ -77,7 +76,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .pdf-content {
   width: 100%;
-  height: 90%;
+  // height: 90%;
+  height: calc(100vh - 127px);
   padding-right: 10px;
+  position: relative;
 }
 </style>

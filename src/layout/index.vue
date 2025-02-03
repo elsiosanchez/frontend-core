@@ -57,7 +57,7 @@ export default {
     },
     styleContainer() {
       if (this.$route.meta.title === 'dashboard' || this.$route.meta.isSummary) {
-        return 'overflow: auto;'
+        return 'height: 90%;overflow: auto;'
       }
       // return 'height: 100%; overflow: hidden;'
       return null
@@ -68,9 +68,9 @@ export default {
     stylesClass() {
       const storedForm = this.$store.getters.getStoredForm(this.$route.meta.uuid)
       if (!this.isEmptyValue(storedForm) && storedForm.file_name === 'PriceChecking') {
-        return 'margin-left: 0px;'
+        return 'height: 100%;margin-left: 0px;'
       }
-      return ''
+      return 'height: 100%;'
     }
   },
   methods: {
