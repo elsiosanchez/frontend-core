@@ -284,7 +284,7 @@ export default defineComponent({
       if (isEmptyValue(params) || isEmptyValue(definition)) {
         return
       }
-      let listFilters, recordId
+      let recordId
 
       recordId = currentRecord.value[props.tabAttributes.table_name + '_ID']
 
@@ -292,9 +292,12 @@ export default defineComponent({
         const currentRoute = router.app._route.query
         recordId = currentRoute.recordId
       }
-      if (props.isPanelRight) {
-        listFilters = store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
-      }
+      // console.log({
+      //   listFilters: store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
+      // })
+      // if (props.isPanelRight) {
+      const listFilters = store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
+      // }
 
       const { endStr, startStr } = params
       store.dispatch('changeDateRange', {
@@ -303,6 +306,7 @@ export default defineComponent({
         isPanel: props.isPanelRight,
         id: definition.id,
         filters: listFilters,
+        listFilters,
         tableName: props.tabAttributes.table_name,
         recordId
       })

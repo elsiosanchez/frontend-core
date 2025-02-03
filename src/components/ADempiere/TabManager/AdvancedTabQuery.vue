@@ -410,6 +410,22 @@ export default defineComponent({
             }
           })
         }
+        if (props.currentDisplyDefinitions.display_type === 'R') {
+          const {
+            startStr,
+            endStr
+          } = store.getters.getResourceDefinition({
+            tableName: tableName.value
+          })
+          store.dispatch('changeDateRange', {
+            endStr,
+            startStr,
+            listFilters,
+            isPanel: false,
+            tableName: tableName.value,
+            id: props.currentDisplyDefinitions.id
+          })
+        }
         store.dispatch('changeTabPanelRightDefinition', {
           tableName: tableName.value,
           definition: props.currentDisplyDefinitions,

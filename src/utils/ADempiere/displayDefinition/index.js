@@ -173,10 +173,12 @@ function addNewRecordToListResource({
   } = store.getters.getResourceDefinition({
     tableName: table_name
   })
+  const listFilters = store.getters.getDisplayFilters({ tableName: table_name })
   store.dispatch('changeDateRange', {
     id,
     endStr,
     startStr,
+    listFilters,
     isPanel: false,
     tableName: table_name
   })
@@ -204,8 +206,10 @@ function addNewRecordToListCalendar({
     })
     return
   } else {
+    const filtersList = store.getters.getDisplayFilters({ tableName: table_name })
     store.dispatch('changeDateCalendar', {
       id,
+      filters: filtersList,
       isPanel: isPanelRight,
       tableName: table_name
     })

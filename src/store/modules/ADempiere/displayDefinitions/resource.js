@@ -250,11 +250,14 @@ const resourceDefinition = {
       startStr,
       filters,
       endStr,
+      listFilters,
       id
     }) {
       if (isPanel) {
         filters = [{ name: [tableName] + '_ID', values: recordId }]
         // filters = JSON.stringify(filters)
+      } else {
+        filters = listFilters
       }
       commit('setResourceChangeDate', {
         tableName,
