@@ -17,7 +17,7 @@
  */
 
 import store from '@/store'
-
+import router from '@/router'
 // Constants
 
 // API Request Methods
@@ -27,8 +27,16 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
+
+function getCurrentRecord(recordId) {
+  if (isEmptyValue(recordId)) {
+    return router.app._route.query.recordId
+  }
+  return recordId
+}
+
 /**
- * Add New Record to Panel
+ * Add New Record to Panel Kanban
  */
 
 function addNewRecordToListKanban({
@@ -76,10 +84,6 @@ function addNewRecordToListKanban({
 /**
  * Resource
  */
-// function getCurrentDateInISOFormat() {
-//   const now = new Date() // Obtiene la fecha y hora actual
-//   return now.toISOString() // Convierte la fecha a formato ISO 8601
-// }
 
 export function transformEvents({
   records
@@ -130,89 +134,82 @@ export function transformResources({
     }
   })
 }
+
+/**
+ * Add New Record to Panel Resource
+ */
 function addNewRecordToListResource({
   isPanelRight,
-  newRecord,
-  keyAttribute,
   currentTab,
-  attributes,
   displayDefinition
 }) {
   const {
-    table_name
-    // group_column
+    table_name,
+    id
   } = displayDefinition
 
-  let currentResource
+  // let currentResource
   if (isPanelRight) {
-    currentResource = store.getters.getCurrentResourcePanelRightDefinition({
+    const {
+      startStr,
+      endStr
+    } = store.getters.getResourcePanelRightDefinitions({
       tableName: currentTab.table_name
     })
-  } else {
-    currentResource = store.getters.getResourceDefinition({
-      tableName: table_name
+
+    store.dispatch('changeDateRange', {
+      id,
+      endStr,
+      startStr,
+      isPanel: isPanelRight,
+      tableName: currentTab.table_name,
+      recordId: getCurrentRecord()
     })
+    return
   }
-  return currentResource
-  // const list = [
-  //   {
-  //     ...newRecord,
-  //     group_id: getCurrentDateInISOFormat
-  //   }
-  // ]
-  // currentkanban.eventsList.push(...list)
-  // if (isPanelRight) {
-  //   store.commit('setCurrentResourceRightDefinition', {
-  //     tableName: currentTab.table_name,
-  //     currentkanban: currentkanban
-  //   })
-  //   return
-  // }
-  // store.commit('setCurrentResourceDefinition', {
-  //   tableName: table_name,
-  //   currentkanban: currentkanban
-  // })
+  const {
+    startStr,
+    endStr
+  } = store.getters.getResourceDefinition({
+    tableName: table_name
+  })
+  store.dispatch('changeDateRange', {
+    id,
+    endStr,
+    startStr,
+    isPanel: false,
+    tableName: table_name
+  })
+  return
 }
 
+/**
+ * Add New Record to Panel Calendar
+ */
 function addNewRecordToListCalendar({
   displayDefinition,
   isPanelRight,
   currentTab
 }) {
   const {
-    table_name
-    // group_column
+    table_name,
+    id
   } = displayDefinition
-
-  let currentCalendar
   if (isPanelRight) {
-    currentCalendar = store.getters.getCalendarPanelRightDefinitions({
-      tableName: currentTab.table_name
+    store.dispatch('changeDateCalendar', {
+      id,
+      isPanel: isPanelRight,
+      tableName: currentTab.table_name,
+      recordId: getCurrentRecord()
     })
+    return
   } else {
-    currentCalendar = store.getters.getCalendarDefinition({
+    store.dispatch('changeDateCalendar', {
+      id,
+      isPanel: isPanelRight,
       tableName: table_name
     })
   }
-  return currentCalendar
-  // const list = [
-  //   {
-  //     ...newRecord,
-  //     group_id: getCurrentDateInISOFormat
-  //   }
-  // ]
-  // currentkanban.eventsList.push(...list)
-  // if (isPanelRight) {
-  //   store.commit('setCurrentResourceRightDefinition', {
-  //     tableName: currentTab.table_name,
-  //     currentkanban: currentkanban
-  //   })
-  //   return
-  // }
-  // store.commit('setCurrentResourceDefinition', {
-  //   tableName: table_name,
-  //   currentkanban: currentkanban
-  // })
 }
 
 function closeModalDefinition({
@@ -274,7 +271,8 @@ const handlePostSaveActions = ({
   displyDefinitions,
   isPanelRight,
   currentTab,
-  keyAttribute
+  keyAttribute,
+  attributes
 }) => {
   const actionType = displyDefinitions.type?.toUpperCase()
   const functionToCall = functionMap[actionType]
@@ -286,6 +284,7 @@ const handlePostSaveActions = ({
         id: response.id,
         ...response
       },
+      attributes,
       currentTab,
       keyAttribute,
       displayDefinition: displyDefinitions
@@ -351,6 +350,9 @@ export const containerManagerFieldDefinition = {
   }) {
     return new Promise((resolve) => {
       const persistenceAttributes = getDefaultAttributes({ currentTab })
+      if (isPanelRight) {
+        attributes[currentTab.table_name + '_ID'] = getCurrentRecord()
+      }
 
       store.dispatch('saveRecord', {
         displayDefinitionId: displyDefinitions.id,

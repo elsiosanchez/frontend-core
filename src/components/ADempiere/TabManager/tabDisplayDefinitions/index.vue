@@ -100,6 +100,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :current-record="currentRecord"
         :action-close="openPanelDisplayDefinition"
         :details-title="detailsTitle"
+        :is-panel-right="isPanelRight"
       />
     </el-dialog>
   </el-container>

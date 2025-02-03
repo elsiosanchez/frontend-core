@@ -198,31 +198,28 @@ const resourceDefinition = {
           .then(response => {
             const { records, groups } = response
 
+            // Transforming resources and events
             const resourcesList = transformResources({ groups })
             const resourcesEventsList = transformEvents({ records })
 
-            let eventsList = []
-            eventsList = resourcesEventsList
-            // Add events on parent
-            const groupEventsList = addGroupEvents(resourcesList, eventsList)
-            eventsList = resourcesEventsList.concat(groupEventsList)
+            // Combine group events and resource events
+            const groupEventsList = addGroupEvents(resourcesList, resourcesEventsList)
+            const eventsList = [...resourcesEventsList, ...groupEventsList]
 
+            // Create final object with all data
             const all = {
               resourcesList,
               eventsList,
               ...response
             }
-            if (isPanel) {
-              commit('setCurrentResourceRightDefinition', {
-                tableName,
-                currentResource: all
-              })
-            } else {
-              commit('setCurrentResourceDefinition', {
-                tableName,
-                currentResource: all
-              })
-            }
+
+            // Commit to store depending on panel status
+            const mutationType = isPanel ? 'setCurrentResourceRightDefinition' : 'setCurrentResourceDefinition'
+
+            commit(mutationType, {
+              tableName,
+              currentResource: all
+            })
             resolve(all)
           })
           .catch(error => {
