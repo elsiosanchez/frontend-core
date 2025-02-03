@@ -77,7 +77,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: [String, Date],
+      type: [String, Date, Boolean],
       required: false
     },
     updateAttribute: {
@@ -141,7 +141,7 @@ export default defineComponent({
     }
 
     function convertirFecha(fecha) {
-      if (isEmptyValue(fecha)) return
+      if (isEmptyValue(fecha) || typeof fecha !== 'string') return
       // Dividir la fecha en partes
       const partes = fecha.split('/')
 
