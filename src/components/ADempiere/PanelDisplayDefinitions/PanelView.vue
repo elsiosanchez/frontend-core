@@ -222,20 +222,22 @@ export default defineComponent({
     })
 
     const displayDefinitionMetadata = computed(() => {
-      return store.getters.getDisplayTabDefinition({
+      const tabDefinition = store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
+      localFields.value = tabDefinition.fields
+      return tabDefinition
     })
 
-    const fields = computed(() => {
-      if (
-        !isEmptyValue(displayDefinitionMetadata.value) &&
-        !isEmptyValue(displayDefinitionMetadata.value.fields)
-      ) {
-        localFields.value = displayDefinitionMetadata.value.fields
-      }
-      return []
-    })
+    // const fields = computed(() => {
+    //   if (
+    //     !isEmptyValue(displayDefinitionMetadata.value) &&
+    //     !isEmptyValue(displayDefinitionMetadata.value.fields)
+    //   ) {
+    //     localFields.value = displayDefinitionMetadata.value.fields
+    //   }
+    //   return []
+    // })
 
     // Constants
     const { currentTab } = store.getters.getContainerInfo
@@ -300,10 +302,7 @@ export default defineComponent({
     function showDelete(show = true) {
       store.commit('setShowDeleteConfirmation', show)
     }
-    watch(showDeleteConfirmation, (newValue) => {
-      localShowDeleteConfirmation.value = newValue
-    })
-    onMounted(() => {
+    function updateLocalFields() {
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
@@ -313,6 +312,15 @@ export default defineComponent({
           is_show_components: false
         }))
       }
+    }
+    watch(showDeleteConfirmation, (newValue) => {
+      localShowDeleteConfirmation.value = newValue
+    })
+    watch(displayDefinitionMetadata, (newValue) => {
+      updateLocalFields()
+    })
+    onMounted(() => {
+      updateLocalFields()
     })
     return {
       // Ref
@@ -322,7 +330,6 @@ export default defineComponent({
       localShowDeleteConfirmation,
       // Computeds
       title,
-      fields,
       isLoading,
       isLoadingDelete,
       getRecordValuesData,
@@ -337,7 +344,8 @@ export default defineComponent({
       ShowFieldComponent,
       hiddenFieldComponent,
       removerRecord,
-      showDelete
+      showDelete,
+      updateLocalFields
     }
   }
 })
