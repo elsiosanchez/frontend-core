@@ -343,13 +343,15 @@ export const containerManagerFieldDefinition = {
   },
   updateField({
     recordId,
-    attributes = {}
+    attributes = {},
+    displayDefinitionId
   }) {
     return new Promise((resolve, reject) => {
       if (isEmptyValue(attributes)) return resolve()
       store.dispatch('updateField', {
         id: recordId,
-        attributes
+        attributes,
+        displayDefinitionId
       })
         .then(() => {
           resolve()

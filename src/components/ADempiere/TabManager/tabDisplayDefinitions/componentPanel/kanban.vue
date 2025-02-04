@@ -99,11 +99,10 @@ import draggable from 'vuedraggable'
 import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
 
 // API Request Methods
-import { requestUpdateEntity } from '@/api/ADempiere/business-data/entities.ts'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'KanbanDefinitions',
@@ -312,49 +311,23 @@ export default defineComponent({
         if (isEmptyValue(value)) {
           value = null
         }
-        const { id, uuid } = event.added.element
-        const { table_name } = currentDisplayDefinition.value
+        const { id } = event.added.element
         const { column_name } = kanbanDefinition.value
         const recordAttributes = {
           [column_name]: value
         }
         loading(true)
-        requestUpdateEntity({
-          tableName: table_name,
+        containerManagerFieldDefinition.updateField({
           recordId: id,
-          recordAttributes
+          displayDefinitionId: currentDisplayDefinition.value.id,
+          attributes: recordAttributes
         })
-          .then(response => {
-            this.$message({
-              type: 'success',
-              showClose: true,
-              message: 'OK'
-            })
-            const { currentTab } = store.getters.getContainerInfo
-            const { parentUuid, firstTabUuid } = currentTab
-
-            // const { values } = response
-            // const serverValue = values[column_name]
-            // if (!isSameValues(serverValue, event.added.element.group_id )) {
-            //   event.added.element.group_id = serverValue
-            // }
-
-            refreshRecord.refreshRecord({
-              parentUuid: parentUuid,
-              containerUuid: firstTabUuid,
-              recordId: id,
-              recordUuid: uuid
-            })
-          })
-          .catch(error => {
-            this.$message({
-              type: 'error',
-              showClose: true,
-              message: error.message
-            })
-          })
           .finally(() => {
             loading(false)
+            containerManagerFieldDefinition.updateField({
+              recordId: id,
+              displayDefinitionId: currentDisplayDefinition.value.id
+            })
           })
       }
     }
