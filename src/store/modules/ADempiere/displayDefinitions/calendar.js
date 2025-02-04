@@ -216,12 +216,6 @@ const calendarDefinition = {
       endStr,
       id
     }) {
-      if (isPanel) {
-        filters = [{ name: [tableName] + '_ID', values: recordId }]
-        filters = JSON.stringify(filters)
-      } else {
-        filters = JSON.stringify(filters)
-      }
       commit('setCalendarChangeDate', {
         tableName,
         startStr,
@@ -232,7 +226,8 @@ const calendarDefinition = {
         id,
         isPanel,
         tableName,
-        filters
+        filters,
+        recordId
       })
     }
   },
