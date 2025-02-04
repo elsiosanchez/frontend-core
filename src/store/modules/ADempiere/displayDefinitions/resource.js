@@ -151,7 +151,8 @@ const resourceDefinition = {
         } else {
           if (isEmptyValue(state.resource[tableName])) commit('setResourceDefinition', { tableName, isLoading: true })
         }
-        let currentDefinition, defaultFilters, startStr, endStr
+        let currentDefinition, startStr, endStr
+        let defaultFilters = []
         if (isPanel) {
           currentDefinition = getters.getCurrentDisplayPanelRightDefinitions({ tableName })
         } else {
@@ -173,13 +174,7 @@ const resourceDefinition = {
             }
           ]
         }
-        let allFilters
-        if (isEmptyValue(filters)) {
-          allFilters = defaultFilters
-        }
-        if (!isEmptyValue(filters) && !isEmptyValue(defaultFilters)) {
-          allFilters = filters.concat(defaultFilters)
-        }
+        const allFilters = [...filters, ...defaultFilters]
 
         // if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
 
