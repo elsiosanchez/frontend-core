@@ -32,7 +32,7 @@
       <p v-show="!isEmptyValue(description)" style="padding: 0px 10px;margin: 0px;">
         <text-truncation
           :full-text="description"
-          :max-words="15"
+          :max-words="16"
           :max-lines="4"
         />
       </p>
