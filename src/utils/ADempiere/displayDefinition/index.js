@@ -43,6 +43,35 @@ export function getCurrentRecord(recordId) {
   return recordId
 }
 
+function deleteRecordToListKanban({
+  isPanelRight,
+  currentTab,
+  recordId
+}) {
+  let currentkanban
+  if (isPanelRight) {
+    currentkanban = store.getters.getCurrentKanbanPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentkanban = store.getters.getCurrentKanbanDefinition({
+      tableName: currentTab.table_name
+    })
+  }
+  currentkanban.records = currentkanban.records.filter(data => data.id !== recordId)
+  if (isPanelRight) {
+    store.commit('setCurrentKanbanRightDefinition', {
+      tableName: currentTab.table_name,
+      currentkanban: currentkanban
+    })
+    return
+  }
+  store.commit('setCurrentKanbanDefinition', {
+    tableName: currentTab.table_name,
+    currentkanban: currentkanban
+  })
+}
+
 /**
  * Add New Record to Panel Kanban
  */
@@ -284,7 +313,8 @@ const functionMap = {
 
 const functionMaDelete = {
   CALENDAR: addNewRecordToListCalendar,
-  RESOURCE: addNewRecordToListResource
+  RESOURCE: addNewRecordToListResource,
+  KANBAN: deleteRecordToListKanban
 }
 
 // Separate function to handle post-save actions
@@ -295,7 +325,8 @@ const handlePostSaveActions = ({
   isPanelRight,
   currentTab,
   keyAttribute,
-  attributes
+  attributes,
+  recordId
 }) => {
   const actionType = displyDefinitions.type?.toUpperCase()
   let functionToCall
@@ -305,7 +336,8 @@ const handlePostSaveActions = ({
       isPanelRight,
       currentTab,
       keyAttribute,
-      displayDefinition: displyDefinitions
+      displayDefinition: displyDefinitions,
+      recordId
     })
     return
   }
@@ -438,7 +470,8 @@ export const containerManagerFieldDefinition = {
           isPanelRight,
           isDelete: true,
           currentTab,
-          displyDefinitions
+          displyDefinitions,
+          recordId
         })
       })
   }

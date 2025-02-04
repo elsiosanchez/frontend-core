@@ -68,16 +68,16 @@
   </el-dropdown>
 </template>
 <script>
-import store from '@/store'
 
 import {
   defineComponent,
   computed,
   ref
 } from '@vue/composition-api'
-// import store from '@/store'
+import store from '@/store'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'OptionsPanel',
@@ -123,11 +123,14 @@ export default defineComponent({
       }
       return false
     })
+    const { currentTab } = store.getters.getContainerInfo
     function removerRecord() {
       showPanel.value = false
-      store.dispatch('removerRecord', {
+      containerManagerFieldDefinition.deleteRecord({
         recordId: props.currentResource.id,
-        displayDefinitionId: props.displayDefinition.id
+        currentTab,
+        isPanelRight: props.isPanelRight,
+        displyDefinitions: props.displayDefinition
       })
     }
     return {
