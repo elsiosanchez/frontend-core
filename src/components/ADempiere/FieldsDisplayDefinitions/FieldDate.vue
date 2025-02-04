@@ -22,6 +22,7 @@
       v-model="value"
       type="date"
       unlink-panels
+      :format="formatView"
       :picker-options="pickerOptionsDate"
       size="mini"
       :placeholder="fieldMetadata.description"
@@ -59,6 +60,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { DATE_PLUS_TIME } from '@/utils/ADempiere/references'
 
 export default defineComponent({
   name: 'FieldDate',
@@ -100,6 +102,35 @@ export default defineComponent({
       return {
         shortcuts: SHORCUTS_DATE
       }
+    })
+    const formatView = computed(() => {
+      let format = ''
+      const currentLanguageDefinition = store.getters['getCurrentLanguageDefinition']
+      if (isEmptyValue(format)) {
+        format = 'yyyy-MM-dd'
+        if (!isEmptyValue(currentLanguageDefinition)) {
+          const { datePattern } = currentLanguageDefinition
+          if (!isEmptyValue(datePattern)) {
+            format = datePattern
+          }
+        }
+      }
+      let formattedFormat = format
+        .replace(/[Y]/gi, 'y')
+        .replace(/[m]/gi, 'M')
+        .replace(/[D]/gi, 'd')
+      if (props.fieldMetadata.display_type === DATE_PLUS_TIME.id) {
+        if (!isEmptyValue(currentLanguageDefinition)) {
+          const { time_pattern } = currentLanguageDefinition
+          if (!isEmptyValue(time_pattern)) {
+            formattedFormat = formattedFormat + ' ' + time_pattern
+            return formattedFormat
+              .replace(/[z]/gi, '')
+          }
+        }
+        formattedFormat = formattedFormat + ' hh:mm:ss A'
+      }
+      return formattedFormat
     })
 
     // Methods
@@ -192,6 +223,7 @@ export default defineComponent({
       value,
       isLoading,
       // Computed
+      formatView,
       pickerOptionsDate,
       // Methods
       updateFieldValue,
