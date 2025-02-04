@@ -23,6 +23,7 @@ import { kanbans } from '@/api/ADempiere/displayDefinition.ts'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
 // Constants
 // import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
 
@@ -107,11 +108,14 @@ const kanbanDefinition = {
       id,
       filters = [],
       tableName,
+      recordId,
       searchValue,
       isPanel = false
     }) {
       return new Promise(resolve => {
         if (isPanel) {
+          if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+          filters = [{ name: [tableName] + '_ID', values: recordId }]
           commit('setKanbanPanelTabDefinition', { tableName, isLoading: true })
         } else {
           commit('setKanbanDefinition', { tableName, isLoading: true })

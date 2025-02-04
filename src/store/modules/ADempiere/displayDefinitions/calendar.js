@@ -24,6 +24,7 @@ import { listCalendars } from '@/api/ADempiere/form/task-management.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 // import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
 // Constants
 // import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
 
@@ -150,6 +151,8 @@ const calendarDefinition = {
           } else {
             commit('setCalendarRightLoading', { tableName, isLoading: true })
           }
+          if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+          filters = [{ name: [tableName] + '_ID', values: recordId }]
         } else {
           if (isEmptyValue(state.calendar[tableName])) {
             commit('setCalendarDefinition', { tableName, isLoading: true })
@@ -161,7 +164,7 @@ const calendarDefinition = {
         listCalendars({
           id,
           pageSize,
-          filters,
+          filters: JSON.stringify(filters),
           searchValue
         })
           .then(response => {

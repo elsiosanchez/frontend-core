@@ -24,6 +24,7 @@ import { workflowsDisplay } from '@/api/ADempiere/displayDefinition.ts'
 // Utils and Helper Methods
 import { showMessage } from '@/utils/ADempiere/notification.js'
 import { isEmptyValue } from '@/utils/ADempiere'
+import { getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
 
 const initState = {
   workflow: {},
@@ -73,10 +74,13 @@ const workflowDefinition = {
       id,
       filters = [],
       searchValue,
+      recordId,
       tableName
     }) {
       return new Promise(resolve => {
         commit('setWorkflowDefinition', { tableName, isLoading: true })
+        if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+        filters = [{ name: [tableName] + '_ID', values: recordId }]
         workflowsDisplay({
           id,
           filters: JSON.stringify(filters),

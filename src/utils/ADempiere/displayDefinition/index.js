@@ -28,9 +28,17 @@ import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 
-function getCurrentRecord(recordId) {
+export function getCurrentRecord(recordId) {
+  const { currentTab } = store.getters.getContainerInfo
+  const { query } = router.app._route
   if (isEmptyValue(recordId)) {
-    return router.app._route.query.recordId
+    if (!isEmptyValue(query.recordId)) return query.recordId
+    if (!isEmptyValue(currentTab)) {
+      return store.getters.getIdOfContainer({
+        containerUuid: currentTab.containerUuid,
+        tableName: currentTab.table_name
+      })
+    }
   }
   return recordId
 }

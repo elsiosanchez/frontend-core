@@ -363,13 +363,12 @@ export default defineComponent({
           tabName: definition.type,
           current: definition
         })
-        const filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
+        // const filters = [{ name: [tableName.value] + '_ID', values: currentRecordId.value }]
         store.dispatch('changeTabPanelRightDefinition', {
           tableName: props.tabAttributes.table_name,
           recordId: currentRecordId.value,
           isPanelRight: true,
-          definition,
-          filters
+          definition
         })
         nameTab.value = capitalize(definition.type)
       }

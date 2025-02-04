@@ -27,7 +27,7 @@ import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 // import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 import { addGroupEvents } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
-import { transformEvents, transformResources } from '@/utils/ADempiere/displayDefinition'
+import { transformEvents, transformResources, getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
 
 // Constants
 // import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
@@ -148,9 +148,12 @@ const resourceDefinition = {
       return new Promise(resolve => {
         if (isPanel) {
           if (isEmptyValue(state.resourcePanelRight[tableName])) commit('setResourcePanelTabDefinition', { tableName, isLoading: true })
+          if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+          filters = [{ name: [tableName] + '_ID', values: recordId }]
         } else {
           if (isEmptyValue(state.resource[tableName])) commit('setResourceDefinition', { tableName, isLoading: true })
         }
+        let allFilters = filters
         let currentDefinition, startStr, endStr
         let defaultFilters = []
         if (isPanel) {
@@ -174,15 +177,13 @@ const resourceDefinition = {
             }
           ]
         }
-        const allFilters = [...filters, ...defaultFilters]
 
-        // if (!isEmptyValue(state.resourcePanelRight[tableName]) && !isEmptyValue(state.resourcePanelRight[tableName].filters) && JSON.stringify(allFilters) === state.resourcePanelRight[tableName].filters) return
+        if (isEmptyValue(filters) && !isEmptyValue(defaultFilters)) {
+          allFilters = defaultFilters
+        }
 
-        if (isPanel) {
-          commit('setResourceFilters', {
-            tableName,
-            filters: JSON.stringify(allFilters)
-          })
+        if (!isEmptyValue(filters) && !isEmptyValue(defaultFilters)) {
+          allFilters = [...filters, ...defaultFilters]
         }
 
         resources({

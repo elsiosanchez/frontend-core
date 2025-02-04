@@ -24,6 +24,7 @@ import { timeLines } from '@/api/ADempiere/displayDefinition.ts'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
 
 const initState = {
   timeLine: {},
@@ -66,10 +67,13 @@ const timeLineDefinition = {
       id,
       filters = [],
       searchValue,
-      tableName
+      tableName,
+      recordId
     }) {
       return new Promise(resolve => {
         commit('setTimeLineDefinition', { tableName, isLoading: true })
+        if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+        filters = [{ name: [tableName] + '_ID', values: recordId }]
         timeLines({
           id,
           filters: JSON.stringify(filters),

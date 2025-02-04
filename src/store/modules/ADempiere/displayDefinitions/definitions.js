@@ -172,12 +172,12 @@ const displayTabDefinition = {
       definition,
       isPanelRight = false
     }) {
-      if (!isEmptyValue(filters)) {
-        commit('setDisplayFilters', {
-          tableName,
-          filters
-        })
-      }
+      // if (!isEmptyValue(filters)) {
+      // commit('setDisplayFilters', {
+      //   tableName,
+      //   filters
+      // })
+      // }
       if (isPanelRight) {
         commit('setCurrentPanelRightDefinition', {
           tableName,
@@ -197,6 +197,7 @@ const displayTabDefinition = {
           id: definition.id,
           isPanel: isPanelRight,
           tableName,
+          recordId,
           filters: filtersList
         })
       }
@@ -222,6 +223,7 @@ const displayTabDefinition = {
         dispatch('requestTimeLine', {
           id: definition.id,
           tableName,
+          recordId,
           filters: filtersList
         })
       }
@@ -229,6 +231,7 @@ const displayTabDefinition = {
         dispatch('requestWorkflow', {
           id: definition.id,
           tableName,
+          recordId,
           filters: filtersList
         })
       }

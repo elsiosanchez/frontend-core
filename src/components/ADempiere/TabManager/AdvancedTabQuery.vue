@@ -426,6 +426,10 @@ export default defineComponent({
             id: props.currentDisplyDefinitions.id
           })
         }
+        store.commit('setDisplayFilters', {
+          tableName: tableName.value,
+          filters: listFilters
+        })
         store.dispatch('changeTabPanelRightDefinition', {
           tableName: tableName.value,
           definition: props.currentDisplyDefinitions,
