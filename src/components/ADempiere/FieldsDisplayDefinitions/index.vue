@@ -26,6 +26,7 @@
     :update-field="updateField"
     :is-new-record="isNewRecord"
     :additional-attributes="additionalAttributes"
+    :is-panel-right="isPanelRight"
   >
     <template v-slot:button-exit>
       <slot name="button" />
@@ -77,6 +78,10 @@ export default defineComponent({
     additionalAttributes: {
       type: Object,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 

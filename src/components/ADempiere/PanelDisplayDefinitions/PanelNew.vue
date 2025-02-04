@@ -53,6 +53,7 @@
               :update-field="updateFieldRecord"
               :additional-attributes="addCurrentAttributes"
               :is-new-record="true"
+              :is-panel-right="isPanelRight"
             />
           </el-descriptions-item>
         </template>

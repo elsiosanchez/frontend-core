@@ -61,6 +61,7 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { DATE_PLUS_TIME } from '@/utils/ADempiere/references'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'FieldDate',
@@ -93,6 +94,10 @@ export default defineComponent({
     additionalAttributes: {
       type: Object,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -153,6 +158,7 @@ export default defineComponent({
         return
       }
     }
+    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       if (props.isNewRecord) {
@@ -160,23 +166,21 @@ export default defineComponent({
         return
       }
       isLoading.value = true
-      store.dispatch('updateField', {
-        id: props.currentRecord.id,
-        isResource: props.currentDisplayDefinition.is_resource,
+      containerManagerFieldDefinition.updateField({
+        recordId: props.currentRecord.id,
+        displyDefinitions: props.currentDisplayDefinition,
+        currentTab,
+        isPanelRight: props.isPanelRight,
         attributes: {
           [field.column_name]: {
             type: 'date',
             value: dateToSend(value)
           }
-        },
-        displayDefinitionId: props.currentDisplayDefinition.id
+        }
       })
-        .catch(() => {
-          isLoading.value = false
-        })
         .finally(() => {
-          props.updateField(value, props.fieldMetadata)
           isLoading.value = false
+          props.updateField(value, field)
         })
     }
 

@@ -52,6 +52,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'FieldYesNo',
@@ -80,6 +81,10 @@ export default defineComponent({
     isNewRecord: {
       type: Boolean,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -98,22 +103,22 @@ export default defineComponent({
         return
       }
     }
+    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
-      store.dispatch('updateField', {
-        id: props.currentRecord.id,
-        isResource: props.currentDisplayDefinition.is_resource,
+      containerManagerFieldDefinition.updateField({
+        recordId: props.currentRecord.id,
+        displyDefinitions: props.currentDisplayDefinition,
+        currentTab,
+        isPanelRight: props.isPanelRight,
         attributes: {
           [field.column_name]: value
-        },
-        displayDefinitionId: props.currentDisplayDefinition.id
+        }
       })
-        .then(response => {
-          props.updateField(response, field)
-        })
         .finally(() => {
           isLoading.value = false
+          props.updateField(value, field)
         })
     }
 

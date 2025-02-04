@@ -56,7 +56,7 @@
 <script>
 import {
   defineComponent,
-  computed,
+  // computed
   ref
 } from '@vue/composition-api'
 
@@ -69,6 +69,7 @@ import store from '@/store'
 // API Request Methods
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -101,6 +102,10 @@ export default defineComponent({
     additionalAttributes: {
       type: Object,
       required: false
+    },
+    isPanelRight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -112,17 +117,6 @@ export default defineComponent({
     const options = ref([])
     const timeOut = ref(null)
 
-    // computed
-    const lookupsAttribute = computed(() => {
-      if (props.fieldMetadata.column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
-        return {
-          columnId: props.fieldMetadata.internal_id
-        }
-      }
-      return {
-        displayDefinitionFieldId: props.fieldMetadata.internal_id
-      }
-    })
     // Watchers
     if (!isEmptyValue(props.currentRecord) && !isEmptyValue(props.currentRecord.fields)) {
       loadRecordValue({
@@ -142,22 +136,22 @@ export default defineComponent({
         return
       }
     }
+    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
-      store.dispatch('updateField', {
-        id: props.currentRecord.id,
-        isResource: props.currentDisplayDefinition.is_resource,
+      containerManagerFieldDefinition.updateField({
+        recordId: props.currentRecord.id,
+        displyDefinitions: props.currentDisplayDefinition,
+        currentTab,
+        isPanelRight: props.isPanelRight,
         attributes: {
           [field.column_name]: value
-        },
-        displayDefinitionId: props.currentDisplayDefinition.id
+        }
       })
-        .then(response => {
-          props.updateField(response, field)
-        })
         .finally(() => {
           isLoading.value = false
+          props.updateField(value, field)
         })
     }
 
@@ -176,8 +170,7 @@ export default defineComponent({
         requestLookupList({
           searchValue,
           pageSize: 10,
-          ...lookupsAttribute.value
-          // displayDefinitionFieldId: props.fieldMetadata.internal_id
+          displayDefinitionFieldId: props.fieldMetadata.internal_id
         })
           .then(responseLookupItem => {
             const { records } = responseLookupItem
@@ -233,8 +226,6 @@ export default defineComponent({
       timeOut,
       isLoadingSearch,
       displayValueOld,
-      // Computed
-      lookupsAttribute,
       // Methods
       showList,
       remoteMethod,

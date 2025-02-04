@@ -81,13 +81,13 @@ function addNewRecordToListKanban({
   newRecord,
   keyAttribute,
   currentTab,
-  displayDefinition
+  displayDefinition,
+  isEditRecord
 }) {
   const {
     table_name,
     group_column
   } = displayDefinition
-
   let currentkanban
   if (isPanelRight) {
     currentkanban = store.getters.getCurrentKanbanPanelRightDefinition({
@@ -98,18 +98,33 @@ function addNewRecordToListKanban({
       tableName: table_name
     })
   }
-  const { fields } = newRecord
-  let value = keyAttribute[group_column]
-  if (!isEmptyValue(fields[group_column]) && !isEmptyValue(fields[group_column].value)) {
-    value = fields[group_column].value
-  }
-  const list = [
-    {
-      ...newRecord,
-      group_id: value
+  if (isEditRecord) {
+    currentkanban.records = currentkanban.records.map(data => {
+      if (data.id === newRecord.id) {
+        return {
+          ...data,
+          ...newRecord
+        }
+      }
+      return {
+        ...data
+      }
+    })
+  } else {
+    const { fields } = newRecord
+    let value = keyAttribute[group_column]
+    if (!isEmptyValue(fields[group_column]) && !isEmptyValue(fields[group_column].value)) {
+      value = fields[group_column].value
     }
-  ]
-  currentkanban.records.push(...list)
+    const list = [
+      {
+        ...newRecord,
+        group_id: value
+      }
+    ]
+    currentkanban.records.push(...list)
+  }
+  console.log(isPanelRight)
   if (isPanelRight) {
     store.commit('setCurrentKanbanRightDefinition', {
       tableName: currentTab.table_name,
@@ -264,7 +279,7 @@ function closeModalDefinition({
   name = ''
 }) {
   store.dispatch('changeTabPanelDefinition', {
-    displyDefinitions,
+    displayDefinitionId: displyDefinitions.id,
     name
   })
   store.commit('setShowPanel', {
@@ -321,6 +336,7 @@ const functionMaDelete = {
 const handlePostSaveActions = ({
   response,
   isDelete = false,
+  isEditRecord = false,
   displyDefinitions,
   isPanelRight,
   currentTab,
@@ -342,7 +358,6 @@ const handlePostSaveActions = ({
     return
   }
   functionToCall = functionMap[actionType]
-
   if (functionToCall) {
     functionToCall({
       isPanelRight,
@@ -353,11 +368,13 @@ const handlePostSaveActions = ({
       attributes,
       currentTab,
       keyAttribute,
-      displayDefinition: displyDefinitions
+      displayDefinition: displyDefinitions,
+      isEditRecord
     })
   }
-
-  closeModalDefinition({ displyDefinitions })
+  if (!isEditRecord) {
+    closeModalDefinition({ displyDefinitions })
+  }
 }
 
 /**
@@ -389,17 +406,26 @@ export const containerManagerFieldDefinition = {
   updateField({
     recordId,
     attributes = {},
-    displyDefinitions
+    displyDefinitions,
+    currentTab,
+    isPanelRight
   }) {
     return new Promise((resolve, reject) => {
       if (isEmptyValue(attributes)) return resolve()
       store.dispatch('updateField', {
         id: recordId,
         attributes,
-        isResource: displyDefinitions.is_resource,
         displayDefinitionId: displyDefinitions.id
       })
-        .then(() => {
+        .then(response => {
+          handlePostSaveActions({
+            response,
+            displyDefinitions,
+            isPanelRight,
+            currentTab,
+            attributes,
+            isEditRecord: true
+          })
           resolve()
         })
         .catch(() => {
@@ -425,8 +451,7 @@ export const containerManagerFieldDefinition = {
 
       store.dispatch('saveRecord', {
         displayDefinitionId: displyDefinitions.id,
-        attributes: { ...persistenceAttributes, ...attributes },
-        isResource: displyDefinitions.is_resource
+        attributes: { ...persistenceAttributes, ...attributes }
       })
         .then(response => {
           handlePostSaveActions({
@@ -461,8 +486,7 @@ export const containerManagerFieldDefinition = {
   }) {
     store.dispatch('removerRecord', {
       recordId,
-      displayDefinitionId: displyDefinitions.id,
-      isResource: displyDefinitions.is_resource
+      displayDefinitionId: displyDefinitions.id
     })
       .then(() => {
         store.commit('setShowPanel', {

@@ -72,6 +72,7 @@
               :display-value="displayValue(recordMetadata.fields, field.column_name)"
               :update-field="updateFieldRecord"
               :update-record="updateRecord"
+              :is-panel-right="isPanelRight"
             >
               <template v-slot:button>
                 <el-button
