@@ -51,6 +51,7 @@
               :current-record="currentRecord"
               :current-display-definition="currentDisplyDefinitions"
               :update-field="updateFieldRecord"
+              :additional-attributes="addCurrentAttributes"
               :is-new-record="true"
             />
           </el-descriptions-item>
@@ -146,6 +147,15 @@ export default defineComponent({
       }
     })
 
+    const addCurrentAttributes = computed(() => {
+      const attributes = store.getters.getCurrentTabPanelDefinition
+      if (isEmptyValue(attributes)) {
+        return {}
+      }
+      const { currentAttributes } = attributes
+      return currentAttributes
+    })
+
     const isLoadingDisplayDefinitions = computed(() => {
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
@@ -227,6 +237,7 @@ export default defineComponent({
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
+      addCurrentAttributes,
       fields,
       additionalAttributes,
       // methods

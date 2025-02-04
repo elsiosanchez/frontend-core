@@ -25,6 +25,7 @@
     :current-display-definition="currentDisplayDefinition"
     :update-field="updateField"
     :is-new-record="isNewRecord"
+    :additional-attributes="additionalAttributes"
   >
     <template v-slot:button-exit>
       <slot name="button" />
@@ -71,6 +72,10 @@ export default defineComponent({
     },
     isNewRecord: {
       type: Boolean,
+      required: false
+    },
+    additionalAttributes: {
+      type: Object,
       required: false
     }
   },

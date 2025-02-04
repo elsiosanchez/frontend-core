@@ -53,10 +53,15 @@ const displayDefinitionField = {
     }) {
       Vue.set(state.showPanel, id, show)
     },
-    setCurrentTabPanelDefinition(state, { type, additionalAttributes = {}}) {
+    setCurrentTabPanelDefinition(state, {
+      type,
+      currentAttributes = {},
+      additionalAttributes = {}
+    }) {
       state.currentTabDefinition = {
         type,
-        additionalAttributes
+        additionalAttributes,
+        currentAttributes
       }
     },
     // Display Definitions Fields
@@ -169,11 +174,13 @@ const displayDefinitionField = {
       id,
       recordId,
       type,
+      currentAttributes = {},
       additionalAttributes = {}
     }) {
       // const getRecordValuesData = getters.getRecordValuesData({ recordId })
       commit('setCurrentTabPanelDefinition', {
         type,
+        currentAttributes,
         additionalAttributes
       })
       // if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) {

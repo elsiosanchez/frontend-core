@@ -347,7 +347,7 @@ export default defineComponent({
     }
 
     function newEntry(currentColumn) {
-      const { value, column_name } = currentColumn
+      const { value, column_name, title } = currentColumn
       let groupValue = null
       if (!isEmptyValue(value)) {
         groupValue = value
@@ -361,7 +361,13 @@ export default defineComponent({
         type: 'new',
         id: currentDisplayDefinition.value.id,
         recordId: -1,
-        additionalAttributes
+        additionalAttributes,
+        currentAttributes: {
+          [column_name]: {
+            display_value: title,
+            value
+          }
+        }
       })
       store.commit('setShowPanel', {
         id: currentDisplayDefinition.value.id,

@@ -69,10 +69,15 @@ function addNewRecordToListKanban({
       tableName: table_name
     })
   }
+  const { fields } = newRecord
+  let value = keyAttribute[group_column]
+  if (!isEmptyValue(fields[group_column]) && !isEmptyValue(fields[group_column].value)) {
+    value = fields[group_column].value
+  }
   const list = [
     {
       ...newRecord,
-      group_id: keyAttribute[group_column]
+      group_id: value
     }
   ]
   currentkanban.records.push(...list)

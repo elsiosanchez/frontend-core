@@ -21,6 +21,7 @@
     <el-select
       v-model="fieldValue"
       remote
+      clearable
       size="mini"
       filterable
       reserve-keyword
@@ -96,6 +97,10 @@ export default defineComponent({
     isNewRecord: {
       type: Boolean,
       required: false
+    },
+    additionalAttributes: {
+      type: Object,
+      required: false
     }
   },
 
@@ -109,17 +114,18 @@ export default defineComponent({
 
     // Watchers
     if (!isEmptyValue(props.currentRecord) && !isEmptyValue(props.currentRecord.fields)) {
-      fieldValue.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
-      displayValueOld.value = props.currentRecord.fields[props.fieldMetadata.column_name].value
-      options.value = [props.currentRecord.fields[props.fieldMetadata.column_name]]
+      loadRecordValue({
+        fieldList: props.currentRecord.fields,
+        columnName: props.fieldMetadata.column_name
+      })
     }
     if (props.isNewRecord) {
-      fieldValue.value = ''
-      options.value = []
+      loadDefaultValueFromServer()
     }
 
     // Methods
     function saveFieldValue(value, field) {
+      if (isEmptyValue(value)) options.value = []
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
         return
@@ -150,22 +156,6 @@ export default defineComponent({
       }
     }
 
-    // function loadList() {
-    //   requestLookupList({
-    //     displayDefinitionFieldId: props.fieldMetadata.internal_id
-    //   })
-    //     .then(responseLookupItem => {
-    //       const { records } = responseLookupItem
-    //       options.value = records.map(list => {
-    //         const { values } = list
-    //         return {
-    //           display_value: values.DisplayColumn,
-    //           value: values.KeyColumn
-    //         }
-    //       })
-    //     })
-    // }
-
     function remoteMethod(searchValue) {
       if (isEmptyValue(searchValue) && !isEmptyValue(options.value)) return
       clearTimeout(timeOut.value)
@@ -192,9 +182,35 @@ export default defineComponent({
       }, 500)
     }
 
-    // function findList(searchValue) {
-    //   return options.value.find(list => list.display_value.includes(searchValue) )
-    // }
+    /**
+     * Get server default value
+     */
+    function loadDefaultValueFromServer() {
+      const { column_name } = props.fieldMetadata
+      const defaultValues = props.additionalAttributes[column_name]
+      if (!isEmptyValue(defaultValues)) {
+        options.value = [defaultValues]
+        fieldValue.value = defaultValues.value
+        saveFieldValue(defaultValues.value)
+        return
+      }
+      fieldValue.value = ''
+      options.value = []
+    }
+
+    /**
+     * Set Record Values
+     * @param {Array} fieldList
+     * @param {String} columnName
+     */
+    function loadRecordValue({
+      fieldList,
+      columnName
+    }) {
+      fieldValue.value = fieldList[columnName].value
+      displayValueOld.value = fieldList[columnName].value
+      options.value = [fieldList[columnName]]
+    }
 
     return {
       // Ref
