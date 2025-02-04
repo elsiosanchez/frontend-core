@@ -103,6 +103,7 @@ export default defineComponent({
       isLoading.value = true
       store.dispatch('updateField', {
         id: props.currentRecord.id,
+        isResource: props.currentDisplayDefinition.is_resource,
         attributes: {
           [field.column_name]: value
         },

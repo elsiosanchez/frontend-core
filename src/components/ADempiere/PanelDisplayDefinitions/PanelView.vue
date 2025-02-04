@@ -296,6 +296,7 @@ export default defineComponent({
     if (isEmptyValue(recordMetadata.value)) {
       store.dispatch('readRecordData', {
         recordId: props.currentRecord.id,
+        isResource: props.currentDisplyDefinitions.is_resource,
         displayDefinitionId: props.currentDisplyDefinitions.id
       })
     }

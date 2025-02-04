@@ -168,3 +168,58 @@ export function deleteDataEntry({
     method: 'delete'
   })
 }
+
+/**
+ * CRUD Resource
+ */
+export function createDataEntryResource({
+  attributes,
+  contextAttributes,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/resources`,
+    method: 'post',
+    data: {
+      attributes,
+      display_definition_id: displayDefinitionId,
+      context_attributes: contextAttributes
+    }
+  })
+}
+
+export function readDataEntryResource({
+  id,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}/resources`,
+    method: 'get'
+  })
+}
+
+export function updateDataEntryResource({
+  id,
+  attributes,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}/resources`,
+    method: 'patch',
+    data: {
+      id,
+      attributes,
+      display_definition_id: displayDefinitionId
+    }
+  })
+}
+
+export function deleteDataEntryResource({
+  id,
+  displayDefinitionId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/entries/${id}/resources`,
+    method: 'delete'
+  })
+}

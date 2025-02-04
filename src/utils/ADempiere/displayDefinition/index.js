@@ -264,7 +264,7 @@ function closeModalDefinition({
   name = ''
 }) {
   store.dispatch('changeTabPanelDefinition', {
-    displayDefinitionId: displyDefinitions.id,
+    displyDefinitions,
     name
   })
   store.commit('setShowPanel', {
@@ -389,14 +389,15 @@ export const containerManagerFieldDefinition = {
   updateField({
     recordId,
     attributes = {},
-    displayDefinitionId
+    displyDefinitions
   }) {
     return new Promise((resolve, reject) => {
       if (isEmptyValue(attributes)) return resolve()
       store.dispatch('updateField', {
         id: recordId,
         attributes,
-        displayDefinitionId
+        isResource: displyDefinitions.is_resource,
+        displayDefinitionId: displyDefinitions.id
       })
         .then(() => {
           resolve()
@@ -424,7 +425,8 @@ export const containerManagerFieldDefinition = {
 
       store.dispatch('saveRecord', {
         displayDefinitionId: displyDefinitions.id,
-        attributes: { ...persistenceAttributes, ...attributes }
+        attributes: { ...persistenceAttributes, ...attributes },
+        isResource: displyDefinitions.is_resource
       })
         .then(response => {
           handlePostSaveActions({
@@ -459,7 +461,8 @@ export const containerManagerFieldDefinition = {
   }) {
     store.dispatch('removerRecord', {
       recordId,
-      displayDefinitionId: displyDefinitions.id
+      displayDefinitionId: displyDefinitions.id,
+      isResource: displyDefinitions.is_resource
     })
       .then(() => {
         store.commit('setShowPanel', {

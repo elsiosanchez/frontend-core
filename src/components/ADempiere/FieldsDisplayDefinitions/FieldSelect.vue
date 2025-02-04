@@ -56,7 +56,7 @@
 <script>
 import {
   defineComponent,
-  // computed
+  computed,
   ref
 } from '@vue/composition-api'
 
@@ -112,6 +112,17 @@ export default defineComponent({
     const options = ref([])
     const timeOut = ref(null)
 
+    // computed
+    const lookupsAttribute = computed(() => {
+      if (props.fieldMetadata.column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
+        return {
+          columnId: props.fieldMetadata.internal_id
+        }
+      }
+      return {
+        displayDefinitionFieldId: props.fieldMetadata.internal_id
+      }
+    })
     // Watchers
     if (!isEmptyValue(props.currentRecord) && !isEmptyValue(props.currentRecord.fields)) {
       loadRecordValue({
@@ -136,6 +147,7 @@ export default defineComponent({
       isLoading.value = true
       store.dispatch('updateField', {
         id: props.currentRecord.id,
+        isResource: props.currentDisplayDefinition.is_resource,
         attributes: {
           [field.column_name]: value
         },
@@ -164,7 +176,8 @@ export default defineComponent({
         requestLookupList({
           searchValue,
           pageSize: 10,
-          displayDefinitionFieldId: props.fieldMetadata.internal_id
+          ...lookupsAttribute.value
+          // displayDefinitionFieldId: props.fieldMetadata.internal_id
         })
           .then(responseLookupItem => {
             const { records } = responseLookupItem
@@ -220,6 +233,8 @@ export default defineComponent({
       timeOut,
       isLoadingSearch,
       displayValueOld,
+      // Computed
+      lookupsAttribute,
       // Methods
       showList,
       remoteMethod,

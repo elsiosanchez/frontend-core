@@ -319,7 +319,7 @@ export default defineComponent({
         loading(true)
         containerManagerFieldDefinition.updateField({
           recordId: id,
-          displayDefinitionId: currentDisplayDefinition.value.id,
+          displyDefinitions: currentDisplayDefinition.value,
           attributes: recordAttributes
         })
           .finally(() => {
@@ -359,7 +359,7 @@ export default defineComponent({
 
       store.dispatch('changeTabPanelDefinition', {
         type: 'new',
-        id: currentDisplayDefinition.value.id,
+        displyDefinitions: currentDisplayDefinition.value,
         recordId: -1,
         additionalAttributes,
         currentAttributes: {

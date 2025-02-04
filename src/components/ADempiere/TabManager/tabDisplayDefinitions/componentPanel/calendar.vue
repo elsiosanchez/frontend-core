@@ -270,7 +270,7 @@ export default defineComponent({
           props.actionOption('new')
           store.dispatch('changeTabPanelDefinition', {
             type: 'new',
-            id: currentDisplyDefinitions.value.id,
+            displyDefinitions: currentDisplyDefinitions.value,
             recordId: -1,
             additionalAttributes: attributes,
             currentAttributes: attributes

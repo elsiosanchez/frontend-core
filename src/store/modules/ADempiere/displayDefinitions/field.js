@@ -24,7 +24,11 @@ import {
   readDataEntry,
   updateDataEntry,
   createDataEntry,
-  deleteDataEntry
+  deleteDataEntry,
+  createDataEntryResource,
+  readDataEntryResource,
+  updateDataEntryResource,
+  deleteDataEntryResource
 } from '@/api/ADempiere/displayDefinition.ts'
 
 // Utils and Helpers Methods
@@ -171,31 +175,34 @@ const displayDefinitionField = {
       getters,
       dispatch
     }, {
-      id,
+      displyDefinitions,
       recordId,
       type,
       currentAttributes = {},
       additionalAttributes = {}
     }) {
-      // const getRecordValuesData = getters.getRecordValuesData({ recordId })
       commit('setCurrentTabPanelDefinition', {
         type,
         currentAttributes,
         additionalAttributes
       })
-      // if (!isEmptyValue(getRecordValuesData) && !isEmptyValue(getRecordValuesData.data)) {
-      //   return
-      // }
       if (typeof recordId !== 'number') {
         return
       }
       dispatch('readRecordData', {
         recordId,
-        displayDefinitionId: id
+        displayDefinitionId: displyDefinitions.id,
+        isResource: displyDefinitions.is_resource
       })
     },
+
+    /**
+     * CRUD Data Entry and CRUD Data Entry with Resource
+     */
+
     readRecordData({ commit }, {
       recordId,
+      isResource = false,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
@@ -206,45 +213,58 @@ const displayDefinitionField = {
           recordId,
           isLoading: true
         })
-        readDataEntry({
+        // Determines the function to use according to the value of `isResource`.
+        const createFunction = isResource ? readDataEntryResource : readDataEntry
+        // Call the corresponding function
+        createFunction({
           id: recordId,
           displayDefinitionId
         })
           .then(responseData => {
+            // Resolve the promise with the successful answer
             commit('setRecordValuesData', {
               recordId,
               data: responseData
             })
           })
           .catch(error => {
+            // Displays an error message to the user
             showMessage({
               type: 'error',
               message: error.message,
               showClose: true
             })
+            // Logs the error to the console for debugging
             console.warn(`Error in Opting for Registry Data: ${error.message}. Code: ${error.code}.`)
             reject(error)
           })
           .finally(() => {
+            // Ensures that the pledge is always resolved, even if there is an error
             commit('setRecordDataLoading', {
               recordId,
               isLoading: false
             })
+            resolve()
           })
       })
     },
     updateField({ commit }, {
       id,
       attributes,
+      isResource = false,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
-        updateDataEntry({
+        // Determines the function to use according to the value of `isResource`.
+        const createFunction = isResource ? updateDataEntryResource : updateDataEntry
+        // Call the corresponding function
+        createFunction({
           id,
           attributes,
           displayDefinitionId
         })
           .then(response => {
+            // Resolve the promise with the successful answer
             commit('setRecordValuesData', {
               recordId: id,
               data: response
@@ -252,67 +272,86 @@ const displayDefinitionField = {
             resolve(response)
           })
           .catch(error => {
+            // Displays an error message to the user
             showMessage({
               type: 'error',
               message: error.message,
               showClose: true
             })
+            // Logs the error to the console for debugging
             console.warn(`Error Getting Update Field Display Definition: ${error.message}. Code: ${error.code}.`)
             reject(error)
           })
           .finally(() => {
+            // Ensures that the pledge is always resolved, even if there is an error
             resolve()
           })
       })
     },
     saveRecord({ commit }, {
       attributes,
+      isResource = false,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
-        createDataEntry({
+        // Determines the function to use according to the value of `isResource`.
+        const createFunction = isResource ? createDataEntryResource : createDataEntry
+        // Call the corresponding function
+        createFunction({
           attributes,
           displayDefinitionId
         })
           .then(response => {
+            // Resolve the promise with the successful answer
             resolve(response)
           })
           .catch(error => {
+            // Displays an error message to the user
             showMessage({
               type: 'error',
               message: error.message,
               showClose: true
             })
+            // Logs the error to the console for debugging
             console.warn(`Error Getting Update Field Display Definition: ${error.message}. Code: ${error.code}.`)
             reject(error)
           })
           .finally(() => {
+            // Ensures that the pledge is always resolved, even if there is an error
             resolve()
           })
       })
     },
     removerRecord({ commit }, {
       recordId,
+      isResource = false,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
-        deleteDataEntry({
+        // Determines the function to use according to the value of `isResource`.
+        const createFunction = isResource ? deleteDataEntryResource : deleteDataEntry
+        // Call the corresponding function
+        createFunction({
           id: recordId,
           displayDefinitionId
         })
           .then(response => {
+            // Resolve the promise with the successful answer
             resolve(response)
           })
           .catch(error => {
+            // Displays an error message to the user
             showMessage({
               type: 'error',
               message: error.message,
               showClose: true
             })
+            // Logs the error to the console for debugging
             console.warn(`Error Delete Record Display Definition: ${error.message}. Code: ${error.code}.`)
             reject(error)
           })
           .finally(() => {
+            // Ensures that the pledge is always resolved, even if there is an error
             resolve()
           })
       })

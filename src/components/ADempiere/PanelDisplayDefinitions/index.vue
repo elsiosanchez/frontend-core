@@ -157,7 +157,7 @@ export default defineComponent({
     function handleTabClick(tab) {
       store.dispatch('changeTabPanelDefinition', {
         type: tab.name,
-        id: props.currentDisplayDefinition.id,
+        displyDefinitions: props.currentDisplayDefinition,
         recordId: props.currentRecord.id
 
       })

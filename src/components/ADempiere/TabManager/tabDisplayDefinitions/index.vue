@@ -311,6 +311,7 @@ export default defineComponent({
       })
       store.dispatch('removerRecord', {
         displayDefinitionId: currentDisplyDefinitions.value.id,
+        isResource: currentDisplyDefinitions.value.is_resource,
         recordId: currentRecord.value.id
       })
         .then(() => {
@@ -332,7 +333,7 @@ export default defineComponent({
         }
         store.dispatch('changeTabPanelDefinition', {
           type: type,
-          id: currentDisplyDefinitions.value.id,
+          displyDefinitions: currentDisplyDefinitions.value,
           recordId: currentRecord.value.id
         })
         isDialogoPanelDifinition.value = !isDialogoPanelDifinition.value
