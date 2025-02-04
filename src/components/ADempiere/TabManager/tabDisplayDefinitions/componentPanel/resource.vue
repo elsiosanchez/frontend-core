@@ -65,6 +65,7 @@ import router from '@/router'
 import FullCalendar from '@fullcalendar/vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
 import esLocale from '@fullcalendar/core/locales/es'
+import allLocales from '@fullcalendar/core/locales-all'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -152,6 +153,10 @@ export default defineComponent({
         isPanel: props.isPanelRight
       })
     })
+    const currentLenguage = computed(() => {
+      const language = store.getters.language
+      return allLocales.find(locale => locale.code.includes(language))
+    })
     const groupedResourcesList = computed(() => {
       if (props.isPanelRight) {
         const { resourcesList } = store.getters.getCurrentResourcePanelRightDefinition({
@@ -209,7 +214,7 @@ export default defineComponent({
         resourceAreaWidth: '30%',
         initialView: 'resourceTimelineMonth',
         eventMinWidth: 90,
-        locale: esLocale,
+        locale: currentLenguage.value,
         scrollTime: '01:00',
         // aspectRatio: 1,
         // editable: true,
@@ -344,9 +349,11 @@ export default defineComponent({
       currenPanelResource,
       //
       esLocale,
+      allLocales,
       listPlugin,
       dayGridPlugin,
       timeGridPlugin,
+      currentLenguage,
       interactionPlugin,
       // Mehtods
       openDetails,

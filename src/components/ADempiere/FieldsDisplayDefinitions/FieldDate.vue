@@ -89,6 +89,10 @@ export default defineComponent({
     isNewRecord: {
       type: Boolean,
       required: false
+    },
+    additionalAttributes: {
+      type: Object,
+      required: false
     }
   },
 
@@ -96,6 +100,10 @@ export default defineComponent({
     const value = ref('')
     const isLoading = ref(false)
     value.value = convertStringDate(props.displayValue)
+
+    if (props.isNewRecord) {
+      loadDefaultValueFromServer()
+    }
 
     // Computed
     const pickerOptionsDate = computed(() => {
@@ -216,6 +224,17 @@ export default defineComponent({
       const fechaFormateada = `${anio}-${mes}-${dia}T${horas}:${minutos}:${segundos}.${milisegundos}Z`
 
       return fechaFormateada
+    }
+
+    /**
+     * Get server default value
+     */
+    function loadDefaultValueFromServer() {
+      const { column_name } = props.fieldMetadata
+      if (!isEmptyValue(props.additionalAttributes[column_name])) {
+        value.value = props.additionalAttributes[column_name].value
+        saveFieldValue(props.additionalAttributes[column_name].value)
+      }
     }
 
     return {

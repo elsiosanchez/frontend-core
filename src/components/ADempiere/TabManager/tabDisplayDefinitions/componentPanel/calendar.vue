@@ -108,6 +108,8 @@ import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefi
 
 // Utils and Helper Methods
 import esLocale from '@fullcalendar/core/locales/es'
+// import enLocale from '@fullcalendar/core/locales/en'
+import allLocales from '@fullcalendar/core/locales-all'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -197,6 +199,11 @@ export default defineComponent({
       })
     })
 
+    const currentLenguage = computed(() => {
+      const language = store.getters.language
+      return allLocales.find(locale => locale.code.includes(language))
+    })
+
     const recordsEvents = computed(() => {
       if (props.isPanelRight) {
         const record = store.getters.getListRecordsCalendarPanelRightDefinition({ tableName: props.tabAttributes.table_name })
@@ -229,7 +236,7 @@ export default defineComponent({
           listPlugin,
           resourceTimelinePlugin
         ],
-        locale: esLocale,
+        locale: currentLenguage.value,
         headerToolbar: {
           left: 'prev,next today',
           center: 'title',
@@ -265,7 +272,8 @@ export default defineComponent({
             type: 'new',
             id: currentDisplyDefinitions.value.id,
             recordId: -1,
-            additionalAttributes: attributes
+            additionalAttributes: attributes,
+            currentAttributes: attributes
           })
         }
         // dateClick: function(info) {
@@ -420,9 +428,12 @@ export default defineComponent({
       currenPanelCalendar,
       //
       esLocale,
+      // enLocale,
+      allLocales,
       listPlugin,
       dayGridPlugin,
       timeGridPlugin,
+      currentLenguage,
       interactionPlugin,
       // Mehtods
       goToEventDate,
