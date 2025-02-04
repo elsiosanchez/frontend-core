@@ -38,10 +38,10 @@
       </p>
     </div>
     <div>
-      <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
+      <el-empty v-if="isEmptyValue(localFields)" :description="$t('component.displayDefinition.fieldEmpty')" />
       <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
         <el-descriptions-item
-          v-for="field in fields"
+          v-for="field in localFields"
           :key="field.sequence"
         >
           <template slot="label">
@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch, onMounted } from '@vue/composition-api'
 
 import store from '@/store'
 
@@ -182,6 +182,7 @@ export default defineComponent({
 
   setup(props) {
     // Ref
+    const localFields = ref([])
     const showButton = ref(false)
     const isLoadingDelete = ref(false)
     const localShowDeleteConfirmation = ref(false)
@@ -231,7 +232,7 @@ export default defineComponent({
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        return displayDefinitionMetadata.value.fields
+        localFields.value = displayDefinitionMetadata.value.fields
       }
       return []
     })
@@ -302,8 +303,20 @@ export default defineComponent({
     watch(showDeleteConfirmation, (newValue) => {
       localShowDeleteConfirmation.value = newValue
     })
+    onMounted(() => {
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        localFields.value = displayDefinitionMetadata.value.fields.map(field => ({
+          ...field,
+          is_show_components: false
+        }))
+      }
+    })
     return {
       // Ref
+      localFields,
       showButton,
       recordMetadata,
       localShowDeleteConfirmation,
