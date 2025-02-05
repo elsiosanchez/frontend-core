@@ -20,8 +20,8 @@
   <span>
     <el-date-picker
       v-model="value"
-      type="date"
       unlink-panels
+      :type="typePicker"
       :format="formatView"
       :picker-options="pickerOptionsDate"
       size="mini"
@@ -146,6 +146,14 @@ export default defineComponent({
       return formattedFormat
     })
 
+    const typePicker = computed(() => {
+      let picker = 'date'
+      if (props.fieldMetadata.display_type === DATE_PLUS_TIME.id) {
+        picker += 'time'
+      }
+      return picker
+    })
+
     // Methods
 
     function saveFieldValue(value, field) {
@@ -248,6 +256,7 @@ export default defineComponent({
       isLoading,
       // Computed
       formatView,
+      typePicker,
       pickerOptionsDate,
       // Methods
       updateFieldValue,
