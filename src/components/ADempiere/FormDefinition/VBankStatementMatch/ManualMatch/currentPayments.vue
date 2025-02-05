@@ -213,9 +213,7 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      if (isEmptyValue(recorsList.value)) {
-        refreshSearch()
-      }
+      refreshSearch()
     })
 
     return {
