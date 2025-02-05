@@ -186,15 +186,5 @@ export default defineComponent({
     margin-top: 5px !important;
   }
 }
-.button-base-delete{
-  background: #f8eeee;
-  color: #ff1e1e;
-  border-color: #eba1a1;
-  &:hover {
-    background: #ff1e1e;
-    border-color: #ff1e1e;
-    color: #fff;
-  }
-}
 </style>
 

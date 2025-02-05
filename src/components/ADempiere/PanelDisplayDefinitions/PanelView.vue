@@ -362,4 +362,15 @@ export default defineComponent({
     padding: 0px;
   }
 }
+.button-base-delete{
+  background: #f8eeee;
+  color: #ff1e1e;
+  border-color: #eba1a1;
+  float: left !important;
+  &:hover {
+    background: #ff1e1e;
+    border-color: #ff1e1e;
+    color: #fff;
+  }
+}
 </style>
