@@ -18,7 +18,7 @@
 
 <template>
   <el-card
-    v-loading="isLoading"
+    v-loading="isLoadingRecord"
     class="box-card-display-definition"
     :body-style="{ padding: '0px' }"
   >
@@ -137,6 +137,8 @@ import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextT
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+// Constants
+// import { TEXT } from '@/utils/ADempiere/references'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -192,6 +194,12 @@ export default defineComponent({
     // Computed
     const showDeleteConfirmation = computed(() => {
       return store.getters.getShowDeleteConfirmation
+    })
+
+    const isLoadingRecord = computed(() => {
+      return store.getters.getRecordLoading({
+        recordId: props.currentRecord.id
+      })
     })
     const recordMetadata = computed(() => {
       if (!isEmptyValue(getRecordValuesData.value)) return getRecordValuesData.value.data
@@ -294,13 +302,13 @@ export default defineComponent({
       showDelete(true)
     }
 
-    if (isEmptyValue(recordMetadata.value)) {
-      store.dispatch('readRecordData', {
-        recordId: props.currentRecord.id,
-        isResource: props.currentDisplyDefinitions.is_resource,
-        displayDefinitionId: props.currentDisplyDefinitions.id
-      })
-    }
+    // if (isEmptyValue(recordMetadata.value)) {
+    //   store.dispatch('readRecordData', {
+    //     recordId: props.currentRecord.id,
+    //     isResource: props.currentDisplyDefinitions.is_resource,
+    //     displayDefinitionId: props.currentDisplyDefinitions.id
+    //   })
+    // }
     function showDelete(show = true) {
       store.commit('setShowDeleteConfirmation', show)
     }
@@ -321,6 +329,7 @@ export default defineComponent({
     watch(displayDefinitionMetadata, (newValue) => {
       updateLocalFields()
     })
+
     onMounted(() => {
       updateLocalFields()
     })
@@ -333,10 +342,11 @@ export default defineComponent({
       // Computeds
       title,
       isLoading,
+      description,
+      isLoadingRecord,
       isLoadingDelete,
       getRecordValuesData,
       displayDefinitionMetadata,
-      description,
       showDeleteConfirmation,
       // Methods
       deleteRecord,

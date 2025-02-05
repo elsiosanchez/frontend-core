@@ -89,6 +89,10 @@ export default defineComponent({
   },
 
   setup(props) {
+    if (props.isNewRecord) {
+      saveFieldValue(false)
+    }
+
     const fieldValue = ref(
       convertStringToBoolean(
         props.displayValue

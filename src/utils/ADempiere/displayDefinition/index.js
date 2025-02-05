@@ -152,6 +152,9 @@ export function transformEvents({
       id,
       title: `${title} - ${name}`,
       start: parseDate(start),
+      textColor: '#FFFFFF',
+      borderColor: '#080062',
+      eventColor: '#558BF7',
       end: parseDate(end),
       resourceId: id,
       description
@@ -177,7 +180,10 @@ export function transformResources({
     // Transforms each resource within the group
     const resourcesChilds = resources.map(({ id, color: colorResource, name: titleResource }) => ({
       id, // ID del recurso
-      eventColor: colorResource, // resource color
+      // eventColor: colorResource, // resource color
+      eventColor: '#558BF7',
+      borderColor: '#000000',
+      textColor: '#FFFFFF',
       title: titleResource // resource title
     }))
 
@@ -185,7 +191,9 @@ export function transformResources({
     return {
       id: uuidGroup, // Unique group ID
       title: titleGroup, // Group title
-      color: colorGroup, // Group color
+      eventColor: '#909399', // Group color
+      borderColor: '#000000',
+      textColor: '#FFFFFF',
       children: resourcesChilds // List of child resources
     }
   })
