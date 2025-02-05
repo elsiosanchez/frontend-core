@@ -25,7 +25,7 @@ import { requestWindowMetadata } from '@/api/ADempiere/dictionary/window.ts'
 
 // Constants
 import {
-  CLIENT, COLUMNNAME_DocAction, COLUMNNAME_DocStatus,
+  COLUMNNAME_AD_Client_ID, COLUMNNAME_DocAction, COLUMNNAME_DocStatus,
   COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX, IS_ADVANCED_QUERY } from '@/utils/ADempiere/dictionaryUtils'
@@ -698,7 +698,7 @@ export default {
             const clientIdRecord = rootGetters.getValueOfField({
               parentUuid: windowUuid,
               containerUuid: tabAssociatedUuid,
-              columnName: CLIENT
+              columnName: COLUMNNAME_AD_Client_ID
             })
             // evaluate client id context with record
             const sessionClientId = rootGetters.getSessionContextClientId

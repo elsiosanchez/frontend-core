@@ -19,7 +19,10 @@
 import language from '@/lang'
 
 // Constants
-import { CLIENT, ORGANIZATION, CURRENCY, UOM, COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_AD_Client_ID, COLUMNNAME_AD_Org_ID, COLUMNNAME_M_Warehouse_ID,
+  COLUMNNAME_C_Currency_ID, COLUMNNAME_C_UOM_ID
+} from '@/utils/ADempiere/constants/systemColumns'
 import { title } from '@/settings'
 import { config } from '@/utils/ADempiere/config'
 import { ACCOUNTING_CONTEXT_PREFIX, GLOBAL_CONTEXT_PREFIX } from '@/utils/ADempiere/contextUtils'
@@ -246,10 +249,10 @@ const actions = {
           dispatch('systemS3')
           dispatch('systemReportEngine')
           dispatch('currencyPrecision', {
-            id: defaultContext[ACCOUNTING_CONTEXT_PREFIX + CURRENCY]
+            id: defaultContext[ACCOUNTING_CONTEXT_PREFIX + COLUMNNAME_C_Currency_ID]
           })
           dispatch('unitOfMeasurePrecision', {
-            id: defaultContext[GLOBAL_CONTEXT_PREFIX + UOM]
+            id: defaultContext[GLOBAL_CONTEXT_PREFIX + COLUMNNAME_C_UOM_ID]
           })
           commit('setIsSession', true)
           commit('setSessionInfo', {
@@ -266,7 +269,7 @@ const actions = {
           if (!isEmptyValue(avatar)) {
             // 108=window User
             // 11/client/window/108/ad_user/101/logo_id/2024-04-0811-55.png
-            const clientId = defaultContext[`#${CLIENT}`]
+            const clientId = defaultContext[`#${COLUMNNAME_AD_Client_ID}`]
             const newLogoPath = `${clientId}/client/window/108/ad_user/${userInfo.id}/logo_id/${userInfo.image}`
             commit('SET_AVATAR', newLogoPath)
           }
@@ -289,9 +292,9 @@ const actions = {
           setCurrentRole(role.id)
           setCurrentClient(role.client.id)
           // const currentOrganizationSession = defaultContext.find(context => {
-          //   return context.key === defaultContext[`#${ORGANIZATION}`]
+          //   return context.key === defaultContext[`#${COLUMNNAME_AD_Org_ID}`]
           // })
-          const sessionOrganizationId = defaultContext[`#${ORGANIZATION}`]
+          const sessionOrganizationId = defaultContext[`#${COLUMNNAME_AD_Org_ID}`]
           commit('SET_CURRENT_ORGANIZATION_ID', sessionOrganizationId)
           setCurrentOrganization(sessionOrganizationId)
 
@@ -528,7 +531,7 @@ const actions = {
         commit('SET_ORGANIZATION', organization)
         commit('SET_CURRENT_ORGANIZATION_ID', id)
         // commit('setPreferenceContext', {
-        //   columnName: `#${ORGANIZATION}`,
+        //   columnName: `#${COLUMNNAME_AD_Org_ID}`,
         //   value: organization.id
         // }, {
         //   root: true
@@ -579,7 +582,7 @@ const actions = {
         commit('SET_ORGANIZATION', organization)
         commit('SET_CURRENT_ORGANIZATION_ID', id)
         commit('setPreferenceContext', {
-          columnName: `#${ORGANIZATION}`,
+          columnName: `#${COLUMNNAME_AD_Org_ID}`,
           value: id
         }, {
           root: true

@@ -123,7 +123,9 @@ import formMixin from '@/components/ADempiere/Form/formMixin'
 
 // constants
 import preferenceFields from './preferenceValueFieldsList.js'
-import { CLIENT, ORGANIZATION } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_AD_Client_ID, COLUMNNAME_AD_Org_ID
+} from '@/utils/ADempiere/constants/systemColumns'
 
 // api request methods
 import { setPreference, deletePreference } from '@/api/ADempiere/fields/preference.js'
@@ -210,12 +212,12 @@ export default {
 
     clientField() {
       return this.metadataList.find(field => {
-        return field.columnName === CLIENT
+        return field.columnName === COLUMNNAME_AD_Client_ID
       })
     },
     organizationField() {
       return this.metadataList.find(field => {
-        return field.columnName === ORGANIZATION
+        return field.columnName === COLUMNNAME_AD_Org_ID
       })
     },
     userField() {

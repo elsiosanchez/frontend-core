@@ -58,7 +58,7 @@ import store from '@/store'
 
 // Constants
 import {
-  CLIENT
+  COLUMNNAME_AD_Client_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 
 // API Request Methods
@@ -121,7 +121,7 @@ export default defineComponent({
       const clientIdRecord = store.getters.getValueOfField({
         parentUuid,
         containerUuid,
-        columnName: CLIENT
+        columnName: COLUMNNAME_AD_Client_ID
       })
       const preferenceClientId = store.getters.getSessionContextClientId
       return clientIdRecord !== preferenceClientId

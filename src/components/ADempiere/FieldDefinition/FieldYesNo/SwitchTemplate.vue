@@ -36,7 +36,7 @@
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 
 // Constants
-import { ACTIVE } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_IsActive } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
@@ -60,13 +60,13 @@ export default {
       return ' custom-field-yes-no-switch '
     },
     activeColor() {
-      if (ACTIVE === this.metadata.columnName) {
+      if (COLUMNNAME_IsActive === this.metadata.columnName) {
         return '#13ce66'
       }
       return undefined
     },
     inactiveColor() {
-      if (ACTIVE === this.metadata.columnName) {
+      if (COLUMNNAME_IsActive === this.metadata.columnName) {
         return '#ff4949'
       }
       return undefined

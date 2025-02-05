@@ -143,7 +143,7 @@ import { standardPrecisionContext } from '@/utils/ADempiere/formatValue/numberFo
 
 // Constants
 import { IMAGE, TEXT_LONG } from '@/utils/ADempiere/references'
-import { CURRENCY } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import { pathImageWindows } from '@/utils/ADempiere/resource'
 
@@ -216,7 +216,7 @@ export default defineComponent({
       const currentValue = props.dataRow[columnName.value]
       return formatField({
         value: currentValue,
-        currency: props.dataRow[DISPLAY_COLUMN_PREFIX + CURRENCY],
+        currency: props.dataRow[DISPLAY_COLUMN_PREFIX + COLUMNNAME_C_Currency_ID],
         displayedValue: props.dataRow[displayColumnName.value],
         displayType: props.fieldAttributes.display_type,
         columnName: columnName.value,

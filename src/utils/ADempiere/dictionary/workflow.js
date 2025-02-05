@@ -18,7 +18,9 @@
 import store from '@/store'
 
 // Constants
-import { DOCUMENT_STATUS, PROCESSING } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_DocStatus, COLUMNNAME_Processing
+} from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helpers Methods
@@ -55,7 +57,7 @@ export function getDocumentStatusValue({
   const documentStatus = getContext({
     parentUuid,
     containerUuid,
-    columnName: DOCUMENT_STATUS
+    columnName: COLUMNNAME_DocStatus
   })
   return documentStatus
 }
@@ -79,7 +81,7 @@ export function getCurrentDocumentDisplayedValue({
   const displayedValue = getContext({
     parentUuid,
     containerUuid,
-    columnName: DISPLAY_COLUMN_PREFIX + DOCUMENT_STATUS
+    columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_DocStatus
   })
 
   if (!isEmptyValue(displayedValue)) {
@@ -130,7 +132,7 @@ export function isRunableDocumentAction({ parentUuid, containerUuid }) {
   const processing = store.getters.getValueOfFieldOnContainer({
     parentUuid,
     containerUuid,
-    columnName: PROCESSING
+    columnName: COLUMNNAME_Processing
   })
   if (convertStringToBoolean(processing)) {
     return true
@@ -140,7 +142,7 @@ export function isRunableDocumentAction({ parentUuid, containerUuid }) {
   // document is closed
   const documentStatus = store.getters.getValueOfFieldOnContainer({
     containerUuid,
-    columnName: DOCUMENT_STATUS
+    columnName: COLUMNNAME_DocStatus
   })
   // Closed, Voided, Reversed
   if (isEndDocumentAction(documentStatus)) {

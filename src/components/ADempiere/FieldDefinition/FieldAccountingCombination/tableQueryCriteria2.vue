@@ -188,6 +188,7 @@ import { TEXT } from '@/utils/ADempiere/references'
 import {
   ACCOUTING_COMBINATIONS_LIST_FORM, COLUMN_NAME
 } from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+import { COLUMNNAME_AD_Org_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Components and Mixins
 import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
@@ -195,7 +196,6 @@ import CustomPagination from '@/components/ADempiere/DataTable/Components/Custom
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
 import SelectAccounting from '@/components/ADempiere/FieldDefinition/FieldAccountingCombination/Fields/SelectAccounting'
 import TextAccounting from '@/components/ADempiere/FieldDefinition/FieldAccountingCombination/Fields/TextAccounting'
-import { ORGANIZATION } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
@@ -287,9 +287,9 @@ export default defineComponent({
 
     const organizationId = computed(() => {
       if (isEmptyValue(fieldsListElements.value)) {
-        return setValuesCombinations.value[ORGANIZATION]
+        return setValuesCombinations.value[COLUMNNAME_AD_Org_ID]
       }
-      return store.getters.getFieldsValue(ORGANIZATION)
+      return store.getters.getFieldsValue(COLUMNNAME_AD_Org_ID)
     })
 
     const attributesQuery = computed(() => {
@@ -319,7 +319,7 @@ export default defineComponent({
     const contextAttributesList = computed(() => {
       return [
         { columnName: 'C_AcctSchema_ID', value: acctSchemaId.value },
-        { columnName: ORGANIZATION, value: organizationId.value },
+        { columnName: COLUMNNAME_AD_Org_ID, value: organizationId.value },
         { columnName: 'Account_ID', value: accoutId.value }
       ]
     })
@@ -434,7 +434,7 @@ export default defineComponent({
       })
       store.dispatch('saveAccountCombinations', {
         id: currentValue,
-        organizationId: store.getters.getFieldsValue(ORGANIZATION),
+        organizationId: store.getters.getFieldsValue(COLUMNNAME_AD_Org_ID),
         accountId: store.getters.getFieldsValue('Account_ID'),
         parentUuid: props.metadata.parentUuid,
         accountingSchemaId: setValuesCombinations.value['C_AcctSchema_ID'],
@@ -449,7 +449,7 @@ export default defineComponent({
     }
 
     function searchRecordsList(pageNumber = 0, isConvert = true) {
-      if (isEmptyValue(store.getters.getFieldsValue(ORGANIZATION))) {
+      if (isEmptyValue(store.getters.getFieldsValue(COLUMNNAME_AD_Org_ID))) {
         showMessage({
           type: 'warning',
           showClose: true,
@@ -483,7 +483,7 @@ export default defineComponent({
         isLoadingRecords.value = true
         store.dispatch('listAccountCombinations', {
           contextAttributesList: contextAttributesList.value,
-          organizationId: store.getters.getFieldsValue(ORGANIZATION),
+          organizationId: store.getters.getFieldsValue(COLUMNNAME_AD_Org_ID),
           parentUuid: props.metadata.parentUuid,
           accountId: store.getters.getFieldsValue('Account_ID'),
           containerUuid: uuidForm.value,

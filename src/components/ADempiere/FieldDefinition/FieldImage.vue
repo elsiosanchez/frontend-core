@@ -175,7 +175,7 @@ import { BEARER_TYPE } from '@/utils/auth'
 import { MIME_TYPE_IMAGE } from '@/utils/ADempiere/resource/image.ts'
 import { UUID_PATTERN } from '@/utils/ADempiere/recordUtil'
 import { RESOURCE_TYPE_IMAGE } from '@/utils/ADempiere/resource'
-import { CLIENT } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_AD_Client_ID } from '@/utils/ADempiere/constants/systemColumns'
 import { UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // API Request Methods
@@ -282,7 +282,7 @@ export default {
         const clientIdRecord = this.$store.getters.getValueOfFieldOnContainer({
           parentUuid,
           containerUuid,
-          columnName: CLIENT + UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
+          columnName: COLUMNNAME_AD_Client_ID + UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
         })
         if (!this.isEmptyValue(clientIdRecord)) return clientIdRecord
       }

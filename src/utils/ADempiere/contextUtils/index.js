@@ -22,7 +22,7 @@ import store from '@/store'
 // Constants
 import {
   ACCOUNTING_COLUMNS,
-  IS_SO_TRX,
+  COLUMNNAME_IsSOTrx,
   SALES_TRANSACTION_COLUMNS
 } from '@/utils/ADempiere/constants/systemColumns'
 import { IS_ADVANCED_QUERY } from '@/utils/ADempiere/dictionaryUtils'
@@ -408,7 +408,7 @@ export function isSalesTransactionContainer({
   const isSOTrx = store.getters.getValueOfField({
     parentUuid,
     containerUuid,
-    columnName: IS_SO_TRX
+    columnName: COLUMNNAME_IsSOTrx
   })
   if (!isEmptyValue(isSOTrx)) {
     return convertStringToBoolean(isSOTrx)

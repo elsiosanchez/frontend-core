@@ -25,7 +25,7 @@ import {
   OPERATOR_LIKE, OPERATOR_GREATER_EQUAL, OPERATOR_LESS_EQUAL, OPERATOR_BETWEEN
 } from '@/utils/ADempiere/dataUtils'
 import {
-  CURRENCY, DOCUMENT_ACTION, DOCUMENT_STATUS
+  COLUMNNAME_C_Currency_ID, COLUMNNAME_DocAction, COLUMNNAME_DocStatus
 } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helpers Methods
@@ -72,9 +72,9 @@ export const IS_ADVANCED_QUERY = '-IS_ADVANCED_QUERY'
  * Always get display column
  */
 export const ALWAYS_DISPLAY_COLUMN = [
-  CURRENCY,
-  DOCUMENT_ACTION,
-  DOCUMENT_STATUS
+  COLUMNNAME_C_Currency_ID,
+  COLUMNNAME_DocAction,
+  COLUMNNAME_DocStatus
 ]
 
 /**
@@ -196,7 +196,7 @@ export function generateField({
       isGetServerValue = true
     }
 
-    // VALUE TO
+    // Value To
     if (fieldToGenerate.is_range) {
       parsedDefaultValueTo = getContextDefaultValue({
         ...fieldToGenerate,

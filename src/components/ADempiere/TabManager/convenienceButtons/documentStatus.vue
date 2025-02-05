@@ -70,7 +70,7 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import store from '@/store'
 
 // Constants
-import { DOCUMENT_STATUS } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_DocStatus } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // Components and Mixins
@@ -115,7 +115,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        columnName: DOCUMENT_STATUS
+        columnName: COLUMNNAME_DocStatus
       })
     })
 
@@ -133,7 +133,7 @@ export default defineComponent({
       const displayValue = store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        columnName: DISPLAY_COLUMN_PREFIX + DOCUMENT_STATUS
+        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_DocStatus
       })
       if (!isEmptyValue(displayValue)) {
         return displayValue

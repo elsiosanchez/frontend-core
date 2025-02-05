@@ -16,15 +16,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const CLIENT = 'AD_Client_ID'
+export const COLUMNNAME_AD_Client_ID = 'AD_Client_ID'
 
-export const ORGANIZATION = 'AD_Org_ID'
+export const COLUMNNAME_AD_Org_ID = 'AD_Org_ID'
 
-export const ACTIVE = 'IsActive'
+export const COLUMNNAME_IsActive = 'IsActive'
 
-export const PROCESSING = 'Processing'
+export const COLUMNNAME_Processing = 'Processing'
 
-export const PROCESSED = 'Processed'
+export const COLUMNNAME_Processed = 'Processed'
 
 export const UUID = 'UUID'
 
@@ -32,48 +32,36 @@ export const ID = 'ID'
 
 export const COLUMNNAME_AD_Table_ID = 'AD_Table_ID'
 
-/**
- * @deprecated
- */
-export const RECORD_ID = 'Record_ID'
 export const COLUMNNAME_Record_ID = 'Record_ID'
 
-export const COUNTRY = 'C_Country_ID'
+export const COLUMNNAME_C_Country_ID = 'C_Country_ID'
 
-export const CURRENCY = 'C_Currency_ID'
+export const COLUMNNAME_C_Currency_ID = 'C_Currency_ID'
 
 export const COLUMNNAME_M_Warehouse_ID = 'M_Warehouse_ID'
 
-export const UOM = 'C_UOM_ID'
+export const COLUMNNAME_C_UOM_ID = 'C_UOM_ID'
 
 export const IS_SALES_TRANSACTION = 'IsSalesTransaction'
 
-export const IS_SO_TRX = 'IsSOTrx'
+export const COLUMNNAME_IsSOTrx = 'IsSOTrx'
 
-export const VALUE = 'Value'
+export const COLUMNNAME_Value = 'Value'
 
-export const DOCUMENT_NO = 'DocumentNo'
+export const COLUMNNAME_DocumentNo = 'DocumentNo'
 
-/**
- * @deprecated
- */
-export const DOCUMENT_STATUS = 'DocStatus'
 export const COLUMNNAME_DocStatus = 'DocStatus'
 
-/**
- * @deprecated
- */
-export const DOCUMENT_ACTION = 'DocAction'
 export const COLUMNNAME_DocAction = 'DocAction'
 
-export const STD_PRECISION = 'StdPrecision'
+export const COLUMNNAME_StdPrecision = 'StdPrecision'
 
 /**
  * Is sales transaction (IsSOTrx, IsSalesTransaction)
  */
 export const SALES_TRANSACTION_COLUMNS = [
   IS_SALES_TRANSACTION,
-  IS_SO_TRX
+  COLUMNNAME_IsSOTrx
 ]
 
 /**
@@ -93,9 +81,9 @@ export const LOG_COLUMNS_NAME_LIST = [
 export const STANDARD_COLUMNS_NAME_LIST = [
   ...LOG_COLUMNS_NAME_LIST,
   // Table Name '_ID'
-  CLIENT,
-  ORGANIZATION,
-  ACTIVE,
+  COLUMNNAME_AD_Client_ID,
+  COLUMNNAME_AD_Org_ID,
+  COLUMNNAME_IsActive,
   UUID
 ]
 
@@ -107,17 +95,17 @@ export const DOCUMENT_COLUMNS_NAME_LIST = [
   'C_DocType_ID',
   'DateDoc',
   'Description',
-  DOCUMENT_ACTION,
-  DOCUMENT_STATUS,
-  DOCUMENT_NO,
+  COLUMNNAME_DocAction,
+  COLUMNNAME_DocStatus,
+  COLUMNNAME_DocumentNo,
   'IsApproved',
-  PROCESSED,
-  PROCESSING
+  COLUMNNAME_Processed,
+  COLUMNNAME_Processing
 ]
 
 export const ACCOUNTING_COLUMNS = [
   'C_AcctSchema_ID',
-  CURRENCY,
+  COLUMNNAME_C_Currency_ID,
   'C_Convertion_Type_ID'
 ]
 
@@ -125,7 +113,7 @@ export const ACCOUNTING_COLUMNS = [
  * Documents status columns list
  */
 export const DOCUMENT_STATUS_COLUMNS_LIST = [
-  DOCUMENT_STATUS,
+  COLUMNNAME_DocStatus,
   'O_DocStatus'
 ]
 
@@ -135,30 +123,30 @@ export function isDocumentStatus({ columnName, elementColumnName }) {
 }
 
 export const COLUMN_IS_ACTIVE = {
-  columnName: ACTIVE, // column name of field
+  columnName: COLUMNNAME_IsActive, // column name of field
   defaultValue: true, // default value when loading
   valueIsReadOnlyForm: false, // value that activates read-only form
   isChangedAllForm: false // change the entire form to read only including this field
 }
 
 export const COLUMN_PROCESSING = {
-  columnName: PROCESSING,
+  columnName: COLUMNNAME_Processing,
   defaultValue: false,
   valueIsReadOnlyForm: false,
   isChangedAllForm: true
 }
 
 export const COLUMN_PROCESSED = {
-  columnName: PROCESSED,
+  columnName: COLUMNNAME_Processed,
   defaultValue: false,
   valueIsReadOnlyForm: true,
   isChangedAllForm: true
 }
 
 export const READ_ONLY_COLUMNS_LIST = [
-  ACTIVE,
-  PROCESSING,
-  PROCESSED
+  COLUMNNAME_IsActive,
+  COLUMNNAME_Processing,
+  COLUMNNAME_Processed
 ]
 
 /**

@@ -26,11 +26,11 @@ import {
   IDENTIFIER_COLUMN_SUFFIX, DISPLAY_COLUMN_PREFIX
 } from '@/utils/ADempiere/dictionaryUtils'
 import {
-  ACTIVE, CLIENT, DOCUMENT_ACTION,
-  DOCUMENT_NO, DOCUMENT_STATUS, CURRENCY,
-  PROCESSING, PROCESSED, UUID, VALUE, // READ_ONLY_FORM_COLUMNS
-  ORGANIZATION, COLUMNNAME_M_Warehouse_ID,
-  RECORD_ID,
+  COLUMNNAME_AD_Client_ID, COLUMNNAME_AD_Org_ID, COLUMNNAME_M_Warehouse_ID,
+  COLUMNNAME_DocumentNo, COLUMNNAME_DocStatus, COLUMNNAME_DocAction,
+  COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed,
+  UUID, COLUMNNAME_Value, // READ_ONLY_FORM_COLUMNS
+  COLUMNNAME_Record_ID, COLUMNNAME_C_Currency_ID,
   LOG_COLUMNS_NAME_LIST
 } from '@/utils/ADempiere/constants/systemColumns'
 import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
@@ -125,7 +125,7 @@ export function isEditableRecord({ parentUuid, containerUuid }) {
   const clientIdRecord = store.getters.getValueOfField({
     parentUuid,
     containerUuid,
-    columnName: CLIENT
+    columnName: COLUMNNAME_AD_Client_ID
   })
   if (preferenceClientId !== clientIdRecord) {
     return false
@@ -135,7 +135,7 @@ export function isEditableRecord({ parentUuid, containerUuid }) {
   const isActiveRecord = store.getters.getValueOfField({
     parentUuid,
     containerUuid,
-    columnName: ACTIVE
+    columnName: COLUMNNAME_IsActive
   })
   if (!convertStringToBoolean(isActiveRecord)) {
     return false
@@ -145,7 +145,7 @@ export function isEditableRecord({ parentUuid, containerUuid }) {
   const isProcessedRecord = store.getters.getValueOfField({
     parentUuid,
     containerUuid,
-    columnName: PROCESSED
+    columnName: COLUMNNAME_Processed
   })
   if (convertStringToBoolean(isProcessedRecord)) {
     return false
@@ -155,7 +155,7 @@ export function isEditableRecord({ parentUuid, containerUuid }) {
   const isProcessingRecord = store.getters.getValueOfField({
     parentUuid,
     containerUuid,
-    columnName: PROCESSING
+    columnName: COLUMNNAME_Processing
   })
   if (convertStringToBoolean(isProcessingRecord)) {
     return false
@@ -211,7 +211,7 @@ export function evaluateDefaultFieldShowed({
   if (!isParentTab && (link_column_name === column_name || parent_column_name === column_name)) {
     return true
   }
-  if (is_document && [ORGANIZATION, COLUMNNAME_M_Warehouse_ID].includes(column_name)) {
+  if (is_document && [COLUMNNAME_AD_Org_ID, COLUMNNAME_M_Warehouse_ID].includes(column_name)) {
     return true
   }
 
@@ -254,8 +254,8 @@ export function evaluateDefaultFieldShowed({
 
   // TODO: Evaluated window type
   const permissedDisplayedDefault = [
-    ACTIVE, 'Name',
-    VALUE, DOCUMENT_NO, CURRENCY,
+    COLUMNNAME_IsActive, 'Name',
+    COLUMNNAME_Value, COLUMNNAME_DocumentNo, COLUMNNAME_C_Currency_ID,
     'DateInvoiced', 'DateOrdered', 'DatePromised',
     'DateTrx', 'MovementDate', 'M_Product_ID', 'QtyEntered',
     'ValidTo',
@@ -319,7 +319,7 @@ export function evaluateDefaultColumnShowed({
   // TODO: Evaluated window type
   const permissedDisplayedDefault = [
     'Name',
-    VALUE, DOCUMENT_NO, DOCUMENT_STATUS, CURRENCY,
+    COLUMNNAME_Value, COLUMNNAME_DocumentNo, COLUMNNAME_DocStatus, COLUMNNAME_C_Currency_ID,
     'DateInvoiced', 'DateOrdered', 'DatePromised',
     'DateTrx', 'M_Product_ID', 'QtyEntered',
     'TaskStatus'
@@ -359,7 +359,7 @@ export function isMandatoryField({ is_key, column_name, display_type, is_mandato
   // Numeric Keys and Created/Updated as well as
   // DocumentNo/Value/ASI ars not mandatory (persistency layer manages them)
   const notMandatoryRender = [
-    VALUE, DOCUMENT_NO, 'M_AttributeSetInstance_ID'
+    COLUMNNAME_Value, COLUMNNAME_DocumentNo, 'M_AttributeSetInstance_ID'
   ]
   if (
     (is_key && column_name.endsWith(IDENTIFIER_COLUMN_SUFFIX)) ||
@@ -404,7 +404,7 @@ export function isDisplayedColumn({ is_displayed, is_displayed_grid, isDisplayed
 
 export function isMandatoryColumn({ is_key, column_name, display_type, is_mandatory, mandatory_logic, isMandatoryFromLogic }) {
   const notMandatoryRender = [
-    VALUE, DOCUMENT_NO, 'M_AttributeSetInstance_ID'
+    COLUMNNAME_Value, COLUMNNAME_DocumentNo, 'M_AttributeSetInstance_ID'
   ]
   if (
     (is_key && column_name.endsWith(IDENTIFIER_COLUMN_SUFFIX)) ||
@@ -514,7 +514,7 @@ export const createNewRecord = {
         if (LOG_COLUMNS_NAME_LIST.includes(columnName)) {
           return false
         }
-        if ([CLIENT, ACTIVE, PROCESSING, PROCESSED, UUID].includes(columnName)) {
+        if ([COLUMNNAME_AD_Client_ID, COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed, UUID].includes(columnName)) {
           return false
         }
         return fieldItem.is_allow_copy
@@ -730,8 +730,8 @@ export const deleteRecord = {
         }
       }
       const isNotEditableAnyRecord = selectionsRecords.some(record => {
-        return record[CLIENT] !== preferenceClientId || convertStringToBoolean(record[PROCESSED]) || convertStringToBoolean(record[PROCESSING])
-        // record[PROCESSED] || convertStringToBoolean(record[PROCESSING])
+        return record[COLUMNNAME_AD_Client_ID] !== preferenceClientId || convertStringToBoolean(record[COLUMNNAME_Processed]) || convertStringToBoolean(record[COLUMNNAME_Processing])
+        // record[COLUMNNAME_Processed] || convertStringToBoolean(record[COLUMNNAME_Processing])
       })
       if (isNotEditableAnyRecord) {
         return false
@@ -981,7 +981,7 @@ export const openFormAssociated = {
     if (!isEmptyValue(recordId)) {
       store.commit('updateValueOfField', {
         containerUuid: formUuid,
-        columnName: RECORD_ID,
+        columnName: COLUMNNAME_Record_ID,
         value: recordId
       })
     }
@@ -993,7 +993,7 @@ export const openFormAssociated = {
         formUuid
       },
       query: {
-        [RECORD_ID]: recordId,
+        [COLUMNNAME_Record_ID]: recordId,
         recordId
       },
       isShowMessage: false
@@ -1006,7 +1006,7 @@ export const openFormAssociated = {
           formUuid
         },
         query: {
-          [RECORD_ID]: recordId,
+          [COLUMNNAME_Record_ID]: recordId,
           recordId
         }
       }, () => {})
@@ -1644,7 +1644,7 @@ export const containerManager = {
       const clientIdRecord = store.getters.getValueOfField({
         parentUuid,
         containerUuid,
-        columnName: CLIENT
+        columnName: COLUMNNAME_AD_Client_ID
       })
       // evaluate client id context with record
       const preferenceClientId = store.getters.getSessionContextClientId
@@ -1660,12 +1660,12 @@ export const containerManager = {
 
     // validate parent record and current record
     // record is inactive isReadOnlyFromForm
-    if (columnName !== ACTIVE) {
+    if (columnName !== COLUMNNAME_IsActive) {
       // is active value of record
       const isActiveRecord = store.getters.getValueOfField({
         parentUuid: isParentTab ? undefined : parentUuid,
         containerUuid,
-        columnName: ACTIVE
+        columnName: COLUMNNAME_IsActive
       })
       if (!convertStringToBoolean(isActiveRecord)) {
         return true
@@ -1678,29 +1678,29 @@ export const containerManager = {
     }
 
     // Button to process document
-    if (columnName === DOCUMENT_ACTION) {
+    if (columnName === COLUMNNAME_DocAction) {
       return false
     }
 
     const isOnlyProcess = !isEmptyValue(process) && !(process.browser_id > 0 || process.form_id > 0 || process.workflow_id > 0)
     if (!isButton || (isButton && !isOnlyProcess)) {
-      // is processed value of record
-      const isProcessedRecord = store.getters.getValueOfField({
-        parentUuid,
-        containerUuid,
-        columnName: PROCESSED
-      })
-      if (convertStringToBoolean(isProcessedRecord)) {
-        return true
-      }
-
       // is processing value of record
       const isProcessingRecord = store.getters.getValueOfField({
         parentUuid,
         containerUuid,
-        columnName: PROCESSING
+        columnName: COLUMNNAME_Processing
       })
       if (convertStringToBoolean(isProcessingRecord)) {
+        return true
+      }
+
+      // is processed value of record
+      const isProcessedRecord = store.getters.getValueOfField({
+        parentUuid,
+        containerUuid,
+        columnName: COLUMNNAME_Processed
+      })
+      if (convertStringToBoolean(isProcessedRecord)) {
         return true
       }
     }
@@ -1744,7 +1744,7 @@ export const containerManager = {
     }
 
     // client id value of record
-    const clientIdRecord = parseInt(row[CLIENT], 10)
+    const clientIdRecord = parseInt(row[COLUMNNAME_AD_Client_ID], 10)
     // evaluate client id context with record
     const preferenceClientId = store.getters.getSessionContextClientId
     if (clientIdRecord !== preferenceClientId) {
@@ -1769,27 +1769,27 @@ export const containerManager = {
 
     // validate parent record and current record
     // record is inactive isReadOnlyFromForm
-    if (columnName !== ACTIVE) {
+    if (columnName !== COLUMNNAME_IsActive) {
       // is active value of record
-      const isActiveRecord = row[ACTIVE]
+      const isActiveRecord = row[COLUMNNAME_IsActive]
       if (!convertStringToBoolean(isActiveRecord)) {
         return true
       }
     }
     // Button to process document
-    if (columnName === DOCUMENT_ACTION) {
+    if (columnName === COLUMNNAME_DocAction) {
       return false
     }
 
-    // is processed value of record
-    const isProcessedRecord = row[PROCESSED]
-    if (convertStringToBoolean(isProcessedRecord)) {
+    // is processing value of record
+    const isProcessingRecord = row[COLUMNNAME_Processing]
+    if (convertStringToBoolean(isProcessingRecord)) {
       return true
     }
 
-    // is processing value of record
-    const isProcessingRecord = row[PROCESSING]
-    if (convertStringToBoolean(isProcessingRecord)) {
+    // is processed value of record
+    const isProcessedRecord = row[COLUMNNAME_Processed]
+    if (convertStringToBoolean(isProcessedRecord)) {
       return true
     }
 

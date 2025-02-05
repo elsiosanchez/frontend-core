@@ -72,7 +72,7 @@ import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import {
   NUMBER
 } from '@/utils/ADempiere/references.js'
-import { CURRENCY } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { isAmountDecimalField, isNumberField } from '@/utils/ADempiere/references.js'
@@ -182,7 +182,7 @@ export default {
       }
     },
     currencyDocument() {
-      const columnName = DISPLAY_COLUMN_PREFIX + CURRENCY
+      const columnName = DISPLAY_COLUMN_PREFIX + COLUMNNAME_C_Currency_ID
       // table records values
       if (this.metadata.inTable) {
         // implement container manager row

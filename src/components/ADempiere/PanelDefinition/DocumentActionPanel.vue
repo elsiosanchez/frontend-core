@@ -104,7 +104,7 @@ import DocumentStatusTag from '@/components/ADempiere/ContainerOptions/DocumentS
 // Constants
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import {
-  DOCUMENT_ACTION, DOCUMENT_STATUS
+  COLUMNNAME_DocAction, COLUMNNAME_DocStatus
 } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
@@ -154,7 +154,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        columnName: DOCUMENT_STATUS
+        columnName: COLUMNNAME_DocStatus
       })
     })
 
@@ -162,7 +162,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         containerUuid: props.parentUuid, // tab uuid
         // containerUuid,
-        columnName: DOCUMENT_ACTION
+        columnName: COLUMNNAME_DocAction
       })
     })
 
@@ -170,7 +170,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         containerUuid: props.parentUuid, // tab uuid
         // containerUuid,
-        columnName: DISPLAY_COLUMN_PREFIX + DOCUMENT_ACTION
+        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_DocAction
       })
     })
 
@@ -179,7 +179,7 @@ export default defineComponent({
       const displayValue = store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: props.parentUuid,
-        columnName: DISPLAY_COLUMN_PREFIX + DOCUMENT_STATUS
+        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_DocStatus
       })
       if (!isEmptyValue(displayValue)) {
         return displayValue

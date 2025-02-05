@@ -32,7 +32,7 @@ import { defineComponent, computed } from '@vue/composition-api'
 import store from '@/store'
 
 // Constants
-import { DOCUMENT_STATUS } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_DocStatus } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Melper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -69,7 +69,7 @@ export default defineComponent({
     const currentDocStatus = computed(() => {
       return store.getters.getValueOfFieldOnContainer({
         containerUuid: props.containerUuid,
-        columnName: DOCUMENT_STATUS
+        columnName: COLUMNNAME_DocStatus
       })
     })
 

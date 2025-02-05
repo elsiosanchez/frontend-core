@@ -21,8 +21,8 @@ import store from '@/store'
 
 // Constants
 import {
-  RECORD_ID,
-  IS_SO_TRX
+  COLUMNNAME_Record_ID,
+  COLUMNNAME_IsSOTrx
 } from '@/utils/ADempiere/constants/systemColumns'
 import {
   containerManager as CONTAINER_MANAGER_BROWSER
@@ -84,7 +84,7 @@ export function copyWindowContextOnBrowser({
   })
   if (!isEmptyValue(recordId)) {
     parentValues.push({
-      columnName: RECORD_ID,
+      columnName: COLUMNNAME_Record_ID,
       value: recordId
     })
   }
@@ -96,7 +96,7 @@ export function copyWindowContextOnBrowser({
     isRecord: true
   })
   parentValues.push({
-    columnName: IS_SO_TRX,
+    columnName: COLUMNNAME_IsSOTrx,
     value: isSOTrx
   })
 

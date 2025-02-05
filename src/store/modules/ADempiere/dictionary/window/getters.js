@@ -18,7 +18,8 @@
 
 // Constants
 import {
-  ACTIVE, PROCESSED, PROCESSING, ORGANIZATION, COLUMNNAME_M_Warehouse_ID
+  COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed,
+  COLUMNNAME_AD_Org_ID, COLUMNNAME_M_Warehouse_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils.js'
 import { ID, YES_NO } from '@/utils/ADempiere/references'
@@ -261,14 +262,14 @@ export default {
           })
         }
         // get value on parent tab
-        if (!isParentTab && [ACTIVE, PROCESSED, PROCESSING].includes(columnName)) {
+        if (!isParentTab && [COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed].includes(columnName)) {
           parsedDefaultValue = rootGetters.getValueOfField({
             parentUuid,
             columnName
           })
         }
 
-        if (is_document && [ORGANIZATION, COLUMNNAME_M_Warehouse_ID].includes(columnName)) {
+        if (is_document && [COLUMNNAME_AD_Org_ID, COLUMNNAME_M_Warehouse_ID].includes(columnName)) {
           // parsedDefaultValue = -1
         }
 

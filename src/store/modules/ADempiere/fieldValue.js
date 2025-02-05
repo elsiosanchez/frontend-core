@@ -20,7 +20,7 @@ import Vue from 'vue'
 
 // Constants
 import {
-  ACTIVE, PROCESSING, PROCESSED, UUID, ID
+  COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed, UUID, ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import {
   DISPLAY_COLUMN_PREFIX, UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
@@ -376,17 +376,17 @@ const value = {
 
     // Using to read only in data tables in Window
     getContainerIsActive: (state) => (parentUuid) => {
-      const valueIsActive = state.field[`${parentUuid}_${ACTIVE}`]
+      const valueIsActive = state.field[`${parentUuid}_${COLUMNNAME_IsActive}`]
 
       return convertStringToBoolean(valueIsActive)
     },
     getContainerProcessing: (state) => (parentUuid) => {
-      const valueProcessing = state.field[`${parentUuid}_${PROCESSING}`]
+      const valueProcessing = state.field[`${parentUuid}_${COLUMNNAME_Processing}`]
 
       return convertStringToBoolean(valueProcessing)
     },
     getContainerProcessed: (state) => (parentUuid) => {
-      const valueProcessed = state.field[`${parentUuid}_${PROCESSED}`]
+      const valueProcessed = state.field[`${parentUuid}_${COLUMNNAME_Processed}`]
 
       return convertStringToBoolean(valueProcessed)
     }

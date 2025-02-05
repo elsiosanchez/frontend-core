@@ -109,7 +109,7 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import store from '@/store'
 
 // Constants
-import { PROCESSING } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_Processing } from '@/utils/ADempiere/constants/systemColumns'
 
 // Components and Mixins
 import DocumentStatusTag from '@/components/ADempiere/ContainerOptions/DocumentStatusTag/index.vue'
@@ -205,7 +205,7 @@ export default defineComponent({
       const processing = store.getters.getValueOfFieldOnContainer({
         parentUuid,
         containerUuid,
-        columnName: PROCESSING
+        columnName: COLUMNNAME_Processing
       })
       return convertStringToBoolean(processing)
     })

@@ -19,6 +19,7 @@
 import lang from '@/lang'
 import router from '@/router'
 import Vue from 'vue'
+
 // API Request Methods
 import {
   requestRunBusinessProcess,
@@ -28,8 +29,9 @@ import {
 import {
   refreshRecord
 } from '@/utils/ADempiere/dictionary/window'
+
 // Constants
-import { RECORD_ID } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { getToken } from '@/utils/auth'
@@ -202,7 +204,7 @@ const processManager = {
         let recordId = rootGetters.getValueOfField({
           parentUuid,
           containerUuid,
-          columnName: RECORD_ID
+          columnName: COLUMNNAME_Record_ID
         })
         if (isEmptyValue(recordId)) {
           const currentRoute = router.app._route

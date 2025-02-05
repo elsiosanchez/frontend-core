@@ -23,7 +23,9 @@ import fieldWithDisplayColumn from '@/components/ADempiere/FieldDefinition/mixin
 
 // Constants
 import { COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
-import { ORGANIZATION } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_AD_Org_ID
+} from '@/utils/ADempiere/constants/systemColumns'
 import {
   DISPLAY_COLUMN_PREFIX
 } from '@/utils/ADempiere/dictionaryUtils'
@@ -80,7 +82,7 @@ export default {
     organizationId() {
       return store.getters.getValueOfField({
         containerUuid: this.uuidForm,
-        columnName: ORGANIZATION
+        columnName: COLUMNNAME_AD_Org_ID
       })
     },
     accoutId() {
@@ -92,7 +94,7 @@ export default {
     contextAttributesList() {
       return [
         { columnName: 'C_AcctSchema_ID', value: this.acctSchemaId },
-        { columnName: ORGANIZATION, value: this.organizationId },
+        { columnName: COLUMNNAME_AD_Org_ID, value: this.organizationId },
         { columnName: 'Account_ID', value: this.accoutId }
       ]
     }

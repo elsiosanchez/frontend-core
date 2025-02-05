@@ -123,7 +123,7 @@ import store from '@/store'
 import draggable from 'vuedraggable'
 
 // Constants
-import { CLIENT } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_AD_Client_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -274,7 +274,7 @@ export default defineComponent({
       const clientIdRecord = store.getters.getValueOfField({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        columnName: CLIENT
+        columnName: COLUMNNAME_AD_Client_ID
       })
       // evaluate client id context with record
       const sessionClientId = store.getters.getSessionContextClientId
