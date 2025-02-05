@@ -404,7 +404,6 @@ export default defineComponent({
     overflow: auto;
     border-radius: 10px;
     border: 1px solid #e6ebf5;
-    width: 800px;
   }
 }
 </style>
