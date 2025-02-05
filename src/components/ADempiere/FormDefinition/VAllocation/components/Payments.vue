@@ -19,17 +19,27 @@
 <template>
   <div style="display: contents;height: 100% !important;">
     <div style="height: 90% !important;">
-      <div style="height: 49%;margin-bottom: 5px;border: solid 1px lightgrey;border-radius: 10px;padding: 10px;">
+      <div style="height: 45%;margin-bottom: 5px;border: solid 1px lightgrey;border-radius: 10px;padding: 10px;">
         <p style="text-align: center;font-size: 20px;margin: 0px 0px 7px 0px;">
           <b> {{ $t('form.VAllocation.payment.title') }} </b>
         </p>
-        <payments-table />
+        <el-card
+          shadow="never"
+          :body-style="{ padding: '5px' }"
+        >
+          <payments-table />
+        </el-card>
       </div>
-      <div style="height: 50%;margin-bottom: 5px;border: solid 1px lightgrey;border-radius: 10px;padding: 10px;">
+      <div style="height: 45%;margin-bottom: 5px;border: solid 1px lightgrey;border-radius: 10px;padding: 10px;">
         <p style="text-align: center;font-size: 20px;margin: 0px 0px 7px 0px;">
           <b> {{ $t('form.VAllocation.invoice.title') }} </b>
         </p>
-        <invoce-table />
+        <el-card
+          shadow="never"
+          :body-style="{ padding: '5px' }"
+        >
+          <invoce-table />
+        </el-card>
       </div>
     </div>
 
@@ -736,10 +746,10 @@ export default defineComponent({
   }
 </style>
 <style>
-.el-table--scrollable-x .el-table__body-wrapper {
+/* .el-table--scrollable-x .el-table__body-wrapper {
   height: 90%;
   overflow-x: auto;
-}
+} */
 /* .el-card__header {
   padding-top: 5px;
   padding-bottom: 0px;

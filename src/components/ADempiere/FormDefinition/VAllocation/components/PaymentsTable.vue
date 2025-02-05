@@ -23,7 +23,7 @@
     v-loading="isLoadingPayments"
     :data="listPayments"
     size="mini"
-    height="calc(100vh - 550px)"
+    height="22vh"
     border
     style="width: 100%;height: 85%;"
     :element-loading-text="$t('notifications.loading')"
