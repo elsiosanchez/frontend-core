@@ -1686,7 +1686,7 @@ export const containerManager = {
     if (!isButton || (isButton && !isOnlyProcess)) {
       // is processing value of record
       const isProcessingRecord = store.getters.getValueOfField({
-        parentUuid,
+        parentUuid: isParentTab ? null : parentUuid,
         containerUuid,
         columnName: COLUMNNAME_Processing
       })
@@ -1696,7 +1696,7 @@ export const containerManager = {
 
       // is processed value of record
       const isProcessedRecord = store.getters.getValueOfField({
-        parentUuid,
+        parentUuid: isParentTab ? null : parentUuid,
         containerUuid,
         columnName: COLUMNNAME_Processed
       })
