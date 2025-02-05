@@ -297,7 +297,7 @@ export default defineComponent({
         ghostClass: 'ghost'
       }
     })
-
+    const { currentTab } = store.getters.getContainerInfo
     // Mehtods
 
     /**
@@ -320,7 +320,10 @@ export default defineComponent({
         containerManagerFieldDefinition.updateField({
           recordId: id,
           displyDefinitions: currentDisplayDefinition.value,
-          attributes: recordAttributes
+          attributes: recordAttributes,
+          isPanelRight: props.isPanelRight,
+          currentTab,
+          isEditRecord: false
         })
           .finally(() => {
             loading(false)

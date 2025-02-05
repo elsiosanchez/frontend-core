@@ -124,7 +124,6 @@ function addNewRecordToListKanban({
     ]
     currentkanban.records.push(...list)
   }
-  console.log(isPanelRight)
   if (isPanelRight) {
     store.commit('setCurrentKanbanRightDefinition', {
       tableName: currentTab.table_name,
@@ -408,7 +407,8 @@ export const containerManagerFieldDefinition = {
     attributes = {},
     displyDefinitions,
     currentTab,
-    isPanelRight
+    isPanelRight,
+    isEditRecord = true
   }) {
     return new Promise((resolve, reject) => {
       if (isEmptyValue(attributes)) return resolve()
@@ -425,7 +425,7 @@ export const containerManagerFieldDefinition = {
             isPanelRight,
             currentTab,
             attributes,
-            isEditRecord: true
+            isEditRecord
           })
           resolve()
         })
