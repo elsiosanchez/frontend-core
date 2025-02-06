@@ -29,9 +29,9 @@
       <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
         <div v-for="(column, index) in columnsList" :key="index" class="kanban-column">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b style="font-size: 16px; padding-left: 10px;">
-              {{ column.title }}
-            </b>
+            <el-badge :value="column.items.length" style="font-size: 16px; padding-left: 10px;" type="primary" class="item">
+              <b>{{ column.title }}</b>
+            </el-badge>
             <el-button
               plain
               circle
@@ -427,8 +427,7 @@ export default defineComponent({
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-
-// .kanban-column-header {
-//   display: block;
-// }
+.kanban-columns-container .el-badge__content.is-fixed {
+  top: 1px !important
+}
 </style>
