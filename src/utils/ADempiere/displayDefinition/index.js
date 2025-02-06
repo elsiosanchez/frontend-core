@@ -403,8 +403,7 @@ export const containerManagerFieldDefinition = {
     if (isEmptyValue(fieldList)) return false
 
     // Filtrar los campos obligatorios
-    const mandatoryFields = fieldList.filter(field => field.is_mandatory && field.is_insert_record)
-
+    const mandatoryFields = fieldList.filter(field => field.is_mandatory && field.is_insert_record && field.is_displayed)
     // Comprobar si hay campos obligatorios faltantes
     const hasMissingFields = mandatoryFields.some(field => !(field.column_name in attributes))
 
