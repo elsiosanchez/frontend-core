@@ -26,6 +26,7 @@
       class="field-number"
       style="margin-right: 5px; width: 200px;"
       @input="saveFieldValue(value, fieldMetadata)"
+      @focus="selectContent"
     />
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
@@ -135,7 +136,9 @@ export default defineComponent({
           props.updateField(value, field)
         })
     }
-
+    function selectContent(event) {
+      event.target.select()
+    }
     return {
       // Ref
       value,
@@ -144,7 +147,8 @@ export default defineComponent({
       contextValue,
       // Methods
       updateFieldValue,
-      saveFieldValue
+      saveFieldValue,
+      selectContent
     }
   }
 })
