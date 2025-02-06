@@ -55,8 +55,9 @@ import store from '@/store'
 import { TEXT } from '@/utils/ADempiere/references'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'FieldText',
@@ -97,6 +98,22 @@ export default defineComponent({
     const isLoading = ref(false)
     value.value = props.displayValue || ''
 
+    const { currentTab } = store.getters.getContainerInfo
+    const { containerUuid, parentUuid } = currentTab
+    const { column_name } = props.fieldMetadata
+
+    const getContextValue = computed(() => {
+      return getContext({
+        columnName: column_name,
+        containerUuid,
+        parentUuid
+      })
+    })
+
+    if (props.isNewRecord && props.isPanelRight && !isEmptyValue(getContextValue.value)) {
+      value.value = getContextValue.value
+    }
+
     const typeTextBox = computed(() => {
       // String, Url, FileName...
       let typeInput = 'text'
@@ -117,7 +134,6 @@ export default defineComponent({
         return
       }
     }
-    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
@@ -142,6 +158,7 @@ export default defineComponent({
       isLoading,
       // Computeds
       typeTextBox,
+      getContextValue,
       // Methods
       updateFieldValue,
       saveFieldValue

@@ -62,10 +62,10 @@ import {
 
 // import lang from '@/lang'
 import store from '@/store'
-
+// Constants
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-
+import { getContext } from '@/utils/ADempiere/contextUtils'
 // API Request Methods
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
@@ -117,15 +117,34 @@ export default defineComponent({
     const options = ref([])
     const timeOut = ref(null)
 
+    const { currentTab } = store.getters.getContainerInfo
+    const { containerUuid, parentUuid } = currentTab
+    const { internal_id, column_name } = props.fieldMetadata
+
     const lookupsAttribute = computed(() => {
-      if (props.fieldMetadata.column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
+      if (column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
         return {
-          columnId: props.fieldMetadata.internal_id
+          columnId: internal_id
         }
       }
       return {
-        displayDefinitionFieldId: props.fieldMetadata.internal_id
+        displayDefinitionFieldId: internal_id
       }
+    })
+
+    const getContextValue = computed(() => {
+      return getContext({
+        columnName: column_name,
+        containerUuid,
+        parentUuid
+      })
+    })
+    const getContextDisplayValue = computed(() => {
+      return getContext({
+        columnName: DISPLAY_COLUMN_PREFIX + column_name,
+        containerUuid,
+        parentUuid
+      })
     })
 
     // Watchers
@@ -147,7 +166,6 @@ export default defineComponent({
         return
       }
     }
-    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
@@ -204,6 +222,18 @@ export default defineComponent({
      */
     function loadDefaultValueFromServer() {
       const { column_name } = props.fieldMetadata
+      if (props.isPanelRight) {
+        if (
+          !isEmptyValue(getContextDisplayValue.value) &&
+          !isEmptyValue(getContextValue.value)
+        ) {
+          getContexValues({
+            value: getContextValue.value,
+            displayValue: getContextDisplayValue.value
+          })
+          return
+        }
+      }
       const defaultValues = props.additionalAttributes[column_name]
       if (!isEmptyValue(defaultValues)) {
         options.value = [defaultValues]
@@ -229,6 +259,21 @@ export default defineComponent({
       options.value = [fieldList[columnName]]
     }
 
+    /**
+     * Get Contex Values
+     */
+    function getContexValues({
+      displayValue,
+      value
+    }) {
+      fieldValue.value = value
+      options.value = [{
+        display_value: displayValue,
+        value: value
+      }]
+      saveFieldValue(value)
+    }
+
     return {
       // Ref
       fieldValue,
@@ -238,10 +283,13 @@ export default defineComponent({
       isLoadingSearch,
       displayValueOld,
       // Computed
+      getContextValue,
       lookupsAttribute,
+      getContextDisplayValue,
       // Methods
       showList,
       remoteMethod,
+      getContexValues,
       updateFieldValue,
       requestLookupList,
       saveFieldValue

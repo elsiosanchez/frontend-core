@@ -44,7 +44,7 @@
 <script>
 import {
   defineComponent,
-  // computed
+  computed,
   ref
 } from '@vue/composition-api'
 
@@ -52,7 +52,8 @@ import {
 import store from '@/store'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere'
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
@@ -94,6 +95,22 @@ export default defineComponent({
     const isLoading = ref(false)
     value.value = props.displayValue || null
 
+    const { currentTab } = store.getters.getContainerInfo
+    const { containerUuid, parentUuid } = currentTab
+    const { column_name } = props.fieldMetadata
+
+    const getContextValue = computed(() => {
+      return getContext({
+        columnName: column_name,
+        containerUuid,
+        parentUuid
+      })
+    })
+
+    if (props.isNewRecord && props.isPanelRight && !isEmptyValue(getContextValue.value)) {
+      value.value = getContextValue.value
+    }
+
     // Methods
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
@@ -101,7 +118,6 @@ export default defineComponent({
         return
       }
     }
-    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
@@ -124,6 +140,8 @@ export default defineComponent({
       // Ref
       value,
       isLoading,
+      // Computed
+      getContextValue,
       // Methods
       updateFieldValue,
       saveFieldValue
