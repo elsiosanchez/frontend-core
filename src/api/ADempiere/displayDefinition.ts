@@ -30,7 +30,7 @@ export function kanbans({
     params: {
       filters,
       search_value: searchValue,
-      page_size: 1000
+      page_size: 300
     }
   })
 }
@@ -75,7 +75,7 @@ export function timeLines({
     method: 'get',
     params: {
       filters,
-      page_size: 1000
+      page_size: 300
     }
   })
 }
@@ -89,7 +89,7 @@ export function workflowsDisplay({
     method: 'get',
     params: {
       filters,
-      page_size: 1000
+      page_size: 300
     }
   })
 }
@@ -103,7 +103,7 @@ export function resources({
     method: 'get',
     params: {
       search_value: searchValue,
-      page_size: 1000,
+      page_size: 300,
       filters
     }
   })
