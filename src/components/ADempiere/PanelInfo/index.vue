@@ -71,7 +71,7 @@
               :is-loading="tab.isLoading"
               :tab-attributes="tabAttributes"
               :is-panel-right="true"
-              style="height: 95%;"
+              style="height: 100%;"
             />
           </el-tab-pane>
         </template>

@@ -24,9 +24,10 @@
       class="table-acct-viewer"
       :data="tableData"
       border
+      height="350"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
-      style="height: calc(100vh - 390px); font-size: 12px;"
+      style="font-size: 12px; overflow: auto"
       :cell-style="getColumnStyle"
     >
       <index-column
