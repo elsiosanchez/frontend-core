@@ -215,13 +215,15 @@ export default defineComponent({
 
     async function actionsSave() {
       isLoading.value = true
+      const recordAttibutes = {
+        ...additionalAttributes.value,
+        ...attributes.value
+      }
       containerManagerFieldDefinition.createNewRecord({
+        parentUuid: props.parentUuid,
         displayDefinitionId: props.currentDisplyDefinitions.id,
         displyDefinitions: props.currentDisplyDefinitions,
-        attributes: {
-          ...additionalAttributes.value,
-          ...attributes.value
-        },
+        attributes: recordAttibutes,
         keyAttribute: additionalAttributes.value,
         isPanelRight: props.isPanelRight,
         currentTab

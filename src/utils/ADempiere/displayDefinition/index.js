@@ -445,6 +445,7 @@ export const containerManagerFieldDefinition = {
     })
   },
   createNewRecord({
+    parentUuid,
     displyDefinitions,
     attributes = {},
     isPanelRight,
@@ -452,15 +453,31 @@ export const containerManagerFieldDefinition = {
     keyAttribute
   }) {
     return new Promise((resolve) => {
-      const persistenceAttributes = getDefaultAttributes({ currentTab })
+      const persistenceAttributes = getDefaultAttributes({
+        currentTab
+      })
       if (isPanelRight) {
         attributes[currentTab.table_name + '_ID'] = getCurrentRecord()
+      }
+
+      const contextAttributesList = store.getters.getValuesView({
+        parentUuid: parentUuid,
+        isOnlyColumns: true,
+        format: 'object'
+      })
+      let contextAttributes = '{}'
+      if (!isEmptyValue(contextAttributesList)) {
+        contextAttributes = JSON.stringify(contextAttributesList)
       }
 
       store.dispatch('saveRecord', {
         displayDefinitionId: displyDefinitions.id,
         isResource: displyDefinitions.is_resource,
-        attributes: { ...persistenceAttributes, ...attributes }
+        contextAttributes,
+        attributes: {
+          ...persistenceAttributes,
+          ...attributes
+        }
       })
         .then(response => {
           handlePostSaveActions({

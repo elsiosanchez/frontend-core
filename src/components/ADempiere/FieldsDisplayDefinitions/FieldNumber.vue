@@ -99,16 +99,16 @@ export default defineComponent({
     const { containerUuid, parentUuid } = currentTab
     const { column_name } = props.fieldMetadata
 
-    const getContextValue = computed(() => {
+    const contextValue = computed(() => {
       return getContext({
-        columnName: column_name,
+        parentUuid,
         containerUuid,
-        parentUuid
+        columnName: column_name
       })
     })
 
-    if (props.isNewRecord && props.isPanelRight && !isEmptyValue(getContextValue.value)) {
-      value.value = getContextValue.value
+    if (props.isNewRecord && props.isPanelRight && !isEmptyValue(contextValue.value)) {
+      value.value = contextValue.value
     }
 
     // Methods
@@ -141,7 +141,7 @@ export default defineComponent({
       value,
       isLoading,
       // Computed
-      getContextValue,
+      contextValue,
       // Methods
       updateFieldValue,
       saveFieldValue

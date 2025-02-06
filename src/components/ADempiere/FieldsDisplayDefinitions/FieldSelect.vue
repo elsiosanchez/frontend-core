@@ -132,14 +132,14 @@ export default defineComponent({
       }
     })
 
-    const getContextValue = computed(() => {
+    const contextValue = computed(() => {
       return getContext({
-        columnName: column_name,
+        parentUuid,
         containerUuid,
-        parentUuid
+        columnName: column_name
       })
     })
-    const getContextDisplayValue = computed(() => {
+    const contextDisplayValue = computed(() => {
       return getContext({
         columnName: DISPLAY_COLUMN_PREFIX + column_name,
         containerUuid,
@@ -224,12 +224,12 @@ export default defineComponent({
       const { column_name } = props.fieldMetadata
       if (props.isPanelRight) {
         if (
-          !isEmptyValue(getContextDisplayValue.value) &&
-          !isEmptyValue(getContextValue.value)
+          !isEmptyValue(contextDisplayValue.value) &&
+          !isEmptyValue(contextValue.value)
         ) {
           getContexValues({
-            value: getContextValue.value,
-            displayValue: getContextDisplayValue.value
+            value: contextValue.value,
+            displayValue: contextDisplayValue.value
           })
           return
         }
@@ -283,9 +283,9 @@ export default defineComponent({
       isLoadingSearch,
       displayValueOld,
       // Computed
-      getContextValue,
       lookupsAttribute,
-      getContextDisplayValue,
+      contextValue,
+      contextDisplayValue,
       // Methods
       showList,
       remoteMethod,

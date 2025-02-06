@@ -44,13 +44,14 @@
 <script>
 import {
   defineComponent,
-  // computed
+  computed,
   ref
 } from '@vue/composition-api'
 
 import store from '@/store'
 
 // Utils and Helper Methods
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
@@ -100,6 +101,18 @@ export default defineComponent({
     )
     const isLoading = ref(false)
 
+    const { currentTab } = store.getters.getContainerInfo
+    const { containerUuid, parentUuid } = currentTab
+    const { column_name } = props.fieldMetadata
+
+    const contextValue = computed(() => {
+      return getContext({
+        parentUuid,
+        containerUuid,
+        columnName: column_name
+      })
+    })
+
     // Methods
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
@@ -107,7 +120,6 @@ export default defineComponent({
         return
       }
     }
-    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       isLoading.value = true
@@ -129,6 +141,9 @@ export default defineComponent({
     return {
       fieldValue,
       isLoading,
+      // Computeds
+      contextValue,
+      // Methods
       saveFieldValue,
       updateFieldValue
     }

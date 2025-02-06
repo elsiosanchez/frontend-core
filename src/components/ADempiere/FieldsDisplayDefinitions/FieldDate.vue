@@ -59,6 +59,7 @@ import {
 } from '@/utils/ADempiere/componentUtils'
 
 // Utils and Helper Methods
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { DATE_PLUS_TIME } from '@/utils/ADempiere/references'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
@@ -105,6 +106,18 @@ export default defineComponent({
     const value = ref('')
     const isLoading = ref(false)
     value.value = convertStringDate(props.displayValue)
+
+    const { currentTab } = store.getters.getContainerInfo
+    const { containerUuid, parentUuid } = currentTab
+    const { column_name } = props.fieldMetadata
+
+    const contextValue = computed(() => {
+      return getContext({
+        parentUuid,
+        containerUuid,
+        columnName: column_name
+      })
+    })
 
     if (props.isNewRecord) {
       loadDefaultValueFromServer()
@@ -166,7 +179,6 @@ export default defineComponent({
         return
       }
     }
-    const { currentTab } = store.getters.getContainerInfo
 
     function updateFieldValue(value, field) {
       if (props.isNewRecord) {
@@ -255,6 +267,7 @@ export default defineComponent({
       value,
       isLoading,
       // Computed
+      contextValue,
       formatView,
       typePicker,
       pickerOptionsDate,

@@ -256,9 +256,9 @@ const displayDefinitionField = {
     }) {
       return new Promise((resolve, reject) => {
         // Determines the function to use according to the value of `isResource`.
-        const createFunction = isResource ? updateDataEntryResource : updateDataEntry
+        const updateEntryRecordFunction = isResource ? updateDataEntryResource : updateDataEntry
         // Call the corresponding function
-        createFunction({
+        updateEntryRecordFunction({
           id,
           attributes,
           displayDefinitionId
@@ -289,15 +289,17 @@ const displayDefinitionField = {
       })
     },
     saveRecord({ commit }, {
+      contextAttributes,
       attributes,
       isResource = false,
       displayDefinitionId
     }) {
       return new Promise((resolve, reject) => {
         // Determines the function to use according to the value of `isResource`.
-        const createFunction = isResource ? createDataEntryResource : createDataEntry
+        const createEntryRecordFunction = isResource ? createDataEntryResource : createDataEntry
         // Call the corresponding function
-        createFunction({
+        createEntryRecordFunction({
+          contextAttributes,
           attributes,
           displayDefinitionId
         })
