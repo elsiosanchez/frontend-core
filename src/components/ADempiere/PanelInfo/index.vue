@@ -522,14 +522,28 @@ export default defineComponent({
     })
 
     const isAccountingInfo = computed(() => {
+      const { is_allow_info_account } = store.getters['user/getRole']
+      if (!is_allow_info_account) {
+        return false
+      }
+      // const sessionContext = store.getters.getAllSessionContext
+      // if (isEmptyValue(sessionContext)) {
+      //   return false
+      // }
+      // const isShowAcct = sessionContext['#ShowAcct']
+      // if (!isShowAcct) {
+      //   return false
+      // }
+      if (isEmptyValue(accoutingSchemaId.value) || accoutingSchemaId.value <= 0) {
+        return false
+      }
       const { currentTab } = store.getters.getContainerInfo
       if (!currentTab.table.is_document) {
         return false
       }
-      if (isEmptyValue(currentRecordId.value)) {
+      if (isEmptyValue(currentRecordId.value) || currentRecordId.value <= 0) {
         return false
       }
-
       const isShowAccouting = store.getters.getIsShowAccoutingFacts
       return isShowAccouting
     })

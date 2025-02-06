@@ -163,12 +163,36 @@ export default {
             })
           },
           isEnabled: () => {
-            const sessionContext = store.getters.getAllSessionContext
-            if (isEmptyValue(sessionContext)) {
+            const { is_allow_info_account } = store.getters['user/getRole']
+            if (!is_allow_info_account) {
               return false
             }
-            const isShowAcct = sessionContext['#ShowAcct']
-            return isShowAcct
+            // const sessionContext = store.getters.getAllSessionContext
+            // if (isEmptyValue(sessionContext)) {
+            //   return false
+            // }
+            // const isShowAcct = sessionContext['#ShowAcct']
+            // if (!isShowAcct) {
+            //   return false
+            // }
+            const accoutingSchemaId = store.getters.getSessionContext({
+              columnName: '$C_AcctSchema_ID'
+            })
+            if (isEmptyValue(accoutingSchemaId) || accoutingSchemaId <= 0) {
+              return false
+            }
+            const storedTab = store.getters.getStoredTab(this.metadata.parentUuid, this.metadata.containerUuid)
+            if (isEmptyValue(storedTab)) {
+              return false
+            }
+            if (!storedTab.table.is_document) {
+              return false
+            }
+            const recordId = this.currentRecord[this.metadata.tabTableName + '_ID']
+            if (isEmptyValue(recordId) || recordId <= 0) {
+              return false
+            }
+            return true
           }
         }
       } else if (this.metadata.columnName === COLUMNNAME_Record_ID) {
