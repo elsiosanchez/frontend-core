@@ -333,6 +333,13 @@ export default defineComponent({
     }
 
     const goToEventDate = (event) => {
+      if (!isEmptyValue(event.id) && isNumber(event.id)) {
+        props.hangleChangeRecord({
+          ...event,
+          id: Number(event.id)
+        })
+        props.actionOption('view')
+      }
       const calendarApi = calendarRef.value.getApi()
       if (isEmptyValue(event.valid_from)) return
       if (event.valid_from) {
