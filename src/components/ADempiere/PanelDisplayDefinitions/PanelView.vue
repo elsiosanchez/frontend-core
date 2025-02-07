@@ -55,7 +55,7 @@
               style="display: flex;"
             />
             <el-button
-              v-show="field.is_update_record && !field.is_show_components"
+              v-show="field.is_update_record && !field.is_show_components && !field.is_read_only"
               style="padding: 0px;"
               icon="el-icon-edit"
               type="text"
