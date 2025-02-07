@@ -23,6 +23,7 @@
       controls-position="right"
       :placeholder="fieldMetadata.description"
       size="mini"
+      :precision="precision"
       class="field-number"
       style="margin-right: 5px; width: 200px;"
       @input="saveFieldValue(value, fieldMetadata)"
@@ -94,7 +95,23 @@ export default defineComponent({
   setup(props) {
     const value = ref(null)
     const isLoading = ref(false)
-    value.value = props.displayValue || null
+    const { fields } = props.currentRecord
+
+    const currentValue = computed(() => {
+      if (props.isNewRecord) return 0
+      return fields[props.fieldMetadata.column_name].value.value
+    })
+
+    const precision = computed(() => {
+      // regular expression to find the digits after the decimal point
+      if (props.isNewRecord) return 2
+      const decimalPart = currentValue.value.match(/\.(\d+)/)
+      if (!decimalPart) {
+        return 0
+      }
+      return decimalPart[1].length
+    })
+    value.value = Number(currentValue.value) || null
 
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
@@ -144,7 +161,9 @@ export default defineComponent({
       value,
       isLoading,
       // Computed
+      precision,
       contextValue,
+      currentValue,
       // Methods
       updateFieldValue,
       saveFieldValue,
