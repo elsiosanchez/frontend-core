@@ -172,7 +172,7 @@ export default defineComponent({
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        return displayDefinitionMetadata.value.fields
+        return displayDefinitionMetadata.value.fields.filter(field => field.is_displayed && field.is_insert_record)
       }
       return []
     })

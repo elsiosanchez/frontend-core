@@ -234,7 +234,7 @@ export default defineComponent({
       const tabDefinition = store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
-      localFields.value = tabDefinition.fields
+      localFields.value = tabDefinition.fields.filter(field => field.is_displayed)
       return tabDefinition
     })
 
