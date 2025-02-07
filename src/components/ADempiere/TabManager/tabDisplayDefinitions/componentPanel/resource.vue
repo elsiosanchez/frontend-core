@@ -244,6 +244,7 @@ export default defineComponent({
           changeRange(info)
         },
         dateClick: function(info) {
+          console.log('dateClick', info)
         },
         customButtons: {
           myCustomButton: {
@@ -301,13 +302,34 @@ export default defineComponent({
       //   listFilters: store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
       // })
       // if (props.isPanelRight) {
-      const listFilters = store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })
+      const listFilters = store.getters.getDisplayFilters({
+        tableName: props.tabAttributes.table_name
+      })
       // }
 
       const { endStr, startStr } = params
+      let dateStart = parseDate(startStr)
+      let dateEnd = parseDate(endStr)
+      if (props.isPanelRight) {
+        // dateStart
+        dateStart = null
+        dateEnd = null
+      } else {
+        // Get the current date
+        const currentDate = new Date()
+        const currentYear = currentDate.getFullYear()
+
+        // First day of the previous year
+        const firstDayPreviousYear = new Date(currentYear - 1, 0, 1) // 0 is January
+        dateStart = firstDayPreviousYear.toJSON()
+
+        // Last day of the next year
+        const lastDayNextYear = new Date(currentYear + 1, 11, 31) // 11 is December
+        dateEnd = lastDayNextYear.toJSON()
+      }
       store.dispatch('changeDateRange', {
-        endStr: parseDate(endStr),
-        startStr: parseDate(startStr),
+        endStr: dateEnd,
+        startStr: dateStart,
         isPanel: props.isPanelRight,
         id: definition.id,
         filters: listFilters,

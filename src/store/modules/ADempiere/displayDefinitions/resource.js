@@ -21,6 +21,12 @@ import Vue from 'vue'
 // API Request Methods
 import { resources } from '@/api/ADempiere/displayDefinition.ts'
 
+// Constants
+import {
+  OPERATOR_BETWEEN, OPERATOR_GREATER_EQUAL, OPERATOR_LESS_EQUAL
+} from '@/utils/ADempiere/dataUtils'
+// import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
@@ -28,9 +34,6 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 // import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 import { addGroupEvents } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 import { transformEvents, transformResources, getCurrentRecord } from '@/utils/ADempiere/displayDefinition'
-
-// Constants
-// import { DISPLAY_TYPE_PANEL } from '@/utils/ADempiere/displaDefinition/index.ts'
 
 const initState = {
   resource: {},
@@ -105,8 +108,8 @@ const resourceDefinition = {
     },
     // Panel Right
     setResourcePanelTabDefinition(state, {
-      startStr = getStartAndEndOfCurrentMonth()[0],
-      endStr = getStartAndEndOfCurrentMonth()[1],
+      startStr = null,
+      endStr = null,
       currentResource = {},
       isLoading = false,
       filters = [],
@@ -147,15 +150,43 @@ const resourceDefinition = {
     }) {
       return new Promise(resolve => {
         if (isPanel) {
-          if (isEmptyValue(state.resourcePanelRight[tableName])) commit('setResourcePanelTabDefinition', { tableName, isLoading: true })
-          if (isEmptyValue(recordId)) recordId = getCurrentRecord()
+          if (isEmptyValue(state.resourcePanelRight[tableName])) {
+            commit('setResourcePanelTabDefinition', {
+              tableName,
+              isLoading: true,
+              startStr: null,
+              endStr: null
+            })
+          }
+          if (isEmptyValue(recordId)) {
+            recordId = getCurrentRecord()
+          }
           filters = [{ name: [tableName] + '_ID', values: recordId }]
         } else {
-          if (isEmptyValue(state.resource[tableName])) commit('setResourceDefinition', { tableName, isLoading: true })
+          if (isEmptyValue(state.resource[tableName])) {
+            // Get the current date
+            const currentDate = new Date()
+            const currentYear = currentDate.getFullYear()
+
+            // First day of the previous year
+            const firstDayPreviousYear = new Date(currentYear - 1, 0, 1) // 0 is January
+            const dateStart = firstDayPreviousYear.toJSON()
+
+            // Last day of the next year
+            const lastDayNextYear = new Date(currentYear + 1, 11, 31) // 11 is December
+            const dateEnd = lastDayNextYear.toJSON()
+
+            commit('setResourceDefinition', {
+              tableName,
+              isLoading: true,
+              startStr: dateStart,
+              endStr: dateEnd
+            })
+          }
         }
         let allFilters = filters
         let currentDefinition, startStr, endStr
-        let defaultFilters = []
+        const defaultFilters = []
         if (isPanel) {
           currentDefinition = getters.getCurrentDisplayPanelRightDefinitions({ tableName })
         } else {
@@ -169,13 +200,27 @@ const resourceDefinition = {
             endStr = state.resource[tableName].endStr
             startStr = state.resource[tableName].startStr
           }
-          defaultFilters = [
-            {
+          if (!isEmptyValue(startStr) && !isEmptyValue(endStr)) {
+            defaultFilters.push({
               name: currentDefinition.valid_to_column,
-              operator: 'between',
+              operator: OPERATOR_BETWEEN.operator,
               values: [startStr, endStr]
-            }
-          ]
+            })
+          } else if (!isEmptyValue(startStr) && isEmptyValue(endStr)) {
+            defaultFilters.push({
+              name: currentDefinition.valid_from_column,
+              operator: OPERATOR_GREATER_EQUAL,
+              values: [startStr],
+              value_from: startStr
+            })
+          } else if (isEmptyValue(startStr) && !isEmptyValue(endStr)) {
+            defaultFilters.push({
+              name: currentDefinition.valid_from_column,
+              operator: OPERATOR_LESS_EQUAL,
+              values: [endStr],
+              value_to: endStr
+            })
+          }
         }
 
         if (isEmptyValue(filters) && !isEmptyValue(defaultFilters)) {
