@@ -17,7 +17,7 @@
  */
 
 import Vue from 'vue'
-
+import language from '@/lang'
 // API Request Methods
 import {
   listDisplayDefinitionFieldsMetadata,
@@ -269,6 +269,10 @@ const displayDefinitionField = {
               recordId: id,
               data: response
             })
+            showMessage({
+              message: language.t('recordManager.updatedRecord'),
+              type: 'success'
+            })
             resolve(response)
           })
           .catch(error => {
@@ -305,6 +309,10 @@ const displayDefinitionField = {
         })
           .then(response => {
             // Resolve the promise with the successful answer
+            showMessage({
+              message: language.t('data.createRecordSuccessful'),
+              type: 'success'
+            })
             resolve(response)
           })
           .catch(error => {
@@ -339,6 +347,10 @@ const displayDefinitionField = {
         })
           .then(response => {
             // Resolve the promise with the successful answer
+            showMessage({
+              message: language.t('recordManager.deleteRecordSuccessful'),
+              type: 'success'
+            })
             resolve(response)
           })
           .catch(error => {
