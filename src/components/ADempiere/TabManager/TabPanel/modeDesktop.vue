@@ -163,7 +163,7 @@ import store from '@/store'
 // Components and Mixins
 import BatchEntry from '@/components/ADempiere/DataTable/Components/BatchEntry.vue'
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
-import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
+import DefaultTable from '@/components/ADempiere/DataTable/Windows/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
