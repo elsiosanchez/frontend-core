@@ -284,8 +284,13 @@ export default defineComponent({
         })
       }
     }
-
+    function searchProcess() {
+      store.dispatch('geProcessesListFromServer', {
+        tableName
+      })
+    }
     searchDisplay()
+    searchProcess()
     return {
       // Consts
       containerManager,

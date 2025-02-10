@@ -103,6 +103,13 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :is-panel-right="isPanelRight"
       />
     </el-dialog>
+    <modal-dialog
+      v-if="!isEmptyValue(processUuid)"
+      :key="processUuid"
+      :container-manager="processContainerManager"
+      :parent-uuid="actionsManager ? actionsManager.containerUuid : tabUuid"
+      :container-uuid="processUuid"
+    />
   </el-container>
 </template>
 
@@ -115,10 +122,13 @@ import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import AdvancedTabQuery from '@/components/ADempiere/TabManager/AdvancedTabQuery.vue'
 import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
 import MenuActionDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/menuActionDefinitions.vue'
+import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
+
 // Utils and Helper Methods
 import { setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { isEmptyValue } from '@/utils/ADempiere'
-
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { containerManager as processContainerManager } from '@/utils/ADempiere/dictionary/process.js'
 export default defineComponent({
   name: 'TabDisplayDefinitions',
 
@@ -127,7 +137,8 @@ export default defineComponent({
     MenuActionDefinitions,
     PanelDisplayDefinitions,
     AdvancedTabQuery,
-    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue')
+    PanelInfo: () => import('@/components/ADempiere/PanelInfo/index.vue'),
+    ModalDialog
   },
 
   props: {
@@ -186,6 +197,7 @@ export default defineComponent({
 
   setup(props) {
     // Ref
+    const processUuid = ref(undefined)
     const isLoading = ref(false)
     const showContainerInfo = ref(false)
     const detailsTitle = ref('')
@@ -193,7 +205,6 @@ export default defineComponent({
     const typeAction = ref('')
     const recordId = ref(-1)
     const currentRecord = ref({})
-
     // Conputed
     const isDialogoPanelDifinition = computed({
       get: () => {
@@ -327,6 +338,10 @@ export default defineComponent({
     }
     function openPanelDisplayDefinition(type, display) {
       if (!isEmptyValue(type)) {
+        if (type !== 'view' && type !== 'new') {
+          runProcess(type)
+          return
+        }
         if (!isEmptyValue(display) && !isEmptyValue(display.id)) {
           detailsTitle.value = display.title
           currentRecord.value.id = display.id
@@ -349,7 +364,21 @@ export default defineComponent({
         id: currentDisplyDefinitions.value.id
       })
     }
-
+    function runProcess(process) {
+      containerManagerFieldDefinition.processDisplay({
+        uuid: process.uuid,
+        parentUuid: props.actionsManager ? props.actionsManager.containerUuid : props.tabUuid,
+        tableName: currentDisplyDefinitions.value.table_name,
+        recordId: currentRecord.value.id,
+        containerUuid: process.uuid,
+        containerManager: processContainerManager,
+        storedTab: props.tabAttributes,
+        isReport: process.is_report,
+        title: process.name,
+        currentDisplyDefinitions: currentDisplyDefinitions.value
+      })
+      processUuid.value = process.uuid
+    }
     return {
       // Ref
       recordId,
@@ -359,6 +388,7 @@ export default defineComponent({
       isDialogoPanelDifinition,
       detailsTitle,
       isLoading,
+      processUuid,
       // computeds
       isMobile,
       isDrawerWidth,
@@ -367,6 +397,7 @@ export default defineComponent({
       actionsManagers,
       displayDefinitionFields,
       currentDisplyDefinitions,
+      processContainerManager,
       // Methods
       openPanelDisplayDefinition,
       changeRecord,

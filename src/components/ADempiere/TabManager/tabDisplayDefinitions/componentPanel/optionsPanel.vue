@@ -24,16 +24,38 @@
     <span class="el-dropdown-link">
       <svg-icon icon-class="more-vertical" />
     </span>
-    <el-dropdown-menu slot="dropdown">
+    <el-dropdown-menu slot="dropdown" style="max-height: 300px; overflow: auto;">
       <el-dropdown-item v-if="isOptionNew" command="new" icon="el-icon-plus">
         {{ $t('component.displayDefinition.cardNew') }}
       </el-dropdown-item>
       <el-dropdown-item v-if="isOptionEdit" command="view" icon="el-icon-news">
         {{ $t('component.displayDefinition.cardView') }}
+        <div style="color: #7e7e7e; display: block; font-size: 12px;">
+          {{ $t('data.noDescription') }}
+        </div>
       </el-dropdown-item>
+      <template v-if="!isEmptyValue(listProcess)">
+        <el-dropdown-item
+          v-for="item in listProcess"
+          :key="item.id"
+          :command="item"
+          :disabled="!item.is_active"
+          :icon="item.icon"
+        >
+          <svg-icon :icon-class="item.icon" />
+          <span>
+            <span style="font-weight: bold;">
+              {{ item.name }}
+            </span>
+            <div style="color: #7e7e7e; display: block; font-size: 12px">
+              {{ item.description || $t('data.noDescription') }}
+            </div>
+          </span>
+        </el-dropdown-item>
+      </template>
       <el-popover
         v-model="showPanel"
-        tigger="click"
+        trigger="click"
         placement="top"
         width="450"
         :content="title"
@@ -47,6 +69,9 @@
           @click="showPanel = true"
         >
           {{ $t('actionMenu.deleteRecord') }}
+          <div style="color: #7e7e7e; display: block; font-size: 12px;">
+            {{ $t('data.noDescription') }}
+          </div>
         </el-dropdown-item>
         {{ title }}
         <div style="text-align: right; margin: 0; margin-top: 5px;">
@@ -124,6 +149,11 @@ export default defineComponent({
       return false
     })
     const { currentTab } = store.getters.getContainerInfo
+    const listProcess = computed(() => {
+      return store.getters.getListProcess({
+        tableName: currentTab.table_name
+      })
+    })
     function removerRecord() {
       showPanel.value = false
       containerManagerFieldDefinition.deleteRecord({
@@ -137,6 +167,7 @@ export default defineComponent({
       isDisableDelete,
       showPanel,
       title,
+      listProcess,
       removerRecord
     }
   }
@@ -156,5 +187,12 @@ export default defineComponent({
 .options-crud {
   cursor: pointer;
   z-index: 9;
+}
+
+.el-dropdown-menu--medium .el-dropdown-menu__item {
+  border-bottom: 1px solid #d0d7de;
+  margin-left: 15px;
+  margin-right: 15px;
+  line-height: 25px !important;
 }
 </style>

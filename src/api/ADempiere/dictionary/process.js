@@ -43,3 +43,12 @@ export function requestProcessMetadata({
     }
   })
 }
+
+export function requestListProcesses({
+  tableName
+}) {
+  return request({
+    url: `/dictionary/processes/table/${tableName}`,
+    method: 'get'
+  })
+}

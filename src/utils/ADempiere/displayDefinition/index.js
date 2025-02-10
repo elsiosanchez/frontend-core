@@ -16,9 +16,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import language from '@/lang'
 import store from '@/store'
 import router from '@/router'
 // Constants
+import { FINANCIAL_REPORT_CODE } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
 
 // API Request Methods
 
@@ -27,7 +29,12 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { parseDate } from '@/utils/ADempiere/displayDefinition/resourceTime.js'
 import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
+import { showMessage } from '@/utils/ADempiere/notification'
+import { containerManager as containerManagerReport } from '@/utils/ADempiere/dictionary/report'
 
+import {
+  COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
+} from '@/utils/ADempiere/constants/systemColumns'
 export function getCurrentRecord(recordId) {
   const { currentTab } = store.getters.getContainerInfo
   const { query } = router.app._route
@@ -326,6 +333,235 @@ const getDefaultAttributes = ({ currentTab }) => {
   return filterValidAttributes(parsedDefaults)
 }
 
+// Process
+
+function runProcess({
+  uuid,
+  tableName,
+  containerUuid,
+  recordId,
+  containerManager,
+  storedTab,
+  title,
+  currentDisplyDefinitions
+}) {
+  const currentRoute = router.app._route
+  const { query, params } = currentRoute
+  store.dispatch('setModalDialog', {
+    containerUuid,
+    title,
+    containerManager,
+    doneMethod: ({ parentUuid, containerUuid }) => {
+      const recordUuid = store.getters.getUuidOfContainer(parentUuid)
+      if (isEmptyValue(recordId)) {
+        if (!isEmptyValue(query.recordId)) {
+          recordId = query.recordId
+        }
+        if (isEmptyValue(recordId) && !isEmptyValue(params.recordId)) {
+          recordId = params.recordId
+        }
+      }
+      store.dispatch('startProcessOfWindows', {
+        parentUuid,
+        containerUuid,
+        tableName,
+        recordId,
+        recordUuid
+      })
+        .then(async response => {
+          store.dispatch('readRecordData', {
+            recordId,
+            displayDefinitionId: currentDisplyDefinitions.id
+          })
+          // await refreshRecord.refreshRecord({
+          //   parentUuid,
+          //   tabId: storedTab.id,
+          //   recordUuid,
+          //   recordId
+          // })
+        })
+    },
+    beforeOpen: ({ parentUuid, containerUuid }) => {
+      const parentValues = store.getters.getValuesView({
+        containerUuid,
+        isOnlyColumns: true,
+        isOnlyWithValue: false,
+        format: 'array'
+      })
+      parentValues.push({
+        columnName: COLUMNNAME_AD_Table_ID,
+        value: storedTab.table.internal_id
+      })
+      parentValues.push({
+        columnName: COLUMNNAME_Record_ID,
+        value: recordId
+      })
+      store.dispatch('updateValuesOfContainer', {
+        parentUuid,
+        containerUuid,
+        attributes: parentValues
+      })
+    },
+    loadData: ({ parentUuid, containerUuid }) => {
+      const processDefinition = store.getters.getStoredProcess(parentUuid)
+      if (!isEmptyValue(processDefinition)) {
+        return Promise.resolve(processDefinition)
+      }
+
+      return store.dispatch('getProcessDefinitionFromServer', {
+        id: uuid.toString(),
+        containerUuidAssociated: containerUuid
+      })
+    },
+    // TODO: Change to string and import dynamic in component
+    componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
+    isShowed: true
+  })
+}
+
+function runProcessReport({
+  uuid,
+  tableName,
+  containerUuid,
+  recordId,
+  containerManager,
+  storedTab,
+  parentUuid,
+  title
+}) {
+  store.dispatch('getReportDefinitionFromServer', {
+    id: uuid,
+    tableName
+  })
+    .then(response => {
+      if (!isEmptyValue(response)) {
+        const doneMethodByReport = ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
+          const emptyMandatory = store.getters.getFieldsListEmptyMandatory({
+            containerUuid: uuid
+          })
+          if (!isEmptyValue(emptyMandatory)) {
+            showMessage({
+              message: language.t('notifications.mandatoryFieldMissing') + emptyMandatory,
+              type: 'info'
+            })
+            return
+          }
+          const recordUuid = store.getters.getUuidOfContainer(parentUuid)
+          let code = ''
+          if (
+            !isEmptyValue(uuid)
+          ) {
+            const storedReportDefinition = store.getters.getStoredReport(uuid)
+            if (!isEmptyValue(storedReportDefinition)) {
+              code = storedReportDefinition.code
+            }
+          }
+          if (code === FINANCIAL_REPORT_CODE) {
+            store.dispatch('startReport', {
+              parentUuid: parentUuid,
+              containerUuid: uuid,
+              recordUuid,
+              tableName,
+              pageSize: 500
+            })
+          } else {
+            store.dispatch('runReport', {
+              parentUuid: parentUuid,
+              containerUuid: uuid,
+              recordUuid,
+              recordId,
+              tableName
+            })
+          }
+        }
+        store.dispatch('setModalDialog', {
+          containerUuid: uuid,
+          title,
+          containerManager: containerManagerReport,
+          doneMethod: doneMethodByReport,
+          beforeOpen: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
+            // set context values
+            const parentValues = store.getters.getValuesView({
+              containerUuid: tabAssociatedUuid,
+              isOnlyColumns: true,
+              isOnlyWithValue: false,
+              format: 'array'
+            })
+            // const parentValues = getContextAttributes({
+            //   parentUuid: windowUuid,
+            //   containerUuid: tabAssociatedUuid,
+            //   contextColumnNames: relatedColumns
+            // })
+            parentValues.push({
+              columnName: COLUMNNAME_AD_Table_ID,
+              value: storedTab.table.internal_id
+            })
+            parentValues.push({
+              columnName: COLUMNNAME_Record_ID,
+              value: recordId
+            })
+
+            store.dispatch('updateValuesOfContainer', {
+              containerUuid: uuid,
+              attributes: parentValues
+            })
+          },
+          loadData: ({ parentUuid: tabAssociatedUuid, containerUuid }) => {
+            const reportDefinition = store.getters.getStoredReport(uuid)
+            if (!isEmptyValue(reportDefinition)) {
+              // clear values to report associated and set with tab
+              store.dispatch('setReportDefaultValues', {
+                parentUuid: tabAssociatedUuid,
+                containerUuid: uuid
+              })
+              // auto run report if without parameters
+              if (!reportDefinition.has_parameters || isEmptyValue(reportDefinition.fieldsList)) {
+                // close modal dialog
+                store.commit('setShowedModalDialog', {
+                  containerUuid: reportDefinition.uuid,
+                  isShowed: false
+                })
+                doneMethodByReport({
+                  parentUuid: tabAssociatedUuid,
+                  containerUuid
+                })
+              }
+              return Promise.resolve(reportDefinition)
+            }
+            return store.dispatch('getReportDefinitionFromServer', {
+              isLegacyReport: true,
+              id: uuid,
+              tableName
+            })
+              .then(reportDefinitionResponse => {
+                // auto run report if without parameters
+                if (isEmptyValue(reportDefinitionResponse.fieldsList)) {
+                  // close modal dialog
+                  store.commit('setShowedModalDialog', {
+                    containerUuid: uuid,
+                    isShowed: false
+                  })
+                  doneMethodByReport({
+                    parentUuid: tabAssociatedUuid,
+                    containerUuid
+                  })
+                }
+              })
+              .finally(() => {
+                // clear values to report associated and set with tab
+                store.dispatch('setReportDefaultValues', {
+                  parentUuid: tabAssociatedUuid,
+                  containerUuid: uuid
+                })
+              })
+          },
+          // TODO: Change to string and import dynamic in component
+          componentPath: () => import('@/components/ADempiere/PanelDefinition/index.vue'),
+          isShowed: true
+        })
+      }
+    })
+}
 // Mapa de funciones
 const functionMap = {
   KANBAN: addNewRecordToListKanban,
@@ -339,6 +575,10 @@ const functionMaDelete = {
   KANBAN: deleteRecordToListKanban
 }
 
+const functionProcess = {
+  Process: runProcess,
+  Report: runProcessReport
+}
 // Separate function to handle post-save actions
 const handlePostSaveActions = ({
   response,
@@ -528,5 +768,35 @@ export const containerManagerFieldDefinition = {
           recordId
         })
       })
+  },
+  async processDisplay({
+    uuid,
+    tableName,
+    containerUuid,
+    recordId,
+    containerManager,
+    storedTab,
+    isReport,
+    parentUuid,
+    title,
+    currentDisplyDefinitions
+  }) {
+    let typeProcess = 'Process'
+    if (isReport) typeProcess = 'Report'
+    const functionToCall = functionProcess[typeProcess]
+    if (functionToCall) {
+      functionToCall({
+        uuid,
+        tableName,
+        containerUuid,
+        recordId,
+        containerManager,
+        storedTab,
+        parentUuid,
+        title,
+        currentDisplyDefinitions
+      })
+      return
+    }
   }
 }
