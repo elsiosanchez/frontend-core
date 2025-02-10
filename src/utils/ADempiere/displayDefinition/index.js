@@ -126,7 +126,7 @@ function addNewRecordToListKanban({
     const list = [
       {
         ...newRecord,
-        group_id: value
+        group_id: String(value)
       }
     ]
     currentkanban.records.push(...list)
