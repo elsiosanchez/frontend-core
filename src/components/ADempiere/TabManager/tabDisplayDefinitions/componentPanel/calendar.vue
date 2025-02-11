@@ -48,6 +48,14 @@
                   class="custom-card-calendar"
                   style="padding-left: 0.5rem;"
                 >
+                  <options-panel
+                    :action-option="actionOption"
+                    :current-resource="event"
+                    :is-option-edit="true"
+                    :is-option-delete="true"
+                    :display-definition="currentDisplyDefinitions"
+                    style="float: right;"
+                  />
                   <b><i>{{ event.title }}</i></b>
                   <p style="font-size: 14px;">{{ event.description }}</p>
                   <p
@@ -104,6 +112,7 @@ import lang from '@/lang'
 
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
+import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
 
 // Utils and Helper Methods
@@ -124,7 +133,8 @@ export default defineComponent({
 
   components: {
     FullCalendar,
-    SeeDetailsCalendar
+    SeeDetailsCalendar,
+    optionsPanel
   },
 
   props: {
@@ -338,7 +348,7 @@ export default defineComponent({
           ...event,
           id: Number(event.id)
         })
-        props.actionOption('view')
+        // props.actionOption('view')
       }
       const calendarApi = calendarRef.value.getApi()
       if (isEmptyValue(event.valid_from)) return
