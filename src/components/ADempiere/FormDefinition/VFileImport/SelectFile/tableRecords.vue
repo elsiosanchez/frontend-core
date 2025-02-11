@@ -40,7 +40,7 @@
       v-for="(item) in formatFieldsList"
       :key="item.uuid"
       :label="item.name"
-      :min-width="item.name.length * 12 + 'px'"
+      :min-width="widthColumn(item)"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': item.data_type === ROW_TYPE_NUMBER }">
@@ -60,7 +60,7 @@ import store from '@/store'
 import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
 
 // Constants
-import { ROW_TYPE_NUMBER } from '@/utils/ADempiere/dictionary/form/VFileImport'
+import { ROW_TYPE_NUMBER, ROW_TYPE_DATE } from '@/utils/ADempiere/dictionary/form/VFileImport'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -111,7 +111,13 @@ export default defineComponent({
     function changeRow(currentRow) {
       currentLine.value = currentRow
     }
-
+    function widthColumn(item) {
+      const nameLength = item.name.length
+      if (item.data_type === ROW_TYPE_DATE) {
+        return 180 + 'px'
+      }
+      return nameLength * 13 + 'px'
+    }
     watch(currentLine, (newValue, oldValue) => {
       if (newValue) {
         singleTable.value.setCurrentRow(newValue)
@@ -128,7 +134,8 @@ export default defineComponent({
       dataTable,
       formatValue,
       //
-      changeRow
+      changeRow,
+      widthColumn
     }
   }
 })
