@@ -67,6 +67,9 @@ import {
   COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
+import {
+  POSTED_TABLES_WITHOUT_DOCUMENT
+} from '@/utils/ADempiere/dictionary/form/VFactReconcile'
 
 // Utils and Helpers Methods
 import {
@@ -167,14 +170,6 @@ export default {
             if (!is_allow_info_account) {
               return false
             }
-            // const sessionContext = store.getters.getAllSessionContext
-            // if (isEmptyValue(sessionContext)) {
-            //   return false
-            // }
-            // const isShowAcct = sessionContext['#ShowAcct']
-            // if (!isShowAcct) {
-            //   return false
-            // }
             const accoutingSchemaId = store.getters.getSessionContext({
               columnName: '$C_AcctSchema_ID'
             })
@@ -186,10 +181,13 @@ export default {
               return false
             }
             if (!storedTab.table.is_document) {
-              return false
+              // TODO: Remove this condition when complete support to document table
+              if (!POSTED_TABLES_WITHOUT_DOCUMENT.includes(storedTab.table_name)) {
+                return false
+              }
             }
             const recordId = this.currentRecord[this.metadata.tabTableName + '_ID']
-            if (isEmptyValue(recordId) || recordId <= 0) {
+            if (isEmptyValue(recordId) || recordId <= 0 || recordId === 'create-new') {
               return false
             }
             return true

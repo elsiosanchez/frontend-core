@@ -104,8 +104,14 @@ import Worflow from '@/components/ADempiere/WorflowView'
 import PanelDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
 // import resource from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
 import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
+
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
+
+// Constants
+import {
+  POSTED_TABLES_WITHOUT_DOCUMENT
+} from '@/utils/ADempiere/dictionary/form/VFactReconcile'
 
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -526,26 +532,24 @@ export default defineComponent({
       if (!is_allow_info_account) {
         return false
       }
-      // const sessionContext = store.getters.getAllSessionContext
-      // if (isEmptyValue(sessionContext)) {
-      //   return false
-      // }
-      // const isShowAcct = sessionContext['#ShowAcct']
-      // if (!isShowAcct) {
-      //   return false
-      // }
       if (isEmptyValue(accoutingSchemaId.value) || accoutingSchemaId.value <= 0) {
         return false
       }
-      const { currentTab } = store.getters.getContainerInfo
-      if (!currentTab.table.is_document) {
+      const storedTab = currentTab.value
+      if (isEmptyValue(storedTab)) {
         return false
       }
-      if (isEmptyValue(currentRecordId.value) || currentRecordId.value <= 0) {
+      if (!storedTab.table.is_document) {
+        // TODO: Remove this condition when complete support to document table
+        if (!POSTED_TABLES_WITHOUT_DOCUMENT.includes(storedTab.table_name)) {
+          return false
+        }
+      }
+      const recordId = currentRecordId.value
+      if (isEmptyValue(recordId) || recordId <= 0 || recordId === 'create-new') {
         return false
       }
-      const isShowAccouting = store.getters.getIsShowAccoutingFacts
-      return isShowAccouting
+      return true
     })
 
     /**
@@ -590,12 +594,11 @@ export default defineComponent({
         }
       }
       if (tab.name === 'accountingInformation') {
-        const { currentTab } = store.getters.getContainerInfo
         const recordId = currentRecordId.value
         if (isEmptyValue(recordId)) return
         store.dispatch('getAccoutingFactsFromServer', {
           recordUuid: currentRecordUuid.value,
-          tableName: currentTab.table_name,
+          tableName: currentTab.value.table_name,
           searchValue: '',
           recordId
         })
@@ -612,21 +615,20 @@ export default defineComponent({
         tabOptions = 'recordNotesTab'
       }
       if (tab.name === 'listDashboard') {
-        const { currentTab } = store.getters.getContainerInfo
         if (isEmptyValue(storedWindow.value.internal_id) ||
-          (isEmptyValue(currentTab))) {
+          (isEmptyValue(currentTab.value))) {
           return
         }
         const dashboardList = store.getters.getPanelDashboard({
-          tabId: currentTab.internal_id,
+          tabId: currentTab.value.internal_id,
           recordId: currentRecordId.value
         })
         if (isEmptyValue(dashboardList)) {
           store.dispatch('listWindowDashboard', {
-            tabId: currentTab.internal_id,
+            tabId: currentTab.value.internal_id,
             windowId: storedWindow.value.internal_id,
             recordId: currentRecordId.value,
-            tableName: currentTab.table_name
+            tableName: currentTab.value.table_name
           })
         }
       }
@@ -736,14 +738,17 @@ export default defineComponent({
         store.commit('setIsShowAccoutingFacts', false)
         return
       }
-      const { currentTab } = store.getters.getContainerInfo
-      if (isEmptyValue(currentTab) || !currentTab.table.is_document) {
+      if (
+        isEmptyValue(currentTab) ||
+        !currentTab.value.table.is_document
+      ) {
         store.commit('setIsShowAccoutingFacts', false)
         return
       }
+
       store.dispatch('getExistsAccoutingDocument', {
         accoutingSchemaId: accoutingSchemaId.value,
-        tableName: currentTab.table_name,
+        tableName: currentTab.value.table_name,
         recordId: currentRecordId.value
       })
     }
