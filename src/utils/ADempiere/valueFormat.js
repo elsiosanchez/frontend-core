@@ -19,6 +19,8 @@
 // A util class for handle format for time, date and others values to beused to display information
 // Note that this file use moment library for a easy conversion
 
+import store from '@/store'
+
 // Constants
 import {
   FALSE_STRING, TRUE_STRING
@@ -125,7 +127,6 @@ export function formatField({
         }
       }
       break
-
     case DATE.id:
       formattedValue = formatDateTemp({
         value: currentValue,
@@ -138,13 +139,29 @@ export function formatField({
       })
       break
 
-    case DATE_PLUS_TIME.id:
+    case DATE_PLUS_TIME.id: {
+      const currentLanguageDefinition = store.getters['getCurrentLanguageDefinition']
+      let format = 'MM/DD/YYYY HH:mm:ss'
+      if (!isEmptyValue(currentLanguageDefinition) && !isEmptyValue(currentLanguageDefinition.datePattern) && !isEmptyValue(currentLanguageDefinition.time_pattern)) {
+        const { time_pattern, datePattern } = currentLanguageDefinition
+        format = datePattern + ' ' + time_pattern
+          .replace(/[Y]/gi, 'y')
+          .replace(/[m]/gi, 'M')
+          .replace(/[D]/gi, 'd')
+          .replace(/[z]/gi, '')
+          .replace(/(A|a)/g, '')
+      }
       formattedValue = formatDateTemp({
         value: currentValue,
         isTime: true,
-        format: optionalFormat || 'yyyy-MM-dd hh:mm:ss A'
+        format: getDateFormat({
+          format: optionalFormat || format,
+          isTime: true,
+          isDate: true
+        })
       })
       break
+    }
     case TIME.id:
       formattedValue = formatDateTemp({
         value: currentValue,
