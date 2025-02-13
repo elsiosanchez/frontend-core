@@ -476,6 +476,7 @@ export default defineComponent({
         })
         if (!currentIndexDisplayed) {
           const tab = newValue.at(0)
+          if (isEmptyValue(tab)) return
           changeTab({
             uuid: tab.uuid,
             index: String(tab.tabChildIndex)
