@@ -41,7 +41,7 @@
         :container-uuid="processUuid"
       />
     </div>
-    <div v-if="isWithChildsTab" id="tab-manager-child" :style="sizeTabChild">
+    <div v-if="isWithChildsTab && isEmptyValue(isDisplayPanelDefinitions)" id="tab-manager-child" :style="sizeTabChild">
       <tab-manager-child
         class="tab-manager"
         :parent-uuid="windowMetadata.uuid"
@@ -130,17 +130,8 @@ export default defineComponent({
     /**
      * Computed
      */
-    const showKanban = computed(() => {
-      return store.getters.getPanelKanban({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
-    })
-    const showCalendar = computed(() => {
-      return store.getters.getShowCalendar({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
-    })
-    const showResource = computed(() => {
-      return store.getters.getPanelResource({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
-    })
-    const resources = computed(() => {
-      return store.getters.getInfoResource
+    const isDisplayPanelDefinitions = computed(() => {
+      return store.getters.getCurrentDisplayTabDefinitions({ tableName: store.getters.getTableName(props.windowMetadata.uuid, currentTabUuid.value) })
     })
     const stylePanelHeight = computed(() => {
       let style = 'width: 100% !important;overflow: auto;'
@@ -301,13 +292,7 @@ export default defineComponent({
       // Display Definitions
       displayTabDefinition,
       displayPanelRightDefinitions,
-      // Calendar
-      showCalendar,
-      // Kanban
-      showKanban,
-      // resources
-      resources,
-      showResource,
+      isDisplayPanelDefinitions,
       // Computeds
       stylePanelHeight,
       isWithChildsTab,
