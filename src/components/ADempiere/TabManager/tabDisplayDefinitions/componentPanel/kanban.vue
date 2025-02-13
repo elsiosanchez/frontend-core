@@ -65,6 +65,7 @@
                     :action-option="actionOption"
                     :current-resource="element"
                     :is-option-edit="true"
+                    :is-panel-right="isPanelRight"
                     :is-option-delete="true"
                     :display-definition="currentDisplayDefinition"
                     style="float: right;"

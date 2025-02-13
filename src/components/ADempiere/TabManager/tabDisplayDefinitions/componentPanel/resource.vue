@@ -42,6 +42,7 @@
                 :current-resource="arg.event"
                 :is-option-edit="true"
                 :is-option-delete="true"
+                :is-panel-right="isPanelRight"
                 :display-definition="currentDisplyDefinitions"
                 style="margin-right: 5px; color: white"
               />
