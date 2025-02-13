@@ -223,3 +223,14 @@ export function deleteDataEntryResource({
     method: 'delete'
   })
 }
+/**
+ * Expand/Collapse
+ */
+export function collapse({
+  id
+}) {
+  return request({
+    url: `/display-definition/expand-collapses/${id}`,
+    method: 'get'
+  })
+}

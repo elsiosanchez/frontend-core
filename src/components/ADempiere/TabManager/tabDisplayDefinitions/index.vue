@@ -286,6 +286,9 @@ export default defineComponent({
         case 'W':
           panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/workflow.vue')
           break
+        case 'E':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/collapse.vue')
+          break
       }
       return panel
     })

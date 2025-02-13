@@ -347,13 +347,10 @@ export default defineComponent({
     }
 
     function getIcon(type) {
-      if (type === 'K') {
-        return 'kanbanMode'
-      } else if (type === 'C') {
-        return 'calendar'
-      } else if (type === 'R') {
-        return 'resources'
-      }
+      if (type === 'K') return 'kanbanMode'
+      if (type === 'C') return 'calendar'
+      if (type === 'R') return 'resources'
+      if (type === 'E') return 'collapse'
       return ''
     }
 

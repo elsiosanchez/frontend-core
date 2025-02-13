@@ -155,7 +155,8 @@ const displayTabDefinition = {
               Timeline: records.filter(data => data.display_type === 'T'),
               Workflow: records.filter(data => data.display_type === 'W'),
               Calendar: records.filter(data => data.display_type === 'C'),
-              Resource: records.filter(data => data.display_type === 'R')
+              Resource: records.filter(data => data.display_type === 'R'),
+              Collapse: records.filter(data => data.display_type === 'E')
             }
             Object.entries(displayLists).forEach(([type, list]) => {
               commit('setCurrentDefinition', { type, tableName, key: 'list', value: list })
@@ -172,23 +173,12 @@ const displayTabDefinition = {
       definition,
       isPanelRight = false
     }) {
-      // if (!isEmptyValue(filters)) {
-      // commit('setDisplayFilters', {
-      //   tableName,
-      //   filters
-      // })
-      // }
-      if (isPanelRight) {
-        commit('setCurrentPanelRightDefinition', {
-          tableName,
-          currentDefinition: definition
-        })
-      } else {
-        commit('setCurrentTabDefinition', {
-          tableName,
-          currentDefinition: definition
-        })
-      }
+      dispatch('updateDefinition', {
+        tableName,
+        definition,
+        isPanelRight
+      })
+      // Get Filter the Definition
       const filtersList = getters.getDisplayFilters({
         tableName
       })
@@ -201,15 +191,6 @@ const displayTabDefinition = {
           filters: filtersList
         })
       }
-      // if (definition.display_type === 'R') {
-      //   dispatch('requestResource', {
-      //     id: definition.id,
-      //     isPanel: isPanelRight,
-      //     tableName,
-      //     recordId,
-      //     filters: filtersList
-      //   })
-      // }
       if (definition.display_type === 'C') {
         dispatch('changeDateCalendar', {
           id: definition.id,
@@ -235,6 +216,30 @@ const displayTabDefinition = {
           filters: filtersList
         })
       }
+      if (definition.display_type === 'E') {
+        dispatch('requestCollapse', {
+          id: definition.id,
+          tableName,
+          recordId,
+          filters: filtersList
+        })
+      }
+      dispatch('listDisplayDefinitionFieldsMetadata', {
+        id: definition.id
+      })
+    },
+    updateDefinition({
+      commit
+    }, {
+      tableName,
+      definition,
+      isPanelRight
+    }) {
+      const panelToUpgrade = isPanelRight ? 'setCurrentPanelRightDefinition' : 'setCurrentTabDefinition'
+      commit(panelToUpgrade, {
+        tableName,
+        currentDefinition: definition
+      })
     }
   },
 
