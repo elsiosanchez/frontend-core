@@ -430,4 +430,146 @@ export default defineComponent({
 .kanban-columns-container .el-badge__content.is-fixed {
   top: 1px !important
 }
+.kanban-container {
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+.kanban-columns-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  padding-top: 0.5rem;
+}
+
+.kanban-column {
+  flex: 0 0 auto;
+  width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(27, 31, 35, 0.12);
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.kanban-column h3 {
+  margin: 0;
+  margin-bottom: 1rem;
+  color: #24292f;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 1px solid #d0d7de;
+  padding-bottom: 0.5rem;
+}
+
+.list-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-group-item {
+  cursor: grab;
+  background-color: #ffffff;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #d0d7de;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: 0 3px 6px rgba(140,149,159,0.15);
+  padding: 0px 5px;
+}
+
+.list-group-item:hover {
+  background-color: #f3f4f6;
+  border-color: #c9d1d9;
+}
+
+.list-group-item i {
+  cursor: pointer;
+  margin-right: 8px;
+  color: #57606a;
+  transition: color 0.2s;
+}
+
+.list-group-item i:hover {
+  color: #24292f;
+}
+
+.list-group-item strong {
+  font-size: 1rem;
+  color: #24292f;
+}
+
+.list-group-item p {
+  font-size: 0.875rem;
+  color: #57606a;
+  margin: 0.5rem 0 0;
+}
+
+.ghost {
+  opacity: 0.5;
+  background: #d8e2ec;
+  border: 2px dashed #c9d1d9;
+}
+.empty-placeholder {
+  min-height: 50px;
+  padding: 10px;
+  background-color: #f6f8fa;
+  border: 2px dashed #d0d7de;
+  border-radius: 6px;
+  text-align: center;
+  color: #57606a;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.empty-placeholder:hover {
+  background-color: #e1e4e8;
+  border-color: #c9d1d9;
+}
+.tab-options-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #ffffff;
+  padding: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.list-group-item strong{
+  font-size: 12px !important;
+  color: #495060;
+}
+.kanban-column-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.2rem;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-width: 1px 0px;
+  border-style: solid none;
+  border-color: rgb(230, 235, 245) currentcolor;
+}
+
+.column-icon {
+  color: green;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+.column-title {
+  font-size: 12px;
+  font-weight: bold;
+}
 </style>

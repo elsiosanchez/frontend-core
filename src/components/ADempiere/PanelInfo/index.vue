@@ -100,10 +100,7 @@ import RecordDashboard from './Component/RecordDashboard'
 import Calendar from '@/views/ADempiere/CalendarView'
 import TimeLine from '@/views/ADempiere/TimeLineView'
 import Worflow from '@/components/ADempiere/WorflowView'
-// import KanbanView from '@/components/ADempiere/KanbanView'
 import PanelDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
-// import resource from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
-import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 
 // API Request Methods
 import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
@@ -137,7 +134,6 @@ export default defineComponent({
     LoadingView,
     Calendar,
     TimeLine,
-    CalendarResorce,
     Worflow,
     PanelDisplayDefinitions
   },

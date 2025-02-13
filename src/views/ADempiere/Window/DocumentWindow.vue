@@ -68,9 +68,6 @@ import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
 import TabManager from '@/components/ADempiere/TabManager/index.vue'
 import TabManagerChild from '@/components/ADempiere/TabManager/tabChild.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-import KanbanView from '@/components/ADempiere/KanbanView'
-import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
-import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -84,11 +81,8 @@ export default defineComponent({
     Embedded,
     ModalDialog,
     TabManager,
-    CalendarResorce,
     TabManagerChild,
-    LoadingView,
-    CalendarView,
-    KanbanView
+    LoadingView
   },
 
   props: {

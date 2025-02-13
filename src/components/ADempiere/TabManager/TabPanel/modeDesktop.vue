@@ -167,9 +167,6 @@ import DefaultTable from '@/components/ADempiere/DataTable/Windows/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
-import KanbanView from '@/components/ADempiere/KanbanView'
-import CalendarView from '@/views/ADempiere/CalendarView/index.vue'
-import CalendarResorce from '@/components/ADempiere/CalendarResorce/index.vue'
 // Constants
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
@@ -186,10 +183,7 @@ export default defineComponent({
     FilterFields,
     PanelDefinition,
     TabOptions,
-    BatchEntry,
-    CalendarView,
-    CalendarResorce,
-    KanbanView
+    BatchEntry
   },
 
   props: {
