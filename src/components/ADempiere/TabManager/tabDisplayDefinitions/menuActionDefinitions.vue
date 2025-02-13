@@ -162,6 +162,7 @@ export default defineComponent({
       if (type === 'C') return 'calendar'
 
       if (type === 'R') return 'resources'
+      if (type === 'E') return 'collapse'
       return ''
     }
 

@@ -70,7 +70,8 @@ const window = {
       timeLine: 'Línea de Tiempo',
       workflow: 'Flujo de Trabajo',
       resource: 'Recursos',
-      kanban: 'Kanban'
+      kanban: 'Kanban',
+      collapse: 'Collapse'
     },
     notices: {
       user: 'Usuario',

@@ -79,6 +79,36 @@ function deleteRecordToListKanban({
   })
 }
 
+// Delete Record from Expand/Collapse
+function deleteRecordToListCollapse({
+  isPanelRight,
+  currentTab,
+  recordId
+}) {
+  let currentCollapse
+  if (isPanelRight) {
+    currentCollapse = store.getters.getCurrentCollapsePanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentCollapse = store.getters.getCurrentCollapseDefinition({
+      tableName: currentTab.table_name
+    })
+  }
+  currentCollapse.records = currentCollapse.records.filter(data => data.id !== recordId)
+  if (isPanelRight) {
+    store.commit('setCollapsePanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentCollapse
+    })
+    return
+  }
+  store.commit('setCollapseDefinition', {
+    tableName: currentTab.table_name,
+    currentCollapse
+  })
+}
+
 /**
  * Add New Record to Panel Kanban
  */
@@ -141,6 +171,71 @@ function addNewRecordToListKanban({
   store.commit('setCurrentKanbanDefinition', {
     tableName: table_name,
     currentkanban: currentkanban
+  })
+}
+
+/**
+ * Add New Record to Panel Collapse
+ */
+
+function addNewRecordToListCollapse({
+  isPanelRight,
+  newRecord,
+  keyAttribute,
+  currentTab,
+  displayDefinition,
+  isEditRecord
+}) {
+  const {
+    table_name,
+    group_column
+  } = displayDefinition
+  let currentCollapse
+  if (isPanelRight) {
+    currentCollapse = store.getters.getCurrentCollapsePanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentCollapse = store.getters.getCurrentCollapseDefinition({
+      tableName: table_name
+    })
+  }
+  if (isEditRecord) {
+    currentCollapse.records = currentCollapse.records.map(data => {
+      if (data.id === newRecord.id) {
+        return {
+          ...data,
+          ...newRecord
+        }
+      }
+      return {
+        ...data
+      }
+    })
+  } else {
+    const { fields } = newRecord
+    let value = keyAttribute[group_column]
+    if (!isEmptyValue(fields[group_column]) && !isEmptyValue(fields[group_column].value)) {
+      value = fields[group_column].value
+    }
+    const list = [
+      {
+        ...newRecord,
+        group_id: String(value)
+      }
+    ]
+    currentCollapse.records.push(...list)
+  }
+  if (isPanelRight) {
+    store.commit('setCollapsePanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentCollapse
+    })
+    return
+  }
+  store.commit('setCollapseDefinition', {
+    tableName: table_name,
+    currentCollapse
   })
 }
 
@@ -566,13 +661,15 @@ function runProcessReport({
 const functionMap = {
   KANBAN: addNewRecordToListKanban,
   CALENDAR: addNewRecordToListCalendar,
-  RESOURCE: addNewRecordToListResource
+  RESOURCE: addNewRecordToListResource,
+  EXPAND_COLLAPSE: addNewRecordToListCollapse
 }
 
 const functionMaDelete = {
   CALENDAR: addNewRecordToListCalendar,
   RESOURCE: addNewRecordToListResource,
-  KANBAN: deleteRecordToListKanban
+  KANBAN: deleteRecordToListKanban,
+  EXPAND_COLLAPSE: deleteRecordToListCollapse
 }
 
 const functionProcess = {

@@ -332,6 +332,16 @@ export default defineComponent({
           iconClass: 'kanbanMode',
           isMenu: true,
           component: PanelDisplayDefinitions
+        },
+        {
+          name: 'Collapse',
+          title: language.t('window.containerInfo.log.collapse'),
+          show: !isEmptyValue(listKanbanDefinition.value),
+          svg: true,
+          isLoading: false,
+          iconClass: 'collapse',
+          isMenu: true,
+          component: PanelDisplayDefinitions
         }
       ]
     })
@@ -405,13 +415,21 @@ export default defineComponent({
         type: 'Resource'
       })
     })
+
+    const listCollapseDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Collapse'
+      })
+    })
     const filteredDefinition = computed(() => {
       return {
         Resource: listResourceDefinition.value,
         Calendar: listCalendarDefinition.value,
         TimeLine: listTimeLineDefinition.value,
         Workflow: listWorkflowDefinition.value,
-        Kanban: listKanbanDefinition.value
+        Kanban: listKanbanDefinition.value,
+        Collapse: listCollapseDefinition.value
       }
     })
     // Container Info
@@ -577,7 +595,7 @@ export default defineComponent({
     }
     function handleClick(tab, event) {
       let tabOptions = tab.name
-      const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow']
+      const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow', 'Collapse']
       const currentDisplay = store.getters.getCurrentListDisplay({
         tableName: props.tabAttributes.table_name,
         tabName: tabOptions.toUpperCase()
@@ -791,7 +809,8 @@ export default defineComponent({
       findListStoreProduct,
       showAccoutingFacts,
       handleCommandActions,
-      filteredDefinition
+      filteredDefinition,
+      listCollapseDefinition
     }
   }
 

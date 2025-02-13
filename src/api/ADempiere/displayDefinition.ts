@@ -227,10 +227,15 @@ export function deleteDataEntryResource({
  * Expand/Collapse
  */
 export function collapse({
-  id
+  id,
+  filters
 }) {
   return request({
     url: `/display-definition/expand-collapses/${id}`,
-    method: 'get'
+    method: 'get',
+    params: {
+      filters,
+      page_size: 300
+    }
   })
 }

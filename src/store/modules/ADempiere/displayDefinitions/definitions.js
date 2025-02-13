@@ -37,7 +37,8 @@ const initState = {
     Workflow: {},
     Timeline: {},
     Calendar: {},
-    Resource: {}
+    Resource: {},
+    Collapse: {}
   },
   emtpyDefinitions: {
     currentDefinition: {},
@@ -219,6 +220,7 @@ const displayTabDefinition = {
       if (definition.display_type === 'E') {
         dispatch('requestCollapse', {
           id: definition.id,
+          isPanel: isPanelRight,
           tableName,
           recordId,
           filters: filtersList

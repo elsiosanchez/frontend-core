@@ -69,7 +69,7 @@ const window = {
       timeLine: 'Time Line',
       workflow: 'Workflow',
       resource: 'Resources',
-      kanban: 'Kanban'
+      collapse: 'Collapse'
     },
     notices: {
       user: 'User',
