@@ -35,15 +35,22 @@
           class="demo-app-resource"
           :options="calendarOptions"
         >
-          <template
-            v-slot:eventContent="arg"
-          >
-            <p
-              style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;margin: 0px;padding: 0px;height: 20px;line-height: 15px;font-size: 10px;"
-              @click="openDetails(arg)"
-            >
-              {{ arg.event.title }}
-            </p>
+          <template v-slot:eventContent="arg">
+            <div style="display: flex; align-items: center;" @click="openDetails(arg)">
+              <options-panel
+                :action-option="actionOption"
+                :current-resource="arg.event"
+                :is-option-edit="true"
+                :is-option-delete="true"
+                :display-definition="currentDisplyDefinitions"
+                style="margin-right: 5px; color: white"
+              />
+              <p
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; height: 20px; line-height: 15px; font-size: 10px;"
+              >
+                {{ arg.event.title }}
+              </p>
+            </div>
           </template>
         </FullCalendar>
       </div>
@@ -71,6 +78,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import listPlugin from '@fullcalendar/list'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
+import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -81,7 +89,8 @@ export default defineComponent({
 
   components: {
     FullCalendar,
-    SeeDetailsCalendar
+    SeeDetailsCalendar,
+    optionsPanel
   },
 
   props: {
@@ -345,7 +354,7 @@ export default defineComponent({
           ...params.event,
           id: Number(params.event.id)
         })
-        props.actionOption('view')
+        // props.actionOption('view')
       }
     }
 
