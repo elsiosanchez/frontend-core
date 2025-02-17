@@ -249,7 +249,7 @@ import IssueRecordTime from '@/components/ADempiere/FormDefinition/IssueManageme
 import ProgressPercentage from '@/components/ADempiere/ContainerOptions/ProgressPercentage.vue'
 import IssueAvatar from '@/components/ADempiere/FormDefinition/IssueManagement/issueAvatar.vue'
 // Constants
-import { REQUEST_WINDOW_UUID, REQUEST_ALL_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
+import { REQUEST_ALL_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
 import { TABLE_NAME_C_BPARTNER } from '@/utils/ADempiere/constants/resoucer.ts'
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -295,10 +295,8 @@ export default defineComponent({
       store.dispatch('changeCurrentIssues', issue)
     }
     function zoomIssues(issues) {
-      let uuid = REQUEST_WINDOW_UUID
-      if (props.issueAll) {
-        uuid = REQUEST_ALL_WINDOW_UUID
-      }
+      const uuid = REQUEST_ALL_WINDOW_UUID
+
       zoomIn({
         uuid,
         params: {
@@ -310,6 +308,7 @@ export default defineComponent({
           ]
         }
       })
+      store.commit('setShowLogs', false)
     }
 
     return {

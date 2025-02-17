@@ -55,7 +55,7 @@ import Comment from '@/components/ADempiere/Form/Issues/component/Comment.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 
 // Constants
-import { REQUEST_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
+import { REQUEST_ALL_WINDOW_UUID } from '@/utils/ADempiere/dictionary/form/Issues.js'
 
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -133,7 +133,7 @@ export default defineComponent({
 
     function zoomIssues(issues) {
       zoomIn({
-        uuid: REQUEST_WINDOW_UUID,
+        uuid: REQUEST_ALL_WINDOW_UUID,
         params: {
           filters: [
             {
@@ -143,6 +143,7 @@ export default defineComponent({
           ]
         }
       })
+      store.commit('setShowLogs', false)
     }
 
     function avatarResize(user) {
