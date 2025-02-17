@@ -95,7 +95,10 @@ function deleteRecordToListCollapse({
       tableName: currentTab.table_name
     })
   }
-  currentCollapse.records = currentCollapse.records.filter(data => data.id !== recordId)
+  currentCollapse.groups.forEach(group => {
+    group.records = group.records.filter(record => record.id !== recordId)
+  })
+  // currentCollapse.records = currentCollapse.records.filter(data => data.id !== recordId)
   if (isPanelRight) {
     store.commit('setCollapsePanelTabDefinition', {
       tableName: currentTab.table_name,
@@ -213,18 +216,11 @@ function addNewRecordToListCollapse({
       }
     })
   } else {
-    const { fields } = newRecord
-    let value = keyAttribute[group_column]
-    if (!isEmptyValue(fields[group_column]) && !isEmptyValue(fields[group_column].value)) {
-      value = fields[group_column].value
-    }
-    const list = [
-      {
-        ...newRecord,
-        group_id: String(value)
-      }
-    ]
-    currentCollapse.records.push(...list)
+    const indexColumn = currentCollapse.groups.findIndex(list => list.value === keyAttribute[group_column])
+    currentCollapse.groups[indexColumn].records.push({
+      ...newRecord,
+      ...keyAttribute
+    })
   }
   if (isPanelRight) {
     store.commit('setCollapsePanelTabDefinition', {

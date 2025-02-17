@@ -30,19 +30,18 @@
         <el-collapse-item
           v-for="(column, index) in groupsList"
           :key="index"
-          :title="column.title"
           :name="index"
         >
           <template slot="title">
             <p style="margin: 0px 5px;width: 95%;">
               <el-badge
-                :value="column.items.length"
+                :value="column.records.length"
                 style="font-size: 16px; padding-left: 10px;"
                 type="info"
                 class="item-table-collapse"
               >
                 <b style="padding-right: 3px;">
-                  {{ column.title }}
+                  {{ isEmptyValue(column.name) ? $t('form.kanban.noStatus') : column.name }}
                 </b>
               </el-badge>
             </p>
@@ -57,10 +56,10 @@
               <el-icon class="el-icon-plus" />
             </el-button>
           </template>
-          <el-empty v-if="isEmptyValue(column.items)" :image-size="200" />
+          <el-empty v-if="isEmptyValue(column.records)" :image-size="200" />
           <el-table
             v-else
-            :data="column.items"
+            :data="column.records"
             style="width: 100%"
             @row-dblclick="openPanelDetails"
           >
@@ -123,7 +122,7 @@ import {
 } from '@vue/composition-api'
 
 import store from '@/store'
-import lang from '@/lang'
+// import lang from '@/lang'
 
 // Components and Mixins
 import draggable from 'vuedraggable'
@@ -233,44 +232,7 @@ export default defineComponent({
     const groupsList = computed({
       // getter
       get() {
-        // const columnsStore = store.getters.getKanbanColumnsDefinition({ tableName: props.tabAttributes.table_name })
-        // if (!isEmptyValue(columnsStore)) return columnsStore
-        if (
-          isEmptyValue(collapseDefinition.value) ||
-          isEmptyValue(collapseDefinition.value.groups)
-        ) {
-          return []
-        }
-        const { groups, records, column_name } = collapseDefinition.value
-        const ungroupedItems = records
-          .filter(record => {
-            return !groups.some(step => {
-              return record.group_id === step.value
-            })
-          })
-        const ungroupedColumn = {
-          title: lang.t('form.kanban.noStatus'),
-          column_name,
-          value: null,
-          items: ungroupedItems
-        }
-
-        const groupedColumns = groups.map(step => {
-          return {
-            title: step.name,
-            column_name,
-            value: step.value,
-            items: records
-              .filter(record => {
-                return record.group_id === step.value
-              })
-          }
-        })
-
-        return [
-          ungroupedColumn,
-          ...groupedColumns
-        ]
+        return collapseDefinition.value.groups
       },
       // setter
       set(newValue) {
@@ -387,14 +349,15 @@ export default defineComponent({
     }
 
     function newEntry(currentColumn) {
-      const { value, column_name, title } = currentColumn
+      const { value, title } = currentColumn
+      const { group_column } = currentDisplayDefinition.value
       let groupValue = null
       if (!isEmptyValue(value)) {
         groupValue = value
       }
       // Add group/column value
       const additionalAttributes = {
-        [column_name]: groupValue
+        [group_column]: groupValue
       }
 
       store.dispatch('changeTabPanelDefinition', {
@@ -403,7 +366,7 @@ export default defineComponent({
         recordId: -1,
         additionalAttributes,
         currentAttributes: {
-          [column_name]: {
+          [group_column]: {
             display_value: title,
             value
           }
