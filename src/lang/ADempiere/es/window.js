@@ -71,7 +71,8 @@ const window = {
       workflow: 'Flujo de Trabajo',
       resource: 'Recursos',
       kanban: 'Kanban',
-      collapse: 'Collapse'
+      collapse: 'Collapse',
+      mosaic: 'Mosaicos'
     },
     notices: {
       user: 'Usuario',

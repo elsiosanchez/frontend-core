@@ -38,7 +38,8 @@ const initState = {
     Timeline: {},
     Calendar: {},
     Resource: {},
-    Collapse: {}
+    Collapse: {},
+    Mosaic: {}
   },
   emtpyDefinitions: {
     currentDefinition: {},
@@ -157,7 +158,8 @@ const displayTabDefinition = {
               Workflow: records.filter(data => data.display_type === 'W'),
               Calendar: records.filter(data => data.display_type === 'C'),
               Resource: records.filter(data => data.display_type === 'R'),
-              Collapse: records.filter(data => data.display_type === 'E')
+              Collapse: records.filter(data => data.display_type === 'E'),
+              Mosaic: records.filter(data => data.display_type === 'M')
             }
             Object.entries(displayLists).forEach(([type, list]) => {
               commit('setCurrentDefinition', { type, tableName, key: 'list', value: list })
@@ -219,6 +221,15 @@ const displayTabDefinition = {
       }
       if (definition.display_type === 'E') {
         dispatch('requestCollapse', {
+          id: definition.id,
+          isPanel: isPanelRight,
+          tableName,
+          recordId,
+          filters: filtersList
+        })
+      }
+      if (definition.display_type === 'M') {
+        dispatch('requestMosaic', {
           id: definition.id,
           isPanel: isPanelRight,
           tableName,

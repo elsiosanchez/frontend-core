@@ -112,6 +112,53 @@ function deleteRecordToListCollapse({
   })
 }
 
+// Delete Record from Mosaic
+
+function deleteRecordToMosaic({
+  displayDefinition,
+  isPanelRight,
+  currentTab,
+  recordId
+}) {
+  let currentMosaic
+  if (isPanelRight) {
+    currentMosaic = store.getters.getCurrentMosaicPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentMosaic = store.getters.getCurrentMosaicDefinition({
+      tableName: displayDefinition.table_name
+    })
+  }
+  const { records } = currentMosaic
+  const recordList = []
+  records.forEach(element => {
+    if (element.id !== recordId) {
+      recordList.push(element)
+    }
+  })
+
+  if (isPanelRight) {
+    store.commit('setMosaicPanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentMosaic: {
+        ...currentMosaic,
+        records: recordList,
+        record_count: recordList.length
+      }
+    })
+    return
+  }
+  store.commit('setMosaicDefinition', {
+    tableName: displayDefinition.table_name,
+    currentMosaic: {
+      ...currentMosaic,
+      records: recordList,
+      record_count: recordList.length
+    }
+  })
+}
+
 /**
  * Add New Record to Panel Kanban
  */
@@ -232,6 +279,43 @@ function addNewRecordToListCollapse({
   store.commit('setCollapseDefinition', {
     tableName: table_name,
     currentCollapse
+  })
+}
+
+/**
+ * New Record Mosaic
+ */
+
+function addNewRecordToMosaic({
+  isPanelRight,
+  newRecord,
+  currentTab,
+  displayDefinition,
+  isEditRecord
+}) {
+  let currentMosaic
+  if (isPanelRight) {
+    currentMosaic = store.getters.getCurrentMosaicPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentMosaic = store.getters.getCurrentMosaicDefinition({
+      tableName: displayDefinition.table_name
+    })
+  }
+
+  currentMosaic.records.push(newRecord)
+
+  if (isPanelRight) {
+    store.commit('setMosaicPanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentMosaic
+    })
+    return
+  }
+  store.commit('setMosaicDefinition', {
+    tableName: displayDefinition.table_name,
+    currentMosaic
   })
 }
 
@@ -658,14 +742,16 @@ const functionMap = {
   KANBAN: addNewRecordToListKanban,
   CALENDAR: addNewRecordToListCalendar,
   RESOURCE: addNewRecordToListResource,
-  EXPAND_COLLAPSE: addNewRecordToListCollapse
+  EXPAND_COLLAPSE: addNewRecordToListCollapse,
+  MOSAIC: addNewRecordToMosaic
 }
 
 const functionMaDelete = {
   CALENDAR: addNewRecordToListCalendar,
   RESOURCE: addNewRecordToListResource,
   KANBAN: deleteRecordToListKanban,
-  EXPAND_COLLAPSE: deleteRecordToListCollapse
+  EXPAND_COLLAPSE: deleteRecordToListCollapse,
+  MOSAIC: deleteRecordToMosaic
 }
 
 const functionProcess = {

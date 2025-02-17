@@ -336,10 +336,20 @@ export default defineComponent({
         {
           name: 'Collapse',
           title: language.t('window.containerInfo.log.collapse'),
-          show: !isEmptyValue(listKanbanDefinition.value),
+          show: !isEmptyValue(listCollapseDefinition.value),
           svg: true,
           isLoading: false,
           iconClass: 'collapse',
+          isMenu: true,
+          component: PanelDisplayDefinitions
+        },
+        {
+          name: 'Mosaic',
+          title: language.t('window.containerInfo.log.mosaic'),
+          show: !isEmptyValue(listMosaicDefinition.value),
+          svg: true,
+          isLoading: false,
+          iconClass: 'mosaic',
           isMenu: true,
           component: PanelDisplayDefinitions
         }
@@ -422,6 +432,13 @@ export default defineComponent({
         type: 'Collapse'
       })
     })
+
+    const listMosaicDefinition = computed(() => {
+      return store.getters.getListDefinition({
+        tableName: props.tabAttributes.table_name,
+        type: 'Mosaic'
+      })
+    })
     const filteredDefinition = computed(() => {
       return {
         Resource: listResourceDefinition.value,
@@ -429,6 +446,7 @@ export default defineComponent({
         TimeLine: listTimeLineDefinition.value,
         Workflow: listWorkflowDefinition.value,
         Kanban: listKanbanDefinition.value,
+        Mosaic: listMosaicDefinition.value,
         Collapse: listCollapseDefinition.value
       }
     })
@@ -595,7 +613,7 @@ export default defineComponent({
     }
     function handleClick(tab, event) {
       let tabOptions = tab.name
-      const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow', 'Collapse']
+      const listDisplayDeninitions = ['Resource', 'Kanban', 'Calendar', 'TimeLine', 'Workflow', 'Collapse', 'Mosaic']
       const currentDisplay = store.getters.getCurrentListDisplay({
         tableName: props.tabAttributes.table_name,
         tabName: tabOptions.toUpperCase()

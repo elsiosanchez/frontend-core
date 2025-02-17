@@ -351,6 +351,7 @@ export default defineComponent({
       if (type === 'C') return 'calendar'
       if (type === 'R') return 'resources'
       if (type === 'E') return 'collapse'
+      if (type === 'M') return 'mosaic'
       return ''
     }
 

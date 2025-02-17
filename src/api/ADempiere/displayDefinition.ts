@@ -239,3 +239,19 @@ export function collapse({
     }
   })
 }
+/**
+ * Mosaic
+ */
+export function mosaic({
+  id,
+  filters
+}) {
+  return request({
+    url: `/display-definition/mosaics/${id}`,
+    method: 'get',
+    params: {
+      filters,
+      page_size: 300
+    }
+  })
+}

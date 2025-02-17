@@ -289,6 +289,9 @@ export default defineComponent({
         case 'E':
           panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/collapse.vue')
           break
+        case 'M':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/mosaic.vue')
+          break
       }
       return panel
     })

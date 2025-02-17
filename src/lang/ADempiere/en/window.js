@@ -69,7 +69,8 @@ const window = {
       timeLine: 'Time Line',
       workflow: 'Workflow',
       resource: 'Resources',
-      collapse: 'Collapse'
+      collapse: 'Collapse',
+      mosaic: 'Mosaic'
     },
     notices: {
       user: 'User',
