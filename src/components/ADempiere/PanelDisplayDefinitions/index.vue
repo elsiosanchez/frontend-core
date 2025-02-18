@@ -29,6 +29,7 @@
       :button-close-panel="actionClose"
       :details-title="detailsTitle"
       :is-panel-right="isPanelRight"
+      :is-quick-entry="bachtEntry"
     >
       <template v-slot:footer-buttons>
         <el-button
@@ -38,6 +39,19 @@
           style="float: right;margin-left: 10px;"
           @click="actionClose('')"
         />
+        <span
+          v-if="!isQuickEntry"
+          style="float: right;margin: 0px"
+        >
+          <b>
+            {{ $t('table.dataTable.batchEntry') }}
+          </b>
+          <el-switch
+            v-model="bachtEntry"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          />
+        </span>
       </template>
     </component>
   </el-card>
@@ -46,15 +60,15 @@
 <script>
 import {
   defineComponent,
-  computed
-  // ref
+  computed,
+  ref
 } from '@vue/composition-api'
 
 import lang from '@/lang'
 import store from '@/store'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'PanelDisplayDefinitions',
@@ -99,7 +113,7 @@ export default defineComponent({
   },
 
   setup(props) {
-    // const currentab = ref('')
+    const bachtEntry = ref(false)
     const currentab = computed({
       // store.getters.getCurrentTabPanelDefinition
       get() {
@@ -138,6 +152,25 @@ export default defineComponent({
       }) || {}
     })
 
+    const displayDefinitionMetadata = computed(() => {
+      return store.getters.getDisplayTabDefinition({
+        id: props.currentDisplayDefinition.id
+      })
+    })
+
+    const isQuickEntry = computed(() => {
+      let fields = []
+      if (
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        fields = displayDefinitionMetadata.value.fields
+          .filter(field => field.is_displayed && field.is_insert_record && field.is_quick_entry)
+          .sort((a, b) => a.sequence - b.sequence)
+      }
+      return isEmptyValue(fields)
+    })
+
     const componentRender = computed(() => {
       let panelComponent
       switch (currentab.value) {
@@ -166,8 +199,11 @@ export default defineComponent({
     return {
       // Ref
       currentab,
+      bachtEntry,
       // computeds
       listTabs,
+      isQuickEntry,
+      displayDefinitionMetadata,
       getCurrentRecord,
       containerManagerPanel,
       panelMetadata,

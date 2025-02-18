@@ -61,19 +61,6 @@
             </el-descriptions-item>
           </template>
         </el-descriptions>
-        <p
-          v-if="!isQuickEntry"
-          style="text-align: right;margin: 0px"
-        >
-          <b>
-            {{ $t('table.dataTable.batchEntry') }}
-          </b>
-          <el-switch
-            v-model="bachtEntry"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          />
-        </p>
       </el-card>
       <el-button
         type="primary"
@@ -146,6 +133,10 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    isQuickEntry: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -154,7 +145,6 @@ export default defineComponent({
     const attributes = ref({})
     const attributesBachtEntry = ref({})
     const isLoading = ref(false)
-    const bachtEntry = ref(false)
     const localFields = ref([])
 
     // Computed
@@ -162,17 +152,6 @@ export default defineComponent({
       return store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
-    })
-
-    const labelColor = computed(() => {
-      if (bachtEntry.value) {
-        return {
-          color: '#13ce66'
-        }
-      }
-      return {
-        color: '#ff4949'
-      }
     })
 
     const additionalAttributes = computed(() => {
@@ -212,11 +191,6 @@ export default defineComponent({
         return displayDefinitionMetadata.value.fields.filter(field => field.is_displayed && field.is_insert_record)
       }
       return []
-    })
-
-    const isQuickEntry = computed(() => {
-      const existsFields = fields.value.filter(field => field.is_quick_entry).sort((a, b) => a.sequence - b.sequence)
-      return isEmptyValue(existsFields)
     })
 
     // Constants
@@ -285,19 +259,18 @@ export default defineComponent({
         attributes: recordAttibutes,
         keyAttribute: additionalAttributes.value,
         isPanelRight: props.isPanelRight,
-        isBachtEntry: bachtEntry.value,
+        isBachtEntry: props.isQuickEntry,
         currentTab
       })
         .finally(() => {
           isLoading.value = false
-          if (bachtEntry.value) clearField(attributesBachtEntry.value)
+          if (props.isQuickEntry) clearField(attributesBachtEntry.value)
         })
     }
 
     return {
       // Ref
       attributes,
-      bachtEntry,
       isLoading,
       // computeds
       isLoadingDisplayDefinitions,
@@ -305,8 +278,6 @@ export default defineComponent({
       additionalAttributes,
       addCurrentAttributes,
       attributesBachtEntry,
-      isQuickEntry,
-      labelColor,
       localFields,
       fields,
       // methods
