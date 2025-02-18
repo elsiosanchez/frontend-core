@@ -273,11 +273,16 @@ function addNewRecordToListCollapse({
       }
     })
   } else {
-    const indexColumn = currentCollapse.groups.findIndex(list => list.value === keyAttribute[group_column])
-    currentCollapse.groups[indexColumn].records.push({
-      ...newRecord,
-      ...keyAttribute
-    })
+    let indexColumn = currentCollapse.groups.findIndex(list => list.value === keyAttribute[group_column])
+    if (indexColumn < 0) indexColumn = 0
+    if (isEmptyValue(currentCollapse.groups[indexColumn])) {
+      currentCollapse.groups[indexColumn] = { records: [...newRecord, ...keyAttribute] }
+    } else {
+      currentCollapse.groups[indexColumn].records.push({
+        ...newRecord,
+        ...keyAttribute
+      })
+    }
   }
   if (isPanelRight) {
     store.commit('setCollapsePanelTabDefinition', {
