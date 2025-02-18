@@ -24,7 +24,9 @@
     :display-value="displayValue"
     :current-display-definition="currentDisplayDefinition"
     :update-field="updateField"
+    :persistence-data="persistenceData"
     :is-new-record="isNewRecord"
+    :is-value-bacht-entry="isValueBachtEntry"
     :additional-attributes="additionalAttributes"
     :is-panel-right="isPanelRight"
   >
@@ -71,6 +73,10 @@ export default defineComponent({
       type: Function,
       required: false
     },
+    persistenceData: {
+      type: Function,
+      required: false
+    },
     isNewRecord: {
       type: Boolean,
       required: false
@@ -82,6 +88,10 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String, Object],
+      required: false
     }
   },
 

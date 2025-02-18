@@ -782,6 +782,7 @@ const handlePostSaveActions = ({
   response,
   isDelete = false,
   isEditRecord = false,
+  isBachtEntry = false,
   displyDefinitions,
   isPanelRight,
   currentTab,
@@ -816,6 +817,7 @@ const handlePostSaveActions = ({
       displayDefinition: displyDefinitions,
       isEditRecord
     })
+    if (isBachtEntry) return
   }
   if (!isEditRecord) {
     closeModalDefinition({ displyDefinitions })
@@ -888,7 +890,8 @@ export const containerManagerFieldDefinition = {
     attributes = {},
     isPanelRight,
     currentTab,
-    keyAttribute
+    keyAttribute,
+    isBachtEntry = false
   }) {
     return new Promise((resolve) => {
       const persistenceAttributes = getDefaultAttributes({
@@ -925,7 +928,8 @@ export const containerManagerFieldDefinition = {
             isPanelRight,
             currentTab,
             attributes,
-            keyAttribute
+            keyAttribute,
+            isBachtEntry
           })
           resolve()
         })

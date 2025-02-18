@@ -99,6 +99,14 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    persistenceData: {
+      type: Function,
+      required: false
+    },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String, Object],
+      required: false
     }
   },
 
@@ -175,6 +183,7 @@ export default defineComponent({
           type: 'date',
           value: dateToSend(value)
         }
+        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(dateParse)
         props.updateField(dateParse, props.fieldMetadata)
         return
       }
@@ -183,6 +192,7 @@ export default defineComponent({
     function updateFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(dateToSend(value), props.fieldMetadata)
+        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
       isLoading.value = true
@@ -260,6 +270,19 @@ export default defineComponent({
         value.value = props.additionalAttributes[column_name].value
         saveFieldValue(props.additionalAttributes[column_name].value)
       }
+    }
+
+    function dataBachtEntry(value) {
+      props.persistenceData(value, props.fieldMetadata)
+    }
+
+    if (
+      props.isNewRecord &&
+      props.fieldMetadata.is_allow_copy &&
+      props.fieldMetadata.is_quick_entry &&
+      !isEmptyValue(props.isValueBachtEntry)
+    ) {
+      value.value = props.isValueBachtEntry.value
     }
 
     return {

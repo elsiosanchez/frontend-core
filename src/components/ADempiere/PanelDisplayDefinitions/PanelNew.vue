@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <el-card class="box-card-display-definition" :body-style="{ padding: '0px' }">
+  <el-card v-if="!isLoading" class="box-card-display-definition" :body-style="{ padding: '0px' }">
     <div slot="header" class="clearfix">
       <p style="text-align: center;margin-top: 0px;margin-bottom: 5px;background: #e8f4ffa8;">
         <b style="font-size: larger;">
@@ -26,38 +26,55 @@
       </p>
     </div>
     <div class="text item">
-      <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
-      <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-        <template
-          v-for="field in fields"
-        >
-          <el-descriptions-item
-            v-if="isDisplayField(field)"
-            :key="field.sequence"
+      <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
+        <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
+        <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
+          <template
+            v-for="(field, indexSequence) in localFields"
           >
-            <template slot="label">
-              <b>
-                <span
-                  v-show="field.is_mandatory"
-                  style="color: red;"
-                >
-                  *
-                </span>
-                {{ field.name }}
-              </b>
-            </template>
-            <fields-display-definitions
-              :field="field"
-              :current-record="currentRecord"
-              :current-display-definition="currentDisplyDefinitions"
-              :update-field="updateFieldRecord"
-              :additional-attributes="addCurrentAttributes"
-              :is-new-record="true"
-              :is-panel-right="isPanelRight"
-            />
-          </el-descriptions-item>
-        </template>
-      </el-descriptions>
+            <el-descriptions-item
+              v-if="isDisplayField(field)"
+              :key="indexSequence"
+            >
+              <template slot="label">
+                <b>
+                  <span
+                    v-show="field.is_mandatory"
+                    style="color: red;"
+                  >
+                    *
+                  </span>
+                  {{ field.name }}
+                </b>
+              </template>
+              <fields-display-definitions
+                :field="field"
+                :current-record="currentRecord"
+                :current-display-definition="currentDisplyDefinitions"
+                :update-field="updateFieldRecord"
+                :persistence-data="persistenceBachtEntry"
+                :additional-attributes="addCurrentAttributes"
+                :is-new-record="true"
+                :is-panel-right="isPanelRight"
+                :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+              />
+            </el-descriptions-item>
+          </template>
+        </el-descriptions>
+        <p
+          v-if="!isQuickEntry"
+          style="text-align: right;margin: 0px"
+        >
+          <b>
+            {{ $t('table.dataTable.batchEntry') }}
+          </b>
+          <el-switch
+            v-model="bachtEntry"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          />
+        </p>
+      </el-card>
       <el-button
         type="primary"
         class="button-base-icon"
@@ -73,6 +90,11 @@
       <slot name="footer-buttons" />
     </div>
   </el-card>
+  <loading-view
+    v-else
+    key="panel-new-loading"
+    style="min-height: 250px !important;"
+  />
 </template>
 
 <script>
@@ -83,7 +105,7 @@ import store from '@/store'
 
 // Components and Mixins
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
-
+import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
@@ -92,6 +114,7 @@ export default defineComponent({
   name: 'PanelDisplayDefinitionsNew',
 
   components: {
+    LoadingView,
     FieldsDisplayDefinitions
   },
 
@@ -129,13 +152,27 @@ export default defineComponent({
   setup(props) {
     // Ref
     const attributes = ref({})
+    const attributesBachtEntry = ref({})
     const isLoading = ref(false)
+    const bachtEntry = ref(false)
+    const localFields = ref([])
 
     // Computed
     const displayDefinitionMetadata = computed(() => {
       return store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
+    })
+
+    const labelColor = computed(() => {
+      if (bachtEntry.value) {
+        return {
+          color: '#13ce66'
+        }
+      }
+      return {
+        color: '#ff4949'
+      }
     })
 
     const additionalAttributes = computed(() => {
@@ -177,6 +214,11 @@ export default defineComponent({
       return []
     })
 
+    const isQuickEntry = computed(() => {
+      const existsFields = fields.value.filter(field => field.is_quick_entry).sort((a, b) => a.sequence - b.sequence)
+      return isEmptyValue(existsFields)
+    })
+
     // Constants
     const { currentTab } = store.getters.getContainerInfo
 
@@ -199,6 +241,13 @@ export default defineComponent({
       }
     }
 
+    function persistenceBachtEntry(value, field) {
+      attributesBachtEntry.value = {
+        ...attributesBachtEntry.value,
+        [field.column_name]: value
+      }
+    }
+
     function isDisplayField(field) {
       return containerManagerFieldDefinition.isDisplayedField({
         ...field,
@@ -210,6 +259,16 @@ export default defineComponent({
       return containerManagerFieldDefinition.validateMandatoryFieldsEmpty({
         fieldList: fields.value,
         attributes: attributes.value
+      })
+    }
+
+    localFields.value = fields.value
+
+    function clearField(attributes) {
+      fields.value.forEach(element => {
+        if (attributes[element.column_name] && !element.is_allow_copy) {
+          attributes[element.column_name] = undefined
+        }
       })
     }
 
@@ -226,29 +285,37 @@ export default defineComponent({
         attributes: recordAttibutes,
         keyAttribute: additionalAttributes.value,
         isPanelRight: props.isPanelRight,
+        isBachtEntry: bachtEntry.value,
         currentTab
       })
         .finally(() => {
           isLoading.value = false
+          if (bachtEntry.value) clearField(attributesBachtEntry.value)
         })
     }
 
     return {
       // Ref
       attributes,
+      bachtEntry,
       isLoading,
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
-      addCurrentAttributes,
-      fields,
       additionalAttributes,
+      addCurrentAttributes,
+      attributesBachtEntry,
+      isQuickEntry,
+      labelColor,
+      localFields,
+      fields,
       // methods
       actionsSave,
       displayValue,
       isDisplayField,
       validateMandatory,
       updateFieldRecord,
+      persistenceBachtEntry,
       containerManagerFieldDefinition
     }
   }
@@ -266,5 +333,8 @@ export default defineComponent({
   .el-card__body {
     padding: 0px;
   }
+}
+.card-text-content {
+  margin-bottom: 16px !important;
 }
 </style>

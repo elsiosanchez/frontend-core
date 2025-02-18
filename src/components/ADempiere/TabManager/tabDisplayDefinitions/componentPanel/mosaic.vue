@@ -74,8 +74,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 <el-col :span="20">
                   <el-row v-if="!isEmptyValue(displayDefinitionFields)" :gutter="0">
                     <span
-                      v-for="field in displayDefinitionFields"
-                      :key="field.sequence"
+                      v-for="(field, key) in displayDefinitionFields"
+                      :key="key"
                     >
                       <el-col :span="12" style="padding: 0px !important;">
                         <el-descriptions :column="2" size="mini">
@@ -264,7 +264,10 @@ export default defineComponent({
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        return displayDefinitionMetadata.value.fields.filter(fields => fields.is_displayed_grid).splice(0, 3)
+        return displayDefinitionMetadata.value.fields
+          .filter(fields => fields.is_displayed_grid)
+          .sort((a, b) => a.sequence - b.sequence)
+          .splice(0, 3)
       }
       return []
     })

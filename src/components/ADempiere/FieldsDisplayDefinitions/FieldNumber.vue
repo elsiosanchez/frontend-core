@@ -89,6 +89,14 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    persistenceData: {
+      type: Function,
+      required: false
+    },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String, Object],
+      default: false
     }
   },
 
@@ -133,6 +141,7 @@ export default defineComponent({
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
+        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
     }
@@ -156,6 +165,20 @@ export default defineComponent({
     function selectContent(event) {
       event.target.select()
     }
+
+    function dataBachtEntry(value) {
+      props.persistenceData(value, props.fieldMetadata)
+    }
+
+    if (
+      props.isNewRecord &&
+      props.fieldMetadata.is_allow_copy &&
+      props.fieldMetadata.is_quick_entry &&
+      !isEmptyValue(props.isValueBachtEntry)
+    ) {
+      value.value = props.isValueBachtEntry
+    }
+
     return {
       // Ref
       value,

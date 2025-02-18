@@ -19,13 +19,13 @@
 <template>
   <span>
     <el-input
-      v-model="value"
+      v-model="fieldValue"
       :placeholder="fieldMetadata.description"
       size="mini"
       :rows="4"
       :type="typeTextBox"
       style="padding-right: 10px;width: 200px;"
-      @input="saveFieldValue(value, fieldMetadata)"
+      @input="saveFieldValue(fieldValue, fieldMetadata)"
     />
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
@@ -90,13 +90,21 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String],
+      required: false
+    },
+    persistenceData: {
+      type: Function,
+      required: false
     }
   },
 
   setup(props) {
-    const value = ref('')
+    const fieldValue = ref('')
     const isLoading = ref(false)
-    value.value = props.displayValue || ''
+    fieldValue.value = props.displayValue || ''
 
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
@@ -111,7 +119,7 @@ export default defineComponent({
     })
 
     if (props.isNewRecord && props.isPanelRight && !isEmptyValue(contextValue.value)) {
-      value.value = contextValue.value
+      saveFieldValue(contextValue.value)
     }
 
     const typeTextBox = computed(() => {
@@ -130,7 +138,9 @@ export default defineComponent({
     // Methods
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
+        fieldValue.value = value
         props.updateField(value, props.fieldMetadata)
+        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
     }
@@ -152,9 +162,22 @@ export default defineComponent({
         })
     }
 
+    function dataBachtEntry(value) {
+      props.persistenceData(value, props.fieldMetadata)
+    }
+
+    if (
+      props.isNewRecord &&
+      props.fieldMetadata.is_allow_copy &&
+      props.fieldMetadata.is_quick_entry &&
+      !isEmptyValue(props.isValueBachtEntry)
+    ) {
+      saveFieldValue(props.isValueBachtEntry)
+    }
+
     return {
       // Ref
-      value,
+      fieldValue,
       isLoading,
       // Computeds
       typeTextBox,

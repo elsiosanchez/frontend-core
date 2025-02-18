@@ -54,6 +54,7 @@ import store from '@/store'
 import { getContext } from '@/utils/ADempiere/contextUtils'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'FieldYesNo',
@@ -86,6 +87,14 @@ export default defineComponent({
     isPanelRight: {
       type: Boolean,
       default: false
+    },
+    persistenceData: {
+      type: Function,
+      required: false
+    },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String],
+      required: false
     }
   },
 
@@ -117,6 +126,7 @@ export default defineComponent({
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
+        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
     }
@@ -136,6 +146,19 @@ export default defineComponent({
           isLoading.value = false
           props.updateField(value, field)
         })
+    }
+
+    function dataBachtEntry(value) {
+      props.persistenceData(value, props.fieldMetadata)
+    }
+
+    if (
+      props.isNewRecord &&
+      props.fieldMetadata.is_allow_copy &&
+      props.fieldMetadata.is_quick_entry &&
+      !isEmptyValue(props.isValueBachtEntry)
+    ) {
+      fieldValue.value = props.isValueBachtEntry
     }
 
     return {
