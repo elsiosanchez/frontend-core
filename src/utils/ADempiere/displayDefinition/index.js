@@ -568,21 +568,30 @@ function runProcess({
     },
     beforeOpen: ({ parentUuid, containerUuid }) => {
       const parentValues = store.getters.getValuesView({
-        containerUuid,
+        containerUuid: parentUuid,
         isOnlyColumns: true,
         isOnlyWithValue: false,
         format: 'array'
       })
       parentValues.push({
+        columnName: currentDisplyDefinitions.table_name + '_ID',
+        value: recordId
+      })
+      parentValues.push({
         columnName: COLUMNNAME_AD_Table_ID,
-        value: storedTab.table.internal_id
+        value: currentDisplyDefinitions.table_id
       })
       parentValues.push({
         columnName: COLUMNNAME_Record_ID,
         value: recordId
       })
+      currentDisplyDefinitions.field_definitions.forEach(data => {
+        parentValues.push({
+          columnName: data.column_name,
+          value: data.internal_id
+        })
+      })
       store.dispatch('updateValuesOfContainer', {
-        parentUuid,
         containerUuid,
         attributes: parentValues
       })
