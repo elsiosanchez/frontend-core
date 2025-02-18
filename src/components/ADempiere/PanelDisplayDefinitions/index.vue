@@ -18,42 +18,44 @@
 
 <template>
   <el-card class="box-card-panel-display-definition" :body-style="{ padding: '0px' }" shadow="never">
-    <component
-      :is="componentRender"
-      :parent-uuid="parentUuid"
-      :container-uuid="containerUuid"
-      :current-disply-definitions="currentDisplayDefinition"
-      :container-manager="containerManagerPanel"
-      :current-record="currentRecord"
-      :panel-metadata="panelMetadata"
-      :button-close-panel="actionClose"
-      :details-title="detailsTitle"
-      :is-panel-right="isPanelRight"
-      :is-quick-entry="bachtEntry"
-    >
-      <template v-slot:footer-buttons>
-        <el-button
-          type="danger"
-          class="button-base-icon"
-          icon="el-icon-close"
-          style="float: right;margin-left: 10px;"
-          @click="actionClose('')"
-        />
-        <span
-          v-if="!isQuickEntry"
-          style="float: right;margin: 0px"
-        >
-          <b>
-            {{ $t('table.dataTable.batchEntry') }}
-          </b>
-          <el-switch
-            v-model="bachtEntry"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
+    <div v-shortkey="{ close: ['esc'] }" @shortkey="actionClose('')">
+      <component
+        :is="componentRender"
+        :parent-uuid="parentUuid"
+        :container-uuid="containerUuid"
+        :current-disply-definitions="currentDisplayDefinition"
+        :container-manager="containerManagerPanel"
+        :current-record="currentRecord"
+        :panel-metadata="panelMetadata"
+        :button-close-panel="actionClose"
+        :details-title="detailsTitle"
+        :is-panel-right="isPanelRight"
+        :is-quick-entry="bachtEntry"
+      >
+        <template v-slot:footer-buttons>
+          <el-button
+            type="danger"
+            class="button-base-icon"
+            icon="el-icon-close"
+            style="float: right;margin-left: 10px;"
+            @click="actionClose('')"
           />
-        </span>
-      </template>
-    </component>
+          <span
+            v-if="!isQuickEntry"
+            style="float: right;margin: 0px"
+          >
+            <b>
+              {{ $t('table.dataTable.batchEntry') }}
+            </b>
+            <el-switch
+              v-model="bachtEntry"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            />
+          </span>
+        </template>
+      </component>
+    </div>
   </el-card>
 </template>
 

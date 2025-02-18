@@ -27,40 +27,42 @@
     </div>
     <div class="text item">
       <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
-        <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
-        <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-          <template
-            v-for="(field, indexSequence) in localFields"
-          >
-            <el-descriptions-item
-              v-if="isDisplayField(field)"
-              :key="indexSequence"
+        <div v-shortkey="{ save: ['ctrl', 'alt', 'enter'] }" @shortkey="actionsSave">
+          <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
+          <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
+            <template
+              v-for="(field, indexSequence) in localFields"
             >
-              <template slot="label">
-                <b>
-                  <span
-                    v-show="field.is_mandatory"
-                    style="color: red;"
-                  >
-                    *
-                  </span>
-                  {{ field.name }}
-                </b>
-              </template>
-              <fields-display-definitions
-                :field="field"
-                :current-record="currentRecord"
-                :current-display-definition="currentDisplyDefinitions"
-                :update-field="updateFieldRecord"
-                :persistence-data="persistenceBachtEntry"
-                :additional-attributes="addCurrentAttributes"
-                :is-new-record="true"
-                :is-panel-right="isPanelRight"
-                :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
-              />
-            </el-descriptions-item>
-          </template>
-        </el-descriptions>
+              <el-descriptions-item
+                v-if="isDisplayField(field)"
+                :key="indexSequence"
+              >
+                <template slot="label">
+                  <b>
+                    <span
+                      v-show="field.is_mandatory"
+                      style="color: red;"
+                    >
+                      *
+                    </span>
+                    {{ field.name }}
+                  </b>
+                </template>
+                <fields-display-definitions
+                  :field="field"
+                  :current-record="currentRecord"
+                  :current-display-definition="currentDisplyDefinitions"
+                  :update-field="updateFieldRecord"
+                  :persistence-data="persistenceBachtEntry"
+                  :additional-attributes="addCurrentAttributes"
+                  :is-new-record="true"
+                  :is-panel-right="isPanelRight"
+                  :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+                />
+              </el-descriptions-item>
+            </template>
+          </el-descriptions>
+        </div>
       </el-card>
       <el-button
         type="primary"

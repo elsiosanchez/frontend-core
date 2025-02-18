@@ -31,7 +31,7 @@
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
       <!-- <div class="kanban-columns-container" style="display: block;"> -->
-      <div class="demo-app">
+      <div v-shortkey="{ new: ['ctrl', 'alt', 'n'] }" class="demo-app" @shortkey="theAction">
         <div class="demo-app-sidebar">
           <div class="demo-app-sidebar-section">
             <h2 style="padding-left: 10px; padding-top: 10px;">
@@ -429,7 +429,21 @@ export default defineComponent({
     //     recordId: currentResource.value.id
     //   })
     // }
-
+    function theAction(event) {
+      switch (event.srcKey) {
+        case 'new':
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            displyDefinitions: currentDisplyDefinitions.value,
+            recordId: -1
+          })
+          store.commit('setShowPanel', {
+            id: currentDisplyDefinitions.value.id,
+            show: true
+          })
+          break
+      }
+    }
     return {
       // Ref
       timeOut,
@@ -460,7 +474,8 @@ export default defineComponent({
       handleEventClick,
       openDetails,
       changeRange,
-      closeDetails
+      closeDetails,
+      theAction
     }
   }
 })

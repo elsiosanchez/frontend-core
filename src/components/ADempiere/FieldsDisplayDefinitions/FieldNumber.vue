@@ -19,6 +19,7 @@
 <template>
   <span>
     <el-input-number
+      ref="inputNumber"
       v-model="value"
       controls-position="right"
       :placeholder="fieldMetadata.description"
@@ -47,7 +48,8 @@
 import {
   defineComponent,
   computed,
-  ref
+  ref,
+  onMounted
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
@@ -104,7 +106,7 @@ export default defineComponent({
     const value = ref(null)
     const isLoading = ref(false)
     const { fields } = props.currentRecord
-
+    const inputNumber = ref(undefined)
     const currentValue = computed(() => {
       if (props.isNewRecord) return 0
       return fields[props.fieldMetadata.column_name].value.value
@@ -178,11 +180,16 @@ export default defineComponent({
     ) {
       value.value = props.isValueBachtEntry
     }
-
+    onMounted(() => {
+      if (props.fieldMetadata.sequence === 10) {
+        inputNumber.value.focus()
+      }
+    })
     return {
       // Ref
       value,
       isLoading,
+      inputNumber,
       // Computed
       precision,
       contextValue,

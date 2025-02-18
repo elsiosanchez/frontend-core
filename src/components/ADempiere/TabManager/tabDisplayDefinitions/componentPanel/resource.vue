@@ -30,7 +30,12 @@
       </div>
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px', height: '10px' }" style="height: calc(100vh - 280px) !important">
-      <div style="display: block; height: 100% !important">
+      <div
+        v-shortkey="{ new: ['ctrl', 'alt', 'n'] }"
+        style="display: block;
+        height: 100% !important"
+        @shortkey="theAction"
+      >
         <FullCalendar
           class="demo-app-resource"
           :options="calendarOptions"
@@ -366,7 +371,21 @@ export default defineComponent({
     function closeDetails() {
       dialogVisibleDetails.value = false
     }
-
+    function theAction(event) {
+      switch (event.srcKey) {
+        case 'new':
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            displyDefinitions: currentDisplyDefinitions.value,
+            recordId: -1
+          })
+          store.commit('setShowPanel', {
+            id: currentDisplyDefinitions.value.id,
+            show: true
+          })
+          break
+      }
+    }
     return {
       // Ref
       currentResource,
@@ -390,7 +409,8 @@ export default defineComponent({
       // Mehtods
       openDetails,
       changeRange,
-      closeDetails
+      closeDetails,
+      theAction
     }
   }
 })

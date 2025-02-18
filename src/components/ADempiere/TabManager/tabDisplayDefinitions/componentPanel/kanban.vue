@@ -26,7 +26,7 @@
       </div>
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
-      <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
+      <div v-shortkey="{ new: ['ctrl', 'alt', 'n'] }" class="kanban-columns-container" style="height: calc(100vh - 250px)" @shortkey="theAction">
         <div v-for="column in columnsList" :key="column.value" class="kanban-column">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <el-badge :value="column.records.length" style="font-size: 16px; padding-left: 10px;" type="primary" class="item">
@@ -356,7 +356,21 @@ export default defineComponent({
         id: currentDisplayDefinition.value.id
       })
     }
-
+    function theAction(event) {
+      switch (event.srcKey) {
+        case 'new':
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            displyDefinitions: currentDisplayDefinition.value,
+            recordId: -1
+          })
+          store.commit('setShowPanel', {
+            id: currentDisplayDefinition.value.id,
+            show: true
+          })
+          break
+      }
+    }
     return {
       // Computeds
       columnsList,
@@ -370,6 +384,7 @@ export default defineComponent({
       // Mehtods
       handleCardMove,
       newEntry,
+      theAction,
       //
       lang
     }

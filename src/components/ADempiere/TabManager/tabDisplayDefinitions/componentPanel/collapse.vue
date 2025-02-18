@@ -26,86 +26,91 @@
       </div>
     </div>
     <el-card v-if="!isLoading" :body-style="{ padding: '10px' }">
-      <el-collapse v-model="activeNames">
-        <el-collapse-item
-          v-for="(column, index) in groupsList"
-          :key="index"
-          :name="index"
-        >
-          <template slot="title">
-            <p style="margin: 0px 5px;width: 95%;">
-              <el-badge
-                :value="column.records.length"
-                style="font-size: 16px; padding-left: 10px;"
-                type="info"
-                class="item-table-collapse"
-              >
-                <b style="padding-right: 3px;">
-                  {{ isEmptyValue(column.name) ? $t('form.kanban.noStatus') : column.name }}
-                </b>
-              </el-badge>
-            </p>
-            <el-button
-              plain
-              circle
-              type="success"
-              style="padding: 5px;float: right;"
-              :title="$t('component.displayDefinition.cardNew')"
-              @click="newEntry(column)"
-            >
-              <el-icon class="el-icon-plus" />
-            </el-button>
-          </template>
-          <el-empty v-if="isEmptyValue(column.records)" :image-size="200" />
-          <el-table
-            v-else
-            :data="column.records"
-            style="width: 100%"
-            @row-dblclick="openPanelDetails"
+      <div
+        v-shortkey="{ new: ['ctrl', 'alt', 'n'] }"
+        @shortkey="theAction"
+      >
+        <el-collapse v-model="activeNames">
+          <el-collapse-item
+            v-for="(column, index) in groupsList"
+            :key="index"
+            :name="index"
           >
-            <el-table-column
-              v-for="(field, key) in filedLists"
-              :key="key"
-              :column-key="field.column_name"
-              :label="field.name"
-              :align="isNumberField(field.display_type) ? 'right' : 'left'"
-              width="180"
-            >
-              <template slot-scope="scope">
-                <p
-                  class="description-column"
-                  @click="readRecord({
-                    record: scope.row,
-                    view: false
-                  })"
+            <template slot="title">
+              <p style="margin: 0px 5px;width: 95%;">
+                <el-badge
+                  :value="column.records.length"
+                  style="font-size: 16px; padding-left: 10px;"
+                  type="info"
+                  class="item-table-collapse"
                 >
-                  {{ displayValue({ fields: scope.row, columnName: field.column_name }) }}
-                </p>
-              </template>
-            </el-table-column>
-            <el-table-column
-              fixed="right"
-              label=""
-              width="50"
+                  <b style="padding-right: 3px;">
+                    {{ isEmptyValue(column.name) ? $t('form.kanban.noStatus') : column.name }}
+                  </b>
+                </el-badge>
+              </p>
+              <el-button
+                plain
+                circle
+                type="success"
+                style="padding: 5px;float: right;"
+                :title="$t('component.displayDefinition.cardNew')"
+                @click="newEntry(column)"
+              >
+                <el-icon class="el-icon-plus" />
+              </el-button>
+            </template>
+            <el-empty v-if="isEmptyValue(column.records)" :image-size="200" />
+            <el-table
+              v-else
+              :data="column.records"
+              style="width: 100%"
+              @row-dblclick="openPanelDetails"
             >
-              <template slot-scope="scope">
-                <span
-                  @click="readRecord({ record: scope.row, view: false })"
-                >
-                  <options-panel
-                    :action-option="actionOption"
-                    :current-resource="scope.row"
-                    :is-option-edit="true"
-                    :is-option-delete="true"
-                    :display-definition="currentDisplayDefinition"
-                    style="float: right;"
-                  />
-                </span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-collapse-item>
-      </el-collapse>
+              <el-table-column
+                v-for="(field, key) in filedLists"
+                :key="key"
+                :column-key="field.column_name"
+                :label="field.name"
+                :align="isNumberField(field.display_type) ? 'right' : 'left'"
+                width="180"
+              >
+                <template slot-scope="scope">
+                  <p
+                    class="description-column"
+                    @click="readRecord({
+                      record: scope.row,
+                      view: false
+                    })"
+                  >
+                    {{ displayValue({ fields: scope.row, columnName: field.column_name }) }}
+                  </p>
+                </template>
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                label=""
+                width="50"
+              >
+                <template slot-scope="scope">
+                  <span
+                    @click="readRecord({ record: scope.row, view: false })"
+                  >
+                    <options-panel
+                      :action-option="actionOption"
+                      :current-resource="scope.row"
+                      :is-option-edit="true"
+                      :is-option-delete="true"
+                      :display-definition="currentDisplayDefinition"
+                      style="float: right;"
+                    />
+                  </span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-collapse-item>
+        </el-collapse>
+      </div>
     </el-card>
     <loading-view
       v-else
@@ -415,7 +420,21 @@ export default defineComponent({
       if (props.isPanelRight) return
       props.isOpenDetails(element.id)
     }
-
+    function theAction(event) {
+      switch (event.srcKey) {
+        case 'new':
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            displyDefinitions: currentDisplayDefinition.value,
+            recordId: -1
+          })
+          store.commit('setShowPanel', {
+            id: currentDisplayDefinition.value.id,
+            show: true
+          })
+          break
+      }
+    }
     return {
       // Ref
       activeNames,
@@ -436,7 +455,8 @@ export default defineComponent({
       isNumberField,
       displayValue,
       readRecord,
-      newEntry
+      newEntry,
+      theAction
     }
   }
 })

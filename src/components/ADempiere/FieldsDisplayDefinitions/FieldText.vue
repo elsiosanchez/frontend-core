@@ -19,6 +19,7 @@
 <template>
   <span>
     <el-input
+      ref="inputText"
       v-model="fieldValue"
       :placeholder="fieldMetadata.description"
       size="mini"
@@ -45,7 +46,8 @@
 import {
   defineComponent,
   computed,
-  ref
+  ref,
+  onMounted
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
@@ -105,7 +107,7 @@ export default defineComponent({
     const fieldValue = ref('')
     const isLoading = ref(false)
     fieldValue.value = props.displayValue || ''
-
+    const inputText = ref('')
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
     const { column_name } = props.fieldMetadata
@@ -174,11 +176,16 @@ export default defineComponent({
     ) {
       saveFieldValue(props.isValueBachtEntry)
     }
-
+    onMounted(() => {
+      if (props.fieldMetadata.sequence === 10) {
+        inputText.value.focus()
+      }
+    })
     return {
       // Ref
       fieldValue,
       isLoading,
+      inputText,
       // Computeds
       typeTextBox,
       contextValue,

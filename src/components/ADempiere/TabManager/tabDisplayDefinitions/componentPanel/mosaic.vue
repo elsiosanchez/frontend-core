@@ -26,82 +26,86 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </div>
     </div>
     <el-card v-loading="isLoading" class="catalog" :body-style="{ padding: '10px' }">
-      <div slot="header">
-        <el-button
-          plain
-          circle
-          type="success"
-          style="padding: 5px 5px;float: right"
-          :title="$t('component.displayDefinition.cardNew')"
-          @click="newEntry"
-        >
-          <el-icon class="el-icon-plus" />
-        </el-button>
-      </div>
-      <el-row :gutter="5">
-        <span
-          v-for="element in listRecords"
-          :key="element.id"
-          @dblclick="isOpenDetails(element.id)"
-          @click="hangleChangeRecord(element)"
-        >
-          <el-col :span="columnNumber" style="padding: 5px !important;">
-            <el-card class="catalog" shadow="never">
-              <div slot="header">
-                <span class="card-title">
-                  {{ element.title }}
-                </span>
-                <options-panel
-                  :action-option="actionOption"
-                  :current-resource="element"
-                  :is-option-edit="true"
-                  :is-option-delete="true"
-                  :display-definition="currentDisplayDefinition"
-                  style="float: right;"
-                />
-              </div>
-              <el-row :gutter="0">
-                <el-col :span="4" style="text-align: center !important;padding-top: 10px !important;">
-                  <el-avatar
-                    src="https://empty"
-                    shape="square"
-                    :size="60"
-                    @error="errorHandler"
-                  >
-                    <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png">
-                  </el-avatar>
-                </el-col>
-                <el-col :span="20">
-                  <el-row v-if="!isEmptyValue(displayDefinitionFields)" :gutter="0">
-                    <span
-                      v-for="(field, key) in displayDefinitionFields"
-                      :key="key"
+      <div
+        v-shortkey="{ new: ['ctrl', 'alt', 'n'] }"
+        @shortkey="theAction"
+      >
+        <div slot="header">
+          <el-button
+            plain
+            circle
+            type="success"
+            style="padding: 5px 5px;float: right"
+            :title="$t('component.displayDefinition.cardNew')"
+            @click="newEntry"
+          >
+            <el-icon class="el-icon-plus" />
+          </el-button>
+        </div>
+        <el-row :gutter="5">
+          <span
+            v-for="element in listRecords"
+            :key="element.id"
+            @dblclick="isOpenDetails(element.id)"
+            @click="hangleChangeRecord(element)"
+          >
+            <el-col :span="columnNumber" style="padding: 5px !important;">
+              <el-card class="catalog" shadow="never">
+                <div slot="header">
+                  <span class="card-title">
+                    {{ element.title }}
+                  </span>
+                  <options-panel
+                    :action-option="actionOption"
+                    :current-resource="element"
+                    :is-option-edit="true"
+                    :is-option-delete="true"
+                    :display-definition="currentDisplayDefinition"
+                    style="float: right;"
+                  />
+                </div>
+                <el-row :gutter="0">
+                  <el-col :span="4" style="text-align: center !important;padding-top: 10px !important;">
+                    <el-avatar
+                      src="https://empty"
+                      shape="square"
+                      :size="60"
+                      @error="errorHandler"
                     >
-                      <el-col :span="12" style="padding: 0px !important;">
-                        <el-descriptions :column="2" size="mini">
-                          <el-descriptions-item
-                            label-class-name="title-description"
-                            :label="field.name"
-                            content-class-name="content-description"
-                          >
-                            <text-truncation
-                              :full-text="displayValue({ fields: element.fields, columnName: field.column_name })"
-                              :max-words="3"
-                              :max-lines="1.5"
-                              style="display: flex;"
-                            />
-                            <!-- {{ displayValue({ fields: element.fields, columnName: field.column_name }) }} -->
-                          </el-descriptions-item>
-                        </el-descriptions>
-                      </el-col>
-                    </span>
-                  </el-row>
-                </el-col>
-              </el-row>
-            </el-card>
-          </el-col>
-        </span>
-      </el-row>
+                      <img src="https://cube.elemecdn.com/e/fd/0fc7d20532fdaf769a25683617711png.png">
+                    </el-avatar>
+                  </el-col>
+                  <el-col :span="20">
+                    <el-row v-if="!isEmptyValue(displayDefinitionFields)" :gutter="0">
+                      <span
+                        v-for="(field, key) in displayDefinitionFields"
+                        :key="key"
+                      >
+                        <el-col :span="12" style="padding: 0px !important;">
+                          <el-descriptions :column="2" size="mini">
+                            <el-descriptions-item
+                              label-class-name="title-description"
+                              :label="field.name"
+                              content-class-name="content-description"
+                            >
+                              <text-truncation
+                                :full-text="displayValue({ fields: element.fields, columnName: field.column_name })"
+                                :max-words="3"
+                                :max-lines="1.5"
+                                style="display: flex;"
+                              />
+                            </el-descriptions-item>
+                          </el-descriptions>
+                        </el-col>
+                      </span>
+                    </el-row>
+                  </el-col>
+                </el-row>
+              </el-card>
+            </el-col>
+          </span>
+        </el-row>
+      </div>
     </el-card>
   </span>
 </template>
@@ -403,7 +407,21 @@ export default defineComponent({
     function errorHandler() {
       return true
     }
-
+    function theAction(event) {
+      switch (event.srcKey) {
+        case 'new':
+          store.dispatch('changeTabPanelDefinition', {
+            type: 'new',
+            displyDefinitions: currentDisplayDefinition.value,
+            recordId: -1
+          })
+          store.commit('setShowPanel', {
+            id: currentDisplayDefinition.value.id,
+            show: true
+          })
+          break
+      }
+    }
     return {
       // Computeds
       columnsList,
@@ -421,7 +439,8 @@ export default defineComponent({
       handleCardMove,
       displayValue,
       errorHandler,
-      newEntry
+      newEntry,
+      theAction
     }
   }
 })
