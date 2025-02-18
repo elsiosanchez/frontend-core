@@ -65,7 +65,10 @@ function deleteRecordToListKanban({
       tableName: currentTab.table_name
     })
   }
-  currentkanban.records = currentkanban.records.filter(data => data.id !== recordId)
+
+  currentkanban.steps.forEach(step => {
+    step.records = step.records.filter(record => record.id !== recordId)
+  })
   if (isPanelRight) {
     store.commit('setCurrentKanbanRightDefinition', {
       tableName: currentTab.table_name,
@@ -98,7 +101,6 @@ function deleteRecordToListCollapse({
   currentCollapse.groups.forEach(group => {
     group.records = group.records.filter(record => record.id !== recordId)
   })
-  // currentCollapse.records = currentCollapse.records.filter(data => data.id !== recordId)
   if (isPanelRight) {
     store.commit('setCollapsePanelTabDefinition', {
       tableName: currentTab.table_name,
@@ -209,7 +211,15 @@ function addNewRecordToListKanban({
         group_id: String(value)
       }
     ]
-    currentkanban.records.push(...list)
+    let stepIndex = currentkanban.steps.findIndex(step =>
+      String(step.value) === String(list[0].group_id)
+    )
+    if (stepIndex < 0) stepIndex = 0
+    if (isEmptyValue(currentkanban.steps[stepIndex])) {
+      currentkanban.steps[stepIndex] = { records: [...list] }
+    } else {
+      currentkanban.steps[stepIndex].records.push(...list)
+    }
   }
   if (isPanelRight) {
     store.commit('setCurrentKanbanRightDefinition', {
@@ -884,6 +894,7 @@ export const containerManagerFieldDefinition = {
         isOnlyColumns: true,
         format: 'object'
       })
+      contextAttributesList[displyDefinitions.group_column] = attributes[displyDefinitions.group_column]
       let contextAttributes = '{}'
       if (!isEmptyValue(contextAttributesList)) {
         contextAttributes = JSON.stringify(contextAttributesList)

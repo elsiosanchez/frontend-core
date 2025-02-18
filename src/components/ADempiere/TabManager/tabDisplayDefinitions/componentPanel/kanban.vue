@@ -27,10 +27,10 @@
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
       <div class="kanban-columns-container" style="height: calc(100vh - 250px)">
-        <div v-for="(column, index) in columnsList" :key="index" class="kanban-column">
+        <div v-for="column in columnsList" :key="column.value" class="kanban-column">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <el-badge :value="column.items.length" style="font-size: 16px; padding-left: 10px;" type="primary" class="item">
-              <b>{{ column.title }}</b>
+            <el-badge :value="column.records.length" style="font-size: 16px; padding-left: 10px;" type="primary" class="item">
+              <b>{{ column.name ? column.name : lang.t('form.kanban.noStatus') }}</b>
             </el-badge>
             <el-button
               plain
@@ -44,7 +44,7 @@
             </el-button>
           </div>
           <draggable
-            v-model="column.items"
+            v-model="column.records"
             v-bind="dragOptions"
             class="list-group"
             @start="isDragging = true"
@@ -53,7 +53,7 @@
           >
             <template>
               <div
-                v-for="element in column.items"
+                v-for="element in column.records"
                 :key="element.id"
                 class="list-group-item"
                 @dblclick="isOpenDetails(element.id)"
@@ -78,7 +78,7 @@
                 </div>
               </div>
             </template>
-            <div v-if="column.items.length < 1" class="empty-placeholder">{{ $t('form.kanban.dropCard') }}</div>
+            <div v-if="column.records.length < 1" class="empty-placeholder">{{ $t('form.kanban.dropCard') }}</div>
           </draggable>
         </div>
       </div>
@@ -202,36 +202,7 @@ export default defineComponent({
         ) {
           return []
         }
-        const { steps, records, column_name } = kanbanDefinition.value
-        const ungroupedItems = records
-          .filter(record => {
-            return !steps.some(step => {
-              return record.group_id === step.value
-            })
-          })
-        const ungroupedColumn = {
-          title: lang.t('form.kanban.noStatus'),
-          column_name,
-          value: null,
-          items: ungroupedItems
-        }
-
-        const groupedColumns = steps.map(step => {
-          return {
-            title: step.name,
-            column_name,
-            value: step.value,
-            items: records
-              .filter(record => {
-                return record.group_id === step.value
-              })
-          }
-        })
-
-        return [
-          ungroupedColumn,
-          ...groupedColumns
-        ]
+        return kanbanDefinition.value.steps
       },
       // setter
       set(newValue) {
@@ -347,7 +318,8 @@ export default defineComponent({
     }
 
     function newEntry(currentColumn) {
-      const { value, column_name, title } = currentColumn
+      const { value, name } = currentColumn
+      const { column_name } = kanbanDefinition.value
       let groupValue = null
       if (!isEmptyValue(value)) {
         groupValue = value
@@ -364,7 +336,7 @@ export default defineComponent({
         additionalAttributes,
         currentAttributes: {
           [column_name]: {
-            display_value: title,
+            display_value: name,
             value
           }
         }
@@ -397,7 +369,9 @@ export default defineComponent({
       currentDisplayDefinition,
       // Mehtods
       handleCardMove,
-      newEntry
+      newEntry,
+      //
+      lang
     }
   }
 })
