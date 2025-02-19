@@ -105,21 +105,21 @@ export default defineComponent({
       let fieldComponent
       switch (props.field.componentPath) {
         case 'FieldText':
-          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldText.vue')
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry/FieldText.vue')
           break
         case 'FieldDate':
-          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldDate.vue')
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry/FieldDate.vue')
           break
         case 'FieldNumber':
-          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldNumber.vue')
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry/FieldNumber.vue')
           break
         case 'FieldSearch':
         case 'FieldSelect':
         case 'FieldWarehouseLocator':
-          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldSelect.vue')
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry/FieldSelect.vue')
           break
         case 'FieldYesNo':
-          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitions/FieldYesNo.vue')
+          fieldComponent = () => import('@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry/FieldYesNo.vue')
           break
       }
 

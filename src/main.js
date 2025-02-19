@@ -129,6 +129,9 @@ Object.keys(globalMethods).forEach(key => {
 })
 
 Vue.config.productionTip = false
+Vue.config.keyCodes = {
+  enter: 13 // Código de la tecla Enter
+}
 
 new Vue({
   el: '#app',

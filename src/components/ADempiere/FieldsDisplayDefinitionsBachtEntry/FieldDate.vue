@@ -19,7 +19,6 @@
 <template>
   <span>
     <el-date-picker
-      ref="fieldDate"
       v-model="value"
       unlink-panels
       :type="typePicker"
@@ -48,8 +47,7 @@
 import {
   defineComponent,
   computed,
-  ref,
-  onMounted
+  ref
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
@@ -115,7 +113,6 @@ export default defineComponent({
   setup(props) {
     const value = ref('')
     const isLoading = ref(false)
-    const fieldDate = ref(undefined)
     value.value = convertStringDate(props.displayValue)
 
     const { currentTab } = store.getters.getContainerInfo
@@ -287,16 +284,11 @@ export default defineComponent({
     ) {
       value.value = props.isValueBachtEntry.value
     }
-    onMounted(() => {
-      if (props.fieldMetadata.sequence === 10) {
-        fieldDate.value.focus()
-      }
-    })
+
     return {
       // Ref
       value,
       isLoading,
-      fieldDate,
       // Computed
       contextValue,
       formatView,

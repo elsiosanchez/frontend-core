@@ -17,48 +17,34 @@
 -->
 
 <template>
-  <span>
-    <el-input-number
-      ref="inputNumber"
-      v-model="value"
-      controls-position="right"
-      :placeholder="fieldMetadata.description"
-      size="mini"
-      :precision="precision"
-      class="field-number"
-      style="margin-right: 5px;"
-      @input="saveFieldValue(value, fieldMetadata)"
-      @focus="selectContent"
-    />
-    <span v-if="!isNewRecord">
-      <slot name="button-exit" />
-      <el-button
-        v-show="value !== displayValue && !isLoading"
-        style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
-        icon="el-icon-check"
-        type="text"
-        @click="updateFieldValue(value, fieldMetadata)"
-      />
-      <i v-if="isLoading" class="el-icon-loading" />
-    </span>
-  </span>
+  <el-input
+    v-model="fieldMetadata.value"
+    :placeholder="fieldMetadata.description"
+    size="mini"
+    :rows="rowsField"
+    :type="typeTextBox"
+    style="padding-right: 10px;"
+    @input="saveFieldValue(fieldMetadata.value, fieldMetadata)"
+  />
 </template>
 
 <script>
 import {
   defineComponent,
   computed,
-  ref,
-  onMounted
+  ref
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
 import store from '@/store'
 
+// Constants
+import { TEXT } from '@/utils/ADempiere/references'
+
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere'
 import { getContext } from '@/utils/ADempiere/contextUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'FieldText',
@@ -77,7 +63,7 @@ export default defineComponent({
       required: false
     },
     displayValue: {
-      type: [String, Number],
+      type: [String, Boolean],
       required: false
     },
     updateField: {
@@ -92,36 +78,20 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    isValueBachtEntry: {
+      type: [Boolean, Number, String],
+      required: false
+    },
     persistenceData: {
       type: Function,
       required: false
-    },
-    isValueBachtEntry: {
-      type: [Boolean, Number, String, Object],
-      default: false
     }
   },
 
   setup(props) {
-    const value = ref(null)
+    const fieldValue = ref('')
     const isLoading = ref(false)
-    const { fields } = props.currentRecord
-    const inputNumber = ref(undefined)
-    const currentValue = computed(() => {
-      if (props.isNewRecord) return 0
-      return fields[props.fieldMetadata.column_name].value.value
-    })
-
-    const precision = computed(() => {
-      // regular expression to find the digits after the decimal point
-      if (props.isNewRecord) return 2
-      const decimalPart = currentValue.value.match(/\.(\d+)/)
-      if (!decimalPart) {
-        return 0
-      }
-      return decimalPart[1].length
-    })
-    value.value = Number(currentValue.value) || null
+    props.fieldMetadata.value = props.displayValue || ''
 
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
@@ -129,19 +99,38 @@ export default defineComponent({
 
     const contextValue = computed(() => {
       return getContext({
-        parentUuid,
+        columnName: column_name,
         containerUuid,
-        columnName: column_name
+        parentUuid
       })
     })
 
+    const rowsField = computed(() => {
+      if (props.fieldMetadata.is_quick_entry) return 1
+      return 4
+    })
+
     if (props.isNewRecord && props.isPanelRight && !isEmptyValue(contextValue.value)) {
-      value.value = contextValue.value
+      saveFieldValue(contextValue.value)
     }
+
+    const typeTextBox = computed(() => {
+      // String, Url, FileName...
+      let typeInput = 'text'
+      // Display Type 'Text' (14)
+      if (props.fieldMetadata.display_type === TEXT.id) {
+        typeInput = 'textarea'
+      }
+      if (props.fieldMetadata.is_encrypted) {
+        typeInput = 'password'
+      }
+      return typeInput
+    })
 
     // Methods
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
+        props.fieldMetadata.value = value
         props.updateField(value, props.fieldMetadata)
         if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
@@ -164,9 +153,6 @@ export default defineComponent({
           props.updateField(value, field)
         })
     }
-    function selectContent(event) {
-      event.target.select()
-    }
 
     function dataBachtEntry(value) {
       props.persistenceData(value, props.fieldMetadata)
@@ -178,37 +164,21 @@ export default defineComponent({
       props.fieldMetadata.is_quick_entry &&
       !isEmptyValue(props.isValueBachtEntry)
     ) {
-      value.value = props.isValueBachtEntry
+      saveFieldValue(props.isValueBachtEntry)
     }
-    onMounted(() => {
-      if (props.fieldMetadata.sequence === 10) {
-        inputNumber.value.focus()
-      }
-    })
+
     return {
       // Ref
-      value,
+      fieldValue,
       isLoading,
-      inputNumber,
-      // Computed
-      precision,
+      // Computeds
+      rowsField,
+      typeTextBox,
       contextValue,
-      currentValue,
       // Methods
       updateFieldValue,
-      saveFieldValue,
-      selectContent
+      saveFieldValue
     }
   }
 })
 </script>
-
-<style scope lang="scss">
-.field-number {
-  &.el-input-number, &.el-input {
-    .el-input__inner {
-      text-align-last: end !important;
-    }
-  }
-}
-</style>

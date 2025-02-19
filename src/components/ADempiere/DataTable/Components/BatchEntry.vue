@@ -17,32 +17,90 @@
 -->
 
 <template>
-  <span
-    key="field-component"
+  <div
+    class="field-component-bacht"
+    @keyup.alt.13="saveEntity"
   >
-    <field-definition
-      v-for="(fieldAttributes, key) in fieldsList"
-      ref="fieldComponent"
-      :key="key"
-      :parent-uuid="parentUuid"
-      :container-uuid="containerUuid + 'Batch_Entry'"
-      :metadata-field="fieldAttributes"
-      :container-manager="containerManagerBatchEntry"
-      :v-model="fieldAttributes.default_value"
-      :size-col="6"
-      @keyup.native.enter="actionKeyEnter(fieldAttributes)"
-    />
-  </span>
+    <el-row>
+      <el-card
+        shadow="never"
+        class="card-text-content"
+        :body-style="{ padding: '5px'}"
+      >
+        <el-col :span="24">
+          <el-form
+            label-position="top"
+            label-width="100px"
+            size="small"
+            class="field-component-bacht-entry"
+          >
+            <template
+              v-for="(field, key) in fieldsListBatchEntry"
+            >
+              <el-col :key="key" :span="8">
+                <el-form-item
+                  :label="field.name"
+                  :required="field.isMandatory"
+                  style="padding: 0px !important;"
+                  class="label-field-title"
+                >
+                  <fields-display-definitions
+                    :field="field"
+                    :update-field="updateField"
+                    :persistence-data="persistenceBachtEntry"
+                    :is-new-record="true"
+                    :is-panel-general="true"
+                    :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+                  />
+                </el-form-item>
+              </el-col>
+            </template>
+          </el-form>
+        </el-col>
+        <el-col :span="24">
+          <p style="text-align: end;margin: 0px;">
+            <b>
+              {{ $t('table.dataTable.batchEntry') }}
+            </b>
+            <el-switch
+              v-model="bachtEntry"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+            />
+            <el-button
+              plain
+              type="info"
+              class="button-base-icon"
+              style="font-size: 25px;margin-left: 5px;"
+              @click="cleanField"
+            >
+              <svg-icon icon-class="layers-clear" />
+            </el-button>
+            <el-button
+              type="primary"
+              class="button-base-icon"
+              icon="el-icon-check"
+              :loading="isLoadingPanel"
+              :disabled="isLoadingPanel"
+              @click="saveEntity"
+            />
+          </p>
+        </el-col>
+      </el-card>
+    </el-row>
+  </div>
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import store from '@/store'
+import lang from '@/lang'
 
 // Components and Mixins
-import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
-
+// import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
+import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
+import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry'
 // Utils and Helpers Methods
 import {
   isMandatoryField,
@@ -54,12 +112,15 @@ import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iterableFormat.js'
+import { showMessage } from '@/utils/ADempiere/notification.js'
+// import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'BatchEntry',
 
   components: {
-    FieldDefinition
+    LoadingView,
+    FieldsDisplayDefinitions
   },
 
   props: {
@@ -90,17 +151,25 @@ export default defineComponent({
   },
 
   setup(props, { refs }) {
+    const bachtEntry = ref(false)
+    const isLoadingPanel = ref(false)
+    const attributesBachtEntry = ref({})
+    const fieldsListBatchEntry = ref([])
+    const attributes = ref({})
     const containerUuid = props.containerUuid + 'Batch_Entry'
 
     const fieldsList = computed(() => {
       return props.fieldListAll.map(fieldAttributes => {
         return {
           ...fieldAttributes,
+          value: '',
           parentUuid: fieldAttributes.parentUuid + 'Batch_Entry',
           containerUuid
         }
       })
     })
+
+    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_allow_copy && fieldAttributes.is_quick_entry)
 
     const tabAttributes = computed(() => {
       return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
@@ -196,7 +265,6 @@ export default defineComponent({
       })
         .then(() => {
           isLoadingTable(true)
-          initialFocus()
         })
     }
 
@@ -207,29 +275,172 @@ export default defineComponent({
       })
     }
 
-    function initialFocus() {
-      const columnName = props.fieldListBatchEntry[0].columnName
-      const index = fieldsList.value.findIndex(a => a.columnName === columnName)
-      setTimeout(() => {
-        if (refs.fieldComponent[index] &&
-          refs.fieldComponent[index].$refs[columnName] &&
-          refs.fieldComponent[index].$refs[columnName].$refs[columnName]) {
-          refs.fieldComponent[index].$refs[columnName].$refs[columnName].focus()
-        }
-      }, 500)
+    function persistenceBachtEntry(value, field) {
+      attributesBachtEntry.value = {
+        ...attributesBachtEntry.value,
+        [field.column_name]: value
+      }
     }
 
-    initialFocus()
+    function updateField(value, field) {
+      attributes.value = {
+        ...attributes.value,
+        [field.column_name]: value
+      }
+    }
+
+    function saveEntity() {
+      const fieldsMandatory = validateMandatoryFieldsEmpty({
+        attributes: {
+          ...parsedDefaultValues,
+          ...attributes.value
+        },
+        fieldList: fieldsListBatchEntry.value
+      })
+      const parsedDefaultValues = convertArrayKeyValueToObject({
+        array: defaultValues.value
+      })
+
+      if (!isEmptyValue(fieldsMandatory)) {
+        showMessage({
+          message: lang.t('notifications.mandatoryFieldMissing') + fieldsMandatory,
+          type: 'warning'
+        })
+        return
+      }
+
+      const sendFieldServer = convertObjectToKeyValue({
+        object: {
+          ...parsedDefaultValues,
+          ...attributes.value
+        }
+      })
+      isLoadingPanel.value = true
+      store.dispatch('flushPersistenceQueue', {
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        tabId: tabAttributes.value.internal_id,
+        tableName: props.tableName,
+        attributesList: sendFieldServer
+      })
+        .then(() => {
+          if (!bachtEntry.value) {
+            attributesBachtEntry.value = {}
+            cleanField()
+            return
+          }
+          clearField()
+        })
+        .finally(() => {
+          isLoadingPanel.value = false
+        })
+    }
+
+    function clearField() {
+      fieldsListBatchEntry.value.forEach(element => {
+        if (attributesBachtEntry.value[element.column_name] && !element.is_allow_copy) {
+          attributesBachtEntry.value[element.column_name] = undefined
+        }
+      })
+      cleanField()
+    }
+
+    function validateMandatoryFieldsEmpty({
+      fieldList = [],
+      attributes = {}
+    }) {
+      if (isEmptyValue(fieldList)) return []
+      const mandatoryFields = fieldList.filter(field => field.isMandatory && field.isDisplayed)
+
+      const emptyMandatoryFields = mandatoryFields
+        .filter(field => !(field.column_name in attributes) || !attributes[field.column_name])
+        .map(field => field.name)
+
+      return emptyMandatoryFields
+    }
+
+    function cleanField() {
+      fieldsListBatchEntry.value.forEach(element => {
+        if (element.componentPath === 'FieldNumber') {
+          element.value = 0
+        } else if (element.componentPath === 'FieldYesNo') {
+          element.value = false
+        } else {
+          element.value = ''
+        }
+      })
+    }
 
     return {
+      bachtEntry,
       fieldsList,
       containerManagerBatchEntry,
       tabAttributes,
+      attributes,
+      isLoadingPanel,
+      fieldsListBatchEntry,
+      attributesBachtEntry,
+      persistenceBachtEntry,
       actionKeyEnter,
+      updateField,
       sendValuesToServer,
       isLoadingTable,
-      initialFocus
+      saveEntity,
+      cleanField
     }
   }
 })
 </script>
+<style lang="scss">
+.field-component-bacht-entry {
+  .el-form--label-top .el-form-item__label {
+    padding: 0px !important;
+  }
+  .label-field-title{
+    .el-form--label-top {
+      padding: 0px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
+  .el-form--label-top {
+    padding: 0px !important;
+    .el-form-item__label {
+      float: none;
+      display: inline-block;
+      text-align: left;
+      padding: 0px !important;
+    }
+  }
+  label {
+    font-weight: 700;
+    padding: 0px !important;
+  }
+  .el-form-item {
+    margin-bottom: 0px;
+  }
+}
+.label-field-title{
+    .el-form--label-top {
+      padding: 0px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
+</style>

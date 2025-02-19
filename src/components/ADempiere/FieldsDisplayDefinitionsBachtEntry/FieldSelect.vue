@@ -17,49 +17,34 @@
 -->
 
 <template>
-  <span>
-    <el-select
-      ref="inputSelect"
-      v-model="fieldValue"
-      remote
-      clearable
-      size="mini"
-      filterable
-      reserve-keyword
-      :placeholder="fieldMetadata.description"
-      :remote-method="remoteMethod"
-      :loading="isLoadingSearch"
-      style="padding-right: 10px;width: 100%;"
-      @visible-change="showList"
-      @change="saveFieldValue"
-    >
-      <el-option
-        v-for="item in options"
-        :key="item.value"
-        :label="item.display_value"
-        :value="item.value"
-      />
-    </el-select>
-    <span v-if="!isNewRecord">
-      <slot name="button-exit" />
-      <el-button
-        v-show="fieldValue !== displayValueOld && !isLoading"
-        style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
-        icon="el-icon-check"
-        type="text"
-        @click="updateFieldValue(fieldValue, fieldMetadata)"
-      />
-      <i v-if="isLoading" class="el-icon-loading" />
-    </span>
-  </span>
+  <el-select
+    v-model="fieldMetadata.value"
+    remote
+    clearable
+    size="mini"
+    filterable
+    reserve-keyword
+    :placeholder="fieldMetadata.description"
+    :remote-method="remoteMethod"
+    :loading="isLoadingSearch"
+    style="padding-right: 10px;width: 100%;"
+    @visible-change="showList"
+    @change="saveFieldValue"
+  >
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.display_value"
+      :value="item.value"
+    />
+  </el-select>
 </template>
 
 <script>
 import {
   defineComponent,
   computed,
-  ref,
-  onMounted
+  ref
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
@@ -130,7 +115,7 @@ export default defineComponent({
     const isLoadingSearch = ref(false)
     const options = ref([])
     const timeOut = ref(null)
-    const inputSelect = ref(undefined)
+
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
     const { internal_id, column_name } = props.fieldMetadata
@@ -263,11 +248,11 @@ export default defineComponent({
       }
       if (!isEmptyValue(defaultValues)) {
         options.value = [defaultValues]
-        fieldValue.value = defaultValues.value
+        props.fieldMetadata.value = defaultValues.value
         saveFieldValue(defaultValues.value)
         return
       }
-      fieldValue.value = ''
+      props.fieldMetadata.value = ''
       options.value = []
     }
 
@@ -280,7 +265,7 @@ export default defineComponent({
       fieldList,
       columnName
     }) {
-      fieldValue.value = fieldList[columnName].value
+      props.fieldMetadata.value = fieldList[columnName].value
       displayValueOld.value = fieldList[columnName].value
       options.value = [fieldList[columnName]]
     }
@@ -292,7 +277,7 @@ export default defineComponent({
       displayValue,
       value
     }) {
-      fieldValue.value = value
+      props.fieldMetadata.value = value
       options.value = [{
         display_value: displayValue,
         value: value
@@ -314,14 +299,10 @@ export default defineComponent({
       props.fieldMetadata.is_quick_entry &&
       !isEmptyValue(props.isValueBachtEntry)
     ) {
-      fieldValue.value = props.isValueBachtEntry.value
+      props.fieldMetadata.value = props.isValueBachtEntry.value
       options.value = props.isValueBachtEntry.options
     }
-    onMounted(() => {
-      if (props.fieldMetadata.sequence === 10) {
-        inputSelect.value.focus()
-      }
-    })
+
     return {
       // Ref
       fieldValue,
@@ -330,7 +311,6 @@ export default defineComponent({
       timeOut,
       isLoadingSearch,
       displayValueOld,
-      inputSelect,
       // Computed
       lookupsAttribute,
       contextValue,

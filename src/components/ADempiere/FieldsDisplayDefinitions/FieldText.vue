@@ -25,7 +25,7 @@
       size="mini"
       :rows="4"
       :type="typeTextBox"
-      style="padding-right: 10px;width: 200px;"
+      style="padding-right: 10px;"
       @input="saveFieldValue(fieldValue, fieldMetadata)"
     />
     <span v-if="!isNewRecord">

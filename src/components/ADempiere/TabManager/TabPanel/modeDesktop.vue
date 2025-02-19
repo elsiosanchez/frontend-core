@@ -78,21 +78,21 @@
           :in-table="isShowedTableRecords"
           :container-manager="containerManager"
         />
-        <el-collapse
-          v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
-          v-model="activeNames"
-          accordion
-          style="margin-top: 5px;"
-        >
-          <el-collapse-item name="1">
-            <template slot="title">
-              {{ $t('table.dataTable.batchEntry') }}
-              <i class="header-icon el-icon-information" />
-            </template>
-            <el-form
-              label-position="top"
-              size="small"
-            >
+      </el-header>
+
+      <el-main id="tab-panel-body" class="tab-panel-body">
+        <div style="width: 100%;height: 100%;">
+          <el-collapse
+            v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
+            v-model="activeNames"
+            accordion
+            style="margin-top: 5px;"
+          >
+            <el-collapse-item name="1">
+              <template slot="title">
+                {{ $t('table.dataTable.batchEntry') }}
+                <i class="header-icon el-icon-information" />
+              </template>
               <batch-entry
                 v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && activeNames === '1'"
                 :parent-uuid="parentUuid"
@@ -102,13 +102,8 @@
                 :table-name="tabAttributes.table_name"
                 :field-list-all="tableHeaders"
               />
-            </el-form>
-          </el-collapse-item>
-        </el-collapse>
-      </el-header>
-
-      <el-main id="tab-panel-body" class="tab-panel-body">
-        <div style="width: 100%;height: 100%;">
+            </el-collapse-item>
+          </el-collapse>
           <default-table
             v-if="isShowedTableRecords"
             id="default-table"
@@ -254,14 +249,6 @@ export default defineComponent({
 
     const styleHeadPanel = computed(() => {
       if (isShowedTableRecords.value) {
-        if (!isEmptyValue(batchEntry.value)) {
-          // batch entry expand
-          if (activeNames.value === '1') {
-            return 'height: 200px'
-          }
-          // batch entry collapse
-          return 'height: 130px'
-        }
         // multi record
         return 'height: 78px'
       }
