@@ -33,7 +33,7 @@
         <el-table
           ref="tableGroup"
           v-loading="isLoading"
-          class="table-group"
+          class="table-collapse"
           :height="500"
           :data="groupsList"
           :border="false"
@@ -513,16 +513,22 @@ export default defineComponent({
     padding: 0px !important;
   }
 }
-.el-table th.el-table__cell.is-leaf, .el-table td.el-table__cell {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+.table-collapse {
+  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .el-table--enable-row-transition .el-table__body td.el-table__cell {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border: none
+  }
+  .el-table__body-wrapper .is-scrolling-left {
+    overflow: hidden;
+  }
+  .el-badge__content.is-fixed {
+    right: 8px !important
+  }
 }
-.el-table--enable-row-transition .el-table__body td.el-table__cell {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  border: none
-}
-.el-table__body-wrapper .is-scrolling-left {
-  overflow: hidden;
-}
+
 </style>
