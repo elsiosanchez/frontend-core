@@ -87,8 +87,17 @@
           >
             <template v-slot:eventContent="arg">
               <div
-                @click="openDetails(arg)"
+                @click="goToEventDate(arg.event)"
               >
+                <options-panel
+                  :action-option="actionOption"
+                  :current-resource="arg"
+                  :is-option-edit="true"
+                  :is-option-delete="true"
+                  :is-panel-right="isPanelRight"
+                  :display-definition="currentDisplyDefinitions"
+                  style="float: right;"
+                />
                 <b>{{ arg.timeText }}</b>
                 <i>{{ arg.event.title }}</i>
               </div>
