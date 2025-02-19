@@ -31,11 +31,11 @@
     <span v-if="!isNewRecord">
       <slot name="button-exit" />
       <el-button
-        v-show="value !== displayValue && !isLoading"
+        v-show="fieldValue !== displayValue && !isLoading"
         style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
         icon="el-icon-check"
         type="text"
-        @click="updateFieldValue(value, fieldMetadata)"
+        @click="updateFieldValue(fieldValue, fieldMetadata)"
       />
       <i v-if="isLoading" class="el-icon-loading" />
     </span>
