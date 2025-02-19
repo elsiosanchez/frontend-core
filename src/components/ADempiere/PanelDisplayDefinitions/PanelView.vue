@@ -38,54 +38,56 @@
       </p>
     </div>
     <div>
-      <el-empty v-if="isEmptyValue(localFields)" :description="$t('component.displayDefinition.fieldEmpty')" />
-      <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-        <el-descriptions-item
-          v-for="field in localFields"
-          :key="field.sequence"
-        >
-          <template slot="label">
-            <b> {{ field.name }} </b>
-          </template>
-          <span v-if="!field.is_show_components" style="display: flex;">
-            <text-truncation
-              :full-text="displayValue(recordMetadata.fields, field.column_name)"
-              :max-words="3"
-              :max-lines="1.5"
-              style="display: flex;"
-            />
-            <el-button
-              v-show="field.is_update_record && !field.is_show_components && !field.is_read_only"
-              style="padding: 0px;"
-              icon="el-icon-edit"
-              type="text"
-              @click="ShowFieldComponent(field)"
-            />
-          </span>
-          <span v-else>
-            <FieldsDisplayDefinitions
-              v-if="!isEmptyValue(recordMetadata.fields) && !isEmptyValue(field.column_name) && !isEmptyValue(recordMetadata.fields[field.column_name])"
-              :field="field"
-              :current-record="recordMetadata"
-              :field-metadata="recordMetadata.fields[field.column_name]"
-              :current-display-definition="currentDisplyDefinitions"
-              :display-value="displayValue(recordMetadata.fields, field.column_name)"
-              :update-field="updateFieldRecord"
-              :update-record="updateRecord"
-              :is-panel-right="isPanelRight"
-            >
-              <template v-slot:button>
-                <el-button
-                  style="padding: 0px;color: red;font-size: medium;font-weight: 900;"
-                  icon="el-icon-close"
-                  type="text"
-                  @click="hiddenFieldComponent(field)"
-                />
-              </template>
-            </FieldsDisplayDefinitions>
-          </span>
-        </el-descriptions-item>
-      </el-descriptions>
+      <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
+        <el-empty v-if="isEmptyValue(localFields)" :description="$t('component.displayDefinition.fieldEmpty')" />
+        <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
+          <el-descriptions-item
+            v-for="field in localFields"
+            :key="field.sequence"
+          >
+            <template slot="label">
+              <b> {{ field.name }} </b>
+            </template>
+            <span v-if="!field.is_show_components" style="display: flex;">
+              <text-truncation
+                :full-text="displayValue(recordMetadata.fields, field.column_name)"
+                :max-words="3"
+                :max-lines="1.5"
+                style="display: flex;"
+              />
+              <el-button
+                v-show="field.is_update_record && !field.is_show_components && !field.is_read_only"
+                style="padding: 0px;"
+                icon="el-icon-edit"
+                type="text"
+                @click="ShowFieldComponent(field)"
+              />
+            </span>
+            <span v-else>
+              <FieldsDisplayDefinitions
+                v-if="!isEmptyValue(recordMetadata.fields) && !isEmptyValue(field.column_name) && !isEmptyValue(recordMetadata.fields[field.column_name])"
+                :field="field"
+                :current-record="recordMetadata"
+                :field-metadata="recordMetadata.fields[field.column_name]"
+                :current-display-definition="currentDisplyDefinitions"
+                :display-value="displayValue(recordMetadata.fields, field.column_name)"
+                :update-field="updateFieldRecord"
+                :update-record="updateRecord"
+                :is-panel-right="isPanelRight"
+              >
+                <template v-slot:button>
+                  <el-button
+                    style="padding: 0px;color: red;font-size: medium;font-weight: 900;"
+                    icon="el-icon-close"
+                    type="text"
+                    @click="hiddenFieldComponent(field)"
+                  />
+                </template>
+              </FieldsDisplayDefinitions>
+            </span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-card>
       <slot name="footer-buttons" />
       <el-popover
         v-model="localShowDeleteConfirmation"
