@@ -34,39 +34,49 @@
       <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
         <div v-shortkey="{ save: ['alt', 'enter'] }" @shortkey="actionsSave">
           <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
-          <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-            <template
-              v-for="(field, indexSequence) in localFields"
+          <el-row v-else>
+            <el-col
+              v-for="(group, keyGroup) in localFields"
+              :key="keyGroup"
+              :span="24"
             >
-              <el-descriptions-item
-                v-if="isDisplayField(field)"
-                :key="indexSequence"
-              >
-                <template slot="label">
-                  <b>
-                    <span
-                      v-show="field.is_mandatory"
-                      style="color: red;"
-                    >
-                      *
-                    </span>
-                    {{ field.name }}
-                  </b>
-                </template>
-                <fields-display-definitions
-                  :field="field"
-                  :current-record="currentRecord"
-                  :current-display-definition="currentDisplyDefinitions"
-                  :update-field="updateFieldRecord"
-                  :persistence-data="persistenceBachtEntry"
-                  :additional-attributes="addCurrentAttributes"
-                  :is-new-record="true"
-                  :is-panel-right="isPanelRight"
-                  :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
-                />
-              </el-descriptions-item>
-            </template>
-          </el-descriptions>
+              <fieldset style="padding: 0.35em 0.75em 0.625em;border-radius: 6px;border: 1px solid #1890ff7a;">
+                <legend>{{ group.title }}</legend>
+                <el-form
+                  label-position="top"
+                  label-width="100px"
+                  size="small"
+                  class="field-component-display-definition"
+                >
+                  <template
+                    v-for="(field, key) in group.fields"
+                  >
+                    <el-col :key="key" :span="sizeSpan(group.fields)">
+                      <el-form-item
+                        :label="field.name"
+                        :required="field.isMandatory"
+                        style="padding: 0px !important;"
+                        class="label-field-title-display-definition"
+                      >
+                        <fields-display-definitions
+                          ref="fieldsDisplay"
+                          :field="field"
+                          :current-record="currentRecord"
+                          :current-display-definition="currentDisplyDefinitions"
+                          :update-field="updateFieldRecord"
+                          :persistence-data="persistenceBachtEntry"
+                          :additional-attributes="addCurrentAttributes"
+                          :is-new-record="true"
+                          :is-panel-right="isPanelRight"
+                          :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+                        />
+                      </el-form-item>
+                    </el-col>
+                  </template>
+                </el-form>
+              </fieldset>
+            </el-col>
+          </el-row>
         </div>
       </el-card>
       <el-button
@@ -92,10 +102,10 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, nextTick, ref } from '@vue/composition-api'
 
 import store from '@/store'
-// import language from '@/lang'
+import language from '@/lang'
 
 // Components and Mixins
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
@@ -243,7 +253,7 @@ export default defineComponent({
       })
     }
 
-    localFields.value = fields.value
+    localFields.value = groupAndSortFields(fields.value)
 
     function clearField(attributes) {
       fields.value.forEach(element => {
@@ -275,10 +285,71 @@ export default defineComponent({
         })
     }
 
+    function groupAndSortFields(fields) {
+      const grouped = fields.reduce((acc, field) => {
+        const groupKey = field.field_group ? field.field_group.name : language.t('field.noGroup')
+        if (!acc[groupKey]) {
+          acc[groupKey] = []
+        }
+        acc[groupKey].push(field)
+        return acc
+      }, {})
+
+      Object.keys(grouped).forEach(group => {
+        grouped[group].sort((a, b) => a.sequence - b.sequence)
+      })
+
+      const result = Object.keys(grouped)
+        .filter(group => group !== language.t('field.noGroup'))
+        .map(group => ({
+          title: group,
+          fields: grouped[group]
+        }))
+
+      if (grouped[language.t('field.noGroup')]) {
+        result.push({
+          title: language.t('field.noGroup'),
+          fields: grouped[language.t('field.noGroup')]
+        })
+      }
+
+      return result
+    }
+
+    function sizeSpan(quantityFields) {
+      if (quantityFields.length <= 1) {
+        return 24
+      } else if (quantityFields.length <= 2) {
+        return 12
+      } else if (quantityFields.length <= 3) {
+        return 8
+      } else if (quantityFields.length >= 4) {
+        return 6
+      }
+    }
+
+    const fieldsDisplay = ref([])
+
+    function focusFirstInput() {
+      nextTick(() => {
+        if (fieldsDisplay.value.length > 0) {
+          const firstField = fieldsDisplay.value[0]
+          if (firstField.$children[0]) {
+            firstField.$children[0].$children[0].focus()
+          }
+        }
+      })
+    }
+
+    setTimeout(() => {
+      focusFirstInput()
+    }, 500)
+
     return {
       // Ref
       attributes,
       isLoading,
+      fieldsDisplay,
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
@@ -288,6 +359,7 @@ export default defineComponent({
       localFields,
       fields,
       // methods
+      sizeSpan,
       actionsSave,
       displayValue,
       isDisplayField,
@@ -315,4 +387,62 @@ export default defineComponent({
 .card-text-content {
   margin-bottom: 16px !important;
 }
+
+.fieldset {
+  padding: 0.35em 0.75em 0.625em;
+  border-radius: 6px;
+  border: 1px solid #1890ff7a;
+}
+
+.field-component-display-definition {
+  .el-form--label-top .el-form-item__label {
+    padding: 0px 5px !important;
+  }
+  .label-field-title-display-definition{
+    .el-form--label-top {
+      padding: 0px 5px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
+  .el-form--label-top {
+    padding: 0px 5px !important;
+    .el-form-item__label {
+      float: none;
+      display: inline-block;
+      text-align: left;
+      padding: 0px 5px !important;
+    }
+  }
+  label {
+    font-weight: 700;
+    padding: 0px !important;
+  }
+  .el-form-item {
+    margin-bottom: 0px;
+  }
+}
+.label-field-title-display-definition{
+    .el-form--label-top {
+      padding: 0px 5px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px 5px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
 </style>

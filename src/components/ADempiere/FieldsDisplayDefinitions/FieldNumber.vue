@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <span>
+  <span style="display: flex;padding-right: 10px;">
     <el-input-number
       ref="inputNumber"
       v-model="value"
@@ -26,11 +26,11 @@
       size="mini"
       :precision="precision"
       class="field-number"
-      style="margin-right: 5px;"
+      style="padding-right: 10px;width: 95%;"
       @input="saveFieldValue(value, fieldMetadata)"
       @focus="selectContent"
     />
-    <span v-if="!isNewRecord">
+    <span v-if="!isNewRecord" style="display: flex;">
       <slot name="button-exit" />
       <el-button
         v-show="value !== displayValue && !isLoading"

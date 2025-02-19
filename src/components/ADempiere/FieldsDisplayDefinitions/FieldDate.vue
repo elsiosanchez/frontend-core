@@ -27,10 +27,10 @@
       :picker-options="pickerOptionsDate"
       size="mini"
       :placeholder="fieldMetadata.description"
-      style="padding-right: 10px;"
+      style="padding-right: 10px;width: 100%;"
       @change="saveFieldValue(value, fieldMetadata)"
     />
-    <span v-if="!isNewRecord">
+    <span v-if="!isNewRecord" style="display: flex;">
       <slot name="button-exit" />
       <el-button
         v-show="value !== displayValue && !isLoading"

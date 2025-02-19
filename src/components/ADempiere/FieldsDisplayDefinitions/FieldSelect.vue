@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <span>
+  <span style="display: flex;padding-right: 10px;">
     <el-select
       ref="inputSelect"
       v-model="fieldValue"
@@ -29,7 +29,7 @@
       :placeholder="fieldMetadata.description"
       :remote-method="remoteMethod"
       :loading="isLoadingSearch"
-      style="padding-right: 10px;width: 100%;"
+      style="width: 100%;"
       @visible-change="showList"
       @change="saveFieldValue"
     >
@@ -40,7 +40,7 @@
         :value="item.value"
       />
     </el-select>
-    <span v-if="!isNewRecord">
+    <span v-if="!isNewRecord" style="display: flex;">
       <slot name="button-exit" />
       <el-button
         v-show="fieldValue !== displayValueOld && !isLoading"

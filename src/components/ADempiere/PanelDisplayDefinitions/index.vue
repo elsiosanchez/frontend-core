@@ -162,6 +162,7 @@ export default defineComponent({
 
     const isQuickEntry = computed(() => {
       let fields = []
+      if (currentab.value === 'view') return true
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)

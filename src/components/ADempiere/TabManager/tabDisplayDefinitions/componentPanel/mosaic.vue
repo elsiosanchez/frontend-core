@@ -30,18 +30,20 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         v-shortkey="{ new: ['ctrl', 'alt', 'n'] }"
         @shortkey="theAction"
       >
-        <div slot="header">
-          <el-button
-            plain
-            circle
-            type="success"
-            style="padding: 5px 5px;float: right"
-            :title="$t('component.displayDefinition.cardNew')"
-            @click="newEntry"
-          >
-            <el-icon class="el-icon-plus" />
-          </el-button>
-        </div>
+        <el-row :gutter="5">
+          <el-col :span="24">
+            <el-button
+              plain
+              circle
+              type="success"
+              style="padding: 5px 5px;float: right"
+              :title="$t('component.displayDefinition.cardNew')"
+              @click="newEntry"
+            >
+              <el-icon class="el-icon-plus" />
+            </el-button>
+          </el-col>
+        </el-row>
         <el-row :gutter="5">
           <span
             v-for="element in listRecords"
@@ -64,7 +66,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                     style="float: right;"
                   />
                 </div>
-                <el-row :gutter="0">
+                <el-row :gutter="12">
                   <el-col :span="4" style="text-align: center !important;padding-top: 10px !important;">
                     <el-avatar
                       src="https://empty"
@@ -81,22 +83,31 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                         v-for="(field, key) in displayDefinitionFields"
                         :key="key"
                       >
-                        <el-col :span="12" style="padding: 0px !important;">
-                          <el-descriptions :column="2" size="mini">
-                            <el-descriptions-item
-                              label-class-name="title-description"
-                              :label="field.name"
-                              content-class-name="content-description"
+                        <el-form
+                          label-position="left"
+                          size="small"
+                          class="field-component-mosaic"
+                        >
+                          <el-col :span="key === 2 ? 24 : 12" style="padding: 0px !important;">
+                            <el-form-item
+                              :label="labelItem(field)"
+                              style="padding: 0px !important;"
+                              class="label-field-title-mosaic"
                             >
+                              <template v-if="!isEmptyValue(labelItem(field))" slot="label">
+                                <span style="padding-right: 10px;">
+                                  {{ labelItem(field) + ':' }}
+                                </span>
+                              </template>
                               <text-truncation
                                 :full-text="displayValue({ fields: element.fields, columnName: field.column_name })"
-                                :max-words="3"
-                                :max-lines="1.5"
+                                :max-words="5"
+                                :max-lines="2"
                                 style="display: flex;"
                               />
-                            </el-descriptions-item>
-                          </el-descriptions>
-                        </el-col>
+                            </el-form-item>
+                          </el-col>
+                        </el-form>
                       </span>
                     </el-row>
                   </el-col>
@@ -270,7 +281,7 @@ export default defineComponent({
       ) {
         return displayDefinitionMetadata.value.fields
           .filter(fields => fields.is_displayed_grid)
-          .sort((a, b) => a.sequence - b.sequence)
+          .sort((a, b) => a.seq_no_grid - b.seq_no_grid)
           .splice(0, 3)
       }
       return []
@@ -422,6 +433,11 @@ export default defineComponent({
           break
       }
     }
+
+    function labelItem(field) {
+      if (field.componentPath === 'FieldYesNo') return field.name
+      return ''
+    }
     return {
       // Computeds
       columnsList,
@@ -440,7 +456,8 @@ export default defineComponent({
       displayValue,
       errorHandler,
       newEntry,
-      theAction
+      theAction,
+      labelItem
     }
   }
 })
@@ -478,4 +495,58 @@ export default defineComponent({
 .content-description {
   text-align: initial;
 }
+.field-component-mosaic {
+  .el-form-item--small.el-form-item {
+    margin: 0px;
+  }
+  .el-form--label-top .el-form-item__label {
+    padding: 0px 5px !important;
+  }
+  .label-field-title-mosaic{
+    .el-form--label-top {
+      padding: 0px 5px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
+  .el-form--label-top {
+    padding: 0px 5px !important;
+    .el-form-item__label {
+      float: none;
+      display: inline-block;
+      text-align: left;
+      padding: 0px 5px !important;
+    }
+  }
+  label {
+    font-weight: 700;
+    padding: 0px !important;
+  }
+  .el-form-item {
+    margin-bottom: 0px;
+  }
+}
+.label-field-title-mosaic{
+    .el-form--label-top {
+      padding: 0px 5px !important;
+      .el-form-item__label {
+        float: none;
+        display: inline-block;
+        text-align: left;
+        padding: 0px 5px !important;
+      }
+    }
+    label {
+      font-weight: 700;
+      padding: 0px !important;
+    }
+  }
 </style>

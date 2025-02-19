@@ -40,53 +40,74 @@
     <div>
       <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
         <el-empty v-if="isEmptyValue(localFields)" :description="$t('component.displayDefinition.fieldEmpty')" />
-        <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
-          <el-descriptions-item
-            v-for="field in localFields"
-            :key="field.sequence"
+        <el-row v-else>
+          <el-col
+            v-for="(group, keyGroup) in localFields"
+            :key="keyGroup"
+            :span="24"
           >
-            <template slot="label">
-              <b> {{ field.name }} </b>
-            </template>
-            <span v-if="!field.is_show_components" style="display: flex;">
-              <text-truncation
-                :full-text="displayValue(recordMetadata.fields, field.column_name)"
-                :max-words="3"
-                :max-lines="1.5"
-                style="display: flex;"
-              />
-              <el-button
-                v-show="field.is_update_record && !field.is_show_components && !field.is_read_only"
-                style="padding: 0px;"
-                icon="el-icon-edit"
-                type="text"
-                @click="ShowFieldComponent(field)"
-              />
-            </span>
-            <span v-else>
-              <FieldsDisplayDefinitions
-                v-if="!isEmptyValue(recordMetadata.fields) && !isEmptyValue(field.column_name) && !isEmptyValue(recordMetadata.fields[field.column_name])"
-                :field="field"
-                :current-record="recordMetadata"
-                :field-metadata="recordMetadata.fields[field.column_name]"
-                :current-display-definition="currentDisplyDefinitions"
-                :display-value="displayValue(recordMetadata.fields, field.column_name)"
-                :update-field="updateFieldRecord"
-                :update-record="updateRecord"
-                :is-panel-right="isPanelRight"
+            <fieldset style="padding: 0.35em 0.75em 0.625em;border-radius: 6px;border: 1px solid #1890ff7a;">
+              <legend>{{ group.title }}</legend>
+              <el-form
+                label-position="top"
+                label-width="100px"
+                size="small"
+                class="field-component-display-definition"
               >
-                <template v-slot:button>
-                  <el-button
-                    style="padding: 0px;color: red;font-size: medium;font-weight: 900;"
-                    icon="el-icon-close"
-                    type="text"
-                    @click="hiddenFieldComponent(field)"
-                  />
+                <template
+                  v-for="(field, key) in group.fields"
+                >
+                  <el-col :key="key" :span="sizeSpan(group.fields)">
+                    <el-form-item
+                      :label="field.name"
+                      :required="field.isMandatory"
+                      style="padding: 0px !important;"
+                      class="label-field-title-display-definition"
+                    >
+                      <span v-if="!field.is_show_components" style="display: flex;">
+                        <text-truncation
+                          :full-text="displayValue(recordMetadata.fields, field.column_name)"
+                          :max-words="3"
+                          :max-lines="1.5"
+                          style="display: flex;"
+                        />
+                        <el-button
+                          v-show="field.is_update_record && !field.is_show_components && !field.is_read_only"
+                          style="padding: 0px;"
+                          icon="el-icon-edit"
+                          type="text"
+                          @click="ShowFieldComponent(field)"
+                        />
+                      </span>
+                      <span v-else style="display: flex;padding-right: 10px;">
+                        <FieldsDisplayDefinitions
+                          v-if="!isEmptyValue(recordMetadata.fields) && !isEmptyValue(field.column_name) && !isEmptyValue(recordMetadata.fields[field.column_name])"
+                          :field="field"
+                          :current-record="recordMetadata"
+                          :field-metadata="recordMetadata.fields[field.column_name]"
+                          :current-display-definition="currentDisplyDefinitions"
+                          :display-value="displayValue(recordMetadata.fields, field.column_name)"
+                          :update-field="updateFieldRecord"
+                          :update-record="updateRecord"
+                          :is-panel-right="isPanelRight"
+                        >
+                          <template v-slot:button>
+                            <el-button
+                              style="padding: 0px;color: red;font-size: medium;font-weight: 900;"
+                              icon="el-icon-close"
+                              type="text"
+                              @click="hiddenFieldComponent(field)"
+                            />
+                          </template>
+                        </FieldsDisplayDefinitions>
+                      </span>
+                    </el-form-item>
+                  </el-col>
                 </template>
-              </FieldsDisplayDefinitions>
-            </span>
-          </el-descriptions-item>
-        </el-descriptions>
+              </el-form>
+            </fieldset>
+          </el-col>
+        </el-row>
       </el-card>
       <slot name="footer-buttons" />
       <el-popover
@@ -128,10 +149,10 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch, onMounted } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 
 import store from '@/store'
-
+import language from '@/lang'
 // Component
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
 import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextTruncation'
@@ -188,6 +209,7 @@ export default defineComponent({
   setup(props) {
     // Ref
     const localFields = ref([])
+    // const fieldList = ref([])
     const showButton = ref(false)
     const isLoadingDelete = ref(false)
     const localShowDeleteConfirmation = ref(false)
@@ -236,19 +258,25 @@ export default defineComponent({
       const tabDefinition = store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
       })
-      localFields.value = tabDefinition.fields.filter(field => field.is_displayed)
       return tabDefinition
     })
 
-    // const fields = computed(() => {
-    //   if (
-    //     !isEmptyValue(displayDefinitionMetadata.value) &&
-    //     !isEmptyValue(displayDefinitionMetadata.value.fields)
-    //   ) {
-    //     localFields.value = displayDefinitionMetadata.value.fields
-    //   }
-    //   return []
-    // })
+    const fieldList = computed(() => {
+      if (
+        isEmptyValue(displayDefinitionMetadata.value) ||
+        isEmptyValue(displayDefinitionMetadata.value.fields)
+      ) {
+        return []
+      }
+      return displayDefinitionMetadata.value.fields
+        .filter(field => field.is_displayed)
+        .map(field => ({
+          ...field,
+          is_show_components: false
+        }))
+    })
+
+    localFields.value = groupAndSortFields(fieldList.value)
 
     // Constants
     const { currentTab } = store.getters.getContainerInfo
@@ -304,37 +332,74 @@ export default defineComponent({
       showDelete(true)
     }
 
-    // if (isEmptyValue(recordMetadata.value)) {
-    //   store.dispatch('readRecordData', {
-    //     recordId: props.currentRecord.id,
-    //     isResource: props.currentDisplyDefinitions.is_resource,
-    //     displayDefinitionId: props.currentDisplyDefinitions.id
-    //   })
-    // }
     function showDelete(show = true) {
       store.commit('setShowDeleteConfirmation', show)
     }
-    function updateLocalFields() {
-      if (
-        !isEmptyValue(displayDefinitionMetadata.value) &&
-        !isEmptyValue(displayDefinitionMetadata.value.fields)
-      ) {
-        localFields.value = displayDefinitionMetadata.value.fields.map(field => ({
-          ...field,
-          is_show_components: false
+    // function updateLocalFields() {
+    //   if (
+    //     !isEmptyValue(displayDefinitionMetadata.value) &&
+    //     !isEmptyValue(displayDefinitionMetadata.value.fields)
+    //   ) {
+    //     localFields.value = displayDefinitionMetadata.value.fields.map(field => ({
+    //       ...field,
+    //       is_show_components: false
+    //     }))
+    //   }
+    // }
+
+    function groupAndSortFields(fields) {
+      const grouped = fields.reduce((acc, field) => {
+        const groupKey = field.field_group ? field.field_group.name : language.t('field.noGroup')
+        if (!acc[groupKey]) {
+          acc[groupKey] = []
+        }
+        acc[groupKey].push(field)
+        return acc
+      }, {})
+
+      Object.keys(grouped).forEach(group => {
+        grouped[group].sort((a, b) => a.sequence - b.sequence)
+      })
+
+      const result = Object.keys(grouped)
+        .filter(group => group !== language.t('field.noGroup'))
+        .map(group => ({
+          title: group,
+          fields: grouped[group]
         }))
+
+      if (grouped[language.t('field.noGroup')]) {
+        result.push({
+          title: language.t('field.noGroup'),
+          fields: grouped[language.t('field.noGroup')]
+        })
+      }
+
+      return result
+    }
+
+    function sizeSpan(quantityFields) {
+      if (quantityFields.length <= 1) {
+        return 24
+      } else if (quantityFields.length <= 2) {
+        return 12
+      } else if (quantityFields.length <= 3) {
+        return 8
+      } else if (quantityFields.length >= 4) {
+        return 6
       }
     }
+
     watch(showDeleteConfirmation, (newValue) => {
       localShowDeleteConfirmation.value = newValue
     })
-    watch(displayDefinitionMetadata, (newValue) => {
-      updateLocalFields()
-    })
+    // watch(displayDefinitionMetadata, (newValue) => {
+    //   updateLocalFields()
+    // })
 
-    onMounted(() => {
-      updateLocalFields()
-    })
+    // onMounted(() => {
+    //   updateLocalFields()
+    // })
     return {
       // Ref
       localFields,
@@ -345,12 +410,14 @@ export default defineComponent({
       title,
       isLoading,
       description,
+      fieldList,
       isLoadingRecord,
       isLoadingDelete,
       getRecordValuesData,
       displayDefinitionMetadata,
       showDeleteConfirmation,
       // Methods
+      sizeSpan,
       deleteRecord,
       updateRecord,
       displayValue,
@@ -358,8 +425,7 @@ export default defineComponent({
       ShowFieldComponent,
       hiddenFieldComponent,
       removerRecord,
-      showDelete,
-      updateLocalFields
+      showDelete
     }
   }
 })

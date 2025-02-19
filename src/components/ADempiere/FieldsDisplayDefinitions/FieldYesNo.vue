@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <span>
+  <span style="display: flex;padding-right: 10px;">
     <el-switch
       v-model="fieldValue"
       :placeholder="fieldMetadata.description"
@@ -27,7 +27,7 @@
       @change="saveFieldValue(fieldValue, fieldMetadata)"
     />
 
-    <span v-if="!isNewRecord">
+    <span v-if="!isNewRecord" style="display: flex;">
       <slot name="button-exit" />
       <el-button
         v-show="fieldValue !== displayValue && !isLoading"

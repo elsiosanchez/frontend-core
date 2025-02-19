@@ -50,5 +50,6 @@ export default {
   invoice,
   payment,
   order,
-  to: 'To'
+  to: 'To',
+  noGroup: 'No Group'
 }
