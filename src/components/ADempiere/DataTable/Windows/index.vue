@@ -73,15 +73,10 @@
         </template>
         <template slot-scope="scope">
           <!-- formatted displayed value -->
-          <cell-edit-info
-            :parent-uuid="parentUuid"
-            :container-uuid="containerUuid"
+          <cell-display-info
+            :class="' cell-info-edit cell-no-edit '"
             :field-attributes="fieldAttributes"
-            :container-manager="containerManager"
-            :scope="scope"
             :data-row="scope.row"
-            :data-cell="scope.column"
-            :table-name="panelMetadata.table_name"
           />
         </template>
       </el-table-column>
@@ -110,7 +105,7 @@ import store from '@/store'
 import router from '@/router'
 
 // Components and Mixins
-import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
+import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
@@ -123,7 +118,7 @@ export default defineComponent({
   name: 'WindowsTable',
 
   components: {
-    CellEditInfo,
+    CellDisplayInfo,
     FullScreenContainer,
     LoadingView
   },
