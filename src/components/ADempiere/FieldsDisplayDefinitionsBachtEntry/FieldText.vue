@@ -24,7 +24,8 @@
     size="mini"
     :rows="rowsField"
     :type="typeTextBox"
-    style="padding-right: 10px;"
+    :disabled="isReadOnly"
+    style="padding-right: 10px;width: 100%;"
     @input="saveFieldValue(fieldMetadata.value, fieldMetadata)"
   />
 </template>
@@ -86,6 +87,10 @@ export default defineComponent({
     persistenceData: {
       type: Function,
       required: false
+    },
+    isReadOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

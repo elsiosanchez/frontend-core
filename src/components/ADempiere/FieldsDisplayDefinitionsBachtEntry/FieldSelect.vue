@@ -29,6 +29,7 @@
     :remote-method="remoteMethod"
     :loading="isLoadingSearch"
     style="padding-right: 10px;width: 100%;"
+    :disabled="isReadOnly"
     @visible-change="showList"
     @change="saveFieldValue"
   >
@@ -104,6 +105,10 @@ export default defineComponent({
       required: false
     },
     isPanelGeneral: {
+      type: Boolean,
+      default: false
+    },
+    isReadOnly: {
       type: Boolean,
       default: false
     }

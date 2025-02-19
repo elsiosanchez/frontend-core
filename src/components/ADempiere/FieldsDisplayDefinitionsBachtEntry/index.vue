@@ -30,6 +30,7 @@
     :additional-attributes="additionalAttributes"
     :is-panel-right="isPanelRight"
     :is-panel-general="isPanelGeneral"
+    :is-read-only="isReadOnly"
   >
     <template v-slot:button-exit>
       <slot name="button" />
@@ -95,6 +96,10 @@ export default defineComponent({
       required: false
     },
     isPanelGeneral: {
+      type: Boolean,
+      default: false
+    },
+    isReadOnly: {
       type: Boolean,
       default: false
     }

@@ -21,7 +21,7 @@
     class="field-component-bacht"
     @keyup.alt.13="saveEntity"
   >
-    <el-row>
+    <el-row :gutter="20">
       <el-card
         shadow="never"
         class="card-text-content"
@@ -37,7 +37,7 @@
             <template
               v-for="(field, key) in fieldsListBatchEntry"
             >
-              <el-col :key="key" :span="8">
+              <el-col :key="key" :span="6">
                 <el-form-item
                   :label="field.name"
                   :required="field.isMandatory"
@@ -51,6 +51,7 @@
                     :persistence-data="persistenceBachtEntry"
                     :is-new-record="true"
                     :is-panel-general="true"
+                    :is-read-only="!isCreateRecord"
                     :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
                   />
                 </el-form-item>
@@ -67,12 +68,14 @@
               v-model="bachtEntry"
               active-color="#13ce66"
               inactive-color="#ff4949"
+              :disabled="!isCreateRecord"
             />
             <el-button
               plain
               type="info"
               class="button-base-icon"
               style="font-size: 25px;margin-left: 5px;"
+              :disabled="!isCreateRecord"
               @click="cleanField"
             >
               <svg-icon icon-class="layers-clear" />
@@ -82,7 +85,7 @@
               class="button-base-icon"
               icon="el-icon-check"
               :loading="isLoadingPanel"
-              :disabled="isLoadingPanel"
+              :disabled="isLoadingPanel || !isCreateRecord"
               @click="saveEntity"
             />
           </p>
@@ -114,6 +117,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iterableFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
 // import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
@@ -159,6 +163,46 @@ export default defineComponent({
     const attributes = ref({})
     const containerUuid = props.containerUuid + 'Batch_Entry'
 
+    const recordUuid = computed(() => {
+      return store.getters.getUuidOfContainer(props.containerUuid)
+    })
+
+    const tabAttributes = computed(() => {
+      return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
+    })
+
+    const isSecondaryParentTab = computed(() => {
+      return !isEmptyValue(tabAttributes.value.tabParentIndex) && tabAttributes.value.tabParentIndex > 0
+    })
+
+    const isExistsChanges = computed(() => {
+      const persistenceValues = store.getters.getPersistenceAttributesChanges({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        recordUuid: recordUuid.value
+      })
+      return !isEmptyValue(persistenceValues)
+    })
+
+    const isCreateRecord = computed(() => {
+      const { table } = tabAttributes.value
+      if (!isEmptyValue(table) && table.is_view) {
+        return false
+      }
+      if (isSecondaryParentTab.value) {
+        return false
+      }
+      if (isExistsChanges.value) {
+        return false
+      }
+
+      return createNewRecord.enabled({
+        parentUuid: props.parentUuid,
+        tabParentIndex: tabAttributes.value.tabParentIndex,
+        containerUuid: props.containerUuid
+      })
+    })
+
     const fieldsList = computed(() => {
       return props.fieldListAll.map(fieldAttributes => {
         return {
@@ -171,10 +215,6 @@ export default defineComponent({
     })
 
     fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_allow_copy && fieldAttributes.is_quick_entry)
-
-    const tabAttributes = computed(() => {
-      return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
-    })
 
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({
@@ -395,6 +435,7 @@ export default defineComponent({
       fieldsList,
       containerManagerBatchEntry,
       tabAttributes,
+      isCreateRecord,
       attributes,
       isLoadingPanel,
       fieldsListBatchEntry,

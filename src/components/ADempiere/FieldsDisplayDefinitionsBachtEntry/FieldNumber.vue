@@ -26,21 +26,11 @@
       size="mini"
       :precision="precision"
       class="field-number"
-      style="margin-right: 5px;"
+      style="width: 100%;"
+      :disabled="isReadOnly"
       @input="saveFieldValue(value, fieldMetadata)"
       @focus="selectContent"
     />
-    <span v-if="!isNewRecord">
-      <slot name="button-exit" />
-      <el-button
-        v-show="value !== displayValue && !isLoading"
-        style="padding: 0px;color: green;font-size: medium;font-weight: 900;"
-        icon="el-icon-check"
-        type="text"
-        @click="updateFieldValue(value, fieldMetadata)"
-      />
-      <i v-if="isLoading" class="el-icon-loading" />
-    </span>
   </span>
 </template>
 
@@ -98,17 +88,19 @@ export default defineComponent({
     isValueBachtEntry: {
       type: [Boolean, Number, String, Object],
       default: false
+    },
+    isReadOnly: {
+      type: Boolean,
+      default: false
     }
   },
 
   setup(props) {
     const value = ref(null)
     const isLoading = ref(false)
-    const { fields } = props.currentRecord
 
     const currentValue = computed(() => {
-      if (props.isNewRecord) return 0
-      return fields[props.fieldMetadata.column_name].value.value
+      return 0
     })
 
     const precision = computed(() => {

@@ -24,6 +24,7 @@
       :active-text="$t('components.switchActiveText')"
       :inactive-text="$t('components.switchInactiveText')"
       size="mini"
+      :disabled="isReadOnly"
       @change="saveFieldValue(fieldValue, fieldMetadata)"
     />
 
@@ -95,6 +96,10 @@ export default defineComponent({
     isValueBachtEntry: {
       type: [Boolean, Number, String],
       required: false
+    },
+    isReadOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

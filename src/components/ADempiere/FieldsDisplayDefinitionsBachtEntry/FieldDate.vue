@@ -27,7 +27,8 @@
       :picker-options="pickerOptionsDate"
       size="mini"
       :placeholder="fieldMetadata.description"
-      style="padding-right: 10px;"
+      style="padding-right: 10px;width: 100%;"
+      :disabled="isReadOnly"
       @change="saveFieldValue(value, fieldMetadata)"
     />
     <span v-if="!isNewRecord">
@@ -108,6 +109,10 @@ export default defineComponent({
     isValueBachtEntry: {
       type: [Boolean, Number, String, Object],
       required: false
+    },
+    isReadOnly: {
+      type: Boolean,
+      default: false
     }
   },
 
