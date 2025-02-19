@@ -19,6 +19,7 @@
 <template>
   <span>
     <el-input-number
+      ref="firstInput"
       v-model="value"
       controls-position="right"
       :placeholder="fieldMetadata.description"

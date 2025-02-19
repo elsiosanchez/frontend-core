@@ -19,6 +19,7 @@
 <template>
   <span>
     <el-date-picker
+      ref="firstInput"
       v-model="value"
       unlink-panels
       :type="typePicker"

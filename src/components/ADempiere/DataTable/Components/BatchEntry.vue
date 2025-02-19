@@ -45,6 +45,7 @@
                   class="label-field-title"
                 >
                   <fields-display-definitions
+                    ref="fieldsDisplay"
                     :field="field"
                     :update-field="updateField"
                     :persistence-data="persistenceBachtEntry"
@@ -92,7 +93,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, nextTick, ref } from '@vue/composition-api'
 
 import store from '@/store'
 import lang from '@/lang'
@@ -324,12 +325,12 @@ export default defineComponent({
         attributesList: sendFieldServer
       })
         .then(() => {
-          if (!bachtEntry.value) {
-            attributesBachtEntry.value = {}
-            cleanField()
+          if (bachtEntry.value) {
+            clearField()
             return
           }
-          clearField()
+          attributesBachtEntry.value = {}
+          cleanField()
         })
         .finally(() => {
           isLoadingPanel.value = false
@@ -342,7 +343,7 @@ export default defineComponent({
           attributesBachtEntry.value[element.column_name] = undefined
         }
       })
-      cleanField()
+      // cleanField()
     }
 
     function validateMandatoryFieldsEmpty({
@@ -371,7 +372,25 @@ export default defineComponent({
       })
     }
 
+    const fieldsDisplay = ref([])
+
+    function focusFirstInput() {
+      nextTick(() => {
+        if (fieldsDisplay.value.length > 0) {
+          const firstField = fieldsDisplay.value[0]
+          if (firstField.$children[0]) {
+            firstField.$children[0].$children[0].focus()
+          }
+        }
+      })
+    }
+
+    setTimeout(() => {
+      focusFirstInput()
+    }, 500)
+
     return {
+      fieldsDisplay,
       bachtEntry,
       fieldsList,
       containerManagerBatchEntry,

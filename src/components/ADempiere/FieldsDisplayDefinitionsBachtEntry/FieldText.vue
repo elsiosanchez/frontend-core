@@ -18,6 +18,7 @@
 
 <template>
   <el-input
+    ref="firstInput"
     v-model="fieldMetadata.value"
     :placeholder="fieldMetadata.description"
     size="mini"

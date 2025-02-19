@@ -17,7 +17,12 @@
 -->
 
 <template>
-  <el-card v-if="!isLoading" class="box-card-display-definition" :body-style="{ padding: '0px' }">
+  <el-card
+    v-if="!isLoading"
+    class="box-card-display-definition"
+    :body-style="{ padding: '0px' }"
+    @keyup.ctrl.13="actionsSave"
+  >
     <div slot="header" class="clearfix">
       <p style="text-align: center;margin-top: 0px;margin-bottom: 5px;background: #e8f4ffa8;">
         <b style="font-size: larger;">
@@ -27,7 +32,7 @@
     </div>
     <div class="text item">
       <el-card shadow="never" class="card-text-content" :body-style="{ padding: '5px'}">
-        <div v-shortkey="{ save: ['ctrl', 'alt', 'enter'] }" @shortkey="actionsSave">
+        <div v-shortkey="{ save: ['alt', 'enter'] }" @shortkey="actionsSave">
           <el-empty v-if="isEmptyValue(fields)" :description="$t('component.displayDefinition.fieldEmpty')" />
           <el-descriptions v-else class="margin-top" :column="2" direction="horizontal">
             <template

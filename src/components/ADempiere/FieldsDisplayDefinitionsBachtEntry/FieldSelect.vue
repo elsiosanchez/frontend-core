@@ -18,6 +18,7 @@
 
 <template>
   <el-select
+    ref="firstInput"
     v-model="fieldMetadata.value"
     remote
     clearable
