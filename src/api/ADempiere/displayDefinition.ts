@@ -255,3 +255,20 @@ export function mosaic({
     }
   })
 }
+
+/**
+ * Group
+ */
+export function group({
+  id,
+  filters
+}) {
+  return request({
+    url: `/display-definition/hierarchies/${id}`,
+    method: 'get',
+    params: {
+      filters,
+      page_size: 300
+    }
+  })
+}

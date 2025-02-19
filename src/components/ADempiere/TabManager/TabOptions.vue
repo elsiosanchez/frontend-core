@@ -352,6 +352,7 @@ export default defineComponent({
       if (type === 'R') return 'resources'
       if (type === 'E') return 'collapse'
       if (type === 'M') return 'mosaic'
+      if (type === 'H') return 'groups'
       return ''
     }
 

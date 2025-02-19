@@ -292,6 +292,9 @@ export default defineComponent({
         case 'M':
           panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/mosaic.vue')
           break
+        case 'H':
+          panel = () => import('@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/group.vue')
+          break
       }
       return panel
     })

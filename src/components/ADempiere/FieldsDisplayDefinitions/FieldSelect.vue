@@ -72,6 +72,7 @@ import { getContext } from '@/utils/ADempiere/contextUtils'
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -134,6 +135,18 @@ export default defineComponent({
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
     const { internal_id, column_name } = props.fieldMetadata
+
+    const IsSOTrx = computed(() => {
+      const IsSOTrx = getContextAttributes({
+        parentUuid,
+        containerUuid,
+        contextColumnNames: ['IsSOTrx'],
+        isBooleanToString: true,
+        format: 'object'
+      })
+      if (isEmptyValue(IsSOTrx)) return ''
+      return JSON.stringify(IsSOTrx)
+    })
 
     const lookupsAttribute = computed(() => {
       if (column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
@@ -219,6 +232,7 @@ export default defineComponent({
         requestLookupList({
           searchValue,
           pageSize: 10,
+          contextAttributesList: IsSOTrx.value,
           ...lookupsAttribute.value
         })
           .then(responseLookupItem => {

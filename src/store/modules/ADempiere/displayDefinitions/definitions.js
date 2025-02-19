@@ -237,6 +237,15 @@ const displayTabDefinition = {
           filters: filtersList
         })
       }
+      if (definition.display_type === 'H') {
+        dispatch('requestGroup', {
+          id: definition.id,
+          isPanel: isPanelRight,
+          tableName,
+          recordId,
+          filters: filtersList
+        })
+      }
       dispatch('listDisplayDefinitionFieldsMetadata', {
         id: definition.id
       })
