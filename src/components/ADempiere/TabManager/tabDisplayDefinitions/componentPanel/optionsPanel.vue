@@ -151,7 +151,7 @@ export default defineComponent({
     const { currentTab } = store.getters.getContainerInfo
     const listProcess = computed(() => {
       return store.getters.getListProcess({
-        tableName: currentTab.table_name
+        tableName: props.displayDefinition.table_name
       })
     })
     function removerRecord() {
