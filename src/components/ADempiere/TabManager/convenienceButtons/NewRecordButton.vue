@@ -115,6 +115,8 @@ export default defineComponent({
         return false
       }
 
+      if (tabAttributes.value.isShowedTableRecords) return false
+
       return createNewRecord.enabled({
         parentUuid: props.parentUuid,
         tabParentIndex: tabAttributes.value.tabParentIndex,
