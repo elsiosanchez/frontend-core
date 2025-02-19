@@ -43,6 +43,7 @@
           <template v-slot:eventContent="arg">
             <div style="display: flex; align-items: center;" @click="openDetails(arg)">
               <options-panel
+                v-show="isNumber(arg.event.id)"
                 :action-option="actionOption"
                 :current-resource="arg.event"
                 :is-option-edit="true"
@@ -386,6 +387,7 @@ export default defineComponent({
           break
       }
     }
+
     return {
       // Ref
       currentResource,
@@ -410,7 +412,8 @@ export default defineComponent({
       openDetails,
       changeRange,
       closeDetails,
-      theAction
+      theAction,
+      isNumber
     }
   }
 })
