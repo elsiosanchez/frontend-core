@@ -50,7 +50,7 @@ import {
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
-import store from '@/store'
+// import store from '@/store'
 // Constants
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 // Utils and Helper Methods
@@ -59,6 +59,7 @@ import { getContext } from '@/utils/ADempiere/contextUtils'
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -122,36 +123,36 @@ export default defineComponent({
     const options = ref([])
     const timeOut = ref(null)
 
-    const { currentTab } = store.getters.getContainerInfo
-    const { containerUuid, parentUuid } = currentTab
-    const { internal_id, column_name } = props.fieldMetadata
+    const { containerUuid, parentUuid, reference } = props.fieldMetadata
 
-    const lookupsAttribute = computed(() => {
-      if (column_name === 'S_Resource_ID' && props.currentDisplayDefinition.is_resource) {
-        return {
-          columnId: internal_id
-        }
-      }
-      if (props.isPanelGeneral) {
-        return {
-          fieldId: internal_id
-        }
-      }
-      return {
-        displayDefinitionFieldId: internal_id
-      }
+    const contexAttribute = computed(() => {
+      if (isEmptyValue(reference.context_column_names)) return
+      const contextAttributesList = getContextAttributes({
+        parentUuid,
+        containerUuid,
+        contextColumnNames: reference.context_column_names,
+        isBooleanToString: true,
+        format: 'object'
+      })
+      return JSON.stringify(contextAttributesList)
     })
 
+    const lookupsAttribute = computed(() => {
+      return {
+        fieldId: props.fieldMetadata.id,
+        contextAttributesList: contexAttribute.value
+      }
+    })
     const contextValue = computed(() => {
       return getContext({
         parentUuid,
         containerUuid,
-        columnName: column_name
+        columnName: props.fieldMetadataa.columnName
       })
     })
     const contextDisplayValue = computed(() => {
       return getContext({
-        columnName: DISPLAY_COLUMN_PREFIX + column_name,
+        columnName: DISPLAY_COLUMN_PREFIX + props.fieldMetadataa.columnName,
         containerUuid,
         parentUuid
       })
@@ -183,7 +184,6 @@ export default defineComponent({
       containerManagerFieldDefinition.updateField({
         recordId: props.currentRecord.id,
         displyDefinitions: props.currentDisplayDefinition,
-        currentTab,
         isPanelRight: props.isPanelRight,
         attributes: {
           [field.column_name]: value
@@ -318,8 +318,9 @@ export default defineComponent({
       isLoadingSearch,
       displayValueOld,
       // Computed
-      lookupsAttribute,
       contextValue,
+      contexAttribute,
+      lookupsAttribute,
       contextDisplayValue,
       // Methods
       showList,
