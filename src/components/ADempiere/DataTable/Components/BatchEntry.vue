@@ -215,7 +215,7 @@ export default defineComponent({
       })
     })
 
-    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_allow_copy && fieldAttributes.is_quick_entry)
+    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry)
 
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({
