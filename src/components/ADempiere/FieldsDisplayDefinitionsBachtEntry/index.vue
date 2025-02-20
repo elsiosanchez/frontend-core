@@ -31,6 +31,7 @@
     :is-panel-right="isPanelRight"
     :is-panel-general="isPanelGeneral"
     :is-read-only="isReadOnly"
+    :container-manager="containerManager"
   >
     <template v-slot:button-exit>
       <slot name="button" />
@@ -102,6 +103,10 @@ export default defineComponent({
     isReadOnly: {
       type: Boolean,
       default: false
+    },
+    containerManager: {
+      type: Object,
+      required: true
     }
   },
 

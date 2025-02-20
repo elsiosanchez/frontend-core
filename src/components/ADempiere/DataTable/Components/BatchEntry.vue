@@ -52,6 +52,7 @@
                     :is-new-record="true"
                     :is-panel-general="true"
                     :is-read-only="!isCreateRecord"
+                    :container-manager="containerManager"
                     :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
                   />
                 </el-form-item>

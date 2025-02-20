@@ -50,7 +50,7 @@ import {
 } from '@vue/composition-api'
 
 // import lang from '@/lang'
-// import store from '@/store'
+import store from '@/store'
 // Constants
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 // Utils and Helper Methods
@@ -112,6 +112,10 @@ export default defineComponent({
     isReadOnly: {
       type: Boolean,
       default: false
+    },
+    containerManager: {
+      type: Object,
+      required: true
     }
   },
 
@@ -124,6 +128,22 @@ export default defineComponent({
     const timeOut = ref(null)
 
     const { containerUuid, parentUuid, reference } = props.fieldMetadata
+
+    const defaultValue = computed(() => {
+      return store.getters.getValueOfFieldOnContainer({
+        parentUuid: props.fieldMetadata.parentUuid,
+        columnName: props.fieldMetadata.column_name,
+        containerUuid: props.fieldMetadata.containerUuid
+      })
+    })
+
+    const defaultDisplayValue = computed(() => {
+      return store.getters.getValueOfFieldOnContainer({
+        parentUuid: props.fieldMetadata.parentUuid,
+        columnName: props.fieldMetadata.displayColumnName,
+        containerUuid: props.fieldMetadata.containerUuid
+      })
+    })
 
     const contexAttribute = computed(() => {
       if (isEmptyValue(reference.context_column_names)) return
@@ -165,7 +185,7 @@ export default defineComponent({
         columnName: props.fieldMetadata.column_name
       })
     }
-    if (props.isNewRecord) {
+    if (props.isNewRecord && props.fieldMetadata.defaultValue) {
       loadDefaultValueFromServer()
     }
 
@@ -232,34 +252,41 @@ export default defineComponent({
      * Get server default value
      */
     function loadDefaultValueFromServer() {
-      const { column_name } = props.fieldMetadata
-      if (props.isPanelRight) {
-        if (
-          !isEmptyValue(contextDisplayValue.value) &&
-          !isEmptyValue(contextValue.value)
-        ) {
-          getContexValues({
-            value: contextValue.value,
-            displayValue: contextDisplayValue.value
-          })
-          return
-        }
-      }
-      let defaultValues
-      if (
-        !isEmptyValue(props.additionalAttributes) &&
-        !isEmptyValue(props.additionalAttributes[column_name])
-      ) {
-        defaultValues = props.additionalAttributes[column_name]
-      }
-      if (!isEmptyValue(defaultValues)) {
-        options.value = [defaultValues]
-        props.fieldMetadata.value = defaultValues.value
-        saveFieldValue(defaultValues.value)
-        return
-      }
-      props.fieldMetadata.value = ''
-      options.value = []
+      const {
+        uuid,
+        columnName,
+        parentUuid,
+        internal_id,
+        containerUuid,
+        default_value,
+        context_column_names
+      } = props.fieldMetadata
+      props.containerManager.getDefaultValue({
+        parentUuid,
+        containerUuid,
+        contextColumnNames: context_column_names,
+        defaultValue: default_value,
+        uuid,
+        id: internal_id,
+        columnName,
+        value: defaultValue.value
+      })
+        .then(responseLookupItem => {
+          let displayedValue, value
+          if (!isEmptyValue(responseLookupItem.displayedValue) && !isEmptyValue(responseLookupItem.value)) {
+            displayedValue = responseLookupItem.displayedValue
+            value = responseLookupItem.value
+          } else {
+            displayedValue = defaultDisplayValue.value
+            value = defaultValue.value
+          }
+          props.fieldMetadata.value = defaultValue.value
+          saveFieldValue(defaultValue.value)
+          options.value = [{
+            display_value: displayedValue,
+            value
+          }]
+        })
     }
 
     /**
@@ -319,8 +346,10 @@ export default defineComponent({
       displayValueOld,
       // Computed
       contextValue,
+      defaultValue,
       contexAttribute,
       lookupsAttribute,
+      defaultDisplayValue,
       contextDisplayValue,
       // Methods
       showList,
