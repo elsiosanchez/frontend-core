@@ -29,6 +29,7 @@
       >
         <el-col :span="24">
           <el-form
+            id="fieldsDisplay"
             label-position="top"
             label-width="100px"
             size="small"
@@ -62,6 +63,9 @@
         </el-col>
         <el-col :span="24">
           <p style="text-align: end;margin: 0px;">
+            <i style="color: #9198a1;margin-right: 5px;">
+              {{ $t('table.dataTable.commandSave') }}
+            </i>
             <b>
               {{ $t('table.dataTable.batchEntry') }}
             </b>
@@ -375,16 +379,16 @@ export default defineComponent({
         })
         .finally(() => {
           isLoadingPanel.value = false
+          focusFirstInput()
         })
     }
 
     function clearField() {
       fieldsListBatchEntry.value.forEach(element => {
-        if (attributesBachtEntry.value[element.column_name] && !element.is_allow_copy) {
-          attributesBachtEntry.value[element.column_name] = undefined
+        if (!element.is_allow_copy) {
+          element.value = undefined
         }
       })
-      // cleanField()
     }
 
     function validateMandatoryFieldsEmpty({
@@ -413,16 +417,13 @@ export default defineComponent({
       })
     }
 
-    const fieldsDisplay = ref([])
+    const fieldsDisplay = ref({})
 
     function focusFirstInput() {
       nextTick(() => {
-        if (fieldsDisplay.value.length > 0) {
-          const firstField = fieldsDisplay.value[0]
-          if (firstField.$children[0]) {
-            firstField.$children[0].$children[0].focus()
-          }
-        }
+        const fieldEmptyIndex = fieldsListBatchEntry.value.findIndex(element => isEmptyValue(element.value))
+        const main = document.getElementById('fieldsDisplay')
+        main.children[fieldEmptyIndex].__vue__.$children[0].$children[1].$children[0].$children[0].focus()
       })
     }
 

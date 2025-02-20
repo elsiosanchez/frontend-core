@@ -53,6 +53,9 @@
               inactive-color="#ff4949"
             />
           </span>
+          <i style="color: #9198a1;margin-right: 5px;float: right;">
+            {{ $t('table.dataTable.commandSave') }}
+          </i>
         </template>
       </component>
     </div>

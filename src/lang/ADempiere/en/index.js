@@ -202,7 +202,8 @@ export default {
       exportRecordTable: 'Export Selected Records',
       showTotal: 'Show Totals',
       hiddenTotal: 'Hidden Totals',
-      batchEntry: 'Batch Entry'
+      batchEntry: 'Batch Entry',
+      commandSave: 'Press Alt + Enter to Save'
     },
     recentItems: {
       search: 'Filter by name, description or date',

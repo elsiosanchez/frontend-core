@@ -17,21 +17,19 @@
 -->
 
 <template>
-  <span>
-    <el-input-number
-      ref="firstInput"
-      v-model="value"
-      controls-position="right"
-      :placeholder="fieldMetadata.description"
-      size="mini"
-      :precision="precision"
-      class="field-number"
-      style="width: 100%;"
-      :disabled="isReadOnly"
-      @input="saveFieldValue(value, fieldMetadata)"
-      @focus="selectContent"
-    />
-  </span>
+  <el-input-number
+    ref="firstInput"
+    v-model="fieldMetadata.value"
+    controls-position="right"
+    :placeholder="fieldMetadata.description"
+    size="mini"
+    :precision="precision"
+    class="field-number"
+    style="width: 100%;"
+    :disabled="isReadOnly"
+    @change="saveFieldValue(fieldMetadata.value, fieldMetadata)"
+    @focus="selectContent"
+  />
 </template>
 
 <script>
@@ -134,7 +132,7 @@ export default defineComponent({
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
-        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
+        if (props.fieldMetadata.is_allow_copy) dataBachtEntry(value)
         return
       }
     }
@@ -169,7 +167,7 @@ export default defineComponent({
       props.fieldMetadata.is_quick_entry &&
       !isEmptyValue(props.isValueBachtEntry)
     ) {
-      value.value = props.isValueBachtEntry
+      props.fieldMetadata.value = props.isValueBachtEntry
     }
 
     return {

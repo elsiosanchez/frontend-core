@@ -203,7 +203,8 @@ export default {
       exportRecordTable: 'Exportar Registros Seleccionados',
       showTotal: 'Mostrar Totales',
       hiddenTotal: 'Ocultar Totales',
-      batchEntry: 'Entrada por Lotes'
+      batchEntry: 'Entrada por Lotes',
+      commandSave: 'Presione Alt + Enter para Guardar'
     },
     recentItems: {
       search: 'Filtrar por nombre, descripción o fecha',
