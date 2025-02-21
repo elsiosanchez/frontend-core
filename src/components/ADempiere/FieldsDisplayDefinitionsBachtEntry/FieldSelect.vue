@@ -330,6 +330,7 @@ export default defineComponent({
       fieldList,
       columnName
     }) {
+      if (isEmptyValue(fieldList[columnName])) return
       props.fieldMetadata.value = fieldList[columnName].value
       displayValueOld.value = fieldList[columnName].value
       options.value = [fieldList[columnName]]

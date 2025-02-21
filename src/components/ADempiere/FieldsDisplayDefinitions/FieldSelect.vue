@@ -64,12 +64,18 @@ import {
 
 // import lang from '@/lang'
 import store from '@/store'
-// Constants
-import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
-// Utils and Helper Methods
-import { getContext } from '@/utils/ADempiere/contextUtils'
+
 // API Request Methods
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
+
+// Constants
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
+import {
+  COLUMNNAME_IsSOTrx
+} from '@/utils/ADempiere/constants/systemColumns'
+
+// Utils and Helper Methods
+import { getContext } from '@/utils/ADempiere/contextUtils'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
@@ -134,18 +140,27 @@ export default defineComponent({
     const inputSelect = ref(undefined)
     const { currentTab } = store.getters.getContainerInfo
     const { containerUuid, parentUuid } = currentTab
-    const { internal_id, column_name } = props.fieldMetadata
+    const { internal_id, column_name, reference } = props.fieldMetadata
 
-    const IsSOTrx = computed(() => {
-      const IsSOTrx = getContextAttributes({
+    const contextAttributesList = computed(() => {
+      let contextColumnNames = []
+      if (!isEmptyValue(reference) && !isEmptyValue(reference.context_column_names)) {
+        contextColumnNames = reference.context_column_names
+      }
+      if (!contextColumnNames.includes(COLUMNNAME_IsSOTrx)) {
+        contextColumnNames.push(COLUMNNAME_IsSOTrx)
+      }
+      const contextAttributes = getContextAttributes({
         parentUuid,
         containerUuid,
-        contextColumnNames: ['IsSOTrx'],
+        contextColumnNames: contextColumnNames,
         isBooleanToString: true,
         format: 'object'
       })
-      if (isEmptyValue(IsSOTrx)) return ''
-      return JSON.stringify(IsSOTrx)
+      if (isEmptyValue(contextAttributes)) {
+        return ''
+      }
+      return JSON.stringify(contextAttributes)
     })
 
     const lookupsAttribute = computed(() => {
@@ -232,7 +247,7 @@ export default defineComponent({
         requestLookupList({
           searchValue,
           pageSize: 10,
-          contextAttributesList: IsSOTrx.value,
+          contextAttributesList: contextAttributesList.value,
           ...lookupsAttribute.value
         })
           .then(responseLookupItem => {
@@ -294,6 +309,7 @@ export default defineComponent({
       fieldList,
       columnName
     }) {
+      if (isEmptyValue(fieldList[columnName])) return
       fieldValue.value = fieldList[columnName].value
       displayValueOld.value = fieldList[columnName].value
       options.value = [fieldList[columnName]]

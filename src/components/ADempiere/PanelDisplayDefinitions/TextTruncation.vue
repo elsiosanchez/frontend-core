@@ -28,7 +28,7 @@ export default defineComponent({
 
   props: {
     fullText: {
-      type: String,
+      type: [String, Boolean],
       required: false
     },
     maxWords: {
@@ -53,6 +53,7 @@ export default defineComponent({
     const buttonText = computed(() => isExpanded.value ? lang.t('component.displayDefinition.seeLess') : lang.t('component.displayDefinition.seeMore'))
     const isTruncated = computed(() => {
       if (isEmptyValue(props.fullText)) return false
+      if (typeof props.fullText === 'boolean') return props.fullText
       return props.fullText.split(' ').length > props.maxWords
     })
     const textContainerStyle = computed(() => ({
@@ -66,6 +67,7 @@ export default defineComponent({
     }
     const truncateText = (text) => {
       if (!isTruncated.value) return text
+      if (typeof text !== 'string') return text
       return text.split(' ').slice(0, props.maxWords).join(' ') + '...  '
     }
     return {

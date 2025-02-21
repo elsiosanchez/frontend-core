@@ -114,6 +114,38 @@ function deleteRecordToListCollapse({
   })
 }
 
+// Delete Record from HIERARCHY
+function deleteRecordToHierarchy({
+  isPanelRight,
+  currentTab,
+  recordId
+}) {
+  let currentGroup
+  if (isPanelRight) {
+    currentGroup = store.getters.getCurrentGroupPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentGroup = store.getters.getCurrentGroupDefinition({
+      tableName: currentTab.table_name
+    })
+  }
+  currentGroup.records.forEach(group => {
+    group.records = group.records.filter(record => record.id !== recordId)
+  })
+  if (isPanelRight) {
+    store.commit('setGroupPanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentGroup
+    })
+    return
+  }
+  store.commit('setGroupDefinition', {
+    tableName: currentTab.table_name,
+    currentGroup
+  })
+}
+
 // Delete Record from Mosaic
 
 function deleteRecordToMosaic({
@@ -294,6 +326,61 @@ function addNewRecordToListCollapse({
   store.commit('setCollapseDefinition', {
     tableName: table_name,
     currentCollapse
+  })
+}
+
+/**
+ * Add New Record to Panel Hierarchy
+ */
+
+function addNewRecordToHierarchy({
+  isPanelRight,
+  newRecord,
+  keyAttribute,
+  currentTab,
+  displayDefinition,
+  isEditRecord
+}) {
+  const {
+    table_name
+  } = displayDefinition
+  let currentGroup
+  if (isPanelRight) {
+    currentGroup = store.getters.getCurrentGroupPanelRightDefinition({
+      tableName: currentTab.table_name
+    })
+  } else {
+    currentGroup = store.getters.getCurrentGroupDefinition({
+      tableName: table_name
+    })
+  }
+  if (isEditRecord) {
+    currentGroup.records.childs = currentGroup.records.childs.map(data => {
+      if (data.id === newRecord.id) {
+        return {
+          ...data,
+          ...newRecord
+        }
+      }
+      return {
+        ...data
+      }
+    })
+  } else {
+    currentGroup.records.push({
+      ...newRecord
+    })
+  }
+  if (isPanelRight) {
+    store.commit('setGroupPanelTabDefinition', {
+      tableName: currentTab.table_name,
+      currentGroup
+    })
+    return
+  }
+  store.commit('setGroupDefinition', {
+    tableName: table_name,
+    currentGroup
   })
 }
 
@@ -767,7 +854,8 @@ const functionMap = {
   CALENDAR: addNewRecordToListCalendar,
   RESOURCE: addNewRecordToListResource,
   EXPAND_COLLAPSE: addNewRecordToListCollapse,
-  MOSAIC: addNewRecordToMosaic
+  MOSAIC: addNewRecordToMosaic,
+  HIERARCHY: addNewRecordToHierarchy
 }
 
 const functionMaDelete = {
@@ -775,7 +863,8 @@ const functionMaDelete = {
   RESOURCE: addNewRecordToListResource,
   KANBAN: deleteRecordToListKanban,
   EXPAND_COLLAPSE: deleteRecordToListCollapse,
-  MOSAIC: deleteRecordToMosaic
+  MOSAIC: deleteRecordToMosaic,
+  HIERARCHY: deleteRecordToHierarchy
 }
 
 const functionProcess = {
