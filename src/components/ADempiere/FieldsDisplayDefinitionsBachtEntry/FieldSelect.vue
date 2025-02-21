@@ -59,7 +59,6 @@ import { getContext } from '@/utils/ADempiere/contextUtils'
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
-import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -116,6 +115,10 @@ export default defineComponent({
     containerManager: {
       type: Object,
       required: true
+    },
+    fieldList: {
+      type: Array,
+      required: false
     }
   },
 
@@ -145,17 +148,7 @@ export default defineComponent({
       })
     })
 
-    const contexAttribute = computed(() => {
-      if (isEmptyValue(reference.context_column_names)) return
-      const contextAttributesList = getContextAttributes({
-        parentUuid,
-        containerUuid,
-        contextColumnNames: reference.context_column_names,
-        isBooleanToString: true,
-        format: 'object'
-      })
-      return JSON.stringify(contextAttributesList)
-    })
+    const contexAttribute = ref({})
 
     const lookupsAttribute = computed(() => {
       return {
@@ -216,10 +209,42 @@ export default defineComponent({
     }
 
     function showList(isShow) {
-      if (isShow && options.value.length <= 1 || !isEmptyValue(options.value)) {
-        remoteMethod()
-        return
+      if (!isEmptyValue(reference.context_column_names)) {
+        const attributesBachtEntry = {}
+        reference.context_column_names.forEach(list => {
+          const fieldValue = props.fieldList.find(field => field.columnName === list)
+          attributesBachtEntry[list] = fieldValue.value
+        })
+        contexAttribute.value = JSON.stringify(attributesBachtEntry)
       }
+      requestLookupList({
+        pageSize: 10,
+        ...lookupsAttribute.value
+      })
+        .then(responseLookupItem => {
+          const { records } = responseLookupItem
+          options.value = records.map(list => {
+            const { values } = list
+            return {
+              display_value: values.DisplayColumn,
+              value: values.KeyColumn
+            }
+          })
+        })
+        .catch(() => {
+          options.value = [{
+            display_value: '',
+            value: ''
+          }]
+          isLoadingSearch.value = false
+        })
+        .finally(() => {
+          isLoadingSearch.value = false
+        })
+      // if (isShow && options.value.length <= 1 || !isEmptyValue(options.value)) {
+      //   remoteMethod()
+      //   return
+      // }
     }
 
     function remoteMethod(searchValue) {
@@ -241,6 +266,13 @@ export default defineComponent({
                 value: values.KeyColumn
               }
             })
+          })
+          .catch(() => {
+            options.value = [{
+              display_value: '',
+              value: ''
+            }]
+            isLoadingSearch.value = false
           })
           .finally(() => {
             isLoadingSearch.value = false

@@ -31,6 +31,7 @@
     :is-panel-right="isPanelRight"
     :is-panel-general="isPanelGeneral"
     :is-read-only="isReadOnly"
+    :field-list="fieldList"
     :container-manager="containerManager"
   >
     <template v-slot:button-exit>
@@ -107,6 +108,10 @@ export default defineComponent({
     containerManager: {
       type: Object,
       required: true
+    },
+    fieldList: {
+      type: Array,
+      required: false
     }
   },
 

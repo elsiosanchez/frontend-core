@@ -51,6 +51,7 @@
                     :update-field="updateField"
                     :persistence-data="persistenceBachtEntry"
                     :is-new-record="true"
+                    :field-list="fieldsListBatchEntry"
                     :is-panel-general="true"
                     :is-read-only="!isCreateRecord"
                     :container-manager="containerManager"
