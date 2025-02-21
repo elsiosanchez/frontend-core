@@ -332,15 +332,26 @@ export default defineComponent({
         dateEnd = null
       } else {
         // Get the current date
-        const currentDate = new Date()
-        const currentYear = currentDate.getFullYear()
+        let currentStartDate = new Date()
+        let currentEndDate = new Date()
+
+        const { view } = params
+        const { type } = view
+        if (['resourceTimelineMonth', 'resourceTimelineYear'].includes(type)) {
+          const {
+            start, end
+          } = params
+          // overwrite dates
+          currentStartDate = start
+          currentEndDate = end
+        }
 
         // First day of the previous year
-        const firstDayPreviousYear = new Date(currentYear - 1, 0, 1) // 0 is January
+        const firstDayPreviousYear = new Date(currentStartDate.getFullYear() - 1, 0, 1) // 0 is January
         dateStart = firstDayPreviousYear.toJSON()
 
         // Last day of the next year
-        const lastDayNextYear = new Date(currentYear + 1, 11, 31) // 11 is December
+        const lastDayNextYear = new Date(currentEndDate.getFullYear() + 1, 11, 31) // 11 is December
         dateEnd = lastDayNextYear.toJSON()
       }
       store.dispatch('changeDateRange', {
