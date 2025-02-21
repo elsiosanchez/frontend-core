@@ -59,6 +59,7 @@ import { getContext } from '@/utils/ADempiere/contextUtils'
 import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
+import { showMessage } from '@/utils/ADempiere/notification.js'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -213,7 +214,11 @@ export default defineComponent({
         const attributesBachtEntry = {}
         reference.context_column_names.forEach(list => {
           const fieldValue = props.fieldList.find(field => field.columnName === list)
-          attributesBachtEntry[list] = fieldValue.value
+          // attributesBachtEntry[list] = fieldValue.value
+          attributesBachtEntry[list] = setValueContextColumnName({
+            context_column_names: list,
+            currentField: fieldValue
+          })
         })
         contexAttribute.value = JSON.stringify(attributesBachtEntry)
       }
@@ -231,11 +236,15 @@ export default defineComponent({
             }
           })
         })
-        .catch(() => {
+        .catch(error => {
           options.value = [{
             display_value: '',
             value: ''
           }]
+          showMessage({
+            message: `Error: ${error.message}`,
+            type: 'warning'
+          })
           isLoadingSearch.value = false
         })
         .finally(() => {
@@ -267,12 +276,16 @@ export default defineComponent({
               }
             })
           })
-          .catch(() => {
+          .catch(error => {
             options.value = [{
               display_value: '',
               value: ''
             }]
             isLoadingSearch.value = false
+            showMessage({
+              message: `Error: ${error.message}`,
+              type: 'warning'
+            })
           })
           .finally(() => {
             isLoadingSearch.value = false
@@ -337,18 +350,18 @@ export default defineComponent({
     }
 
     /**
-     * Get Contex Values
+     * Set the value of the context column names
      */
-    function getContexValues({
-      displayValue,
-      value
+    function setValueContextColumnName({
+      context_column_names,
+      currentField
     }) {
-      props.fieldMetadata.value = value
-      options.value = [{
-        display_value: displayValue,
-        value: value
-      }]
-      saveFieldValue(value)
+      if (!isEmptyValue(currentField) && !isEmptyValue(currentField.value)) return currentField.value
+      return store.getters.getValueOfFieldOnContainer({
+        parentUuid: props.fieldMetadata.parentUuid,
+        columnName: context_column_names,
+        containerUuid: props.fieldMetadata.containerUuid
+      })
     }
 
     function dataBachtEntry(value) {
@@ -387,7 +400,7 @@ export default defineComponent({
       // Methods
       showList,
       remoteMethod,
-      getContexValues,
+      setValueContextColumnName,
       updateFieldValue,
       requestLookupList,
       saveFieldValue
