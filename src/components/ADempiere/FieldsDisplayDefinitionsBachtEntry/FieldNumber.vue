@@ -24,7 +24,6 @@
     :placeholder="fieldMetadata.description"
     size="mini"
     :precision="precision"
-    class="field-number"
     style="width: 100%;"
     :disabled="isReadOnly"
     @change="saveFieldValue(fieldMetadata.value, fieldMetadata)"

@@ -25,7 +25,7 @@
     :rows="rowsField"
     :type="typeTextBox"
     :disabled="isReadOnly"
-    style="padding-right: 10px;width: 100%;"
+    style="width: 100%;"
     @input="saveFieldValue(fieldMetadata.value, fieldMetadata)"
   />
 </template>

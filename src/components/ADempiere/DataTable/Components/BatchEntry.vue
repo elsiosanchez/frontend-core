@@ -35,31 +35,30 @@
             size="small"
             class="field-component-bacht-entry"
           >
-            <template
+            <el-col
               v-for="(field, key) in fieldsListBatchEntry"
+              :key="key"
+              :span="6"
             >
-              <el-col :key="key" :span="6">
-                <el-form-item
-                  :label="field.name"
-                  :required="field.isMandatory"
-                  style="padding: 0px !important;"
-                  class="label-field-title"
-                >
-                  <fields-display-definitions
-                    ref="fieldsDisplay"
-                    :field="field"
-                    :update-field="updateField"
-                    :persistence-data="persistenceBachtEntry"
-                    :is-new-record="true"
-                    :field-list="fieldsListBatchEntry"
-                    :is-panel-general="true"
-                    :is-read-only="!isCreateRecord"
-                    :container-manager="containerManager"
-                    :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
-                  />
-                </el-form-item>
-              </el-col>
-            </template>
+              <el-form-item
+                :label="field.name"
+                style="padding: 0px !important;"
+                class="label-field-title"
+              >
+                <fields-display-definitions
+                  ref="fieldsDisplay"
+                  :field="field"
+                  :update-field="updateField"
+                  :persistence-data="persistenceBachtEntry"
+                  :is-new-record="true"
+                  :field-list="fieldsListBatchEntry"
+                  :is-panel-general="true"
+                  :is-read-only="!isCreateRecord"
+                  :container-manager="containerManager"
+                  :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+                />
+              </el-form-item>
+            </el-col>
           </el-form>
         </el-col>
         <el-col :span="24">
@@ -220,7 +219,7 @@ export default defineComponent({
       })
     })
 
-    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry)
+    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry).sort((a, b) => a.sequence - b.sequence)
 
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({

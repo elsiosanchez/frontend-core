@@ -28,7 +28,7 @@
     :placeholder="fieldMetadata.description"
     :remote-method="remoteMethod"
     :loading="isLoadingSearch"
-    style="padding-right: 10px;width: 100%;"
+    style="width: 100%;"
     :disabled="isReadOnly"
     @visible-change="showList"
     @change="saveFieldValue"
