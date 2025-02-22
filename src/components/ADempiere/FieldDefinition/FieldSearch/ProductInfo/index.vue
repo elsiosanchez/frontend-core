@@ -192,10 +192,12 @@ export default {
           parentUuid,
           containerUuid: this.metadata.containerUuid,
           contextColumnNames: this.metadata.reference.context_column_names,
-          tableName: TABLE_NAME,
-          uuid: this.metadata.uuid,
           id: this.metadata.internal_id,
+          uuid: this.metadata.uuid,
+          //
+          tableName: TABLE_NAME,
           searchValue,
+          //
           pageNumber: 1,
           pageSize: RECORD_ROWS_BY_LIST
         })

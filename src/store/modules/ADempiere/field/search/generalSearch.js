@@ -42,7 +42,6 @@ import { showMessage } from '@/utils/ADempiere/notification'
 import { generatePageToken } from '@/utils/ADempiere/dataUtils'
 import { generateField } from '@/utils/ADempiere/dictionaryUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
-import { isSameSize } from '@/utils/ADempiere/formatValue/iterableFormat'
 
 const initState = {
   generalInfoSearchPopoverList: false,
@@ -451,17 +450,18 @@ const generalInfoSearch = {
           parentUuid,
           containerUuid: originContainerUuid,
           contextColumnNames,
-          isBooleanToString: true
+          isBooleanToString: true,
+          format: 'object'
         })
         let contextAttributes = '{}'
         if (!isEmptyValue(contextAttributesList)) {
           contextAttributes = JSON.stringify(contextAttributesList)
         }
         // fill context value to continue
-        if (!isSameSize(contextColumnNames, contextAttributesList)) {
-          resolve([])
-          return
-        }
+        // if (!isSameSize(contextColumnNames, contextAttributesList)) {
+        //   resolve([])
+        //   return
+        // }
 
         let filtersList
         if (!isEmptyValue(filters)) {
