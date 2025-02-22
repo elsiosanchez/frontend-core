@@ -92,7 +92,9 @@ const groupDefinition = {
       tableName,
       recordId,
       searchValue,
-      isPanel = false
+      isPanel = false,
+      pageSize = 25,
+      pageToken
     }) {
       return new Promise(resolve => {
         if (isPanel) {
@@ -105,7 +107,9 @@ const groupDefinition = {
         group({
           id,
           filters: JSON.stringify(filters),
-          searchValue
+          searchValue,
+          pageSize,
+          pageToken
         })
           .then(response => {
             if (isPanel) {

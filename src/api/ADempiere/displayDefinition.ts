@@ -228,14 +228,17 @@ export function deleteDataEntryResource({
  */
 export function collapse({
   id,
-  filters
+  filters,
+  pageSize,
+  pageToken
 }) {
   return request({
     url: `/display-definition/expand-collapses/${id}`,
     method: 'get',
     params: {
       filters,
-      page_size: 300
+      pageSize,
+      pageToken
     }
   })
 }
@@ -244,14 +247,17 @@ export function collapse({
  */
 export function mosaic({
   id,
-  filters
+  filters,
+  pageSize,
+  pageToken
 }) {
   return request({
     url: `/display-definition/mosaics/${id}`,
     method: 'get',
     params: {
       filters,
-      page_size: 300
+      page_size: pageSize,
+      page_token: pageToken
     }
   })
 }
@@ -261,14 +267,17 @@ export function mosaic({
  */
 export function group({
   id,
-  filters
+  filters,
+  pageSize,
+  pageToken
 }) {
   return request({
     url: `/display-definition/hierarchies/${id}`,
     method: 'get',
     params: {
       filters,
-      page_size: 300
+      page_size: pageSize,
+      page_token: pageToken
     }
   })
 }

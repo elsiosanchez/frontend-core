@@ -110,7 +110,9 @@ const collapseDefinition = {
       tableName,
       recordId,
       searchValue,
-      isPanel = false
+      isPanel = false,
+      pageSize,
+      pageToken
     }) {
       return new Promise(resolve => {
         if (isPanel) {
@@ -123,7 +125,9 @@ const collapseDefinition = {
         collapse({
           id,
           filters: JSON.stringify(filters),
-          searchValue
+          searchValue,
+          pageSize,
+          pageToken
         })
           .then(response => {
             if (isPanel) {

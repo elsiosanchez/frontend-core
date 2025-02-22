@@ -35,7 +35,7 @@
           ref="tableGroup"
           v-loading="isLoading"
           class="table-group"
-          :height="600"
+          :height="500"
           :data="groupDefinition.records"
           :border="false"
           :default-expand-all="false"
@@ -152,6 +152,15 @@
         </el-table>
       </div>
     </el-card>
+    <custom-pagination
+      :parent-uuid="parentUuid"
+      :container-manager="containerManager"
+      :total-records="groupDefinition.record_count"
+      :page-size="pageSize"
+      :page-number="pageToken"
+      :handle-change-page-size="handleChangePageSize"
+      :handle-change-page-number="handleChangePageToken"
+    />
   </span>
 </template>
 
@@ -169,15 +178,18 @@ import {
 
 // Components and Mixins
 import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
+import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 
 // // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isNumberField } from '@/utils/ADempiere/references'
+import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
   name: 'Group',
   components: {
-    optionsPanel
+    optionsPanel,
+    CustomPagination
   },
   props: {
     parentUuid: {
@@ -269,7 +281,16 @@ export default defineComponent({
         id: currentDisplayDefinition.value.id
       })
     })
-
+    const pageSize = computed(() => {
+      if (isEmptyValue(groupDefinition.value)) return 25
+      return Number(groupDefinition.value.record_count)
+    })
+    const pageToken = computed(() => {
+      if (isEmptyValue(groupDefinition.value)) return 0
+      const page = groupDefinition.value.next_page_token
+      if (page) return (Number(page.slice(-1)) - 1)
+      return 0
+    })
     const displayDefinitionFields = computed(() => {
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
@@ -371,6 +392,24 @@ export default defineComponent({
     function childRowClassName() {
       return 'child-row'
     }
+    function handleChangePageSize(pageSize) {
+      containerManagerFieldDefinition.changeSizeRecords({
+        id: currentDisplayDefinition.value.id,
+        tableName: props.tabAttributes.table_name,
+        displyDefinitions: currentDisplayDefinition.value,
+        pageSize,
+        pageToken: pageToken.value
+      })
+    }
+    function handleChangePageToken(pageToken) {
+      containerManagerFieldDefinition.changeSizeRecords({
+        id: currentDisplayDefinition.value.id,
+        tableName: props.tabAttributes.table_name,
+        displyDefinitions: currentDisplayDefinition.value,
+        pageSize: pageSize.value,
+        pageToken
+      })
+    }
     return {
       // computed
       currenPanelGroup,
@@ -381,6 +420,8 @@ export default defineComponent({
       isLoading,
       filedLists,
       filedListsChild,
+      pageToken,
+      pageSize,
       //
       newEntry,
       theAction,
@@ -388,6 +429,8 @@ export default defineComponent({
       readRecord,
       rowClassName,
       childRowClassName,
+      handleChangePageSize,
+      handleChangePageToken,
       //
       isNumberField
     }

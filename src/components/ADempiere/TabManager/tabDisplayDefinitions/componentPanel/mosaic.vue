@@ -25,7 +25,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         {{ currentDisplayDefinition.description }}
       </div>
     </div>
-    <el-card v-loading="isLoading" class="catalog" :body-style="{ padding: '10px' }">
+    <el-card v-loading="isLoading" class="container-catalog" :body-style="{ padding: '10px' }">
       <div
         v-shortkey="{ new: ['ctrl', 'alt', 'n'] }"
         @shortkey="theAction"
@@ -118,6 +118,15 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-row>
       </div>
     </el-card>
+    <custom-pagination
+      :parent-uuid="parentUuid"
+      :container-manager="containerManager"
+      :total-records="mosaicDefinition.record_count"
+      :page-size="pageSize"
+      :page-number="pageToken"
+      :handle-change-page-size="handleChangePageSize"
+      :handle-change-page-number="handleChangePageToken"
+    />
   </span>
 </template>
 <script>
@@ -133,6 +142,8 @@ import store from '@/store'
 import draggable from 'vuedraggable'
 import optionsPanel from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/optionsPanel.vue'
 import TextTruncation from '@/components/ADempiere/PanelDisplayDefinitions/TextTruncation'
+import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
+
 // API Request Methods
 
 // Utils and Helper Methods
@@ -145,7 +156,8 @@ export default defineComponent({
   components: {
     draggable,
     optionsPanel,
-    TextTruncation
+    TextTruncation,
+    CustomPagination
   },
 
   props: {
@@ -218,7 +230,16 @@ export default defineComponent({
         isPanel: props.isPanelRight
       })
     })
-
+    const pageSize = computed(() => {
+      if (isEmptyValue(mosaicDefinition.value)) return 25
+      return Number(mosaicDefinition.value.record_count)
+    })
+    const pageToken = computed(() => {
+      if (isEmptyValue(mosaicDefinition.value)) return 0
+      const page = mosaicDefinition.value.next_page_token
+      if (page) return (Number(page.slice(-1)) - 1)
+      return 0
+    })
     const mosaicDefinition = computed(() => {
       if (props.isPanelRight) {
         return store.getters.getCurrentMosaicPanelRightDefinition({
@@ -438,6 +459,24 @@ export default defineComponent({
       if (field.componentPath === 'FieldYesNo') return field.name
       return ''
     }
+    function handleChangePageSize(pageSize) {
+      containerManagerFieldDefinition.changeSizeRecords({
+        id: currentDisplayDefinition.value.id,
+        tableName: props.tabAttributes.table_name,
+        displyDefinitions: currentDisplayDefinition.value,
+        pageSize,
+        pageToken: pageToken.value
+      })
+    }
+    function handleChangePageToken(pageToken) {
+      containerManagerFieldDefinition.changeSizeRecords({
+        id: currentDisplayDefinition.value.id,
+        tableName: props.tabAttributes.table_name,
+        displyDefinitions: currentDisplayDefinition.value,
+        pageSize: pageSize.value,
+        pageToken
+      })
+    }
     return {
       // Computeds
       columnsList,
@@ -451,13 +490,17 @@ export default defineComponent({
       mosaicDefinition,
       columnNumber,
       currentDisplayDefinition,
+      pageSize,
+      pageToken,
       // Mehtods
       handleCardMove,
       displayValue,
       errorHandler,
       newEntry,
       theAction,
-      labelItem
+      labelItem,
+      handleChangePageSize,
+      handleChangePageToken
     }
   }
 })
@@ -471,6 +514,10 @@ export default defineComponent({
 }
 .menu-options-display {
   float: right;
+}
+.container-catalog {
+  height: 400px !important;
+  overflow-y: scroll
 }
 .catalog {
   .el-card__header {

@@ -848,6 +848,73 @@ function runProcessReport({
       }
     })
 }
+
+// Function Change Records Size Hierarchy
+
+function changePageSizeToHierarchy({
+  id,
+  searchValue,
+  tableName,
+  pageSize,
+  pageToken,
+  recordId,
+  isPanelRight
+}) {
+  store.dispatch('requestGroup', {
+    id,
+    tableName,
+    recordId,
+    searchValue,
+    isPanel: isPanelRight,
+    pageSize,
+    pageToken
+  })
+}
+
+// Function Change Records Size Mosaic
+
+function changePageSizeToMosaic({
+  id,
+  searchValue,
+  tableName,
+  pageSize,
+  pageToken,
+  recordId,
+  isPanelRight
+}) {
+  store.dispatch('requestMosaic', {
+    id,
+    tableName,
+    recordId,
+    searchValue,
+    isPanel: isPanelRight,
+    pageSize,
+    pageToken
+  })
+}
+
+// Function Change Records Size Collapse
+
+function changePageSizeToCollapse({
+  id,
+  searchValue,
+  tableName,
+  pageSize,
+  pageToken,
+  recordId,
+  isPanelRight
+}) {
+  store.dispatch('requestCollapse', {
+    id,
+    tableName,
+    recordId,
+    searchValue,
+    isPanel: isPanelRight,
+    pageSize,
+    pageToken
+  })
+}
+
 // Mapa de funciones
 const functionMap = {
   KANBAN: addNewRecordToListKanban,
@@ -870,6 +937,12 @@ const functionMaDelete = {
 const functionProcess = {
   Process: runProcess,
   Report: runProcessReport
+}
+
+const functionChangePageSize = {
+  HIERARCHY: changePageSizeToHierarchy,
+  MOSAIC: changePageSizeToMosaic,
+  EXPAND_COLLAPSE: changePageSizeToCollapse
 }
 // Separate function to handle post-save actions
 const handlePostSaveActions = ({
@@ -1095,5 +1168,25 @@ export const containerManagerFieldDefinition = {
       })
       return
     }
+  },
+  async changeSizeRecords({
+    id,
+    recordId,
+    tableName,
+    displyDefinitions,
+    isPanelRight = false,
+    pageToken,
+    pageSize = 25
+  }) {
+    const actionType = displyDefinitions.type?.toUpperCase()
+    const functionToCall = functionChangePageSize[actionType]
+    functionToCall({
+      id,
+      recordId,
+      tableName,
+      isPanelRight,
+      pageToken,
+      pageSize
+    })
   }
 }
