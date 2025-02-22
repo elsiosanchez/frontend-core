@@ -88,7 +88,9 @@ export default {
     },
     isRenderRange() {
       if (!isEmptyValue(this.metadata.operator)) {
-        return RANGE_VALUE_OPERATORS_LIST.includes(this.metadata.operator)
+        if (this.metadata.isAdvancedQuery || this.metadata.is_query_criteria || this.metadata.panelType === 'report') {
+          return RANGE_VALUE_OPERATORS_LIST.includes(this.metadata.operator)
+        }
       }
       return this.metadata.is_range
     },
