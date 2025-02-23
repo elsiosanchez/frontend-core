@@ -23,6 +23,7 @@
     controls-position="right"
     :placeholder="fieldMetadata.description"
     size="mini"
+    class="field-number"
     :precision="precision"
     style="width: 100%;"
     :disabled="isReadOnly"
