@@ -20,11 +20,13 @@
   <span v-if="!isEditSecuence">
     <div v-if="isDisableOptionsTabChild" class="convenience-buttons-main">
       <new-record-button
+        v-show="!isShowedTableRecords"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
       />
 
       <undo-change-button
+        v-show="!isShowedTableRecords"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
       />
@@ -40,6 +42,7 @@
       />
 
       <save-record-button
+        v-show="!isShowedTableRecords"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
       />
@@ -156,6 +159,10 @@ export default defineComponent({
       return store.state.app.device === 'mobile'
     })
 
+    const isShowedTableRecords = computed(() => {
+      return getCurrentTab.value.isShowedTableRecords
+    })
+
     function openLog() {
       const list = store.getters.getTabRecordsList({ containerUuid })
       const currentRecord = list.find(row => row.UUID === recordUuid.value)
@@ -174,6 +181,7 @@ export default defineComponent({
       recordUuid,
       getCurrentTab,
       isEditSecuence,
+      isShowedTableRecords,
       isDisableOptionsTabChild,
       // Methodss
       openLog

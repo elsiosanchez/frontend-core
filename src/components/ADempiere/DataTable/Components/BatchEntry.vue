@@ -53,7 +53,7 @@
                   :is-new-record="true"
                   :field-list="fieldsListBatchEntry"
                   :is-panel-general="true"
-                  :is-read-only="!isCreateRecord"
+                  :is-read-only="!isReadOnlyBatchEntry"
                   :container-manager="containerManager"
                   :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
                 />
@@ -122,7 +122,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iterableFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
-import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
+import { isReadOnlyTab, isEditableRecord } from '@/utils/ADempiere/dictionary/window'
 // import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
@@ -168,44 +168,37 @@ export default defineComponent({
     const attributes = ref({})
     const containerUuid = props.containerUuid + 'Batch_Entry'
 
-    const recordUuid = computed(() => {
-      return store.getters.getUuidOfContainer(props.containerUuid)
-    })
-
     const tabAttributes = computed(() => {
       return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
     })
 
-    const isSecondaryParentTab = computed(() => {
-      return !isEmptyValue(tabAttributes.value.tabParentIndex) && tabAttributes.value.tabParentIndex > 0
-    })
+    const isReadOnlyBatchEntry = computed(() => {
+      if (isReadOnlyTab({ parentUuid: props.parentUuid, containerUuid: props.containerUuid })) {
+        return false
+      }
+      const tab = store.getters.getStoredTab(props.parentUuid, props.containerUuid)
+      // TODO: Verify index Parent Tab
+      if (tab.isParentTab && tab.index > 0) {
+        return false
+      }
 
-    const isExistsChanges = computed(() => {
-      const persistenceValues = store.getters.getPersistenceAttributesChanges({
-        parentUuid: props.parentUuid,
-        containerUuid: props.containerUuid,
-        recordUuid: recordUuid.value
-      })
-      return !isEmptyValue(persistenceValues)
+      if (!tab.is_insert_record) {
+        return false
+      }
+
+      if (!tab.isParentTab) {
+        const isEditable = isEditableRecord({
+          parentUuid: props.parentUuid
+        })
+        if (!isEditable) {
+          return false
+        }
+      }
+      return true
     })
 
     const isCreateRecord = computed(() => {
-      const { table } = tabAttributes.value
-      if (!isEmptyValue(table) && table.is_view) {
-        return false
-      }
-      if (isSecondaryParentTab.value) {
-        return false
-      }
-      if (isExistsChanges.value) {
-        return false
-      }
-
-      return createNewRecord.enabled({
-        parentUuid: props.parentUuid,
-        tabParentIndex: tabAttributes.value.tabParentIndex,
-        containerUuid: props.containerUuid
-      })
+      return isReadOnlyBatchEntry.value
     })
 
     const fieldsList = computed(() => {
@@ -442,6 +435,7 @@ export default defineComponent({
       isLoadingPanel,
       fieldsListBatchEntry,
       attributesBachtEntry,
+      isReadOnlyBatchEntry,
       persistenceBachtEntry,
       actionKeyEnter,
       updateField,
