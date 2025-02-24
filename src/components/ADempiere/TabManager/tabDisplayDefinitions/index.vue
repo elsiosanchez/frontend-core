@@ -46,7 +46,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     </el-header>
     <el-main
       :style="isPanelRight ? {} : {height: 'calc(100vh - 400px)'}"
-      style="padding: 0px !important; "
+      style="padding: 0px !important; overflow-y: hidden"
     >
       <component
         :is="templatePanel"

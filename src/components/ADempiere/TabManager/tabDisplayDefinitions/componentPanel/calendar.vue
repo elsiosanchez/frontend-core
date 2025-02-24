@@ -31,7 +31,7 @@
     </div>
     <el-card v-loading="isLoading" :body-style="{ padding: '10px' }">
       <!-- <div class="kanban-columns-container" style="display: block;"> -->
-      <div v-shortkey="{ new: ['ctrl', 'alt', 'n'] }" class="demo-app" @shortkey="theAction">
+      <div v-shortkey="{ new: ['ctrl', 'alt', 'n'] }" class="demo-app" style="height: calc(100vh - 300px) !important;" @shortkey="theAction">
         <div class="demo-app-sidebar">
           <div class="demo-app-sidebar-section">
             <h2 style="padding-left: 10px; padding-top: 10px;">
@@ -503,6 +503,9 @@ export default defineComponent({
   padding: 1em;
   .demo-app .fc {
     overflow: hidden !important;
+  }
+  .fc .fc-scroller-liquid-absolute{
+    height: calc(100vh - 470px)
   }
 }
 </style>

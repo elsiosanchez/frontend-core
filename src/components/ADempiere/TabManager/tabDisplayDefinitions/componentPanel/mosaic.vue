@@ -516,7 +516,7 @@ export default defineComponent({
   float: right;
 }
 .container-catalog {
-  height: 400px !important;
+  height: calc(100vh - 300px) !important;
   overflow-y: scroll
 }
 .catalog {

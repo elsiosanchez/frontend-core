@@ -397,7 +397,7 @@ export default defineComponent({
 
     ul {
       overflow: auto;
-      height: calc(100vh - 180px);
+      height: calc(100vh - 330px);
       padding: 0px 5px;
       margin: 0;
     }
