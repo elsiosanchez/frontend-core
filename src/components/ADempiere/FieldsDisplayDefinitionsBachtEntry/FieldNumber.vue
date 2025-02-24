@@ -168,6 +168,8 @@ export default defineComponent({
       !isEmptyValue(props.isValueBachtEntry)
     ) {
       props.fieldMetadata.value = props.isValueBachtEntry
+    } else {
+      saveFieldValue(0)
     }
 
     return {

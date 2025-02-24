@@ -336,6 +336,9 @@ export default defineComponent({
         },
         fieldList: fieldsListBatchEntry.value
       })
+      console.log({
+        fieldsMandatory
+      })
       const parsedDefaultValues = convertArrayKeyValueToObject({
         array: defaultValues.value
       })
@@ -389,7 +392,7 @@ export default defineComponent({
       attributes = {}
     }) {
       if (isEmptyValue(fieldList)) return []
-      const mandatoryFields = fieldList.filter(field => field.isMandatory && field.isDisplayed)
+      const mandatoryFields = fieldList.filter(field => field.isMandatory && field.isDisplayed && field.componentPath !== 'FieldNumber')
 
       const emptyMandatoryFields = mandatoryFields
         .filter(field => !(field.column_name in attributes) || !attributes[field.column_name])
