@@ -66,7 +66,7 @@
         :tab-attributes="tabAttributes"
         :container-manager="containerManager"
       />
-
+      <slot name="additional-options" />
     </div>
   </span>
   <div v-else>

@@ -65,7 +65,17 @@
           :tab-attributes="tabAttributes"
           :is-child-tab="isChildTab"
           :is-change-record="!isShowedTableRecords"
-        />
+        >
+          <template v-slot:convenience-additional-options>
+            <el-checkbox
+              v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
+              v-model="isBachtEntry"
+              :border="true"
+              size="small"
+              :label="$t('table.dataTable.batchEntry')"
+            />
+          </template>
+        </tab-options>
 
         <filter-fields
           v-if="isShowedTableRecords"
@@ -82,28 +92,15 @@
 
       <el-main id="tab-panel-body" class="tab-panel-body">
         <div style="width: 100%;height: 100%;">
-          <el-collapse
-            v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
-            v-model="activeNames"
-            accordion
-            style="margin-top: 5px;"
-          >
-            <el-collapse-item name="1">
-              <template slot="title">
-                {{ $t('table.dataTable.batchEntry') }}
-                <i class="header-icon el-icon-information" />
-              </template>
-              <batch-entry
-                v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && activeNames === '1'"
-                :parent-uuid="parentUuid"
-                :container-uuid="tabAttributes.uuid"
-                :container-manager="containerManager"
-                :field-list-batch-entry="batchEntry"
-                :table-name="tabAttributes.table_name"
-                :field-list-all="tableHeaders"
-              />
-            </el-collapse-item>
-          </el-collapse>
+          <batch-entry
+            v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && isBachtEntry"
+            :parent-uuid="parentUuid"
+            :container-uuid="tabAttributes.uuid"
+            :container-manager="containerManager"
+            :field-list-batch-entry="batchEntry"
+            :table-name="tabAttributes.table_name"
+            :field-list-all="tableHeaders"
+          />
           <default-table
             v-if="isShowedTableRecords"
             id="default-table"
@@ -215,6 +212,8 @@ export default defineComponent({
 
   setup(props, { root }) {
     const activeNames = ref(['0'])
+
+    const isBachtEntry = ref(false)
 
     const showKanban = computed(() => {
       return store.getters.getPanelKanban({ tableName: props.tabAttributes.table_name })
@@ -453,6 +452,7 @@ export default defineComponent({
       storedWindow,
       batchEntry,
       activeNames,
+      isBachtEntry,
       // methods
       loadOpenWindows,
       handleChangePage,

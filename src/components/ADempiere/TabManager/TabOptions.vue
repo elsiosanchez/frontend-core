@@ -90,8 +90,11 @@
       :container-uuid="tabAttributes.uuid"
       :container-manager="containerManager"
       :tab-attributes="tabAttributes"
-      style="display: contents;"
-    />
+    >
+      <template v-slot:additional-options>
+        <slot name="convenience-additional-options" style="display: contents;" />
+      </template>
+    </convenience-buttons>
 
     <!--
     <full-screen-container
