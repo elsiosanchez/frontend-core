@@ -17,48 +17,54 @@
 -->
 
 <template>
-  <el-tabs
-    v-if="!isEmptyValue(showedTabsList)"
-    v-model="currentTabNo"
-    type="border-card"
-    style="width: 100%"
-    @tab-click="handleClick"
+  <span
+    @keyup.alt.90="ActionAltZ"
+    @keyup.alt.78="ActionAltN"
+    @keyup.alt.13="ActionAltS"
   >
-    <el-tab-pane
-      v-for="(tabAttributes, key) in showedTabsList"
-      :key="tabAttributes.tabChildIndex"
-      :label="tabAttributes.name"
-      :name="String(tabAttributes.tabChildIndex)"
-      :tabuuid="tabAttributes.uuid"
-      :tabindex="String(tabAttributes.tabChildIndex)"
-      lazy
-      :disabled="isDisabledTab(key)"
-      :style="tabStyle"
+    <el-tabs
+      v-if="!isEmptyValue(showedTabsList)"
+      v-model="currentTabNo"
+      type="border-card"
+      style="width: 100%"
+      @tab-click="handleClick"
     >
-      <tab-label
-        slot="label"
-        :is-active-tab="tabAttributes.uuid === tabUuid"
-        :parent-uuid="parentUuid"
-        :container-uuid="tabAttributes.uuid"
-      />
-      <div
-        style="height: 100% !important;"
-        @click="selectTab(tabsList[parseInt(currentTabNo)])"
+      <el-tab-pane
+        v-for="(tabAttributes, key) in showedTabsList"
+        :key="tabAttributes.tabChildIndex"
+        :label="tabAttributes.name"
+        :name="String(tabAttributes.tabChildIndex)"
+        :tabuuid="tabAttributes.uuid"
+        :tabindex="String(tabAttributes.tabChildIndex)"
+        lazy
+        :disabled="isDisabledTab(key)"
+        :style="tabStyle"
       >
-        <tab-panel
+        <tab-label
+          slot="label"
+          :is-active-tab="tabAttributes.uuid === tabUuid"
           :parent-uuid="parentUuid"
-          :container-manager="containerManager"
-          :tabs-list="tabsList"
-          :all-tabs-list="allTabsList"
-          :current-tab-uuid="tabUuid"
-          :tab-attributes="tabAttributes"
-          :actions-manager="actionsManager"
-          :is-child-tab="true"
-          style="height: 100% !important;"
+          :container-uuid="tabAttributes.uuid"
         />
-      </div>
-    </el-tab-pane>
-  </el-tabs>
+        <div
+          style="height: 100% !important;"
+          @click="selectTab(tabsList[parseInt(currentTabNo)])"
+        >
+          <tab-panel
+            :parent-uuid="parentUuid"
+            :container-manager="containerManager"
+            :tabs-list="tabsList"
+            :all-tabs-list="allTabsList"
+            :current-tab-uuid="tabUuid"
+            :tab-attributes="tabAttributes"
+            :actions-manager="actionsManager"
+            :is-child-tab="true"
+            style="height: 100% !important;"
+          />
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+  </span>
 </template>
 
 <script>
@@ -66,6 +72,7 @@ import { defineComponent, computed, watch, ref, onUnmounted } from '@vue/composi
 
 import router from '@/router'
 import store from '@/store'
+import language from '@/lang'
 
 // components and mixins
 import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
@@ -75,11 +82,20 @@ import TabOptions from './TabOptions.vue'
 
 // constants
 import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
-
+import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
 // utils and helper methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { isDisplayedTab } from '@/utils/ADempiere/dictionary/window'
-import { getContextAttributes, generateContextKey } from '@/utils/ADempiere/contextUtils/contextAttributes'
+import { showMessage } from '@/utils/ADempiere/notification'
+import {
+  getContextAttributes,
+  generateContextKey
+} from '@/utils/ADempiere/contextUtils/contextAttributes'
+import {
+  createNewRecord,
+  refreshRecord,
+  undoChange
+} from '@/utils/ADempiere/dictionary/window'
 
 export default defineComponent({
   name: 'TabManagerChild',
@@ -513,24 +529,174 @@ export default defineComponent({
       })
     }
 
+    // Current Record UUID
+    const currentRecordUuid = computed(() => {
+      if (currentTabMetadata.value) {
+        return store.getters.getUuidOfContainer(currentTabMetadata.value.uuid)
+      }
+      return ''
+    })
+
+    const emptyMandatoryFields = computed(() => {
+      if (isEmptyValue(currentTabMetadata.value)) return []
+      const { parentUuid, containerUuid } = currentTabMetadata.value
+      return store.getters.getTabFieldsEmptyMandatory({
+        parentUuid,
+        containerUuid,
+        formatReturn: false
+      }).filter(itemField => {
+        // omit send to server (to create or update) columns manage by backend
+        return itemField.is_always_updateable ||
+          !LOG_COLUMNS_NAME_LIST.includes(itemField.columnName)
+      }).map(itemField => {
+        return itemField.name
+      })
+    })
+
+    function ActionAltZ() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+
+      const { parentUuid, fieldsList, containerUuid } = currentTabMetadata.value
+
+      const info = {
+        fieldsList: fieldsList,
+        option: language.t('actionMenu.undo')
+      }
+
+      store.dispatch('fieldListInfo', { info })
+      undoChange.undoChange({
+        parentUuid,
+        containerUuid
+      })
+    }
+
+    function ActionAltN() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+      const { parentUuid, fieldsList, containerUuid } = currentTabMetadata.value
+      createNewRecord.createNewRecord({
+        parentUuid,
+        containerUuid,
+        isCopyValues: false
+      })
+
+      store.dispatch('panelInfo', {
+        currentTab: currentTabMetadata.value,
+        currentRecord: currentRecordUuid.value
+      })
+      const info = {
+        fieldsList: fieldsList,
+        option: language.t('actionMenu.new')
+      }
+      store.dispatch('fieldListInfo', { info })
+    }
+
+    function ActionAltS() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+      const {
+        parentUuid,
+        fieldsList,
+        table_name,
+        internal_id,
+        isParentTab,
+        firstTabUuid,
+        containerUuid
+      } = currentTabMetadata.value
+      const emptyMandatory = emptyMandatoryFields.value.join(', ')
+      if (!isEmptyValue(emptyMandatory)) {
+        showMessage({
+          message: language.t('notifications.mandatoryFieldMissing') + emptyMandatory,
+          type: 'info'
+        })
+        return
+      }
+
+      const info = {
+        fieldsList,
+        option: language.t('actionMenu.save')
+      }
+
+      store.dispatch('fieldListInfo', { info })
+      const currentRoute = router.app._route
+      const recordUuid = store.getters.getUuidOfContainer(containerUuid)
+      const currentReccord = store.getters.getTabCurrentRow({
+        containerUuid
+      })
+      let recordId = -1
+      if (!isEmptyValue(currentReccord[table_name + '_ID'])) recordId = currentReccord[table_name + '_ID']
+      store.dispatch('flushPersistenceQueue', {
+        parentUuid,
+        containerUuid,
+        tabId: internal_id,
+        tableName: table_name,
+        recordUuid,
+        recordId
+      })
+        .then(response => {
+          const {
+            name,
+            query,
+            params
+          } = currentRoute
+          let id = query.recordId
+          if (!isEmptyValue(response)) id = response.id
+          // refresh parent tab on document window
+          if (!isParentTab) {
+            const firstTab = store.getters.getStoredTab(
+              parentUuid,
+              firstTabUuid
+            )
+            if (!isEmptyValue(firstTab) && firstTab.table.is_document) {
+              refreshRecord.refreshRecord({
+                parentUuid,
+                containerUuid: firstTabUuid
+              })
+            }
+          }
+
+          router.replace({
+            name,
+            query: {
+              ...query,
+              recordId: id,
+              filters: []
+            },
+            params: {
+              ...params,
+              filters: []
+            }
+          }, () => {})
+        })
+        .catch(error => {
+          showMessage({
+            message: error.message,
+            type: 'error'
+          })
+        })
+    }
+
     return {
       tabUuid,
       currentTabNo,
       tableHeaders,
       recordsList,
       // computed
-      storedOldRecord,
-      storedOldContextAttibutes,
-      currentContextAttributes,
+      tabData,
+      isMobile,
+      tabStyle,
       isShowedTabs,
       showedTabsList,
-      isMobile,
+      storedOldRecord,
+      currentRecordUuid,
       currentTabMetadata,
       recordUuidTabParent,
       isShowedTableRecords,
-      tabData,
-      tabStyle,
+      emptyMandatoryFields,
+      storedOldContextAttibutes,
+      currentContextAttributes,
       // methods
+      ActionAltZ,
+      ActionAltN,
+      ActionAltS,
       handleClick,
       isDisabledTab,
       setRecordRoute,

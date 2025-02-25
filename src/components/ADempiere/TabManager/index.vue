@@ -18,9 +18,10 @@
 
 <template>
   <div
-    v-shortkey="{ new: ['alt', 'n'], save: ['alt', 's'], undo: ['alt', 'z'] }"
     class="tab-manager-container"
-    @shortkey="theAction"
+    @keyup.alt.90="ActionAltZ"
+    @keyup.alt.78="ActionAltN"
+    @keyup.alt.13="ActionAltS"
   >
     <el-tabs
       ref="el-tabs-container"
@@ -1133,12 +1134,7 @@ export default defineComponent({
     const isDisplayPanelDefinitions = computed(() => {
       return store.getters.getCurrentDisplayTabDefinitions({ tableName: currentTabTableName.value })
     })
-    // function adisplayDefinition() {
-    //   store.dispatch('getDisplayDefinition', {
-    //     tableName: currentTabTableName.value,
-    //     onlyeReferences: true
-    //   })
-    // }
+
     findRecordLogs(props.allTabsList[0])
 
     setTabNumber(currentTab.value)
@@ -1148,7 +1144,24 @@ export default defineComponent({
     getIssues()
     getIsNotes()
     getDashboard()
-    // displayDefinition()
+
+    function ActionAltZ() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+      undoChanges(currentTabMetadata.value)
+    }
+    function ActionAltN() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+      newRecordTab(currentTabMetadata.value)
+    }
+
+    function ActionAltS() {
+      if (currentTabMetadata.value.isShowedTableRecords) return
+      focusLost(currentTabMetadata.value)
+      setTimeout(() => {
+        saveRecordTab(currentTabMetadata.value)
+      }, 500)
+    }
+
     return {
       tabUuid,
       currentTab,
@@ -1191,6 +1204,9 @@ export default defineComponent({
       emptyMandatoryFields,
       recordId,
       // methods
+      ActionAltZ,
+      ActionAltN,
+      ActionAltS,
       theAction,
       handleClick,
       changeShowedRecords,
