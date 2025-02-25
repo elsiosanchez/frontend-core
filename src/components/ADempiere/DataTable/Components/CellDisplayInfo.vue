@@ -34,9 +34,9 @@
     /> -->
 
     <p
-      v-else-if="!isEmptyValue(displayedValue) && displayedValue.length >= 23 && fieldAttributes.display_type != IMAGE.id"
+      v-else-if="!isEmptyValue(displayedValue) && displayedValue.length >= columnWidth && fieldAttributes.display_type != IMAGE.id"
       key="display-column"
-      style="max-height: 40px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap; margin: 5px;"
+      style="max-height: 20px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap; margin: 0px !important;"
     >
       <el-popover
         placement="top-start"
@@ -118,7 +118,7 @@
         >
       </el-popover>
 
-      <p v-else key="only-value" style="margin: 5px;">
+      <p v-else key="only-value" style="margin: 0px !important;">
         {{ displayedValue }}
       </p>
     </span>
@@ -164,6 +164,10 @@ export default defineComponent({
     dataRow: {
       type: Object,
       default: () => {}
+    },
+    columnWidth: {
+      type: Number,
+      default: 23
     }
   },
 

@@ -57,10 +57,11 @@
       <el-table-column
         v-for="(fieldAttributes, key) in headerList"
         :key="key"
-        :column-key="fieldAttributes.columnName"
-        :prop="fieldAttributes.columnName"
         sortable
+        :label="fieldAttributes.name"
+        :prop="fieldAttributes.columnName"
         :width="widthColumn(fieldAttributes)"
+        :column-key="fieldAttributes.columnName"
         :fixed="fieldAttributes.isFixedTableColumn"
       >
         <template slot="header">
@@ -72,11 +73,12 @@
           </span>
         </template>
         <template slot-scope="scope">
-          <!-- formatted displayed value -->
           <cell-display-info
-            :class="' cell-info-edit cell-no-edit '"
+            key="info-value"
+            :class="classDefaultsCells"
             :field-attributes="fieldAttributes"
             :data-row="scope.row"
+            :column-width="columnWidths({ fieldAttributes })"
           />
         </template>
       </el-table-column>
@@ -165,6 +167,10 @@ export default defineComponent({
     isNavigation: {
       type: Boolean,
       default: false
+    },
+    classDefaultsCells: {
+      type: String,
+      default: ' cell-info-edit  cell-no-edit '
     }
   },
 
@@ -638,6 +644,16 @@ export default defineComponent({
         }
       })
     }
+
+    function columnWidths({
+      fieldAttributes
+    }) {
+      if (multipleTable.value) {
+        const key = multipleTable.value.$children.findIndex(list => list.label === fieldAttributes.name)
+        return multipleTable.value.$children[key].label.length
+      }
+      return 25
+    }
     /**
      * Watch - watch works directly on a ref
      * @param newValue - New Assessed Property value
@@ -730,14 +746,15 @@ export default defineComponent({
       handleSelectionAll,
       tableRowClassName,
       handleRowDblClick,
+      handleSortChange,
       handleSelection,
       handleCellClick,
       handleRowClick,
+      columnWidths,
       widthColumn,
       changeTable,
       adjustSize,
-      loadHeight,
-      handleSortChange
+      loadHeight
     }
   }
 })
