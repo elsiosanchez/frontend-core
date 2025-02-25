@@ -391,15 +391,13 @@ export function isReadOnlyField({ is_read_only, read_only_logic, isReadOnlyFromL
 /**
  * Is displayed column in table multi record
  */
-export function isDisplayedColumn({ is_displayed, is_displayed_grid, isDisplayedFromLogic, is_key, display_type, display_logic }) {
+export function isDisplayedColumn({ is_displayed, is_displayed_grid, is_key, display_type, is_active }) {
   // key or button field not showed
   if (is_key || isHiddenField(display_type)) {
     return false
   }
 
-  // window (table) result
-  return is_displayed && is_displayed_grid &&
-    (isEmptyValue(display_logic) || isDisplayedFromLogic)
+  return is_displayed && is_displayed_grid && is_active
 }
 
 export function isMandatoryColumn({ is_key, column_name, display_type, is_mandatory, mandatory_logic, isMandatoryFromLogic }) {

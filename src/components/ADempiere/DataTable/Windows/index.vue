@@ -204,35 +204,7 @@ export default defineComponent({
     })
 
     const headerList = computed(() => {
-      // return props.containerManager.getFieldsToHidden({
-      //   parentUuid: props.parentUuid,
-      //   containerUuid: props.containerUuid,
-      //   fieldsList: props.containerManager.getFieldsList({
-      //     parentUuid: props.parentUuid,
-      //     containerUuid: props.containerUuid
-      //   }),
-      //   isTable: true
-      // }).filter(itemField => {
-      //   return itemField.isShowedTableFromUser
-      // })
-      return props.header.filter(fieldItem => {
-        if (props.containerManager.isDisplayedColumn(fieldItem)) {
-          const isMandatoryGenerated = props.containerManager.isMandatoryColumn(fieldItem)
-          const isDisplayedDefault = props.containerManager.isDisplayedDefaultTable({
-            ...fieldItem,
-            isMandatory: isMandatoryGenerated
-          })
-          // madatory, not parent column and without default value to window, mandatory or with default value to others
-          if (isDisplayedDefault) {
-            return true
-          }
-          // tableColumnDataType(fieldItem, currentOption.value)
-          // showed by user
-          return fieldItem.isShowedTableFromUser
-        }
-
-        return false
-      })
+      return props.header.filter(fieldItem => props.containerManager.isDisplayedColumn(fieldItem))
     })
 
     const isMobile = computed(() => {
