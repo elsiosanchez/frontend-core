@@ -29,7 +29,7 @@
       :placeholder="fieldMetadata.description"
       :remote-method="remoteMethod"
       :loading="isLoadingSearch"
-      style="width: 100%;"
+      style="width: 100%; height: 30px"
       @visible-change="showList"
       @change="saveFieldValue"
     >

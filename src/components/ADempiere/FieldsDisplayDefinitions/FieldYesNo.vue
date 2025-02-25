@@ -24,6 +24,7 @@
       :active-text="$t('components.switchActiveText')"
       :inactive-text="$t('components.switchInactiveText')"
       size="mini"
+      style="height: 30px"
       @change="saveFieldValue(fieldValue, fieldMetadata)"
     />
 
