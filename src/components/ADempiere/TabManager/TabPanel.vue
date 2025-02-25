@@ -128,7 +128,6 @@ import BatchEntry from '@/components/ADempiere/DataTable/Components/BatchEntry.v
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
-// import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from './TabOptions.vue'
 
@@ -145,7 +144,6 @@ export default defineComponent({
     CustomPagination,
     DefaultTable,
     FilterFields,
-    // FullScreenContainer,
     PanelDefinition,
     TabOptions,
     BatchEntry

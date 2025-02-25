@@ -18,116 +18,77 @@
 
 <template>
   <el-container style="height: 100%;" class="tab-panel">
-    <kanban-view
-      v-if="showKanban && !(showCalendar || showResource)"
-      :container-manager="containerManager"
-      :parent-uuid="parentUuid"
-      :container-uuid="tabAttributes.uuid"
-      :current-tab-uuid="tabAttributes.uuid"
-      :tabs-list="tabsList"
-      :all-tabs-list="allTabsList"
-      :actions-manager="actionsManager"
-      :is-panel="false"
-      :style="styleScroll"
-    />
-    <calendar-view
-      v-if="showCalendar && !(showKanban || showResource)"
-      :is-panel="false"
-      :container-manager="containerManager"
-      :parent-uuid="parentUuid"
-      :container-uuid="tabAttributes.uuid"
-      :current-tab-uuid="tabAttributes.uuid"
-      :tabs-list="tabsList"
-      :all-tabs-list="allTabsList"
-      :actions-manager="actionsManager"
-      :style="styleScroll"
-    />
-    <calendar-resorce
-      v-if="showResource && !(showKanban || showCalendar)"
-      :is-panel="false"
-      :container-manager="containerManager"
-      :parent-uuid="parentUuid"
-      :container-uuid="tabAttributes.uuid"
-      :current-tab-uuid="tabAttributes.uuid"
-      :tabs-list="tabsList"
-      :all-tabs-list="allTabsList"
-      :actions-manager="actionsManager"
-      :style="styleScroll"
-      :resources-info="resources"
-    />
-    <span v-if="!(showKanban || showCalendar || showResource)">
-      <el-header :style="styleHeadPanel" class="tab-panel-header">
-        <tab-options
-          :parent-uuid="parentUuid"
-          :container-manager="containerManager"
-          :current-tab-uuid="currentTabUuid"
-          :container-uuid="tabAttributes.uuid"
-          :tab-attributes="tabAttributes"
-          :is-child-tab="isChildTab"
-          :is-change-record="!isShowedTableRecords"
-        >
-          <template v-slot:convenience-additional-options>
-            <el-checkbox
-              v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
-              v-model="isBachtEntry"
-              :border="true"
-              size="small"
-              :label="$t('table.dataTable.batchEntry')"
-            />
-          </template>
-        </tab-options>
+    <el-header :style="styleHeadPanel" class="tab-panel-header">
+      <tab-options
+        :parent-uuid="parentUuid"
+        :container-manager="containerManager"
+        :current-tab-uuid="currentTabUuid"
+        :container-uuid="tabAttributes.uuid"
+        :tab-attributes="tabAttributes"
+        :is-child-tab="isChildTab"
+        :is-change-record="!isShowedTableRecords"
+      >
+        <template v-slot:convenience-additional-options>
+          <el-checkbox
+            v-show="!isEmptyValue(batchEntry) && isShowedTableRecords"
+            v-model="isBachtEntry"
+            :border="true"
+            size="small"
+            :label="$t('table.dataTable.batchEntry')"
+          />
+        </template>
+      </tab-options>
 
-        <filter-fields
-          v-if="isShowedTableRecords"
-          v-bind="commonFilterFielsProperties"
+      <filter-fields
+        v-if="isShowedTableRecords"
+        v-bind="commonFilterFielsProperties"
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :fields-list="containerManager.getFieldsList({ parentUuid, containerUuid: tabAttributes.uuid })"
+        :fields-to-hidden="containerManager.getFieldsToHidden"
+        :is-filter-records="true"
+        :in-table="isShowedTableRecords"
+        :container-manager="containerManager"
+      />
+    </el-header>
+
+    <el-main id="tab-panel-body" class="tab-panel-body">
+      <div style="width: 100%;height: 100%;">
+        <batch-entry
+          v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && isBachtEntry"
           :parent-uuid="parentUuid"
           :container-uuid="tabAttributes.uuid"
-          :fields-list="containerManager.getFieldsList({ parentUuid, containerUuid: tabAttributes.uuid })"
-          :fields-to-hidden="containerManager.getFieldsToHidden"
-          :is-filter-records="true"
-          :in-table="isShowedTableRecords"
           :container-manager="containerManager"
+          :field-list-batch-entry="batchEntry"
+          :table-name="tabAttributes.table_name"
+          :field-list-all="tableHeaders"
         />
-      </el-header>
-
-      <el-main id="tab-panel-body" class="tab-panel-body">
-        <div style="width: 100%;height: 100%;">
-          <batch-entry
-            v-if="!isEmptyValue(batchEntry) && isShowedTableRecords && isBachtEntry"
+        <default-table
+          v-if="isShowedTableRecords"
+          id="default-table"
+          key="default-table"
+          :parent-uuid="parentUuid"
+          :container-uuid="tabAttributes.uuid"
+          :container-manager="containerManager"
+          :header="tableHeaders"
+          :data-table="recordsList"
+          :panel-metadata="tabAttributes"
+          :is-navigation="true"
+        />
+        <template v-else>
+          <panel-definition
+            key="panel-definition"
             :parent-uuid="parentUuid"
             :container-uuid="tabAttributes.uuid"
             :container-manager="containerManager"
-            :field-list-batch-entry="batchEntry"
-            :table-name="tabAttributes.table_name"
-            :field-list-all="tableHeaders"
+            :group-tab="tabAttributes.tabGroup"
+            :style="overflowHeightScrooll"
+            :is-tab-panel="true"
+            :is-filter-records="true"
           />
-          <default-table
-            v-if="isShowedTableRecords"
-            id="default-table"
-            key="default-table"
-            :parent-uuid="parentUuid"
-            :container-uuid="tabAttributes.uuid"
-            :container-manager="containerManager"
-            :header="tableHeaders"
-            :data-table="recordsList"
-            :panel-metadata="tabAttributes"
-            :is-navigation="true"
-          />
-          <template v-else>
-            <panel-definition
-              key="panel-definition"
-              :parent-uuid="parentUuid"
-              :container-uuid="tabAttributes.uuid"
-              :container-manager="containerManager"
-              :group-tab="tabAttributes.tabGroup"
-              :style="overflowHeightScrooll"
-              :is-tab-panel="true"
-              :is-filter-records="true"
-            />
-          </template>
-        </div>
-      </el-main>
-    </span>
+        </template>
+      </div>
+    </el-main>
 
     <el-footer :style="styleFooterPanel" class="tab-panel-footer">
       <!-- pagination table, set custom or use default change page method -->
@@ -214,16 +175,6 @@ export default defineComponent({
     const activeNames = ref(['0'])
 
     const isBachtEntry = ref(false)
-
-    const showKanban = computed(() => {
-      return store.getters.getPanelKanban({ tableName: props.tabAttributes.table_name })
-    })
-    const showCalendar = computed(() => {
-      return store.getters.getShowCalendar({ tableName: props.tabAttributes.table_name })
-    })
-    const showResource = computed(() => {
-      return store.getters.getPanelResource({ tableName: props.tabAttributes.table_name })
-    })
 
     const currentTabUuid = props.tabAttributes.uuid
 
@@ -420,10 +371,6 @@ export default defineComponent({
       return 'min-height: 84vh !important;'
     })
 
-    const resources = computed(() => {
-      return store.getters.getInfoResource
-    })
-
     loadOpenWindows()
 
     return {
@@ -436,10 +383,6 @@ export default defineComponent({
       currentTab,
       overflowHeightScrooll,
       recordUuid,
-      showKanban,
-      showCalendar,
-      showResource,
-      resources,
       styleScroll,
       showFullGridMode,
       // pagination
