@@ -124,6 +124,7 @@ export default defineComponent({
     FullScreenContainer,
     LoadingView
   },
+
   props: {
     parentUuid: {
       type: String,
@@ -210,7 +211,22 @@ export default defineComponent({
     })
 
     const headerList = computed(() => {
-      return props.header.filter(fieldItem => props.containerManager.isDisplayedColumn(fieldItem))
+      return props.header.filter(fieldItem => {
+        if (!props.containerManager.isDisplayedColumn(fieldItem)) {
+          return false
+        }
+        const isMandatoryGenerated = props.containerManager.isMandatoryColumn(fieldItem)
+        const isDisplayedDefault = props.containerManager.isDisplayedDefaultTable({
+          ...fieldItem,
+          isMandatory: isMandatoryGenerated
+        })
+        // madatory, not parent column and without default value to window, mandatory or with default value to others
+        if (isDisplayedDefault) {
+          return true
+        }
+        // showed by user
+        return fieldItem.isShowedTableFromUser
+      })
     })
 
     const isMobile = computed(() => {

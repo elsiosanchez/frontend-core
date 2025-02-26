@@ -110,6 +110,7 @@ import lang from '@/lang'
 // import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitionsBachtEntry'
+
 // Utils and Helpers Methods
 import {
   isMandatoryField,
@@ -122,7 +123,8 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iterableFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
-import { isReadOnlyTab, isEditableRecord } from '@/utils/ADempiere/dictionary/window'
+import { isEditableRecord } from '@/utils/ADempiere/dictionary/window'
+import { isReadOnlyTab } from '@/utils/ADempiere/dictionary/window/tab'
 // import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({

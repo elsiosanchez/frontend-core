@@ -44,7 +44,7 @@ import { requestSaveWindowCustomization } from '@/api/ADempiere/user-customizati
 // Utils and Helpers Methods
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
 import {
-  getContext, isSalesTransaction, isContextSQL
+  isSalesTransaction, isContextSQL
 } from '@/utils/ADempiere/contextUtils'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
@@ -56,68 +56,7 @@ import { zoomIn } from '@/utils/ADempiere/coreUtils'
 import { exportRecords } from '@/utils/ADempiere/exportUtil.js'
 import { isRunableDocumentAction } from '@/utils/ADempiere/dictionary/workflow'
 import { convertRelationTabs } from '@/utils/ADempiere/dictionary/window/templatesWindow.js'
-
-/**
- * Evaluate if tab is displayed
- * @param {string} parentUuid
- * @param {string} containerUuid
- * @param {string} displayLogic
- * @returns {boolean}
- */
-export function isDisplayedTab({ parentUuid, containerUuid, displayLogic }) {
-  // evaluate display logic
-  if (!isEmptyValue(displayLogic)) {
-    const isDisplayedFromLogic = evaluator.evaluateLogic({
-      context: getContext,
-      parentUuid,
-      containerUuid,
-      logic: displayLogic,
-      defaultReturned: true
-    })
-    return isDisplayedFromLogic
-  }
-
-  return true
-}
-
-export function isReadOnlyTab({ parentUuid, containerUuid }) {
-  const window = store.getters.getStoredWindow(parentUuid)
-  if (isEmptyValue(window)) {
-    return true
-  }
-  const { window_type } = window
-  // window is "Only Query" type
-  if (!isEmptyValue(window_type) && window_type === 'Q') {
-    return true
-  }
-  const storeTab = store.getters.getStoredTab(parentUuid, containerUuid)
-  if (isEmptyValue(storeTab)) {
-    return true
-  }
-  const { table, is_read_only, read_only_logic } = storeTab
-  if (!isEmptyValue(table) && table.is_view) {
-    return true
-  }
-  // if tab is read only, all fields are read only
-  if (is_read_only) {
-    return true
-  }
-
-  if (!isEmptyValue(read_only_logic)) {
-    const isReadOnlyFromLogic = evaluator.evaluateLogic({
-      context: getContext,
-      parentUuid,
-      containerUuid,
-      logic: read_only_logic,
-      defaultReturned: false
-    })
-    if (isReadOnlyFromLogic) {
-      return true
-    }
-  }
-
-  return false
-}
+import { isReadOnlyTab } from '@/utils/ADempiere/dictionary/window/tab'
 
 export function isEditableRecord({ parentUuid, containerUuid }) {
   const preferenceClientId = store.getters.getSessionContextClientId
@@ -282,7 +221,7 @@ export function evaluateDefaultColumnShowed({
   is_key, is_parent, column_name,
   default_value, parsedDefaultValue,
   display_type, isShowedTableFromUser, is_displayed_as_table,
-  is_mandatory, mandatory_logic, isMandatoryFromLogic
+  is_mandatory
 }) {
   if (!isEmptyValue(is_displayed_as_table)) {
     return convertStringToBoolean(is_displayed_as_table)
@@ -301,7 +240,7 @@ export function evaluateDefaultColumnShowed({
   }
 
   const isMandatoryGenerated = isMandatoryColumn({
-    is_key, column_name, display_type, is_mandatory, mandatory_logic, isMandatoryFromLogic
+    is_key, column_name, display_type, is_mandatory
   })
   const isEmpty = isEmptyValue(parsedDefaultValue) || (isDecimalField(display_type) && parsedDefaultValue === 0)
   if (isEmpty && isMandatoryGenerated && !is_parent) {
@@ -391,16 +330,16 @@ export function isReadOnlyField({ is_read_only, read_only_logic, isReadOnlyFromL
 /**
  * Is displayed column in table multi record
  */
-export function isDisplayedColumn({ is_displayed, is_displayed_grid, is_key, display_type, is_active }) {
+export function isDisplayedColumn({ is_displayed, is_displayed_grid, is_key, display_type }) {
   // key or button field not showed
   if (is_key || isHiddenField(display_type)) {
     return false
   }
 
-  return is_displayed && is_displayed_grid && is_active
+  return is_displayed && is_displayed_grid
 }
 
-export function isMandatoryColumn({ is_key, column_name, display_type, is_mandatory, mandatory_logic, isMandatoryFromLogic }) {
+export function isMandatoryColumn({ is_key, column_name, display_type, is_mandatory }) {
   const notMandatoryRender = [
     COLUMNNAME_Value, COLUMNNAME_DocumentNo, 'M_AttributeSetInstance_ID'
   ]
@@ -415,7 +354,7 @@ export function isMandatoryColumn({ is_key, column_name, display_type, is_mandat
   if (display_type === BUTTON.id) {
     return false
   }
-  return is_mandatory || (!isEmptyValue(mandatory_logic) && isMandatoryFromLogic)
+  return is_mandatory
 }
 
 export function isReadOnlyColumn({ is_read_only }) {
@@ -1377,6 +1316,8 @@ export function changeFieldAttribure({
  * Manage the window tab panel
  */
 export const containerManager = {
+  name: 'ContainerManagerWindow',
+
   getPanel({ parentUuid, containerUuid }) {
     return store.getters.getStoredTab(parentUuid, containerUuid)
   },

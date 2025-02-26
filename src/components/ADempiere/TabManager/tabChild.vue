@@ -85,7 +85,7 @@ import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
 import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
 // utils and helper methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
-import { isDisplayedTab } from '@/utils/ADempiere/dictionary/window'
+import { isDisplayedTab } from '@/utils/ADempiere/dictionary/window/tab'
 import { showMessage } from '@/utils/ADempiere/notification'
 import {
   getContextAttributes,
