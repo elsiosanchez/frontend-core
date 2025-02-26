@@ -64,7 +64,7 @@
           :field-list-all="tableHeaders"
         />
         <default-table
-          v-if="isShowedTableRecords"
+          v-show="isShowedTableRecords"
           id="default-table"
           key="default-table"
           :parent-uuid="parentUuid"
@@ -75,18 +75,17 @@
           :panel-metadata="tabAttributes"
           :is-navigation="true"
         />
-        <template v-else>
-          <panel-definition
-            key="panel-definition"
-            :parent-uuid="parentUuid"
-            :container-uuid="tabAttributes.uuid"
-            :container-manager="containerManager"
-            :group-tab="tabAttributes.tabGroup"
-            :style="overflowHeightScrooll"
-            :is-tab-panel="true"
-            :is-filter-records="true"
-          />
-        </template>
+        <panel-definition
+          v-show="!isShowedTableRecords"
+          key="panel-definition"
+          :parent-uuid="parentUuid"
+          :container-uuid="tabAttributes.uuid"
+          :container-manager="containerManager"
+          :group-tab="tabAttributes.tabGroup"
+          :style="overflowHeightScrooll"
+          :is-tab-panel="true"
+          :is-filter-records="true"
+        />
       </div>
     </el-main>
 

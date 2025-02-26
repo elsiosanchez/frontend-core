@@ -41,7 +41,6 @@
       style="overflow: auto"
       @row-dblclick="handleRowDblClick"
       @select-all="handleSelectionAll"
-      @cell-click="handleCellClick"
       @row-click="handleRowClick"
       @select="handleSelection"
       @sort-change="handleSortChange"
@@ -346,6 +345,7 @@ export default defineComponent({
      */
     function handleRowDblClick(row, column) {
       // disable edit mode
+      changeTable(false)
 
       const currentTab = store.getters.getStoredTab(
         props.parentUuid,
@@ -353,24 +353,20 @@ export default defineComponent({
       )
 
       const recordUuid = store.getters.getUuidOfContainer(props.containerUuid)
-      if (recordUuid !== row.UUID && currentTab.isParentTab) {
-        // props.containerManager.seekRecord({
-        //   parentUuid: props.parentUuid,
-        //   containerUuid: props.containerUuid,
-        //   row
-        // })
-        handleSelectionAll([])
-      }
-      changeTable(false)
+      if (recordUuid !== row.UUID && currentTab.isParentTab) handleSelectionAll([])
 
-      if (props.containerManager.confirmRowChanges && row.isSelectedRow && row.isEditRow) {
-        row.isEditRow = false
-        props.containerManager.confirmRowChanges({
-          parentUuid: props.parentUuid,
-          containerUuid: props.containerUuid,
-          row
-        })
-      }
+      // if (
+      //   props.containerManager.confirmRowChanges &&
+      //   row.isSelectedRow &&
+      //   row.isEditRow
+      // ) {
+      //   row.isEditRow = false
+      //   props.containerManager.confirmRowChanges({
+      //     parentUuid: props.parentUuid,
+      //     containerUuid: props.containerUuid,
+      //     row
+      //   })
+      // }
     }
 
     /**
@@ -380,6 +376,9 @@ export default defineComponent({
      */
     let scrollPosition = 0
     function handleRowClick(row, column, event) {
+      const { table_name } = props.panelMetadata
+      const currentReccordId = store.getters.getIdOfContainer({ containerUuid: props.containerUuid, tableName: table_name })
+      if (currentReccordId === row[table_name + '_ID']) return
       const tableElement = multipleTable.value.$el
       scrollPosition = tableElement.scrollTop
       currentRowSelect.value = row
@@ -400,7 +399,6 @@ export default defineComponent({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid
       })
-      const { table_name } = props.panelMetadata
       if (!isEmptyValue(table_name) && !isEmptyValue(row[table_name + '_ID'])) {
         const currentTab = store.getters.getStoredTab(
           props.parentUuid,

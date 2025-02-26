@@ -49,13 +49,8 @@
           :container-uuid="tabAttributes.uuid"
           :container-manager="containerManager"
         />
-        <!-- Close table when clicking on group of fields -->
-        <!-- <div
-          v-if="isShowedTabs"
-          @click="selectTab(tabsList[parseInt(currentTab)])"
-        > -->
         <div
-          style="display: block;height: 100%;overflow: auto;"
+          style="display: block;height: 100%;overflow: hidden;"
           @click="selectTab(tabsList[parseInt(currentTab)])"
         >
           <tab-panel
