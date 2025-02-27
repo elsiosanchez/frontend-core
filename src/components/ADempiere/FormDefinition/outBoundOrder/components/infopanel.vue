@@ -1,0 +1,86 @@
+<!--
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+<template>
+  <el-card>
+    <el-table
+      ref="listOrderTable"
+      class="list-order-table"
+      sise="mini"
+      height="30vh"
+      border
+      style="width: 100%"
+      :element-loading-text="$t('notifications.loading')"
+      element-loading-background="rgba(255, 255, 255, 0.8)"
+    >
+      <el-table-column
+        prop="product"
+        :label="$t('form.outBoundOrder.select.product')"
+        align="left"
+        width="110"
+      />
+      <el-table-column
+        prop="document_no"
+        :label="$t('form.outBoundOrder.select.uom')"
+        align="right"
+        width="80"
+      />
+      <el-table-column
+        prop="date_ordered"
+        :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
+        align="left"
+        width="150"
+      />
+      <el-table-column
+        prop="date_promised"
+        :label="$t('form.outBoundOrder.select.handQuantity')"
+        align="right"
+        width="160"
+      />
+      <el-table-column
+        prop="region"
+        :label="$t('form.outBoundOrder.select.qtyTransit')"
+        align="right"
+        width="160"
+      />
+      <el-table-column
+        prop="city"
+        :label="$t('form.outBoundOrder.select.quantity')"
+        align="right"
+        width="110"
+      />
+      <el-table-column
+        prop="sales_representative"
+        :label="$t('form.outBoundOrder.productInfo.pickedQty')"
+        align="right"
+        width="180"
+      />
+      <el-table-column
+        prop="sum"
+        align="right"
+        width="80"
+      />
+    </el-table>
+  </el-card>
+</template>
+
+<script>
+import { defineComponent } from '@vue/composition-api'
+export default defineComponent({
+  name: 'InfoPanel'
+})
+</script>

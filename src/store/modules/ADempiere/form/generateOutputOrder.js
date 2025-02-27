@@ -16,7 +16,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// API Request Methods
+import {
+  requestListDocuments,
+  requesListDocumentLines
+} from '@/api/ADempiere/form/outBoundOrder.ts'
+
 const initState = {
+  listDocument: [],
+  isLoadingDocument: false,
+  listDocumentLines: [],
+  isLoadingDocumentLines: false,
   searchCriteria: {
     listOrganization: [],
     organizationId: -1,
@@ -55,12 +65,93 @@ const OutBoundOrder = {
       value
     }) {
       state.searchCriteria[attribute] = value
+    },
+    setListDocument(state, list) {
+      state.listDocument = list
+    },
+    setIsLoadingDocument(state, loading) {
+      state.isLoadingDocument = loading
+    },
+    setListDocumentList(state, list) {
+      state.listDocumentLines = list
+    },
+    setIsLoadingDocumentList(state, loading) {
+      state.isLoadingDocumentLines = loading
     }
   },
-  action: {},
+  actions: {
+    searchListDocument({ commit }, {
+      moventTypeId,
+      organizationId,
+      warehouseId,
+      salesRegionId,
+      salesRepresentativeId,
+      documentTypeId
+    }) {
+      return new Promise(resolve => {
+        commit('setIsLoadingDocument', true)
+        requestListDocuments({
+          movement_type: moventTypeId,
+          organization_id: organizationId,
+          warehouse_id: warehouseId,
+          sales_region_id: salesRegionId,
+          sales_representative_id: salesRepresentativeId,
+          document_type_id: documentTypeId
+        })
+          .then(response => {
+            const { records } = response
+            commit('setListDocument', records)
+            resolve(records)
+          })
+          .finally(() => {
+            commit('setIsLoadingDocument', false)
+          })
+      })
+    },
+    searchListDocumentLine({ commit }, {
+      moventTypeId,
+      organizationId,
+      warehouseId,
+      salesRegionId,
+      salesRepresentativeId,
+      documentTypeId
+    }) {
+      return new Promise(resolve => {
+        commit('setIsLoadingDocumentList', true)
+        requesListDocumentLines({
+          movement_type: moventTypeId,
+          organization_id: organizationId,
+          warehouse_id: warehouseId,
+          sales_region_id: salesRegionId,
+          sales_representative_id: salesRepresentativeId,
+          document_type_id: documentTypeId
+        })
+          .then(response => {
+            const { records } = response
+            commit('setListDocumentList', records)
+            resolve(records)
+          })
+          .finally(() => {
+            commit('setIsLoadingDocumentList', false)
+          })
+      })
+    }
+  },
   getters: {
     getSearchFilterGenerateOrder: (state) => {
       return state.searchCriteria
+    },
+    getIsLoadingListDocument: (state) => {
+      return state.isLoadingDocument
+    },
+    getListDocument: (state) => {
+      return state.listDocument
+    },
+    getListDocumentLine: (state) => {
+      return state.listDocumentLines
+    },
+    getIsLoadingListDocumentLine: (state) => {
+      return state.isLoadingDocumentLines
     }
   }
 }

@@ -201,3 +201,47 @@ export function requestListLocators({
     }
   })
 }
+
+// Table
+
+export function requestListDocuments({
+  movement_type,
+  organization_id,
+  warehouse_id,
+  sales_region_id,
+  sales_representative_id,
+  document_type_id
+}) {
+  return request({
+    url: `/forms/out-bound-orders/documents/${movement_type}`,
+    method: 'get',
+    params: {
+      organization_id,
+      warehouse_id,
+      sales_region_id,
+      sales_representative_id,
+      document_type_id
+    }
+  })
+}
+
+export function requesListDocumentLines({
+  movement_type,
+  organization_id,
+  warehouse_id,
+  sales_region_id,
+  sales_representative_id,
+  document_type_id
+}) {
+  return request({
+    url: `/forms/out-bound-orders/documents/${movement_type}/lines`,
+    method: 'get',
+    params: {
+      organization_id,
+      warehouse_id,
+      sales_region_id,
+      sales_representative_id,
+      document_type_id
+    }
+  })
+}

@@ -44,10 +44,38 @@ const OutBoundOrder = {
     }
   },
   order: {
-    title: 'Orden'
+    title: 'Orden',
+    documentNo: 'Número Documento',
+    dateOrdered: 'Fecha Ordenada',
+    datePromised: 'Fecha Prometida',
+    region: 'Región',
+    city: 'Ciudad',
+    businessPartner: 'Socio del Negocios',
+    location: 'Dirección',
+    address1: 'Dirección 1',
+    address2: 'Dirección 2',
+    address3: 'Dirección 3',
+    address4: 'Dirección 4',
+    weight: 'Peso',
+    volume: 'Volumen'
   },
   select: {
-    title: 'Seleccionar'
+    title: 'Seleccionar',
+    product: 'Producto',
+    uom: 'UM',
+    handQuantity: 'Cantidad Disponible',
+    quantity: 'Cantidad',
+    loadSequence: 'Secuencia de Carga',
+    orderedQuantity: 'Cantidad Ordenada',
+    reservedQuantity: 'Cantidad Reservada',
+    quantityInvoiced: 'Cantidad Facturada',
+    deliveredQuantity: 'Cantidad Entregada',
+    qtyTransit: 'Cantidad en tránsito',
+    deliveryRule: 'Regla de reparto'
+  },
+  productInfo: {
+    title: 'Stock de Productos Para Almacén',
+    pickedQty: 'Cantidad Seleccionada'
   }
 }
 

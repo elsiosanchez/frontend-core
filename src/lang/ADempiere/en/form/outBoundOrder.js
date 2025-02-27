@@ -44,10 +44,38 @@ const OutBoundOrder = {
     }
   },
   order: {
-    title: 'Order'
+    title: 'Order',
+    documentNo: 'Document No',
+    dateOrdered: 'Date Ordered',
+    datePromised: 'Date Promised',
+    region: 'Region',
+    city: 'City',
+    businessPartner: 'Business Partner',
+    location: 'Location',
+    address1: 'Address 1',
+    address2: 'Address 2',
+    address3: 'Address 3',
+    address4: 'Address 4',
+    weight: 'Weight',
+    volume: 'Volume'
   },
   select: {
-    title: 'Select'
+    title: 'Select',
+    product: 'Product',
+    uom: 'UOM',
+    handQuantity: 'On Hand Quantity',
+    quantity: 'Quantity',
+    loadSequence: 'Load Sequence',
+    orderedQuantity: 'Ordered Quantity',
+    reservedQuantity: 'Reserved Quantity',
+    quantityInvoiced: 'Quantity Invoiced',
+    deliveredQuantity: 'Delivered Quantity',
+    qtyTransit: 'Qty In Transit',
+    deliveryRule: 'Delivery Rule'
+  },
+  productInfo: {
+    title: 'Product Stock for Warehouse',
+    pickedQty: 'Picked Qty'
   }
 }
 

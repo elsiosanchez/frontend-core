@@ -79,15 +79,16 @@
         @click="nextStep"
       />
     </div>
-    <!-- <el-drawer
+    <el-drawer
       :visible.sync="showPanel"
+      :show-close="true"
+      :with-header="true"
+      :size="isMobile ? '100%' : '50%'"
+      :title="$t('form.outBoundOrder.productInfo.title')"
     >
-      <span slot="title">
-        <svg-icon icon-class="tab" style="margin-right: 10px;" />
-        {{ $t('') }}
-      </span>
+      <info-panel />
       <panel />
-    </el-drawer> -->
+    </el-drawer>
   </div>
 </template>
 
@@ -101,6 +102,7 @@ import store from '@/store'
 import SearchCriteria from './SearchCriteria/index.vue'
 import Components from './components/index.vue'
 import Process from './process/index.vue'
+import InfoPanel from './components/infopanel.vue'
 // import Summary from './components/Summary'
 
 // Utils and Helper Methods
@@ -118,7 +120,8 @@ export default defineComponent({
   components: {
     SearchCriteria,
     Components,
-    Process
+    Process,
+    InfoPanel
   },
 
   props: {
@@ -167,13 +170,30 @@ export default defineComponent({
         store.commit('setChangeSteps', value)
       }
     })
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
 
     function refreshRecords() {
-      store.dispatch('findListPayment')
-      store.dispatch('findListInvoices')
+      searchRecords()
     }
-
+    function searchRecords() {
+      const { organizationId, moventTypeId, warehouseId } = store.getters.getSearchFilterGenerateOrder
+      let moventType = 'C_Order'
+      if (moventTypeId) {
+        moventType = 'DD_Order'
+      }
+      store.dispatch('searchListDocument', {
+        organizationId,
+        moventTypeId: moventType,
+        warehouseId
+        // salesRegionId,
+        // salesRepresentativeId,
+        // documentTypeId
+      })
+    }
     function nextStep(step) {
+      searchRecords()
       currentStep.value++
     }
 
@@ -187,6 +207,7 @@ export default defineComponent({
       showPanel,
       // Computed
       isDisabled,
+      isMobile,
       // Methods
       nextStep,
       refreshRecords

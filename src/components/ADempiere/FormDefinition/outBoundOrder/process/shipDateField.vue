@@ -21,6 +21,7 @@
     style="width: 100%;"
   >
     <template slot="label">
+      <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.panel.shipDate') }}
     </template>
     <el-date-picker
