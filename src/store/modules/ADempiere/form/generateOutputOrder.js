@@ -20,8 +20,7 @@ const initState = {
   searchCriteria: {
     listOrganization: [],
     organizationId: -1,
-    listMoventType: [],
-    moventTypeId: -1,
+    moventTypeId: false,
     listDocumentType: [],
     documentTypeId: -1,
     listWarehouse: [],
@@ -37,7 +36,14 @@ const initState = {
     listDeliveryVia: [],
     deliveryViaId: -1,
     listShipper: [],
-    shipperId: -1
+    shipperId: -1,
+    // process
+    listDocumentAction: [],
+    documentActionId: -1,
+    listLocator: [],
+    locatorId: -1,
+    shipDate: new Date(),
+    documentDate: new Date()
   }
 }
 

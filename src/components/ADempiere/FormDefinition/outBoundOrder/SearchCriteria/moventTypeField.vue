@@ -23,17 +23,18 @@
     <template slot="label">
       {{ $t('form.outBoundOrder.searchCriteria.moventType') }}
       <el-switch
-        v-model="currentMoventTypeValue"
+        v-model="value"
         :inactive-text="$t('form.outBoundOrder.searchCriteria.order')"
         :active-text="$t('form.outBoundOrder.searchCriteria.distributionOrder')"
-        style="display: flex; justify-content: center; height: 40px;"
+        style="display: flex; justify-content: center; height: 30px;"
       />
     </template>
   </el-form-item>
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import store from '@/store'
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
@@ -45,10 +46,27 @@ export default defineComponent({
     EmptyOptionSelect
   },
   setup() {
-    const currentMoventTypeValue = ref(false)
+    const value = computed({
+      // getter
+      get() {
+        const { moventTypeId } = store.getters.getSearchFilterGenerateOrder
+        return moventTypeId
+      },
+      // setter
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'moventTypeId',
+          value: newValue
+        })
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'documentTypeId',
+          value: ''
+        })
+      }
+    })
 
     return {
-      currentMoventTypeValue
+      value
     }
   }
 })

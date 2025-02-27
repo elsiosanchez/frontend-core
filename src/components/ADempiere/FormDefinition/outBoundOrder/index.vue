@@ -75,6 +75,7 @@
         type="success"
         class="button-base-icon"
         icon="el-icon-arrow-right"
+        :disabled="!isDisabled"
         @click="nextStep"
       />
     </div>
@@ -151,14 +152,10 @@ export default defineComponent({
         key: 'process'
       }
     ])
-
-    const isLoadingPayments = computed(() => {
-      return store.getters.getIsLoadingPayments
+    const isDisabled = computed(() => {
+      const { organizationId, warehouseId } = store.getters.getSearchFilterGenerateOrder
+      return !isEmptyValue(organizationId) && !isEmptyValue(warehouseId)
     })
-    const isLoadingInvoices = computed(() => {
-      return store.getters.getIsLoadingInvoices
-    })
-
     const currentStep = computed({
       // getter
       get() {
@@ -169,25 +166,6 @@ export default defineComponent({
       set(value) {
         store.commit('setChangeSteps', value)
       }
-    })
-
-    const transactionOrganizationId = computed(() => {
-      const { transactionOrganizationId } = store.getters.getProcess
-      return transactionOrganizationId
-    })
-
-    const isDisabledProcess = computed(() => {
-      const {
-        businessPartnerId,
-        currencyId
-      } = store.getters.getSearchFilter
-      if (currentStep.value === 1) {
-        // only process
-        if (isEmptyValue(transactionOrganizationId.value) || transactionOrganizationId.value <= 0) {
-          return true
-        }
-      }
-      return isEmptyValue(businessPartnerId) || isEmptyValue(currencyId)
     })
 
     function refreshRecords() {
@@ -208,9 +186,7 @@ export default defineComponent({
       currentStep,
       showPanel,
       // Computed
-      isDisabledProcess,
-      isLoadingPayments,
-      isLoadingInvoices,
+      isDisabled,
       // Methods
       nextStep,
       refreshRecords

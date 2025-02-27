@@ -79,6 +79,10 @@ export default defineComponent({
           attribute: 'organizationId',
           value: newValue
         })
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'warehouseId',
+          value: ''
+        })
       }
     })
     const optionsList = computed({

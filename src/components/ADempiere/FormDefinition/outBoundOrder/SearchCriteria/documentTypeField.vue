@@ -79,6 +79,13 @@ export default defineComponent({
         })
       }
     })
+    const moventType = computed(() => {
+      const { moventTypeId } = store.getters.getSearchFilterGenerateOrder
+      if (moventTypeId) {
+        return 'DD_Order'
+      }
+      return 'C_Order'
+    })
     const optionsList = computed({
       get() {
         const { listDocumentType } = store.getters.getSearchFilterGenerateOrder
@@ -111,7 +118,8 @@ export default defineComponent({
         return
       }
       requestListDocumentTypes({
-        searchValue
+        searchValue,
+        movement_type: moventType.value
       })
         .then(response => {
           const { records } = response

@@ -57,10 +57,11 @@ export function requestListWarehouses({
 export function requestListDocumentTypes({
   searchValue,
   pageToken,
-  pageSize = RECORD_ROWS_BY_LIST
+  pageSize = RECORD_ROWS_BY_LIST,
+  movement_type
 }) {
   return request({
-    url: `/forms/out-bound-orders/document-types`,
+    url: `/forms/out-bound-orders/document-types/${movement_type}`,
     method: 'get',
     params: {
       page_size: pageSize,

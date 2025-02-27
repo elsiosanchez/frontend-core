@@ -47,6 +47,9 @@
             <el-col :span="6">
               <shipper-field />
             </el-col>
+            <el-col :span="6">
+              <delivery-via-field />
+            </el-col>
           </el-row>
         </el-form>
       </el-card>
@@ -67,6 +70,7 @@ import LocatorField from './locatorField.vue'
 import TargetDocumentTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/targetDocumentTypeField.vue'
 import DeliveryRuleField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/deliveryRuleField.vue'
 import ShipperField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/shipperField.vue'
+import DeliveryViaField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/deliveryViaField.vue'
 
 export default defineComponent({
   name: 'SearchCriteriaProcess',
@@ -77,7 +81,8 @@ export default defineComponent({
     LocatorField,
     ShipperField,
     TargetDocumentTypeField,
-    DeliveryRuleField
+    DeliveryRuleField,
+    DeliveryViaField
   }
 })
 </script>

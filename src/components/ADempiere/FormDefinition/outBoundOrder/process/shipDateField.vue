@@ -21,36 +21,25 @@
     style="width: 100%;"
   >
     <template slot="label">
-      <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.panel.shipDate') }}
     </template>
-    <el-select
-      v-model="currentShilpDataValue"
-      clearable
-      style="width: 100%;"
-      filterable
-      :default-first-option="true"
-      remote
-    >
-      <empty-option-select
-        :current-value="currentShilpDataValue"
-      />
-      <!-- <el-option
-        v-for="item in optionsList"
-        :key="item.uuid"
-        :label="item.label"
-        :value="item.id"
-      /> -->
-    </el-select>
+    <el-date-picker
+      v-model="value"
+      unlink-panels
+      :format="formatView"
+    />
   </el-form-item>
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import store from '@/store'
+
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 export default defineComponent({
   name: 'ShipDateField',
 
@@ -59,9 +48,41 @@ export default defineComponent({
   },
 
   setup() {
-    const currentShilpDataValue = ref('')
+    const value = computed({
+      // getter
+      get() {
+        const { shipDate } = store.getters.getSearchFilterGenerateOrder
+        return shipDate
+      },
+      // setter
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'shipDate',
+          value: newValue
+        })
+      }
+    })
+    const formatView = computed(() => {
+      let format = ''
+      const currentLanguageDefinition = store.getters['getCurrentLanguageDefinition']
+      if (isEmptyValue(format)) {
+        format = 'yyyy-MM-dd'
+        if (!isEmptyValue(currentLanguageDefinition)) {
+          const { datePattern } = currentLanguageDefinition
+          if (!isEmptyValue(datePattern)) {
+            format = datePattern
+          }
+        }
+      }
+      const formattedFormat = format
+        .replace(/[Y]/gi, 'y')
+        .replace(/[m]/gi, 'M')
+        .replace(/[D]/gi, 'd')
+      return formattedFormat
+    })
     return {
-      currentShilpDataValue
+      value,
+      formatView
     }
   }
 })

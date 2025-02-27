@@ -21,36 +21,43 @@
     style="width: 100%;"
   >
     <template slot="label">
-      <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.panel.locator') }}
     </template>
     <el-select
-      v-model="currentDocumentDataValue"
+      v-model="value"
       clearable
       style="width: 100%;"
       filterable
       :default-first-option="true"
       remote
+      :remote-method="remoteSearchCurrencies"
+      @visible-change="loadRecords"
     >
       <empty-option-select
-        :current-value="currentDocumentDataValue"
+        :current-value="value"
       />
-      <!-- <el-option
+      <el-option
         v-for="item in optionsList"
         :key="item.uuid"
         :label="item.label"
         :value="item.id"
-      /> -->
+      />
     </el-select>
   </el-form-item>
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import store from '@/store'
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-
+// API Request Methods
+import {
+  requestListLocators
+} from '@/api/ADempiere/form/outBoundOrder.ts'
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 export default defineComponent({
   name: 'DocumentDataField',
 
@@ -59,9 +66,73 @@ export default defineComponent({
   },
 
   setup() {
-    const currentDocumentDataValue = ref('')
+    const value = computed({
+      // getter
+      get() {
+        const { locatorId } = store.getters.getSearchFilterGenerateOrder
+        return locatorId
+      },
+      // setter
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'locatorId',
+          value: newValue
+        })
+      }
+    })
+    const warehouse = computed(() => {
+      const { warehouseId } = store.getters.getSearchFilterGenerateOrder
+      if (isEmptyValue(warehouseId)) return
+      return warehouseId
+    })
+    const optionsList = computed({
+      get() {
+        const { listLocator } = store.getters.getSearchFilterGenerateOrder
+        if (!isEmptyValue(listLocator)) {
+          if (listLocator.some(item => item.label === undefined)) {
+            const listFormData = listLocator.map(item => {
+              return {
+                id: item.id,
+                label: item.values.DisplayColumn,
+                uuid: item.values.UUID
+              }
+            })
+            return listFormData
+          }
+        }
+        return listLocator
+      },
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'listLocator',
+          value: newValue
+        })
+      }
+    })
+    function remoteSearchCurrencies(searchValue) {
+      loadRecords(true, searchValue)
+    }
+
+    function loadRecords(isFind, searchValue) {
+      if (!isFind) {
+        return
+      }
+      requestListLocators({
+        searchValue,
+        warehouse_id: warehouse.value
+      })
+        .then(response => {
+          const { records } = response
+          optionsList.value = records
+        })
+    }
     return {
-      currentDocumentDataValue
+      // Computeds
+      value,
+      optionsList,
+      // Methods
+      loadRecords,
+      remoteSearchCurrencies
     }
   }
 })

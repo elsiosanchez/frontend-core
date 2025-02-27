@@ -30,9 +30,6 @@
               <organization-field />
             </el-col>
             <el-col :span="6">
-              <document-type-field />
-            </el-col>
-            <el-col :span="6">
               <warehouse-field />
             </el-col>
             <el-col :span="6">
@@ -42,10 +39,10 @@
               <sales-representative-field />
             </el-col>
             <el-col :span="6">
-              <delivery-via-field />
+              <movent-type-field />
             </el-col>
             <el-col :span="6">
-              <movent-type-field />
+              <document-type-field />
             </el-col>
           </el-row>
         </el-form>
@@ -67,7 +64,6 @@ import DocumentTypeField from '@/components/ADempiere/FormDefinition/outBoundOrd
 import WarehouseField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/warehouseField.vue'
 import SalesRegionField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/salesRegionField.vue'
 import SalesRepresentativeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/salesRepresentativeField.vue'
-import DeliveryViaField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/deliveryViaField.vue'
 
 export default defineComponent({
   name: 'SearchCriteria',
@@ -78,8 +74,7 @@ export default defineComponent({
     DocumentTypeField,
     WarehouseField,
     SalesRegionField,
-    SalesRepresentativeField,
-    DeliveryViaField
+    SalesRepresentativeField
   }
 })
 

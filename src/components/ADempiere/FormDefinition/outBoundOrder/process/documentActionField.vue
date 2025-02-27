@@ -21,36 +21,43 @@
     style="width: 100%;"
   >
     <template slot="label">
-      <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.panel.documentAction') }}
     </template>
     <el-select
-      v-model="currentDocumentActionValue"
+      v-model="value"
       clearable
       style="width: 100%;"
       filterable
       :default-first-option="true"
       remote
+      :remote-method="remoteSearchCurrencies"
+      @visible-change="loadRecords"
     >
       <empty-option-select
-        :current-value="currentDocumentActionValue"
+        :current-value="value"
       />
-      <!-- <el-option
+      <el-option
         v-for="item in optionsList"
         :key="item.uuid"
         :label="item.label"
         :value="item.id"
-      /> -->
+      />
     </el-select>
   </el-form-item>
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import store from '@/store'
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-
+// API Request Methods
+import {
+  requestListDocumentActions
+} from '@/api/ADempiere/form/outBoundOrder.ts'
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 export default defineComponent({
   name: 'DocumentActionField',
 
@@ -59,9 +66,67 @@ export default defineComponent({
   },
 
   setup() {
-    const currentDocumentActionValue = ref('')
+    const value = computed({
+      // getter
+      get() {
+        const { documentActionId } = store.getters.getSearchFilterGenerateOrder
+        return documentActionId
+      },
+      // setter
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'documentActionId',
+          value: newValue
+        })
+      }
+    })
+    const optionsList = computed({
+      get() {
+        const { listDocumentAction } = store.getters.getSearchFilterGenerateOrder
+        if (!isEmptyValue(listDocumentAction)) {
+          if (listDocumentAction.some(item => item.label === undefined)) {
+            const listFormData = listDocumentAction.map(item => {
+              return {
+                id: item.id,
+                label: item.values.DisplayColumn,
+                uuid: item.values.UUID
+              }
+            })
+            return listFormData
+          }
+        }
+        return listDocumentAction
+      },
+      set(newValue) {
+        store.commit('updateAttributeCriteriaGenerateOrder', {
+          attribute: 'listDocumentAction',
+          value: newValue
+        })
+      }
+    })
+    function remoteSearchCurrencies(searchValue) {
+      loadRecords(true, searchValue)
+    }
+
+    function loadRecords(isFind, searchValue) {
+      if (!isFind) {
+        return
+      }
+      requestListDocumentActions({
+        searchValue
+      })
+        .then(response => {
+          const { records } = response
+          optionsList.value = records
+        })
+    }
     return {
-      currentDocumentActionValue
+      // Computeds
+      value,
+      optionsList,
+      // Methods
+      loadRecords,
+      remoteSearchCurrencies
     }
   }
 })
