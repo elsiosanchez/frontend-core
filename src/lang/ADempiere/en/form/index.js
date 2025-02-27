@@ -35,6 +35,7 @@ import tasks from './tasks'
 import issues from './issues'
 import businessPartnerInformation from './businessPartnerInformation.js'
 import kanban from './kanban'
+import outBoundOrder from './outBoundOrder'
 
 export default {
   accountingViewer,
@@ -55,5 +56,6 @@ export default {
   tasks,
   issues,
   businessPartnerInformation,
-  kanban
+  kanban,
+  outBoundOrder
 }
