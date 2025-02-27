@@ -338,7 +338,8 @@ export default {
         },
         isEnabled: () => generateReportOfWindow.enabled({
           parentUuid: this.parentUuid,
-          containerUuid: this.containerUuid
+          containerUuid: this.containerUuid,
+          uuid: this.metadata.process.uuid
         })
       }
     },
