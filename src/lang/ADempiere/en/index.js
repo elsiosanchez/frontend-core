@@ -203,6 +203,7 @@ export default {
       showTotal: 'Show Totals',
       hiddenTotal: 'Hidden Totals',
       batchEntry: 'Batch Entry',
+      continueRegister: 'Continue to Register',
       commandSave: 'Press Alt + Enter to Save'
     },
     recentItems: {

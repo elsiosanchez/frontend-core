@@ -45,7 +45,7 @@
             style="float: right;margin: 0px"
           >
             <b>
-              {{ $t('table.dataTable.batchEntry') }}
+              {{ $t('table.dataTable.continueRegister') }}
             </b>
             <el-switch
               v-model="bachtEntry"

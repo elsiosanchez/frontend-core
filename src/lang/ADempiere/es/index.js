@@ -204,6 +204,7 @@ export default {
       showTotal: 'Mostrar Totales',
       hiddenTotal: 'Ocultar Totales',
       batchEntry: 'Entrada por Lotes',
+      continueRegister: 'Continuar Registrando',
       commandSave: 'Presione Alt + Enter para Guardar'
     },
     recentItems: {

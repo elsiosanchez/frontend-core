@@ -67,7 +67,7 @@
               {{ $t('table.dataTable.commandSave') }}
             </i>
             <b>
-              {{ $t('table.dataTable.batchEntry') }}
+              {{ $t('table.dataTable.continueRegister') }}
             </b>
             <el-switch
               v-model="bachtEntry"
