@@ -18,7 +18,7 @@
 
 <template>
   <el-button
-    v-show="isSaveRecord"
+    v-if="isSaveRecord"
     plain
     size="small"
     type="primary"

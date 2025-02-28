@@ -62,7 +62,7 @@
           </el-form>
         </el-col>
         <el-col :span="24">
-          <p style="text-align: end;margin: 0px;">
+          <p style="text-align: end;margin: 5px 0px;">
             <i style="color: #9198a1;margin-right: 5px;">
               {{ $t('table.dataTable.commandSave') }}
             </i>
