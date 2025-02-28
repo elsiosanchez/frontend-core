@@ -19,7 +19,7 @@
 
 <template>
   <div
-    v-if="!isChangeOptions && isLoadingDataTale"
+    v-if="!isChangeOptions"
     id="mainWindowDataTable"
     class="multipleTableWindow"
     :onLoad="adjustSize()"

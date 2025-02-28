@@ -167,15 +167,6 @@ const windowManager = {
           ...row,
           rowIndex
         })
-      } else {
-        recordsList.unshift(row)
-
-        recordsList = recordsList.map((rowItem, index) => {
-          return {
-            ...rowItem,
-            rowIndex: index
-          }
-        })
       }
 
       Vue.set(state.tabData[containerUuid], 'recordsList', recordsList)
