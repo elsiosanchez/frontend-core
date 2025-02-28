@@ -34,37 +34,37 @@
         width="110"
       />
       <el-table-column
-        prop="document_no"
+        prop="uom"
         :label="$t('form.outBoundOrder.select.uom')"
         align="right"
         width="80"
       />
       <el-table-column
-        prop="date_ordered"
+        prop="warehouse"
         :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
         align="left"
         width="150"
       />
       <el-table-column
-        prop="date_promised"
+        prop="handQuantity"
         :label="$t('form.outBoundOrder.select.handQuantity')"
         align="right"
         width="160"
       />
       <el-table-column
-        prop="region"
+        prop="qtyTransit"
         :label="$t('form.outBoundOrder.select.qtyTransit')"
         align="right"
         width="160"
       />
       <el-table-column
-        prop="city"
+        prop="quantity"
         :label="$t('form.outBoundOrder.select.quantity')"
         align="right"
         width="110"
       />
       <el-table-column
-        prop="sales_representative"
+        prop="pickedQty"
         :label="$t('form.outBoundOrder.productInfo.pickedQty')"
         align="right"
         width="180"

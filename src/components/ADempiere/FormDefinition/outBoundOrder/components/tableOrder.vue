@@ -29,6 +29,7 @@
       style="width: 100%"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
+      @select="selectionOrder"
     >
       <el-table-column type="selection" />
       <el-table-column
@@ -137,7 +138,7 @@
 import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
@@ -149,9 +150,35 @@ export default defineComponent({
     const records = computed(() => {
       return store.getters.getListDocument
     })
+    function selectionOrder(selection) {
+      const { organizationId, moventTypeId, warehouseId } = store.getters.getSearchFilterGenerateOrder
+      let moventType = 'C_Order'
+      if (moventTypeId) {
+        moventType = 'DD_Order'
+      }
+      if (!isEmptyValue(selection)) {
+        const recordsId = selection.map(data => data.id)
+        store.dispatch('searchListDocumentLine', {
+          organizationId,
+          moventTypeId: moventType,
+          warehouseId,
+          recordsId: recordsId
+        })
+      } else {
+        store.dispatch('searchListDocumentLine', {
+          organizationId,
+          moventTypeId: moventType,
+          warehouseId,
+          recordsId: -1
+        })
+        store.commit('setRecordsSelection', [])
+      }
+    }
     return {
       isLoading,
       records,
+      //
+      selectionOrder,
       //
       formatDate
     }

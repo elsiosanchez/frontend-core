@@ -20,7 +20,8 @@ import { request } from '@/utils/ADempiere/request'
 
 // Constants
 import { RECORD_ROWS_BY_LIST } from '@/utils/ADempiere/dictionary/field/lookups'
-
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 export function requestListOrganizations({
   searchValue,
   pageToken,
@@ -231,17 +232,25 @@ export function requesListDocumentLines({
   warehouse_id,
   sales_region_id,
   sales_representative_id,
-  document_type_id
+  document_type_id,
+  recordsId
 }) {
+  const params = new URLSearchParams()
+  params.append('organization_id', organization_id)
+  params.append('warehouse_id', warehouse_id)
+  params.append('sales_region_id', sales_region_id)
+  params.append('sales_representative_id', sales_representative_id)
+  params.append('document_type_id', document_type_id)
+  if (!isEmptyValue(recordsId)) {
+    recordsId.forEach((id) => {
+      params.append('header_ids', id)
+    })
+  } else {
+    params.append('header_ids', recordsId)
+  }
   return request({
     url: `/forms/out-bound-orders/documents/${movement_type}/lines`,
     method: 'get',
-    params: {
-      organization_id,
-      warehouse_id,
-      sales_region_id,
-      sales_representative_id,
-      document_type_id
-    }
+    params
   })
 }

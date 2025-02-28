@@ -24,10 +24,12 @@
       class="list-select-table"
       sise="mini"
       height="30vh"
+      :data="records"
       border
       style="width: 100%; height: 85%"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
+      @select="selectionOrder"
     >
       <el-table-column type="selection" />
       <el-table-column
@@ -46,7 +48,7 @@
         prop="product"
         :label="$t('form.outBoundOrder.select.product')"
         align="left"
-        width="150"
+        width="170"
       />
       <el-table-column
         prop="uom"
@@ -55,7 +57,7 @@
         width="70"
       />
       <el-table-column
-        prop="handQuantity"
+        prop="on_hand_quantity"
         :label="$t('form.outBoundOrder.select.handQuantity')"
         align="right"
         width="160"
@@ -65,6 +67,24 @@
         :label="$t('form.outBoundOrder.select.quantity')"
         align="right"
         width="110"
+      >
+        <template slot-scope="scope">
+          <span v-if="activateField[scope.row.id]">
+            <el-input
+              v-model="scope.row.quantity"
+              @input="handleQuantityChange(scope.row)"
+            />
+          </span>
+          <span v-else>
+            {{ scope.row.quantity }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="order_uom"
+        :label="$t('form.outBoundOrder.select.uom')"
+        align="left"
+        width="70"
       />
       <el-table-column
         prop="weight"
@@ -79,7 +99,7 @@
         width="110"
       />
       <el-table-column
-        prop="weight"
+        prop="loadSequence"
         :label="$t('form.outBoundOrder.select.loadSequence')"
         align="right"
         width="160"
@@ -126,25 +146,77 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'TableOrder',
   setup() {
+    const activateField = ref({})
+    const listSelectTable = ref()
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocumentLine
     })
     const records = computed(() => {
       return store.getters.getListDocumentLine
     })
+    function selectionOrder(selection) {
+      if (!isEmptyValue(selection)) {
+        const newActivateField = {}
+        selection.forEach(row => {
+          newActivateField[row.id] = true
+        })
+        activateField.value = newActivateField
+        store.commit('setRecordsSelection', selection)
+      } else {
+        activateField.value = false
+        store.commit('setRecordsSelection', [])
+      }
+    }
+    function handleQuantityChange(row) {
+      const storeRecords = store.getters.getRecordsSelection
+      const updatedRecords = storeRecords.map(record => {
+        if (row.id === record.id) {
+          return {
+            ...record,
+            quantity: row.quantity
+          }
+        }
+        return record
+      })
+      store.commit('setRecordsSelection', updatedRecords)
+    }
+    watch(records, (newRecords) => {
+      const selectedRecords = store.getters.getRecordsSelection
+      if (selectedRecords && selectedRecords.length > 0) {
+        nextTick(() => {
+          const newActivateField = {}
+          selectedRecords.forEach(row => {
+            const record = newRecords.find(r => r.id === row.id)
+            if (record) {
+              newActivateField[record.id] = true
+              listSelectTable.value.toggleRowSelection(record, true)
+            }
+          })
+          activateField.value = newActivateField
+        })
+      } else {
+        activateField.value = {}
+      }
+    }, { deep: true })
     return {
+      // Ref
+      activateField,
+      listSelectTable,
+      // Computed
       isLoading,
       records,
       //
-      formatDate
+      formatDate,
+      selectionOrder,
+      handleQuantityChange
     }
   }
 })
@@ -153,5 +225,8 @@ export default defineComponent({
 <style>
 .list-select-table  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
   padding: 0px !important
+}
+.list-select-table .el-input--medium .el-input__inner{
+  height: 25px !important
 }
 </style>

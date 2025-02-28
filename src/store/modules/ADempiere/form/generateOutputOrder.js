@@ -27,6 +27,9 @@ const initState = {
   isLoadingDocument: false,
   listDocumentLines: [],
   isLoadingDocumentLines: false,
+  recordsId: [],
+  recordsSelection: [],
+  steps: 0,
   searchCriteria: {
     listOrganization: [],
     organizationId: -1,
@@ -77,6 +80,15 @@ const OutBoundOrder = {
     },
     setIsLoadingDocumentList(state, loading) {
       state.isLoadingDocumentLines = loading
+    },
+    setRecordsId(state, ids) {
+      state.recordsId = ids
+    },
+    setRecordsSelection(state, records) {
+      state.recordsSelection = records
+    },
+    setOutputSteps(state, steps) {
+      state.steps = steps
     }
   },
   actions: {
@@ -114,7 +126,8 @@ const OutBoundOrder = {
       warehouseId,
       salesRegionId,
       salesRepresentativeId,
-      documentTypeId
+      documentTypeId,
+      recordsId
     }) {
       return new Promise(resolve => {
         commit('setIsLoadingDocumentList', true)
@@ -124,11 +137,13 @@ const OutBoundOrder = {
           warehouse_id: warehouseId,
           sales_region_id: salesRegionId,
           sales_representative_id: salesRepresentativeId,
-          document_type_id: documentTypeId
+          document_type_id: documentTypeId,
+          recordsId
         })
           .then(response => {
             const { records } = response
             commit('setListDocumentList', records)
+            commit('setRecordsId', recordsId)
             resolve(records)
           })
           .finally(() => {
@@ -152,6 +167,15 @@ const OutBoundOrder = {
     },
     getIsLoadingListDocumentLine: (state) => {
       return state.isLoadingDocumentLines
+    },
+    getRecordsId: (state) => {
+      return state.recordsId
+    },
+    getRecordsSelection: (state) => {
+      return state.recordsSelection
+    },
+    getOutputSteps(state) {
+      return state.steps
     }
   }
 }

@@ -21,8 +21,8 @@
     <div style="height: 6% !important;padding: 0px 15px;">
       <el-steps :active="currentStep" finish-status="success">
         <el-step
-          v-for="(list, key) in stepList"
-          :key="key"
+          v-for="(list) in stepList"
+          :key="list.key"
           :title="list.name"
         />
       </el-steps>
@@ -66,7 +66,8 @@
           type="primary"
           class="button-base-icon"
           icon="el-icon-check"
-          @click="nextStep"
+          :disabled="isEmptyValue(recordsSelecion)"
+          @click="validateNextStep"
         />
       </div>
     </div>
@@ -107,6 +108,7 @@ import InfoPanel from './components/infopanel.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { showNotification } from '@/utils/ADempiere/notification.js'
 
 /**
  * Based on:
@@ -138,6 +140,7 @@ export default defineComponent({
      * Refs
      */
     const showPanel = ref(false)
+    const disabledButton = ref(false)
     const stepList = ref([
       {
         name: lang.t('form.outBoundOrder.step.searchCriteria'),
@@ -159,15 +162,18 @@ export default defineComponent({
       const { organizationId, warehouseId } = store.getters.getSearchFilterGenerateOrder
       return !isEmptyValue(organizationId) && !isEmptyValue(warehouseId)
     })
+    const recordsSelecion = computed(() => {
+      return store.getters.getRecordsSelection
+    })
     const currentStep = computed({
       // getter
       get() {
-        const step = store.getters.getSteps
+        const step = store.getters.getOutputSteps
         return step
       },
       // setter
       set(value) {
-        store.commit('setChangeSteps', value)
+        store.commit('setOutputSteps', value)
       }
     })
     const isMobile = computed(() => {
@@ -191,40 +197,55 @@ export default defineComponent({
         // salesRepresentativeId,
         // documentTypeId
       })
+      store.dispatch('searchListDocumentLine', {
+        organizationId,
+        moventTypeId: moventType,
+        warehouseId,
+        recordsId: -1
+        // salesRegionId,
+        // salesRepresentativeId,
+        // documentTypeId
+      })
     }
     function nextStep(step) {
       searchRecords()
+      store.commit('setRecordsSelection', [])
       currentStep.value++
     }
-
-    /**
-     * Methods
-     */
+    function validateNextStep() {
+      if (!isEmptyValue(recordsSelecion.value)) {
+        disabledButton.value = true
+        recordsSelecion.value.forEach(record => {
+          if (record.delivery_rule_value !== 'F' && record.quantity > record.on_hand_quantity) {
+            const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.order.documentNo') + ': ' + record.document_no
+            showNotification({
+              title: lang.t('notifications.error'),
+              message,
+              type: 'error'
+            })
+            return
+          }
+          currentStep.value++
+        })
+      } else {
+        disabledButton.value = false
+      }
+    }
     return {
       // Refs
       stepList,
       currentStep,
       showPanel,
+      disabledButton,
       // Computed
       isDisabled,
       isMobile,
+      recordsSelecion,
       // Methods
       nextStep,
-      refreshRecords
+      refreshRecords,
+      validateNextStep
     }
   }
 })
 </script>
-
-<style lang="scss">
-  .from-wf-panel {
-    padding-top: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  .el-input-number {
-    .el-input--medium .el-input__inner {
-      text-align: end;
-    }
-  }
-</style>

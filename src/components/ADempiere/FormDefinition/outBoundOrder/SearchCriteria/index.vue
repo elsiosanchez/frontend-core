@@ -19,11 +19,10 @@
 <template>
   <div style="display: contents; height: 100% !important;">
     <div style="height: 100% !important;">
-      <el-card id="panel-top-search-criteria" class="panel-top-search-criteria">
+      <el-card>
         <el-form
           :inline="true"
           label-position="top"
-          class="form-base"
         >
           <el-row :gutter="24">
             <el-col :span="6">
