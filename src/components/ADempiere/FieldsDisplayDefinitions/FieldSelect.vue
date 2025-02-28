@@ -151,7 +151,6 @@ export default defineComponent({
         contextColumnNames.push(COLUMNNAME_IsSOTrx)
       }
       const contextAttributes = getContextAttributes({
-        parentUuid,
         containerUuid,
         contextColumnNames: contextColumnNames,
         isBooleanToString: true,

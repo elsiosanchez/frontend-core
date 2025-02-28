@@ -389,7 +389,7 @@ export default defineComponent({
 }
 
 .fieldset {
-  padding: 0.35em 0.75em 0.625em;
+  padding: 0.35em 0.75em 1.625em;
   border-radius: 6px;
   border: 1px solid #1890ff7a;
 }

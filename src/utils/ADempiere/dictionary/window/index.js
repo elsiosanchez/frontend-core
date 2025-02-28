@@ -865,6 +865,7 @@ export const generateReportOfWindow = {
       // return process.name === processModal.title
       return process.uuid === uuid
     })
+    if (isEmptyValue(currentProcess)) return false
     return currentProcess.is_multi_selection
   },
   isSvgIcon: true,

@@ -23,7 +23,7 @@
       v-model="fieldValue"
       :placeholder="fieldMetadata.description"
       size="mini"
-      :rows="4"
+      :rows="1"
       :type="typeTextBox"
       style="padding-right: 10px; height: 30px"
       @input="saveFieldValue(fieldValue, fieldMetadata)"
