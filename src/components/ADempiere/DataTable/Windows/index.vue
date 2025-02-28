@@ -695,7 +695,7 @@ export default defineComponent({
       }
       // changeTable(!newValue)
       if (newValue) {
-        loadHeight(newValue)
+        // loadHeight(newValue)
         loadSelection()
       }
     })
