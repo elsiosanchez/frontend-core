@@ -15,12 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+import lang from '@/lang'
 
 // API Request Methods
 import {
   requestListDocuments,
-  requesListDocumentLines
+  requesListDocumentLines,
+  requestLoadOrder
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+import { showNotification } from '@/utils/ADempiere/notification.js'
 
 const initState = {
   listDocument: [],
@@ -30,6 +33,7 @@ const initState = {
   recordsId: [],
   recordsSelection: [],
   steps: 0,
+  isLoadingProcess: false,
   searchCriteria: {
     listOrganization: [],
     organizationId: -1,
@@ -52,7 +56,7 @@ const initState = {
     shipperId: -1,
     // process
     listDocumentAction: [],
-    documentActionId: -1,
+    documentActionId: '',
     listLocator: [],
     locatorId: -1,
     shipDate: new Date(),
@@ -63,6 +67,43 @@ const initState = {
 const OutBoundOrder = {
   state: initState,
   mutations: {
+    clearOutputOrder(state) {
+      state.listDocument = []
+      state.isLoadingDocument = false
+      state.listDocumentLines = []
+      state.isLoadingDocumentLines = false
+      state.recordsId = []
+      state.recordsSelection = []
+      state.steps = 0
+      state.isLoadingProcess = false
+      state.searchCriteria = {
+        listOrganization: [],
+        organizationId: -1,
+        moventTypeId: false,
+        listDocumentType: [],
+        documentTypeId: -1,
+        listWarehouse: [],
+        warehouseId: -1,
+        listSalesRegion: [],
+        salesRegionId: -1,
+        listSalesRepresentative: [],
+        salesRepresentativeId: -1,
+        listTargetDocumentType: [],
+        targetDocumentTypeId: -1,
+        listDeliveryRule: [],
+        deliveryRuleId: -1,
+        listDeliveryVia: [],
+        deliveryViaId: -1,
+        listShipper: [],
+        shipperId: -1,
+        listDocumentAction: [],
+        documentActionId: '',
+        listLocator: [],
+        locatorId: -1,
+        shipDate: new Date(),
+        documentDate: new Date()
+      }
+    },
     updateAttributeCriteriaGenerateOrder(state, {
       attribute,
       value
@@ -89,6 +130,9 @@ const OutBoundOrder = {
     },
     setOutputSteps(state, steps) {
       state.steps = steps
+    },
+    setIsLoadingProcess(state, loading) {
+      state.isLoadingProcess = loading
     }
   },
   actions: {
@@ -114,6 +158,13 @@ const OutBoundOrder = {
             const { records } = response
             commit('setListDocument', records)
             resolve(records)
+          })
+          .catch(error => {
+            showNotification({
+              title: lang.t('notifications.error'),
+              message: error,
+              type: 'error'
+            })
           })
           .finally(() => {
             commit('setIsLoadingDocument', false)
@@ -146,8 +197,62 @@ const OutBoundOrder = {
             commit('setRecordsId', recordsId)
             resolve(records)
           })
+          .catch(error => {
+            showNotification({
+              title: lang.t('notifications.error'),
+              message: error,
+              type: 'error'
+            })
+          })
           .finally(() => {
             commit('setIsLoadingDocumentList', false)
+          })
+      })
+    },
+    runOutputOrderProcess({ commit }, {
+      organization_id,
+      warehouse_id,
+      target_document_type_id,
+      delivery_rule,
+      delivery_via,
+      shipper_id,
+      document_date,
+      shipment_date,
+      movement_type,
+      orderLineRequest
+    }) {
+      return new Promise(resolve => {
+        commit('setIsLoadingProcess', true)
+        requestLoadOrder({
+          organization_id,
+          warehouse_id,
+          target_document_type_id,
+          delivery_rule,
+          delivery_via,
+          shipper_id,
+          document_date,
+          shipment_date,
+          movement_type,
+          orderLineRequest
+        })
+          .then(response => {
+            showNotification({
+              title: lang.t('notifications.completed'),
+              message: response.message,
+              type: 'success'
+            })
+            commit('clearOutputOrder')
+            resolve(response)
+          })
+          .catch(error => {
+            showNotification({
+              title: lang.t('notifications.error'),
+              message: error,
+              type: 'error'
+            })
+          })
+          .finally(() => {
+            commit('setIsLoadingProcess', false)
           })
       })
     }
@@ -174,8 +279,11 @@ const OutBoundOrder = {
     getRecordsSelection: (state) => {
       return state.recordsSelection
     },
-    getOutputSteps(state) {
+    getOutputSteps: (state) => {
       return state.steps
+    },
+    getIsLoadingProcess: (state) => {
+      return state.isLoadingProcess
     }
   }
 }

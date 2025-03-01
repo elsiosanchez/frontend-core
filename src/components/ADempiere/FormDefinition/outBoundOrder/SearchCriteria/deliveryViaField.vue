@@ -87,7 +87,7 @@ export default defineComponent({
           if (listDeliveryVia.some(item => item.label === undefined)) {
             const listFormData = listDeliveryVia.map(item => {
               return {
-                id: item.id,
+                id: item.values.KeyColumn,
                 label: item.values.DisplayColumn,
                 uuid: item.values.UUID
               }

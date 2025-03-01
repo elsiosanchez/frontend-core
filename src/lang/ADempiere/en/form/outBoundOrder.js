@@ -64,6 +64,7 @@ const OutBoundOrder = {
     title: 'Select',
     product: 'Product',
     uom: 'UOM',
+    uomProcess: 'UOM(Order)',
     handQuantity: 'On Hand Quantity',
     quantity: 'Quantity',
     loadSequence: 'Load Sequence',

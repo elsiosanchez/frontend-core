@@ -136,7 +136,7 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
@@ -144,6 +144,7 @@ import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 export default defineComponent({
   name: 'TableOrder',
   setup() {
+    const listOrderTable = ref()
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocument
     })
@@ -174,7 +175,22 @@ export default defineComponent({
         store.commit('setRecordsSelection', [])
       }
     }
+    watch(records, (newRecords) => {
+      const selectedRecords = store.getters.getRecordsId
+      if (selectedRecords && selectedRecords.length > 0) {
+        nextTick(() => {
+          selectedRecords.forEach(row => {
+            const record = newRecords.find(r => r.id === row)
+            if (record) {
+              listOrderTable.value.toggleRowSelection(record, true)
+            }
+          })
+        })
+      }
+    }, { deep: true })
     return {
+      listOrderTable,
+      //
       isLoading,
       records,
       //

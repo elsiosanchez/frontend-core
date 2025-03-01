@@ -39,13 +39,13 @@
         v-show="'process' === stepList[currentStep].key"
       />
       <div style="height: 14% !important;text-align: end;padding: 0px 15px;">
-        <el-button
+        <!-- <el-button
           v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
           type="primary"
           class="button-base-icon"
           icon="el-icon-s-grid"
           @click="showPanel = true"
-        />
+        /> -->
         <el-button
           v-if="'order' === stepList[currentStep].key"
           type="success"
@@ -59,6 +59,7 @@
           type="danger"
           class="button-base-icon"
           icon="el-icon-close"
+          :disabled="isLoadingProcess"
           @click="currentStep--"
         />
         <el-button
@@ -68,6 +69,15 @@
           icon="el-icon-check"
           :disabled="isEmptyValue(recordsSelecion)"
           @click="validateNextStep"
+        />
+        <el-button
+          v-if="'process' === stepList[currentStep].key"
+          type="primary"
+          class="button-base-icon"
+          icon="el-icon-check"
+          :loading="isLoadingProcess"
+          :disabled="isLoadingProcess"
+          @click="runProcess"
         />
       </div>
     </div>
@@ -165,6 +175,12 @@ export default defineComponent({
     const recordsSelecion = computed(() => {
       return store.getters.getRecordsSelection
     })
+    const recordsId = computed(() => {
+      return store.getters.getRecordsId
+    })
+    const isLoadingProcess = computed(() => {
+      return store.getters.getIsLoadingProcess
+    })
     const currentStep = computed({
       // getter
       get() {
@@ -197,24 +213,32 @@ export default defineComponent({
         // salesRepresentativeId,
         // documentTypeId
       })
+      let ids = -1
+      if (!isEmptyValue(recordsId.value)) {
+        ids = recordsId.value
+      }
       store.dispatch('searchListDocumentLine', {
         organizationId,
         moventTypeId: moventType,
         warehouseId,
-        recordsId: -1
+        recordsId: ids
         // salesRegionId,
         // salesRepresentativeId,
         // documentTypeId
       })
     }
     function nextStep(step) {
-      searchRecords()
       store.commit('setRecordsSelection', [])
+      store.commit('setListDocumentList', [])
+      store.commit('setRecordsId', [])
+      searchRecords()
       currentStep.value++
     }
     function validateNextStep() {
       if (!isEmptyValue(recordsSelecion.value)) {
         disabledButton.value = true
+        let hasError = false
+
         recordsSelecion.value.forEach(record => {
           if (record.delivery_rule_value !== 'F' && record.quantity > record.on_hand_quantity) {
             const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.order.documentNo') + ': ' + record.document_no
@@ -223,13 +247,52 @@ export default defineComponent({
               message,
               type: 'error'
             })
-            return
+            hasError = true
           }
-          currentStep.value++
         })
+        if (!hasError) {
+          currentStep.value++
+        }
       } else {
         disabledButton.value = false
       }
+    }
+    function runProcess() {
+      const filters = store.getters.getSearchFilterGenerateOrder
+      const lineSelect = store.getters.getRecordsSelection
+
+      const { organizationId, warehouseId, targetDocumentTypeId,
+        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId, moventTypeId } = filters
+      const orderLineRequest = lineSelect.map(data => {
+        return {
+          id: data.id,
+          product_id: data.product_id,
+          weight: data.weight,
+          volume: data.volume,
+          quantity: data.quantity.toString(),
+          reserved_quantity: data.reserved_quantity,
+          quantity_invoiced: data.quantity_invoiced,
+          quantity_in_transit: data.quantity_in_transit,
+          ordered_quantity: data.ordered_quantity,
+          on_hand_quantity: data.on_hand_quantity
+        }
+      })
+      let moventType = 'C_Order'
+      if (moventTypeId) {
+        moventType = 'DD_Order'
+      }
+      store.dispatch('runOutputOrderProcess', {
+        organization_id: organizationId,
+        warehouse_id: warehouseId,
+        target_document_type_id: targetDocumentTypeId,
+        delivery_rule: deliveryRuleId,
+        delivery_via: deliveryViaId,
+        shipper_id: shipperId,
+        document_date: documentDate,
+        shipment_date: shipDate,
+        movement_type: moventType,
+        orderLineRequest
+      })
     }
     return {
       // Refs
@@ -241,10 +304,13 @@ export default defineComponent({
       isDisabled,
       isMobile,
       recordsSelecion,
+      recordsId,
+      isLoadingProcess,
       // Methods
       nextStep,
       refreshRecords,
-      validateNextStep
+      validateNextStep,
+      runProcess
     }
   }
 })

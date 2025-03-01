@@ -254,3 +254,35 @@ export function requesListDocumentLines({
     params
   })
 }
+
+// Execute Process
+
+export function requestLoadOrder({
+  organization_id,
+  warehouse_id,
+  target_document_type_id,
+  delivery_rule,
+  delivery_via,
+  shipper_id,
+  document_date,
+  shipment_date,
+  movement_type,
+  orderLineRequest
+}) {
+  return request({
+    url: `/forms/out-bound-orders/load-order`,
+    method: 'post',
+    data: {
+      organization_id,
+      warehouse_id,
+      target_document_type_id,
+      delivery_rule,
+      delivery_via,
+      shipper_id,
+      document_date,
+      shipment_date,
+      movement_type,
+      lines: orderLineRequest
+    }
+  })
+}

@@ -74,6 +74,7 @@ export default defineComponent({
       },
       // setter
       set(newValue) {
+        console.log()
         store.commit('updateAttributeCriteriaGenerateOrder', {
           attribute: 'documentActionId',
           value: newValue
@@ -87,7 +88,7 @@ export default defineComponent({
           if (listDocumentAction.some(item => item.label === undefined)) {
             const listFormData = listDocumentAction.map(item => {
               return {
-                id: item.id,
+                id: item.values.KeyColumn,
                 label: item.values.DisplayColumn,
                 uuid: item.values.UUID
               }

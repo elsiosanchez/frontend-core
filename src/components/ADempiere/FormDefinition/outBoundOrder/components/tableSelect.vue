@@ -42,7 +42,7 @@
         prop="document_no"
         :label="$t('form.outBoundOrder.order.documentNo')"
         align="right"
-        width="160"
+        width="140"
       />
       <el-table-column
         prop="product"
@@ -66,12 +66,14 @@
         prop="quantity"
         :label="$t('form.outBoundOrder.select.quantity')"
         align="right"
-        width="110"
+        width="150"
       >
         <template slot-scope="scope">
           <span v-if="activateField[scope.row.id]">
-            <el-input
+            <el-input-number
               v-model="scope.row.quantity"
+              size="mini"
+              controls-position="right"
               @input="handleQuantityChange(scope.row)"
             />
           </span>
@@ -82,9 +84,9 @@
       </el-table-column>
       <el-table-column
         prop="order_uom"
-        :label="$t('form.outBoundOrder.select.uom')"
+        :label="$t('form.outBoundOrder.select.uomProcess')"
         align="left"
-        width="70"
+        width="120"
       />
       <el-table-column
         prop="weight"
@@ -98,12 +100,12 @@
         align="right"
         width="110"
       />
-      <el-table-column
+      <!-- <el-table-column
         prop="loadSequence"
         :label="$t('form.outBoundOrder.select.loadSequence')"
         align="right"
         width="160"
-      />
+      /> -->
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.select.orderedQuantity')"

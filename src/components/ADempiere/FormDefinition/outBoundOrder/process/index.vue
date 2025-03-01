@@ -45,10 +45,10 @@
               <delivery-rule-field />
             </el-col>
             <el-col :span="6">
-              <shipper-field />
+              <delivery-via-field />
             </el-col>
             <el-col :span="6">
-              <delivery-via-field />
+              <shipper-field />
             </el-col>
           </el-row>
         </el-form>

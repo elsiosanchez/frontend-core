@@ -87,7 +87,7 @@ export default defineComponent({
           if (listDeliveryRule.some(item => item.label === undefined)) {
             const listFormData = listDeliveryRule.map(item => {
               return {
-                id: item.id,
+                id: item.values.KeyColumn,
                 label: item.values.DisplayColumn,
                 uuid: item.values.UUID
               }

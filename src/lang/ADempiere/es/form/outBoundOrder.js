@@ -46,7 +46,7 @@ const OutBoundOrder = {
   },
   order: {
     title: 'Orden',
-    documentNo: 'Número de Documento',
+    documentNo: 'No Documento',
     dateOrdered: 'Fecha Ordenada',
     datePromised: 'Fecha Prometida',
     region: 'Región',
@@ -64,6 +64,7 @@ const OutBoundOrder = {
     title: 'Seleccionar',
     product: 'Producto',
     uom: 'UM',
+    uomProcess: 'UM(Orden)',
     handQuantity: 'Cantidad Disponible',
     quantity: 'Cantidad',
     loadSequence: 'Secuencia de Carga',
