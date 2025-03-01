@@ -45,6 +45,17 @@
       @select="handleSelection"
       @sort-change="handleSortChange"
     >
+      <span slot="empty" style="width: 100%;">
+        <refresh-record-button
+          v-show="isLoadRefreshDataTale"
+          :parent-uuid="parentUuid"
+          :container-uuid="containerUuid"
+        />
+        <el-empty
+          v-show="!isLoadRefreshDataTale"
+          :image-size="100"
+        />
+      </span>
       <!-- column with the checkbox -->
       <el-table-column
         v-if="isTableSelection"
@@ -110,7 +121,7 @@ import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDis
 import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
-
+import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
 // Utils and Helper Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { isLookup, isDateField, isNumberField, isBooleanField } from '@/utils/ADempiere/references'
@@ -119,9 +130,10 @@ export default defineComponent({
   name: 'WindowsTable',
 
   components: {
+    LoadingView,
     CellDisplayInfo,
     FullScreenContainer,
-    LoadingView
+    RefreshRecordButton
   },
 
   props: {
@@ -197,6 +209,12 @@ export default defineComponent({
       return store.getters.getIsLoadedTabRecord({
         containerUuid: props.containerUuid
       })
+    })
+
+    const isLoadRefreshDataTale = computed(() => {
+      return store.getters.getTabData({
+        containerUuid: props.containerUuid
+      }).isError
     })
     const currentOption = computed(() => {
       return store.getters.getTableOption(props.containerUuid)
@@ -743,6 +761,7 @@ export default defineComponent({
       heightTable,
       heightSize,
       // Computeds
+      isLoadRefreshDataTale,
       currentTabChildren,
       isLoadingDataTale,
       recordsWithFilter,

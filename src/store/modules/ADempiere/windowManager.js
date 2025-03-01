@@ -69,6 +69,7 @@ const initState = {
     isLoading: false, // request currently in progress
     pageNumber: 1, // page number of records
     pageSize: 15,
+    isError: false,
     sortBy: ''
   }
 }
@@ -89,6 +90,7 @@ const windowManager = {
       recordCount = 0,
       isLoaded = true,
       isLoading = false,
+      isError = false,
       pageNumber = 1,
       pageSize = ROWS_OF_RECORDS_BY_PAGE_HIGH,
       sortBy,
@@ -108,6 +110,7 @@ const windowManager = {
         isLoaded,
         isLoading,
         pageNumber,
+        isError,
         pageSize,
         sortBy,
         referenceUuid,
@@ -626,6 +629,7 @@ const windowManager = {
               pageNumber,
               pageSize,
               isLoaded: true,
+              isError: false,
               isLoading: false,
               recordCount: dataResponse.recordCount,
               sortBy
@@ -661,6 +665,7 @@ const windowManager = {
 
             commit('setTabData', {
               parentUuid,
+              isError: true,
               isLoaded: true,
               containerUuid
             })
