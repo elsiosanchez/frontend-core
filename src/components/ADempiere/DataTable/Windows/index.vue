@@ -35,6 +35,7 @@
       reserve-selection
       :border="true"
       size="small"
+      height="500"
       element-loading-background="rgba(255, 255, 255, 0.8)"
       :element-loading-text="$t('notifications.loading')"
       :row-class-name="tableRowClassName"
@@ -799,6 +800,7 @@ export default defineComponent({
   overflow: auto;
   .el-table {
     height: 100% !important;
+    overflow: hidden !important;
   }
   .el-table .el-table__cell {
     padding: 0px !important;
