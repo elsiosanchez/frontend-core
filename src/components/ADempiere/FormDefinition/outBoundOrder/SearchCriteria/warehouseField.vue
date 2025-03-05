@@ -37,6 +37,7 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
       <el-option
         v-for="item in optionsList"
@@ -54,12 +55,15 @@ import { defineComponent, computed, onMounted } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import {
   requestListWarehouses
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'OrganizationField',
 
@@ -69,11 +73,9 @@ export default defineComponent({
 
   setup() {
     const sessionWarehouseId = computed(() => {
-      const { id } = store.getters['user/getWarehouse']
-      if (!isEmptyValue(id) && id > 0) {
-        return id
-      }
+      return store.getters['user/getWarehouse'].id
     })
+
     const value = computed({
       // getter
       get() {
@@ -88,27 +90,22 @@ export default defineComponent({
         })
       }
     })
+
     const organization = computed(() => {
       const { organizationId } = store.getters.getSearchFilterGenerateOrder
-      if (isEmptyValue(organizationId)) return
+      if (isEmptyValue(organizationId) || organizationId <= 0) {
+        return -1
+      }
       return organizationId
     })
+
     const optionsList = computed({
       get() {
         const { listWarehouse } = store.getters.getSearchFilterGenerateOrder
         if (!isEmptyValue(listWarehouse)) {
-          if (listWarehouse.some(item => item.label === undefined)) {
-            const listFormData = listWarehouse.map(item => {
-              return {
-                id: item.id,
-                label: item.values.DisplayColumn,
-                uuid: item.values.UUID
-              }
-            })
-            return listFormData
-          }
+          return listWarehouse
         }
-        return listWarehouse
+        return []
       },
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
@@ -117,6 +114,7 @@ export default defineComponent({
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -125,21 +123,33 @@ export default defineComponent({
       if (!isFind) {
         return
       }
+      if (isEmptyValue(organization.value)) {
+        return
+      }
       requestListWarehouses({
         searchValue,
         organization_id: organization.value
       })
         .then(response => {
           const { records } = response
-          optionsList.value = records
+          optionsList.value = records.map(item => {
+            return {
+              id: item.id,
+              label: item.values.DisplayColumn,
+              uuid: item.values.UUID
+            }
+          })
         })
     }
+
     onMounted(() => {
       loadRecords(true, '')
-      if (!isEmptyValue(sessionWarehouseId.value)) {
+      const currentValue = value.value
+      if (isEmptyValue(currentValue) || currentValue < 0) {
         value.value = sessionWarehouseId.value
       }
     })
+
     return {
       // Computeds
       value,

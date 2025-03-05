@@ -89,7 +89,7 @@ export default defineComponent({
         })
         store.commit('updateAttributeCriteriaGenerateOrder', {
           attribute: 'warehouseId',
-          value: -1
+          value: null // -1
         })
       }
     })

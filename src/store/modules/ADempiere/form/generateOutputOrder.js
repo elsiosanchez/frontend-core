@@ -78,12 +78,12 @@ const OutBoundOrder = {
       state.isLoadingProcess = false
       state.searchCriteria = {
         listOrganization: [],
-        organizationId: -1,
-        moventTypeId: false,
+        organizationId: null,
+        moventTypeId: 'C_Order',
         listDocumentType: [],
         documentTypeId: -1,
         listWarehouse: [],
-        warehouseId: -1,
+        warehouseId: null,
         listSalesRegion: [],
         salesRegionId: -1,
         listSalesRepresentative: [],
