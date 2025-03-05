@@ -217,7 +217,7 @@ export default {
       }
 
       // request lookup
-      this.getValueOfLookup()
+      // this.getValueOfLookup()
     },
     getValueOfLookup() {
       this.isLoading = true

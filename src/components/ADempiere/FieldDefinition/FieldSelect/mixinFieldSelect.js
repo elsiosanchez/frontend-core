@@ -84,35 +84,52 @@ export default {
         reason: 'Table option'
       }
     },
-    getStoredLookupAll() {
-      const allOptions = store.getters.getStoredLookupAll({
-        parentUuid: this.metadata.parentUuid,
-        containerUuid: this.metadata.containerUuid,
-        contextColumnNames: this.metadata.reference.context_column_names,
-        contextColumnNamesByDefaultValue: this.metadata.context_column_names,
-        uuid: this.metadata.uuid,
-        id: this.metadata.internal_id,
-        //
-        tableName: this.metadata.referenceTableName,
-        columnName: this.metadata.columnName,
-        value: this.value
-      })
-
-      // sets the value to blank when the lookupList or lookupItem have no
-      // values, or if only lookupItem does have a value
-      if (isEmptyValue(allOptions) || (!isEmptyValue(allOptions) &&
-        (!this.blankValues.includes(allOptions.at().value)))) {
-        allOptions.unshift(this.blankOption)
-      }
-      if (this.metadata.inTable) {
-        if (!allOptions.some(option => option.value === this.getTableOption.value)) {
-          allOptions.push(
-            this.getTableOption
-          )
+    currentRecordUuid() {
+      return this.$store.getters.getUuidOfContainer(this.metadata.containerUuid)
+    },
+    // Get default values from table
+    getDefaulValuesTable() {
+      const { parentUuid, containerUuid, displayColumnName } = this.metadata
+      const displayedValue = store.getters.getValueOfFieldOnContainer({ parentUuid, containerUuid, columnName: displayColumnName })
+      return [
+        {
+          value: this.value,
+          displayedValue
         }
-      }
+      ]
+    },
+    getStoredLookupAll() {
+      const {
+        uuid,
+        reference,
+        columnName,
+        parentUuid,
+        internal_id,
+        containerUuid,
+        referenceTableName,
+        context_column_names
+      } = this.metadata
 
-      return allOptions
+      if (isEmptyValue(this.currentRecordUuid)) {
+        const allOptions = store.getters.getStoredLookupAll({
+          contextColumnNamesByDefaultValue: context_column_names,
+          contextColumnNames: reference.context_column_names,
+          tableName: referenceTableName,
+          value: this.value,
+          id: internal_id,
+          containerUuid,
+          parentUuid,
+          uuid,
+          columnName
+        })
+
+        // sets the value to blank when the lookupList or lookupItem have no
+        // values, or if only lookupItem does have a value
+        if (isEmptyValue(allOptions) || (!isEmptyValue(allOptions) && (!this.blankValues.includes(allOptions.at().value)))) allOptions.unshift(this.blankOption)
+
+        return allOptions
+      }
+      return this.getDefaulValuesTable
     },
 
     isAlwaysDisplayColumn() {

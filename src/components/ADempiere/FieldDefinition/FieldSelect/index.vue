@@ -184,6 +184,10 @@ export default {
       return this.$store.getters.getTabCurrentRow({
         containerUuid: this.metadata.containerUuid
       })
+    },
+
+    recordUuid() {
+      return this.$store.getters.getUuidOfContainer(this.metadata.containerUuid)
     }
   },
 
@@ -225,6 +229,11 @@ export default {
       }
 
       this.setDisplayedValue()
+    },
+    recordUuid(value) {
+      if (isEmptyValue(value)) {
+        this.getValueOfLookup()
+      }
     }
   },
 
@@ -297,7 +306,7 @@ export default {
       // }
 
       // request displayed value
-      this.getValueOfLookup()
+      // this.getValueOfLookup()
     },
 
     // TODO: With remote and filter is enabled not working displayed value

@@ -239,21 +239,35 @@ export default {
      * @returns promisse with object = { value, default_value, uuid, id }
      */
     loadDefaultValueFromServer() {
-      if (this.containerManager && this.containerManager.getDefaultValue) {
+      const {
+        context_column_names,
+        containerUuid,
+        default_value,
+        column_name,
+        internal_id,
+        parentUuid,
+        rowIndex,
+        inTable,
+        rowUid,
+        uuid
+      } = this.metadata
+      if (
+        this.containerManager &&
+        this.containerManager.getDefaultValue &&
+        !this.currentTab.isShowedTableRecords
+      ) {
         return this.containerManager.getDefaultValue({
-          parentUuid: this.metadata.parentUuid,
-          containerUuid: this.metadata.containerUuid,
-          contextColumnNames: this.metadata.context_column_names,
-          defaultValue: this.metadata.default_value,
-          //
-          inTable: this.metadata.inTable,
-          rowIndex: this.metadata.rowIndex,
-          rowUid: this.metadata.rowUid,
-          //
-          uuid: this.metadata.uuid,
-          id: this.metadata.internal_id,
-          columnName: this.metadata.column_name,
-          value: this.value
+          contextColumnNames: context_column_names,
+          defaultValue: default_value,
+          columnName: column_name,
+          value: this.value,
+          id: internal_id,
+          containerUuid,
+          parentUuid,
+          rowIndex,
+          inTable,
+          rowUid,
+          uuid
         })
       }
 
