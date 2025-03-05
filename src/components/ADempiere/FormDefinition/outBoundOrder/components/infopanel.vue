@@ -21,6 +21,7 @@
       ref="listOrderTable"
       class="list-order-table"
       sise="mini"
+      :data="records"
       height="30vh"
       border
       style="width: 100%"
@@ -31,7 +32,7 @@
         prop="product"
         :label="$t('form.outBoundOrder.select.product')"
         align="left"
-        width="110"
+        width="200"
       />
       <el-table-column
         prop="uom"
@@ -46,13 +47,13 @@
         width="150"
       />
       <el-table-column
-        prop="handQuantity"
+        prop="on_hand_quantity"
         :label="$t('form.outBoundOrder.select.handQuantity')"
         align="right"
         width="160"
       />
       <el-table-column
-        prop="qtyTransit"
+        prop="quantity_in_transit"
         :label="$t('form.outBoundOrder.select.qtyTransit')"
         align="right"
         width="160"
@@ -67,20 +68,51 @@
         prop="pickedQty"
         :label="$t('form.outBoundOrder.productInfo.pickedQty')"
         align="right"
-        width="180"
-      />
-      <el-table-column
-        prop="sum"
-        align="right"
-        width="80"
+        width="200"
       />
     </el-table>
   </el-card>
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
+import store from '@/store'
+import { defineComponent, computed } from '@vue/composition-api'
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 export default defineComponent({
-  name: 'InfoPanel'
+  name: 'InfoPanel',
+  setup() {
+    const records = computed(() => {
+      const record = store.getters.getRecordsSelection
+      if (isEmptyValue(record)) return
+      const recordsGroup = {}
+      record.forEach(r => {
+        const product = r.product
+        const on_hand_quantity = parseFloat(r.on_hand_quantity)
+        const quantity = parseFloat(r.quantity)
+        if (recordsGroup[product]) {
+          recordsGroup[product].on_hand_quantity += on_hand_quantity
+          recordsGroup[product].quantity += quantity
+        } else {
+          recordsGroup[product] = {
+            ...r,
+            on_hand_quantity: on_hand_quantity,
+            quantity: quantity
+          }
+        }
+      })
+      const resultado = Object.values(recordsGroup).map(product => {
+        const pickedQty = product.on_hand_quantity - product.quantity
+        return {
+          ...product,
+          pickedQty: pickedQty
+        }
+      })
+      return resultado
+    })
+    return {
+      records
+    }
+  }
 })
 </script>

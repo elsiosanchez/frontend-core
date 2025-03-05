@@ -77,7 +77,7 @@ const OutBoundOrder = {
   },
   productInfo: {
     title: 'Stock de Productos Para Almacén',
-    pickedQty: 'Cantidad Seleccionada'
+    pickedQty: 'Cantidad de Recolección'
   }
 }
 

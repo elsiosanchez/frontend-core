@@ -39,13 +39,13 @@
         v-show="'process' === stepList[currentStep].key"
       />
       <div style="height: 14% !important;text-align: end;padding: 0px 15px;">
-        <!-- <el-button
+        <el-button
           v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
           type="primary"
           class="button-base-icon"
           icon="el-icon-s-grid"
           @click="showPanel = true"
-        /> -->
+        />
         <el-button
           v-if="'order' === stepList[currentStep].key"
           type="success"
@@ -98,7 +98,6 @@
       :title="$t('form.outBoundOrder.productInfo.title')"
     >
       <info-panel />
-      <panel />
     </el-drawer>
   </div>
 </template>
