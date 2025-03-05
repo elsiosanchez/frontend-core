@@ -115,7 +115,7 @@ export default defineComponent({
           const { records } = response
           optionsList.value = records.map(item => {
             return {
-              id: item.id,
+              id: item.values.KeyColumn,
               label: item.values.DisplayColumn,
               uuid: item.values.UUID
             }
