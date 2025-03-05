@@ -142,7 +142,7 @@ export default defineComponent({
         case 'WTrialBalance':
           form = import('@/components/ADempiere/FormDefinition/WTrialBalance')
           break
-        case 'GenerateOutput':
+        case 'VOutBoundOrder':
           form = import('@/components/ADempiere/FormDefinition/outBoundOrder')
           break
         default:

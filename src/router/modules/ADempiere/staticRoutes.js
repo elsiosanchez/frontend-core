@@ -144,20 +144,6 @@ const staticRoutes = [
         }
       },
       {
-        path: '/Form/GenerateOutput',
-        component: () => import('@/components/ADempiere/FormDefinition/outBoundOrder'),
-        name: 'Generate Output',
-        hidden: false,
-        meta: {
-          title: language.t('form.outBoundOrder.title'),
-          icon: 'el-icon-s-promotion',
-          fileName: 'GenerateOutput',
-          isIndex: true,
-          isAll: true,
-          type: 'from'
-        }
-      },
-      {
         path: '/documentation',
         component: () => import('@/views/documentation/index'),
         hidden: false,
