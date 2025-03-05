@@ -199,7 +199,7 @@ export default defineComponent({
       searchRecords()
     }
     function searchRecords() {
-      const { organizationId, moventTypeId, warehouseId } = store.getters.getSearchFilterGenerateOrder
+      const { organizationId, moventTypeId, warehouseId, salesRegionId, salesRepresentativeId, documentTypeId } = store.getters.getSearchFilterGenerateOrder
       let moventType = 'C_Order'
       if (moventTypeId) {
         moventType = 'DD_Order'
@@ -207,10 +207,10 @@ export default defineComponent({
       store.dispatch('searchListDocument', {
         organizationId,
         moventTypeId: moventType,
-        warehouseId
-        // salesRegionId,
-        // salesRepresentativeId,
-        // documentTypeId
+        warehouseId,
+        salesRegionId,
+        salesRepresentativeId,
+        documentTypeId
       })
       let ids = -1
       if (!isEmptyValue(recordsId.value)) {
@@ -220,10 +220,10 @@ export default defineComponent({
         organizationId,
         moventTypeId: moventType,
         warehouseId,
-        recordsId: ids
-        // salesRegionId,
-        // salesRepresentativeId,
-        // documentTypeId
+        recordsId: ids,
+        salesRegionId,
+        salesRepresentativeId,
+        documentTypeId
       })
     }
     function nextStep(step) {

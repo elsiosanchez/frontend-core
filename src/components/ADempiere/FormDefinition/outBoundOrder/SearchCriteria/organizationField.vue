@@ -39,8 +39,8 @@
         :is-allows-zero="false"
       />
       <el-option
-        v-for="item in optionsList"
-        :key="item.uuid"
+        v-for="(item, index) in optionsList"
+        :key="index"
         :label="item.label"
         :value="item.id"
       />

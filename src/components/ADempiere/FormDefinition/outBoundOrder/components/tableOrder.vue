@@ -152,7 +152,7 @@ export default defineComponent({
       return store.getters.getListDocument
     })
     function selectionOrder(selection) {
-      const { organizationId, moventTypeId, warehouseId } = store.getters.getSearchFilterGenerateOrder
+      const { organizationId, moventTypeId, warehouseId, salesRegionId, salesRepresentativeId, documentTypeId } = store.getters.getSearchFilterGenerateOrder
       let moventType = 'C_Order'
       if (moventTypeId) {
         moventType = 'DD_Order'
@@ -163,14 +163,20 @@ export default defineComponent({
           organizationId,
           moventTypeId: moventType,
           warehouseId,
-          recordsId: recordsId
+          recordsId: recordsId,
+          salesRegionId,
+          salesRepresentativeId,
+          documentTypeId
         })
       } else {
         store.dispatch('searchListDocumentLine', {
           organizationId,
           moventTypeId: moventType,
           warehouseId,
-          recordsId: -1
+          recordsId: -1,
+          salesRegionId,
+          salesRepresentativeId,
+          documentTypeId
         })
         store.commit('setRecordsSelection', [])
       }
