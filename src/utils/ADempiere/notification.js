@@ -16,7 +16,8 @@
 
 import { Message, Notification } from 'element-ui'
 import language from '@/lang'
-import router from '@/router'
+// import router from '@/router'
+import store from '@/store'
 
 export function hasTranslation(text) {
   const hasKey = language.te('notifications.' + text)
@@ -36,7 +37,7 @@ export function hasTranslation(text) {
  * @param {string} name
  * @param {array} logs
  */
-export function showNotification({ type = 'success', title, message = '', summary, name, logs = [], isRedirect = true }) {
+export function showNotification({ type = 'success', title, message = '', summary, name, logs = [], isRedirect = true, openModal }) {
   title = hasTranslation(title)
   if (message) {
     message = hasTranslation(message)
@@ -60,6 +61,11 @@ export function showNotification({ type = 'success', title, message = '', summar
   if (name) {
     message = `${name} ${message}`
   }
+  const detailsNotifications = {
+    logs,
+    title,
+    message
+  }
 
   return Notification({
     title,
@@ -72,11 +78,8 @@ export function showNotification({ type = 'success', title, message = '', summar
     position: 'bottom-right',
     dangerouslyUseHTMLString: true,
     onClick() {
-      if (isRedirect) {
-        router.push({
-          name: 'ProcessActivity'
-        }, () => {})
-      }
+      store.commit('setShowNotification', true)
+      store.commit('setDetailsNotifications', detailsNotifications)
     }
   })
 }

@@ -25,7 +25,9 @@ import { showNotification } from '@/utils/ADempiere/notification.js'
 
 const initState = {
   userList: {},
-  notifyList: {}
+  notifyList: {},
+  detailsNotifications: {},
+  showNotification: false
 }
 
 const notifyManager = {
@@ -36,6 +38,12 @@ const notifyManager = {
     },
     setUserList(state, userList) {
       state.userList = userList
+    },
+    setDetailsNotifications(state, details) {
+      state.detailsNotifications = details
+    },
+    setShowNotification(state, show) {
+      state.showNotification = show
     }
   },
   action: {
@@ -115,6 +123,12 @@ const notifyManager = {
     },
     getUserList: (state) => {
       return state.userList
+    },
+    getShowNotification: (state) => {
+      return state.showNotification
+    },
+    getDetailsNotifications: (state) => {
+      return state.detailsNotifications
     }
   }
 }
