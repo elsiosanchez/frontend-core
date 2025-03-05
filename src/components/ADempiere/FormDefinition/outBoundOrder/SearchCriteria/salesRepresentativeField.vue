@@ -52,13 +52,17 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
+// API Request Methods
 import {
   requestListSalesRepresentatives
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
-  name: 'OrganizationField',
+  name: 'SalesRepresentativeField',
 
   components: {
     EmptyOptionSelect
@@ -79,22 +83,14 @@ export default defineComponent({
         })
       }
     })
+
     const optionsList = computed({
       get() {
         const { listSalesRepresentative } = store.getters.getSearchFilterGenerateOrder
         if (!isEmptyValue(listSalesRepresentative)) {
-          if (listSalesRepresentative.some(item => item.label === undefined)) {
-            const listFormData = listSalesRepresentative.map(item => {
-              return {
-                id: item.id,
-                label: item.values.DisplayColumn,
-                uuid: item.values.UUID
-              }
-            })
-            return listFormData
-          }
+          return listSalesRepresentative
         }
-        return listSalesRepresentative
+        return []
       },
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
@@ -103,6 +99,7 @@ export default defineComponent({
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -116,9 +113,16 @@ export default defineComponent({
       })
         .then(response => {
           const { records } = response
-          optionsList.value = records
+          optionsList.value = records.map(item => {
+            return {
+              id: item.id,
+              label: item.values.DisplayColumn,
+              uuid: item.values.UUID
+            }
+          })
         })
     }
+
     return {
       // Computeds
       value,

@@ -40,7 +40,7 @@ import { defineComponent, computed } from '@vue/composition-api'
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 
 export default defineComponent({
-  name: 'OrganizationField',
+  name: 'MovementTypeField',
 
   components: {
     EmptyOptionSelect

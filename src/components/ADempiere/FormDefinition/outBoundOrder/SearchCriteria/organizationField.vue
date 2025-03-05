@@ -36,6 +36,7 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
       <el-option
         v-for="item in optionsList"
@@ -49,16 +50,19 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, onMounted } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import {
   requestListOrganizations
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'OrganizationField',
 
@@ -67,6 +71,10 @@ export default defineComponent({
   },
 
   setup() {
+    const sessionOrganizationId = computed(() => {
+      return store.getters['user/getOrganization'].id
+    })
+
     const value = computed({
       // getter
       get() {
@@ -81,26 +89,18 @@ export default defineComponent({
         })
         store.commit('updateAttributeCriteriaGenerateOrder', {
           attribute: 'warehouseId',
-          value: ''
+          value: -1
         })
       }
     })
+
     const optionsList = computed({
       get() {
         const { listOrganization } = store.getters.getSearchFilterGenerateOrder
         if (!isEmptyValue(listOrganization)) {
-          if (listOrganization.some(item => item.label === undefined)) {
-            const listFormData = listOrganization.map(item => {
-              return {
-                id: item.id,
-                label: item.values.DisplayColumn,
-                uuid: item.values.UUID
-              }
-            })
-            return listFormData
-          }
+          return listOrganization
         }
-        return listOrganization
+        return []
       },
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
@@ -109,6 +109,7 @@ export default defineComponent({
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -122,9 +123,24 @@ export default defineComponent({
       })
         .then(response => {
           const { records } = response
-          optionsList.value = records
+          optionsList.value = records.map(item => {
+            return {
+              id: item.id,
+              label: item.values.DisplayColumn,
+              uuid: item.values.UUID
+            }
+          })
         })
     }
+
+    onMounted(() => {
+      loadRecords(true, '')
+      const currentValue = value.value
+      if (isEmptyValue(currentValue) || currentValue < 0) {
+        value.value = sessionOrganizationId.value
+      }
+    })
+
     return {
       // Computeds
       value,

@@ -50,7 +50,7 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, onMounted } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
@@ -68,6 +68,12 @@ export default defineComponent({
   },
 
   setup() {
+    const sessionWarehouseId = computed(() => {
+      const { id } = store.getters['user/getWarehouse']
+      if (!isEmptyValue(id) && id > 0) {
+        return id
+      }
+    })
     const value = computed({
       // getter
       get() {
@@ -128,6 +134,12 @@ export default defineComponent({
           optionsList.value = records
         })
     }
+    onMounted(() => {
+      loadRecords(true, '')
+      if (!isEmptyValue(sessionWarehouseId.value)) {
+        value.value = sessionWarehouseId.value
+      }
+    })
     return {
       // Computeds
       value,

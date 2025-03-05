@@ -148,27 +148,10 @@ const staticRoutes = [
         component: () => import('@/components/ADempiere/FormDefinition/outBoundOrder'),
         name: 'Generate Output',
         hidden: false,
-        validateToEnable: ({ role, dynamicRoutes }) => {
-          if (isEmptyValue(dynamicRoutes)) {
-            return false
-          }
-          const menuTree = dynamicRoutes
-          const viewSearch = recursiveTreeSearch({
-            treeData: menuTree,
-            attributeValue: 'window_' + REQUEST_ALL_WINDOW_ID,
-            attributeName: 'meta',
-            secondAttribute: 'containerKey',
-            attributeChilds: 'children'
-          })
-          if (isEmptyValue(viewSearch)) {
-            return false
-          }
-          return true
-        },
         meta: {
           title: language.t('form.outBoundOrder.title'),
           icon: 'el-icon-s-promotion',
-          fileName: 'issuesAll',
+          fileName: 'GenerateOutput',
           isIndex: true,
           isAll: true,
           type: 'from'
