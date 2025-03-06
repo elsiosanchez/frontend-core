@@ -356,7 +356,9 @@ export default {
 
       if (isShowList) {
         const listLookups = this.getStoredLookupList
-        if (isEmptyValue(listLookups) || this.isWithSearchValue) {
+        if (!isEmptyValue(listLookups)) {
+          this.optionsList = listLookups
+        } else if (isEmptyValue(listLookups) || this.isWithSearchValue) {
           this.loadListFromServer()
         } else if (listLookups.length === 1) {
           const firstOption = listLookups.at(0)
