@@ -19,18 +19,22 @@
 <template>
   <div style="display: contents; height: 100% !important">
     <div style="height: 90% !important;">
-      <div style="height: 50%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
-        <p style="text-align: left;font-size: 12px;margin: 0px 0px 7px 0px;">
-          <b> {{ $t('form.outBoundOrder.order.title') }} </b>
-        </p>
-        <el-card
-          shadow="never"
-          :body-style="{ padding: '5px' }"
-        >
-          <table-order />
-        </el-card>
-      </div>
-      <div style="height: 50%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
+      <el-collapse>
+        <el-collapse-item :title="$t('form.outBoundOrder.order.title')">
+          <div style="height: 45%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
+            <p style="text-align: left;font-size: 12px;margin: 0px 0px 7px 0px;">
+              <b> {{ $t('form.outBoundOrder.order.title') }} </b>
+            </p>
+            <el-card
+              shadow="never"
+              :body-style="{ padding: '5px' }"
+            >
+              <table-order />
+            </el-card>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+      <div style="height: 45%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
         <p style="text-align: left;font-size: 12px;margin: 0px 0px 7px 0px;">
           <b> {{ $t('form.outBoundOrder.select.title') }} </b>
         </p>

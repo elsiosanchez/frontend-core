@@ -23,7 +23,7 @@
       v-loading="isLoading"
       class="list-order-table"
       sise="mini"
-      height="30vh"
+      height="25vh"
       :data="records"
       border
       style="width: 100%"
@@ -32,12 +32,12 @@
       @select="selectionOrder"
     >
       <el-table-column type="selection" />
-      <el-table-column
+      <!-- <el-table-column
         prop="warehouse"
         :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
         align="left"
         width="110"
-      />
+      /> -->
       <el-table-column
         prop="document_no"
         :label="$t('form.outBoundOrder.order.documentNo')"

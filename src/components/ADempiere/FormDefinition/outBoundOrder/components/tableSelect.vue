@@ -23,7 +23,7 @@
       v-loading="isLoading"
       class="list-select-table"
       sise="mini"
-      height="30vh"
+      height="25vh"
       :data="records"
       border
       style="width: 100%; height: 85%"

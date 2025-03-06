@@ -38,9 +38,9 @@
       <process
         v-show="'process' === stepList[currentStep].key"
       />
-      <div style="height: 14% !important;text-align: end;padding: 0px 15px;">
+      <div style="height: 14% !important;text-align: end;padding: 0px 15px; padding-top: 25px">
         <el-button
-          v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
+          v-if="'order' === stepList[currentStep].key"
           type="primary"
           class="button-base-icon"
           icon="el-icon-s-grid"
@@ -94,7 +94,7 @@
       :visible.sync="showPanel"
       :show-close="true"
       :with-header="true"
-      :size="isMobile ? '100%' : '50%'"
+      :size="isMobile ? '100%' : '65%'"
       :title="$t('form.outBoundOrder.productInfo.title')"
     >
       <info-panel />

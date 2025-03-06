@@ -49,9 +49,9 @@ const initState = {
     listTargetDocumentType: [],
     targetDocumentTypeId: -1,
     listDeliveryRule: [],
-    deliveryRuleId: -1,
+    deliveryRuleId: '',
     listDeliveryVia: [],
-    deliveryViaId: -1,
+    deliveryViaId: '',
     listShipper: [],
     shipperId: -1,
     // process
