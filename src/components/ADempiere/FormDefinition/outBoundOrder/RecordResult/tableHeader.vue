@@ -30,23 +30,35 @@
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
       @select="selectionOrder"
+      @select-all="selectionOrder"
     >
       <el-table-column type="selection" />
-      <!-- <el-table-column
+
+      <!--
+      <el-table-column
         prop="warehouse"
-        :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
+        :label="$t('form.outBoundOrder.header.warehouse')"
         align="left"
         width="110"
-      /> -->
+      />
+      -->
       <el-table-column
         prop="document_no"
-        :label="$t('form.outBoundOrder.order.documentNo')"
-        align="right"
-        width="160"
-      />
+        :label="$t('form.outBoundOrder.header.documentNo')"
+        align="left"
+        width="120"
+      >
+        <template slot-scope="scope">
+          <copy-clipboard
+            :text="scope.row.document_no"
+          />
+          {{ scope.row.document_no }}
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="date_ordered"
-        :label="$t('form.outBoundOrder.order.dateOrdered')"
+        :label="$t('form.outBoundOrder.header.dateOrdered')"
         align="left"
         width="150"
       >
@@ -56,7 +68,7 @@
       </el-table-column>
       <el-table-column
         prop="date_promised"
-        :label="$t('form.outBoundOrder.order.datePromised')"
+        :label="$t('form.outBoundOrder.header.datePromised')"
         align="left"
         width="150"
       >
@@ -66,70 +78,108 @@
       </el-table-column>
       <el-table-column
         prop="region"
-        :label="$t('form.outBoundOrder.order.region')"
+        :label="$t('form.outBoundOrder.header.region')"
         align="left"
         width="110"
       />
       <el-table-column
         prop="city"
-        :label="$t('form.outBoundOrder.order.city')"
+        :label="$t('form.outBoundOrder.header.city')"
         align="left"
         width="110"
       />
       <el-table-column
         prop="sales_representative"
-        :label="$t('form.outBoundOrder.searchCriteria.salesRepresentative')"
+        :label="$t('form.outBoundOrder.header.salesRepresentative')"
         align="left"
         width="200"
       />
       <el-table-column
         prop="business_partner"
-        :label="$t('form.outBoundOrder.order.businessPartner')"
+        :label="$t('form.outBoundOrder.header.businessPartner')"
         align="left"
-        width="160"
+        min-width="160"
       />
+
       <el-table-column
         prop="location"
-        :label="$t('form.outBoundOrder.order.location')"
+        :label="$t('form.outBoundOrder.header.location')"
         align="left"
-        width="110"
-      />
+        width="180"
+      >
+        <template slot-scope="scope">
+          <p
+            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+          >
+            <el-popover
+              placement="top-start"
+              trigger="hover"
+              width="300"
+            >
+              {{ scope.row.location }}
+              <p
+                slot="reference"
+                type="text"
+                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+              >
+                {{ scope.row.location }}
+              </p>
+            </el-popover>
+          </p>
+        </template>
+      </el-table-column>
+
+      <!--
       <el-table-column
         prop="address1"
-        :label="$t('form.outBoundOrder.order.address1')"
+        :label="$t('form.outBoundOrder.header.address1')"
         align="left"
         width="110"
       />
       <el-table-column
         prop="address2"
-        :label="$t('form.outBoundOrder.order.address2')"
+        :label="$t('form.outBoundOrder.header.address2')"
         align="left"
         width="110"
       />
-      <!-- <el-table-column
+      <el-table-column
         prop="address3"
-        :label="$t('form.outBoundOrder.order.address3')"
+        :label="$t('form.outBoundOrder.header.address3')"
         align="left"
         width="110"
       />
       <el-table-column
         prop="address4"
-        :label="$t('form.outBoundOrder.order.address4')"
+        :label="$t('form.outBoundOrder.header.address4')"
         align="left"
         width="110"
-      /> -->
+      />
+      -->
       <el-table-column
         prop="weight"
-        :label="$t('form.outBoundOrder.order.weight')"
-        align="right"
+        :label="$t('form.outBoundOrder.header.weight')"
+        align="left"
         width="100"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.weight }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="volume"
-        :label="$t('form.outBoundOrder.order.volume')"
-        align="right"
+        :label="$t('form.outBoundOrder.header.volume')"
+        align="left"
         width="100"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.volume }) }}
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -138,6 +188,9 @@
 import store from '@/store'
 import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
 
+// Components and Mixins
+import CopyClipboard from '@/components/ADempiere/CopyClipboard'
+
 // Constants
 import {
   MOVEMENT_TYPE_SALES_ORDER
@@ -145,10 +198,15 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'TableOrder',
+
+  components: {
+    CopyClipboard
+  },
 
   setup() {
     const listOrderTable = ref()
@@ -218,7 +276,8 @@ export default defineComponent({
       //
       selectionOrder,
       //
-      formatDate
+      formatDate,
+      formatQuantity
     }
   }
 })

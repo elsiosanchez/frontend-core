@@ -32,7 +32,7 @@
         v-show="'searchCriteria' === stepList[currentStep].key"
         :metadata="metadata"
       />
-      <components
+      <record-result
         v-show="'order' === stepList[currentStep].key"
       />
       <process
@@ -110,9 +110,9 @@ import store from '@/store'
 
 // Components and Mixins
 import SearchCriteria from './SearchCriteria/index.vue'
-import Components from './components/index.vue'
+import RecordResult from './RecordResult/index.vue'
 import Process from './process/index.vue'
-import InfoPanel from './components/infopanel.vue'
+import InfoPanel from './RecordResult/infoPanel.vue'
 // import Summary from './components/Summary'
 
 // Constants
@@ -134,7 +134,7 @@ export default defineComponent({
 
   components: {
     SearchCriteria,
-    Components,
+    RecordResult,
     Process,
     InfoPanel
   },
@@ -154,6 +154,7 @@ export default defineComponent({
      */
     const showPanel = ref(false)
     const disabledButton = ref(false)
+
     const stepList = ref([
       {
         name: lang.t('form.outBoundOrder.step.searchCriteria'),
@@ -171,19 +172,24 @@ export default defineComponent({
         key: 'process'
       }
     ])
+
     const isDisabled = computed(() => {
       const { organizationId, warehouseId } = store.getters.getSearchFilterGenerateOrder
       return !isEmptyValue(organizationId) && !isEmptyValue(warehouseId)
     })
+
     const recordsSelecion = computed(() => {
       return store.getters.getRecordsSelection
     })
+
     const recordsId = computed(() => {
       return store.getters.getRecordsId
     })
+
     const isLoadingProcess = computed(() => {
       return store.getters.getIsLoadingProcess
     })
+
     const currentStep = computed({
       // getter
       get() {
@@ -195,6 +201,7 @@ export default defineComponent({
         store.commit('setOutputSteps', value)
       }
     })
+
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
@@ -202,6 +209,7 @@ export default defineComponent({
     function refreshRecords() {
       searchRecords()
     }
+
     function searchRecords() {
       const {
         organizationId, movementTypeId, warehouseId,
@@ -234,6 +242,7 @@ export default defineComponent({
         documentTypeId
       })
     }
+
     function nextStep(step) {
       store.commit('setRecordsSelection', [])
       store.commit('setListDocumentList', [])
@@ -241,6 +250,7 @@ export default defineComponent({
       searchRecords()
       currentStep.value++
     }
+
     function validateNextStep() {
       if (!isEmptyValue(recordsSelecion.value)) {
         disabledButton.value = true
@@ -248,7 +258,7 @@ export default defineComponent({
 
         recordsSelecion.value.forEach(record => {
           if (record.delivery_rule_value !== 'F' && record.quantity > record.on_hand_quantity) {
-            const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.order.documentNo') + ': ' + record.document_no
+            const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.header.documentNo') + ': ' + record.document_no
             showNotification({
               title: lang.t('notifications.error'),
               message,
@@ -264,6 +274,7 @@ export default defineComponent({
         disabledButton.value = false
       }
     }
+
     function runProcess() {
       const filters = store.getters.getSearchFilterGenerateOrder
       const lineSelect = store.getters.getRecordsSelection
@@ -303,6 +314,7 @@ export default defineComponent({
         orderLineRequest
       })
     }
+
     return {
       // Refs
       stepList,

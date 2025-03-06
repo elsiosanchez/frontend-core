@@ -34,14 +34,16 @@ const OutBoundOrder = {
     salesOrder: 'Sales order',
     distributionOrder: 'Distribution Order'
   },
-  order: {
-    title: 'Order',
+  header: {
+    title: 'Documents Headers',
+    warehouse: 'Warehouse',
     documentNo: 'Document No',
     dateOrdered: 'Date Ordered',
     datePromised: 'Date Promised',
     region: 'Region',
     city: 'City',
     businessPartner: 'Business Partner',
+    salesRepresentative: 'Sales Representative',
     location: 'Location',
     address1: 'Address 1',
     address2: 'Address 2',
@@ -50,23 +52,32 @@ const OutBoundOrder = {
     weight: 'Weight',
     volume: 'Volume'
   },
-  select: {
-    title: 'Select',
+  lines: {
+    title: 'Documents Lines',
+    documentNo: 'Document No',
     product: 'Product',
     uom: 'UOM',
     uomOrder: 'UOM (Order)',
-    handQuantity: 'On Hand Quantity',
+    weight: 'Weight',
+    volume: 'Volume',
+    onHandQuantity: 'On Hand Quantity',
     quantity: 'Quantity',
     loadSequence: 'Load Sequence',
     orderedQuantity: 'Ordered Quantity',
     reservedQuantity: 'Reserved Quantity',
     quantityInvoiced: 'Quantity Invoiced',
     deliveredQuantity: 'Delivered Quantity',
-    qtyTransit: 'Qty In Transit',
+    quantityInTransit: 'Qty In Transit',
     deliveryRule: 'Delivery Rule'
   },
   productInfo: {
     title: 'Product Stock for Warehouse',
+    product: 'Product',
+    uom: 'UOM',
+    warehouse: 'Warehouse',
+    quantityInTransit: 'Qty In Transit',
+    onHandQuantity: 'On Hand Quantity',
+    quantity: 'Quantity',
     pickedQty: 'Picked Qty'
   },
   process: {

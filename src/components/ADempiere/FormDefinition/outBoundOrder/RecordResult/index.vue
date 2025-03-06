@@ -19,30 +19,32 @@
 <template>
   <div style="display: contents; height: 100% !important">
     <div style="height: 90% !important;">
-      <el-collapse>
-        <el-collapse-item :title="$t('form.outBoundOrder.order.title')">
+      <el-collapse v-model="activeNames">
+        <el-collapse-item name="header">
+          <template slot="title">
+            <b>{{ $t('form.outBoundOrder.header.title') }}</b>
+          </template>
+
           <div style="height: 45%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
-            <p style="text-align: left;font-size: 12px;margin: 0px 0px 7px 0px;">
-              <b> {{ $t('form.outBoundOrder.order.title') }} </b>
-            </p>
-            <el-card
-              shadow="never"
-              :body-style="{ padding: '5px' }"
-            >
-              <table-order />
-            </el-card>
+            <table-header />
           </div>
         </el-collapse-item>
       </el-collapse>
-      <div style="height: 45%; margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;">
+
+      <div
+        :height="lineHeigth"
+        style="margin-bottom: 5px; border: solid 1px lightgrey; border-radius: 10px; padding: 10px;"
+      >
         <p style="text-align: left;font-size: 12px;margin: 0px 0px 7px 0px;">
-          <b> {{ $t('form.outBoundOrder.select.title') }} </b>
+          <b> {{ $t('form.outBoundOrder.lines.title') }} </b>
         </p>
         <el-card
           shadow="never"
           :body-style="{ padding: '5px' }"
         >
-          <table-select />
+          <table-line
+            :is-expand-header="!isEmptyValue(activeNames)"
+          />
         </el-card>
       </div>
     </div>
@@ -50,14 +52,37 @@
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
-import TableOrder from './tableOrder.vue'
-import TableSelect from './tableSelect.vue'
+import { defineComponent, computed, ref } from '@vue/composition-api'
+
+// Components and Mixins
+import TableHeader from './tableHeader.vue'
+import TableLine from './tableLines.vue'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
-  name: 'Component',
+  name: 'RecordResult',
+
   components: {
-    TableOrder,
-    TableSelect
+    TableHeader,
+    TableLine
+  },
+
+  setup() {
+    const activeNames = ref(['header'])
+
+    const lineHeigth = computed(() => {
+      if (isEmptyValue(activeNames.value)) {
+        return '90%'
+      }
+      return '46%'
+    })
+
+    return {
+      activeNames,
+      lineHeigth
+    }
   }
 })
 </script>

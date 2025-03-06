@@ -34,14 +34,16 @@ const OutBoundOrder = {
     order: 'Orden de Venta',
     distributionOrder: 'Orden de Distribución'
   },
-  order: {
-    title: 'Orden',
+  header: {
+    title: 'Encabezados de Documentos',
+    warehouse: 'Almacén',
     documentNo: 'No Documento',
     dateOrdered: 'Fecha Ordenada',
     datePromised: 'Fecha Prometida',
     region: 'Región',
     city: 'Ciudad',
     businessPartner: 'Socio del Negocios',
+    salesRepresentative: 'Representante de Ventas',
     location: 'Dirección',
     address1: 'Dirección 1',
     address2: 'Dirección 2',
@@ -50,23 +52,32 @@ const OutBoundOrder = {
     weight: 'Peso',
     volume: 'Volumen'
   },
-  select: {
-    title: 'Seleccionar',
+  lines: {
+    title: 'Líneas de Documentos',
+    documentNo: 'No Documento',
     product: 'Producto',
     uom: 'UM',
     uomOrder: 'UM (Orden)',
-    handQuantity: 'Cantidad Disponible',
+    weight: 'Peso',
+    volume: 'Volumen',
+    onHandQuantity: 'Cantidad Disponible',
     quantity: 'Cantidad',
     loadSequence: 'Secuencia de Carga',
     orderedQuantity: 'Cantidad Ordenada',
     reservedQuantity: 'Cantidad Reservada',
     quantityInvoiced: 'Cantidad Facturada',
     deliveredQuantity: 'Cantidad Entregada',
-    qtyTransit: 'Cantidad en tránsito',
+    quantityInTransit: 'Cantidad en tránsito',
     deliveryRule: 'Regla de reparto'
   },
   productInfo: {
     title: 'Stock de Productos Para Almacén',
+    product: 'Producto',
+    uom: 'UM',
+    warehouse: 'Almacén',
+    quantityInTransit: 'Cantidad en tránsito',
+    onHandQuantity: 'Cantidad Disponible',
+    quantity: 'Cantidad',
     pickedQty: 'Cantidad de Recolección'
   },
   process: {

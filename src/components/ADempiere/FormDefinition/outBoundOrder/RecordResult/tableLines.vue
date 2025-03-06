@@ -23,7 +23,7 @@
       v-loading="isLoading"
       class="list-select-table"
       sise="mini"
-      height="25vh"
+      :height="tableHeigth"
       :data="records"
       border
       style="width: 100%; height: 85%"
@@ -32,39 +32,64 @@
       @select="selectionOrder"
     >
       <el-table-column type="selection" />
-      <el-table-column
-        prop="warehouse"
-        :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
-        align="left"
-        width="110"
-      />
+
       <el-table-column
         prop="document_no"
-        :label="$t('form.outBoundOrder.order.documentNo')"
+        :label="$t('form.outBoundOrder.lines.documentNo')"
         align="right"
         width="140"
       />
       <el-table-column
         prop="product"
-        :label="$t('form.outBoundOrder.select.product')"
+        :label="$t('form.outBoundOrder.lines.product')"
         align="left"
-        width="170"
-      />
+        min-width="200"
+      >
+        <template slot-scope="scope">
+          <p
+            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+          >
+            <el-popover
+              placement="top-start"
+              trigger="hover"
+              width="300"
+            >
+              {{ scope.row.product }}
+              <p
+                slot="reference"
+                type="text"
+                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+              >
+                {{ scope.row.product }}
+              </p>
+            </el-popover>
+          </p>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="uom"
-        :label="$t('form.outBoundOrder.select.uom')"
+        :label="$t('form.outBoundOrder.lines.uom')"
         align="left"
         width="70"
       />
+
       <el-table-column
         prop="on_hand_quantity"
-        :label="$t('form.outBoundOrder.select.handQuantity')"
-        align="right"
+        :label="$t('form.outBoundOrder.lines.onHandQuantity')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="quantity"
-        :label="$t('form.outBoundOrder.select.quantity')"
+        :label="$t('form.outBoundOrder.lines.quantity')"
         align="right"
         width="150"
       >
@@ -82,64 +107,118 @@
           </span>
         </template>
       </el-table-column>
+
       <el-table-column
         prop="order_uom"
-        :label="$t('form.outBoundOrder.select.uomOrder')"
+        :label="$t('form.outBoundOrder.lines.uomOrder')"
         align="left"
         width="120"
       />
+
       <el-table-column
         prop="weight"
-        :label="$t('form.outBoundOrder.order.weight')"
-        align="right"
-        width="110"
-      />
+        :label="$t('form.outBoundOrder.header.weight')"
+        align="left"
+        width="100"
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.weight }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.order.volume')"
-        align="right"
-        width="110"
-      />
-      <!-- <el-table-column
+        prop="volume"
+        :label="$t('form.outBoundOrder.header.volume')"
+        align="left"
+        width="100"
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.volume }) }}
+          </span>
+        </template>
+      </el-table-column>
+
+      <!--
+      <el-table-column
         prop="loadSequence"
-        :label="$t('form.outBoundOrder.select.loadSequence')"
-        align="right"
-        width="160"
-      /> -->
-      <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.orderedQuantity')"
-        align="right"
+        :label="$t('form.outBoundOrder.lines.loadSequence')"
+        align="left"
         width="160"
       />
+      -->
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.reservedQuantity')"
-        align="right"
+        prop="ordered_quantity"
+        :label="$t('form.outBoundOrder.lines.orderedQuantity')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.ordered_quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.quantityInvoiced')"
-        align="right"
+        prop="reserved_quantity"
+        :label="$t('form.outBoundOrder.lines.reservedQuantity')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.reserved_quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.deliveredQuantity')"
-        align="right"
+        prop="quantity_invoiced"
+        :label="$t('form.outBoundOrder.lines.quantityInvoiced')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.quantity_invoiced }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.qtyTransit')"
-        align="right"
+        prop="delivered_quantity"
+        :label="$t('form.outBoundOrder.lines.deliveredQuantity')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.delivered_quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
-        prop="weight"
-        :label="$t('form.outBoundOrder.select.deliveryRule')"
-        align="right"
+        prop="quantity_in_transit"
+        :label="$t('form.outBoundOrder.lines.quantityInTransit')"
+        align="left"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.quantity_in_transit }) }}
+          </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        prop="delivery_rule"
+        :label="$t('form.outBoundOrder.lines.deliveryRule')"
+        align="left"
         width="160"
       />
     </el-table>
@@ -149,21 +228,41 @@
 <script>
 import store from '@/store'
 import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'TableOrder',
-  setup() {
+
+  props: {
+    isExpandHeader: {
+      type: Boolean,
+      default: true
+    }
+  },
+
+  setup(props) {
     const activateField = ref({})
     const listSelectTable = ref()
+
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocumentLine
     })
+
     const records = computed(() => {
       return store.getters.getListDocumentLine
     })
+
+    const tableHeigth = computed(() => {
+      if (props.isExpandHeader) {
+        return '50vh'
+      }
+      return '25vh'
+    })
+
     function selectionOrder(selection) {
       if (!isEmptyValue(selection)) {
         const newActivateField = {}
@@ -177,6 +276,7 @@ export default defineComponent({
         store.commit('setRecordsSelection', [])
       }
     }
+
     function handleQuantityChange(row) {
       const storeRecords = store.getters.getRecordsSelection
       const updatedRecords = storeRecords.map(record => {
@@ -190,6 +290,7 @@ export default defineComponent({
       })
       store.commit('setRecordsSelection', updatedRecords)
     }
+
     watch(records, (newRecords) => {
       const selectedRecords = store.getters.getRecordsSelection
       if (selectedRecords && selectedRecords.length > 0) {
@@ -208,6 +309,7 @@ export default defineComponent({
         activateField.value = {}
       }
     }, { deep: true })
+
     return {
       // Ref
       activateField,
@@ -215,8 +317,10 @@ export default defineComponent({
       // Computed
       isLoading,
       records,
+      tableHeigth,
       //
       formatDate,
+      formatQuantity,
       selectionOrder,
       handleQuantityChange
     }

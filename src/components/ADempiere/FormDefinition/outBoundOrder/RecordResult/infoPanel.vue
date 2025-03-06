@@ -15,6 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <el-card>
     <el-table
@@ -30,46 +31,95 @@
     >
       <el-table-column
         prop="product"
-        :label="$t('form.outBoundOrder.select.product')"
+        :label="$t('form.outBoundOrder.productInfo.product')"
         align="left"
-        width="200"
-      />
+        min-width="200"
+      >
+        <template slot-scope="scope">
+          <p
+            style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+          >
+            <el-popover
+              placement="top-start"
+              trigger="hover"
+              width="300"
+            >
+              {{ scope.row.product }}
+              <p
+                slot="reference"
+                type="text"
+                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+              >
+                {{ scope.row.product }}
+              </p>
+            </el-popover>
+          </p>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="uom"
-        :label="$t('form.outBoundOrder.select.uom')"
-        align="right"
+        :label="$t('form.outBoundOrder.productInfo.uom')"
+        align="left"
         width="80"
       />
       <el-table-column
         prop="warehouse"
-        :label="$t('form.outBoundOrder.searchCriteria.warehouse')"
+        :label="$t('form.outBoundOrder.productInfo.warehouse')"
         align="left"
         width="150"
       />
       <el-table-column
         prop="on_hand_quantity"
-        :label="$t('form.outBoundOrder.select.handQuantity')"
-        align="right"
+        :label="$t('form.outBoundOrder.productInfo.onHandQuantity')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="quantity_in_transit"
-        :label="$t('form.outBoundOrder.select.qtyTransit')"
-        align="right"
+        :label="$t('form.outBoundOrder.productInfo.quantityInTransit')"
+        align="left"
         width="160"
-      />
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.quantity_in_transit }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="quantity"
-        :label="$t('form.outBoundOrder.select.quantity')"
-        align="right"
-        width="110"
-      />
+        :label="$t('form.outBoundOrder.productInfo.quantity')"
+        align="left"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.quantity }) }}
+          </span>
+        </template>
+      </el-table-column>
+
       <el-table-column
         prop="pickedQty"
         :label="$t('form.outBoundOrder.productInfo.pickedQty')"
-        align="right"
-        width="200"
-      />
+        align="left"
+        width="160"
+      >
+        <template slot-scope="scope">
+          <span class="cell-align-right">
+            {{ formatQuantity({ value: scope.row.pickedQty }) }}
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
   </el-card>
 </template>
@@ -77,10 +127,14 @@
 <script>
 import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+
 export default defineComponent({
   name: 'InfoPanel',
+
   setup() {
     const records = computed(() => {
       const record = store.getters.getRecordsSelection
@@ -110,8 +164,11 @@ export default defineComponent({
       })
       return resultado
     })
+
     return {
-      records
+      records,
+      //
+      formatQuantity
     }
   }
 })
