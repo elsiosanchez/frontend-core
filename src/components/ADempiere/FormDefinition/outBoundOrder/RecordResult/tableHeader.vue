@@ -46,7 +46,7 @@
         prop="document_no"
         :label="$t('form.outBoundOrder.header.documentNo')"
         align="left"
-        width="120"
+        width="125"
       >
         <template slot-scope="scope">
           <copy-clipboard

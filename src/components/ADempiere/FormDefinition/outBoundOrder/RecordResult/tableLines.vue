@@ -36,14 +36,14 @@
       <el-table-column
         prop="document_no"
         :label="$t('form.outBoundOrder.lines.documentNo')"
-        align="right"
-        width="140"
+        align="left"
+        width="125"
       />
       <el-table-column
         prop="product"
         :label="$t('form.outBoundOrder.lines.product')"
         align="left"
-        min-width="200"
+        min-width="300"
       >
         <template slot-scope="scope">
           <p
@@ -78,7 +78,7 @@
         prop="on_hand_quantity"
         :label="$t('form.outBoundOrder.lines.onHandQuantity')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -90,7 +90,7 @@
       <el-table-column
         prop="quantity"
         :label="$t('form.outBoundOrder.lines.quantity')"
-        align="right"
+        align="left"
         width="150"
       >
         <template slot-scope="scope">
@@ -99,6 +99,7 @@
               v-model="scope.row.quantity"
               size="mini"
               controls-position="right"
+              style="text-align-last: end !important;"
               @input="handleQuantityChange(scope.row)"
             />
           </span>
@@ -112,14 +113,14 @@
         prop="order_uom"
         :label="$t('form.outBoundOrder.lines.uomOrder')"
         align="left"
-        width="120"
+        width="115"
       />
 
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.header.weight')"
         align="left"
-        width="100"
+        width="90"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -132,7 +133,7 @@
         prop="volume"
         :label="$t('form.outBoundOrder.header.volume')"
         align="left"
-        width="100"
+        width="90"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -154,7 +155,7 @@
         prop="ordered_quantity"
         :label="$t('form.outBoundOrder.lines.orderedQuantity')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -167,7 +168,7 @@
         prop="reserved_quantity"
         :label="$t('form.outBoundOrder.lines.reservedQuantity')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -180,7 +181,7 @@
         prop="quantity_invoiced"
         :label="$t('form.outBoundOrder.lines.quantityInvoiced')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -193,7 +194,7 @@
         prop="delivered_quantity"
         :label="$t('form.outBoundOrder.lines.deliveredQuantity')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -206,7 +207,7 @@
         prop="quantity_in_transit"
         :label="$t('form.outBoundOrder.lines.quantityInTransit')"
         align="left"
-        width="160"
+        width="140"
       >
         <template slot-scope="scope">
           <span class="cell-align-right">
@@ -257,8 +258,8 @@ export default defineComponent({
     })
 
     const tableHeigth = computed(() => {
-      if (props.isExpandHeader) {
-        return '50vh'
+      if (!props.isExpandHeader) {
+        return '58vh'
       }
       return '25vh'
     })

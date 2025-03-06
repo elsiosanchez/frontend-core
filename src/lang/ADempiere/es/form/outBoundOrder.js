@@ -60,15 +60,15 @@ const OutBoundOrder = {
     uomOrder: 'UM (Orden)',
     weight: 'Peso',
     volume: 'Volumen',
-    onHandQuantity: 'Cantidad Disponible',
+    onHandQuantity: 'Cant. Disponible',
     quantity: 'Cantidad',
     loadSequence: 'Secuencia de Carga',
-    orderedQuantity: 'Cantidad Ordenada',
-    reservedQuantity: 'Cantidad Reservada',
-    quantityInvoiced: 'Cantidad Facturada',
-    deliveredQuantity: 'Cantidad Entregada',
-    quantityInTransit: 'Cantidad en tránsito',
-    deliveryRule: 'Regla de reparto'
+    orderedQuantity: 'Cant. Ordenada',
+    reservedQuantity: 'Cant. Reservada',
+    quantityInvoiced: 'Cant. Facturada',
+    deliveredQuantity: 'Cant. Entregada',
+    quantityInTransit: 'Cant. en Tránsito',
+    deliveryRule: 'Regla de Entrega'
   },
   productInfo: {
     title: 'Stock de Productos Para Almacén',
