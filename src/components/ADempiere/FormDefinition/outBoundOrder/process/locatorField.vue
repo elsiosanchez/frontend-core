@@ -21,7 +21,7 @@
     style="width: 100%;"
   >
     <template slot="label">
-      {{ $t('form.outBoundOrder.searchCriteria.panel.locator') }}
+      {{ $t('form.outBoundOrder.process.locator') }}
     </template>
     <el-select
       v-model="value"
@@ -52,12 +52,15 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import {
   requestListLocators
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'DocumentDataField',
 
@@ -80,11 +83,15 @@ export default defineComponent({
         })
       }
     })
+
     const warehouse = computed(() => {
       const { warehouseId } = store.getters.getSearchFilterGenerateOrder
-      if (isEmptyValue(warehouseId)) return
+      if (isEmptyValue(warehouseId)) {
+        return -1
+      }
       return warehouseId
     })
+
     const optionsList = computed({
       get() {
         const { listLocator } = store.getters.getSearchFilterGenerateOrder
@@ -109,6 +116,7 @@ export default defineComponent({
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -126,6 +134,7 @@ export default defineComponent({
           optionsList.value = records
         })
     }
+
     return {
       // Computeds
       value,

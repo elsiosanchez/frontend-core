@@ -23,6 +23,7 @@
         <el-form
           :inline="true"
           label-position="top"
+          class="form-base form-min-label"
         >
           <el-row :gutter="24">
             <el-col :span="6">
@@ -58,7 +59,7 @@ import {
 
 // Components and Mixins
 import OrganizationField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/organizationField.vue'
-import MoventTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/moventTypeField.vue'
+import MoventTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/movementTypeField.vue'
 import DocumentTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/documentTypeField.vue'
 import WarehouseField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/warehouseField.vue'
 import SalesRegionField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/salesRegionField.vue'

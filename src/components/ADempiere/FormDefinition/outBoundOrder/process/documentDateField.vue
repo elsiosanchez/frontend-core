@@ -22,7 +22,7 @@
   >
     <template slot="label">
       <span style="color: #f34b4b"> * </span>
-      {{ $t('form.outBoundOrder.searchCriteria.panel.documentDate') }}
+      {{ $t('form.outBoundOrder.process.documentDate') }}
     </template>
     <el-date-picker
       v-model="value"
@@ -38,8 +38,10 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'DocumentDataField',
 
@@ -66,6 +68,7 @@ export default defineComponent({
         .replace(/[D]/gi, 'd')
       return formattedFormat
     })
+
     const value = computed({
       // getter
       get() {
@@ -80,6 +83,7 @@ export default defineComponent({
         })
       }
     })
+
     return {
       value,
       formatView

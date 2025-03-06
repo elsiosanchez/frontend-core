@@ -21,11 +21,14 @@
     style="width: 100%;"
   >
     <template slot="label">
-      {{ $t('form.outBoundOrder.searchCriteria.moventType') }}
+      {{ $t('form.outBoundOrder.searchCriteria.movementType') }}
       <el-switch
         v-model="value"
-        :inactive-text="$t('form.outBoundOrder.searchCriteria.order')"
+        inactive-color="#13ce66"
         :active-text="$t('form.outBoundOrder.searchCriteria.distributionOrder')"
+        :active-value="MOVEMENT_TYPE_DISTRIBUTION_ORDER"
+        :inactive-text="$t('form.outBoundOrder.searchCriteria.salesOrder')"
+        :inactive-value="MOVEMENT_TYPE_SALES_ORDER"
         style="display: flex; justify-content: center; height: 30px;"
       />
     </template>
@@ -39,6 +42,12 @@ import { defineComponent, computed } from '@vue/composition-api'
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 
+// Constants
+import {
+  MOVEMENT_TYPE_DISTRIBUTION_ORDER,
+  MOVEMENT_TYPE_SALES_ORDER
+} from '@/utils/ADempiere/dictionary/form/WOutBoundOrder'
+
 export default defineComponent({
   name: 'MovementTypeField',
 
@@ -49,24 +58,26 @@ export default defineComponent({
     const value = computed({
       // getter
       get() {
-        const { moventTypeId } = store.getters.getSearchFilterGenerateOrder
-        return moventTypeId
+        const { movementTypeId } = store.getters.getSearchFilterGenerateOrder
+        return movementTypeId
       },
       // setter
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
-          attribute: 'moventTypeId',
+          attribute: 'movementTypeId',
           value: newValue
         })
         store.commit('updateAttributeCriteriaGenerateOrder', {
           attribute: 'documentTypeId',
-          value: ''
+          value: -1
         })
       }
     })
 
     return {
-      value
+      value,
+      MOVEMENT_TYPE_SALES_ORDER,
+      MOVEMENT_TYPE_DISTRIBUTION_ORDER
     }
   }
 })

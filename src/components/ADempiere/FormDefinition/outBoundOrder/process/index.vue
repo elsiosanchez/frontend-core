@@ -23,7 +23,7 @@
         <el-form
           :inline="true"
           label-position="top"
-          class="form-base"
+          class="form-base form-min-label"
         >
           <el-row :gutter="24">
             <el-col :span="6">
@@ -67,13 +67,14 @@ import DocumentDateField from './documentDateField.vue'
 import ShipDateField from './shipDateField.vue'
 import DocumentActionField from './documentActionField.vue'
 import LocatorField from './locatorField.vue'
-import TargetDocumentTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/targetDocumentTypeField.vue'
-import DeliveryRuleField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/deliveryRuleField.vue'
-import ShipperField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/shipperField.vue'
-import DeliveryViaField from '@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria/deliveryViaField.vue'
+import TargetDocumentTypeField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/targetDocumentTypeField.vue'
+import DeliveryRuleField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/deliveryRuleField.vue'
+import ShipperField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/shipperField.vue'
+import DeliveryViaField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/deliveryViaField.vue'
 
 export default defineComponent({
-  name: 'SearchCriteriaProcess',
+  name: 'Process',
+
   components: {
     DocumentActionField,
     DocumentDateField,

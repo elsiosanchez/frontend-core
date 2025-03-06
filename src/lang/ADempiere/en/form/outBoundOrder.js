@@ -26,23 +26,13 @@ const OutBoundOrder = {
   },
   searchCriteria: {
     organization: 'Organization',
-    moventType: 'Movement Type',
+    movementType: 'Movement Type',
     documentType: 'Document Type',
     warehouse: 'Warehouse',
     salesRegion: 'Sales Region',
     salesRepresentative: 'Sales Representative',
-    targetDocumentType: 'Target Document Type',
-    deliveryRule: 'Delivery Rule',
-    deliveryVia: 'delivery Via',
-    shipper: 'shipper',
-    order: 'Sales order',
-    distributionOrder: 'Distribution Order',
-    panel: {
-      documentDate: 'Document Date',
-      shipDate: 'Ship Date',
-      documentAction: 'Document Action',
-      locator: 'Locator'
-    }
+    salesOrder: 'Sales order',
+    distributionOrder: 'Distribution Order'
   },
   order: {
     title: 'Order',
@@ -64,7 +54,7 @@ const OutBoundOrder = {
     title: 'Select',
     product: 'Product',
     uom: 'UOM',
-    uomProcess: 'UOM(Order)',
+    uomOrder: 'UOM (Order)',
     handQuantity: 'On Hand Quantity',
     quantity: 'Quantity',
     loadSequence: 'Load Sequence',
@@ -78,6 +68,16 @@ const OutBoundOrder = {
   productInfo: {
     title: 'Product Stock for Warehouse',
     pickedQty: 'Picked Qty'
+  },
+  process: {
+    documentDate: 'Document Date',
+    shipDate: 'Ship Date',
+    documentAction: 'Document Action',
+    locator: 'Locator',
+    targetDocumentType: 'Target Document Type',
+    deliveryRule: 'Delivery Rule',
+    deliveryVia: 'Delivery Via',
+    shipper: 'Shipper'
   }
 }
 

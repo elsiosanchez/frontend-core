@@ -58,6 +58,9 @@ import {
   requestListDocumentTypes
 } from '@/api/ADempiere/form/outBoundOrder.ts'
 
+// Constants
+import { MOVEMENT_TYPE_SALES_ORDER } from '@/utils/ADempiere/dictionary/form/WOutBoundOrder'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
@@ -86,12 +89,12 @@ export default defineComponent({
       }
     })
 
-    const moventType = computed(() => {
-      const { moventTypeId } = store.getters.getSearchFilterGenerateOrder
-      if (moventTypeId) {
-        return 'DD_Order'
+    const movementType = computed(() => {
+      const { movementTypeId } = store.getters.getSearchFilterGenerateOrder
+      if (isEmptyValue(movementTypeId)) {
+        return MOVEMENT_TYPE_SALES_ORDER
       }
-      return 'C_Order'
+      return movementTypeId
     })
 
     const optionsList = computed({
@@ -120,7 +123,7 @@ export default defineComponent({
       }
       requestListDocumentTypes({
         searchValue,
-        movement_type: moventType.value
+        movement_type: movementType.value
       })
         .then(response => {
           const { records } = response

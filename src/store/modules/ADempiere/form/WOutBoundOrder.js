@@ -23,6 +23,13 @@ import {
   requesListDocumentLines,
   requestLoadOrder
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
+// Constants
+import {
+  MOVEMENT_TYPE_SALES_ORDER
+} from '@/utils/ADempiere/dictionary/form/WOutBoundOrder'
+
+// Utils and Helper Methods
 import { showNotification } from '@/utils/ADempiere/notification.js'
 
 const initState = {
@@ -37,7 +44,7 @@ const initState = {
   searchCriteria: {
     listOrganization: [],
     organizationId: -1,
-    moventTypeId: false,
+    movementTypeId: MOVEMENT_TYPE_SALES_ORDER,
     listDocumentType: [],
     documentTypeId: -1,
     listWarehouse: [],
@@ -79,7 +86,7 @@ const OutBoundOrder = {
       state.searchCriteria = {
         listOrganization: [],
         organizationId: null,
-        moventTypeId: 'C_Order',
+        movementTypeId: MOVEMENT_TYPE_SALES_ORDER,
         listDocumentType: [],
         documentTypeId: -1,
         listWarehouse: [],
@@ -137,7 +144,7 @@ const OutBoundOrder = {
   },
   actions: {
     searchListDocument({ commit }, {
-      moventTypeId,
+      movementTypeId,
       organizationId,
       warehouseId,
       salesRegionId,
@@ -147,7 +154,7 @@ const OutBoundOrder = {
       return new Promise(resolve => {
         commit('setIsLoadingDocument', true)
         requestListDocuments({
-          movement_type: moventTypeId,
+          movement_type: movementTypeId,
           organization_id: organizationId,
           warehouse_id: warehouseId,
           sales_region_id: salesRegionId,
@@ -172,7 +179,7 @@ const OutBoundOrder = {
       })
     },
     searchListDocumentLine({ commit }, {
-      moventTypeId,
+      movementTypeId,
       organizationId,
       warehouseId,
       salesRegionId,
@@ -183,7 +190,7 @@ const OutBoundOrder = {
       return new Promise(resolve => {
         commit('setIsLoadingDocumentList', true)
         requesListDocumentLines({
-          movement_type: moventTypeId,
+          movement_type: movementTypeId,
           organization_id: organizationId,
           warehouse_id: warehouseId,
           sales_region_id: salesRegionId,

@@ -137,31 +137,45 @@
 <script>
 import store from '@/store'
 import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
+
+// Constants
+import {
+  MOVEMENT_TYPE_SALES_ORDER
+} from '@/utils/ADempiere/dictionary/form/WOutBoundOrder'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'TableOrder',
+
   setup() {
     const listOrderTable = ref()
+
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocument
     })
+
     const records = computed(() => {
       return store.getters.getListDocument
     })
+
     function selectionOrder(selection) {
-      const { organizationId, moventTypeId, warehouseId, salesRegionId, salesRepresentativeId, documentTypeId } = store.getters.getSearchFilterGenerateOrder
-      let moventType = 'C_Order'
-      if (moventTypeId) {
-        moventType = 'DD_Order'
+      const {
+        organizationId, movementTypeId, warehouseId,
+        salesRegionId, salesRepresentativeId, documentTypeId
+      } = store.getters.getSearchFilterGenerateOrder
+
+      let movementType = movementTypeId
+      if (isEmptyValue(movementTypeId)) {
+        movementType = MOVEMENT_TYPE_SALES_ORDER
       }
       if (!isEmptyValue(selection)) {
         const recordsId = selection.map(data => data.id)
         store.dispatch('searchListDocumentLine', {
           organizationId,
-          moventTypeId: moventType,
+          movementTypeId: movementType,
           warehouseId,
           recordsId: recordsId,
           salesRegionId,
@@ -171,7 +185,7 @@ export default defineComponent({
       } else {
         store.dispatch('searchListDocumentLine', {
           organizationId,
-          moventTypeId: moventType,
+          movementTypeId: movementType,
           warehouseId,
           recordsId: -1,
           salesRegionId,
@@ -181,6 +195,7 @@ export default defineComponent({
         store.commit('setRecordsSelection', [])
       }
     }
+
     watch(records, (newRecords) => {
       const selectedRecords = store.getters.getRecordsId
       if (selectedRecords && selectedRecords.length > 0) {
@@ -194,6 +209,7 @@ export default defineComponent({
         })
       }
     }, { deep: true })
+
     return {
       listOrderTable,
       //

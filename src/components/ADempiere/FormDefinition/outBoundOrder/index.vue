@@ -115,18 +115,22 @@ import Process from './process/index.vue'
 import InfoPanel from './components/infopanel.vue'
 // import Summary from './components/Summary'
 
+// Constants
+import {
+  MOVEMENT_TYPE_SALES_ORDER
+} from '@/utils/ADempiere/dictionary/form/WOutBoundOrder'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showNotification } from '@/utils/ADempiere/notification.js'
 
 /**
  * Based on:
- * org.compiere.apps.form.Allocation
- * org.compiere.apps.form.VAllocation
- * org.adempiere.webui.apps.form.WAllocation
+ * org.spin.wms.form.OutBoundOrder
+ * org.spin.wms.form.WOutBoundOrder
  */
 export default defineComponent({
-  name: 'outBoundOrder',
+  name: 'OutBoundOrder',
 
   components: {
     SearchCriteria,
@@ -199,14 +203,18 @@ export default defineComponent({
       searchRecords()
     }
     function searchRecords() {
-      const { organizationId, moventTypeId, warehouseId, salesRegionId, salesRepresentativeId, documentTypeId } = store.getters.getSearchFilterGenerateOrder
-      let moventType = 'C_Order'
-      if (moventTypeId) {
-        moventType = 'DD_Order'
+      const {
+        organizationId, movementTypeId, warehouseId,
+        salesRegionId, salesRepresentativeId, documentTypeId
+      } = store.getters.getSearchFilterGenerateOrder
+
+      let movementType = movementTypeId
+      if (isEmptyValue(movementType)) {
+        movementType = MOVEMENT_TYPE_SALES_ORDER
       }
       store.dispatch('searchListDocument', {
         organizationId,
-        moventTypeId: moventType,
+        movementTypeId: movementType,
         warehouseId,
         salesRegionId,
         salesRepresentativeId,
@@ -218,7 +226,7 @@ export default defineComponent({
       }
       store.dispatch('searchListDocumentLine', {
         organizationId,
-        moventTypeId: moventType,
+        movementTypeId: movementType,
         warehouseId,
         recordsId: ids,
         salesRegionId,
@@ -260,8 +268,10 @@ export default defineComponent({
       const filters = store.getters.getSearchFilterGenerateOrder
       const lineSelect = store.getters.getRecordsSelection
 
-      const { organizationId, warehouseId, targetDocumentTypeId,
-        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId, moventTypeId } = filters
+      const {
+        movementTypeId, organizationId, warehouseId, targetDocumentTypeId,
+        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId
+      } = filters
       const orderLineRequest = lineSelect.map(data => {
         return {
           id: data.id,
@@ -276,9 +286,9 @@ export default defineComponent({
           on_hand_quantity: data.on_hand_quantity
         }
       })
-      let moventType = 'C_Order'
-      if (moventTypeId) {
-        moventType = 'DD_Order'
+      let movementType = movementTypeId
+      if (isEmptyValue(movementTypeId)) {
+        movementType = MOVEMENT_TYPE_SALES_ORDER
       }
       store.dispatch('runOutputOrderProcess', {
         organization_id: organizationId,
@@ -289,7 +299,7 @@ export default defineComponent({
         shipper_id: shipperId,
         document_date: documentDate,
         shipment_date: shipDate,
-        movement_type: moventType,
+        movement_type: movementType,
         orderLineRequest
       })
     }

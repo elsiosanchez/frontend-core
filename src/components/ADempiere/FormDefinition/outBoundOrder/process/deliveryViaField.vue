@@ -21,7 +21,7 @@
     style="width: 100%;"
   >
     <template slot="label">
-      {{ $t('form.outBoundOrder.searchCriteria.deliveryVia') }}
+      {{ $t('form.outBoundOrder.process.deliveryVia') }}
     </template>
     <el-select
       v-model="value"

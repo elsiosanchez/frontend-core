@@ -84,7 +84,7 @@
       </el-table-column>
       <el-table-column
         prop="order_uom"
-        :label="$t('form.outBoundOrder.select.uomProcess')"
+        :label="$t('form.outBoundOrder.select.uomOrder')"
         align="left"
         width="120"
       />

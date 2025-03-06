@@ -26,23 +26,13 @@ const OutBoundOrder = {
   },
   searchCriteria: {
     organization: 'Organización',
-    moventType: 'Tipo de Movimiento',
+    movementType: 'Tipo de Movimiento',
     documentType: 'Tipo de Documento',
     warehouse: 'Almacén',
     salesRegion: 'Región de Ventas',
     salesRepresentative: 'Representante de Ventas',
-    targetDocumentType: 'Tipo de Documento de Destino',
-    deliveryRule: 'Regla de Entrega',
-    deliveryVia: 'Vía de Entrega',
-    shipper: 'Transportista',
     order: 'Orden de Venta',
-    distributionOrder: 'Orden de Distribución',
-    panel: {
-      documentDate: 'Fecha del Documento',
-      shipDate: 'Fecha de Envío',
-      documentAction: 'Acción del Documento',
-      locator: 'Localizador'
-    }
+    distributionOrder: 'Orden de Distribución'
   },
   order: {
     title: 'Orden',
@@ -64,7 +54,7 @@ const OutBoundOrder = {
     title: 'Seleccionar',
     product: 'Producto',
     uom: 'UM',
-    uomProcess: 'UM(Orden)',
+    uomOrder: 'UM (Orden)',
     handQuantity: 'Cantidad Disponible',
     quantity: 'Cantidad',
     loadSequence: 'Secuencia de Carga',
@@ -78,6 +68,16 @@ const OutBoundOrder = {
   productInfo: {
     title: 'Stock de Productos Para Almacén',
     pickedQty: 'Cantidad de Recolección'
+  },
+  process: {
+    documentDate: 'Fecha del Documento',
+    shipDate: 'Fecha de Envío',
+    documentAction: 'Acción del Documento',
+    locator: 'Localizador',
+    targetDocumentType: 'Tipo de Documento de Destino',
+    deliveryRule: 'Regla de Entrega',
+    deliveryVia: 'Vía de Entrega',
+    shipper: 'Transportista'
   }
 }
 

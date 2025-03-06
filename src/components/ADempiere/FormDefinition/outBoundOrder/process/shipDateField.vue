@@ -22,7 +22,7 @@
   >
     <template slot="label">
       <span style="color: #f34b4b"> * </span>
-      {{ $t('form.outBoundOrder.searchCriteria.panel.shipDate') }}
+      {{ $t('form.outBoundOrder.process.shipDate') }}
     </template>
     <el-date-picker
       v-model="value"
@@ -34,13 +34,14 @@
 
 <script>
 import store from '@/store'
-
 import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'ShipDateField',
 
@@ -63,6 +64,7 @@ export default defineComponent({
         })
       }
     })
+
     const formatView = computed(() => {
       let format = ''
       const currentLanguageDefinition = store.getters['getCurrentLanguageDefinition']
@@ -81,6 +83,7 @@ export default defineComponent({
         .replace(/[D]/gi, 'd')
       return formattedFormat
     })
+
     return {
       value,
       formatView

@@ -21,7 +21,7 @@
     style="width: 100%;"
   >
     <template slot="label">
-      {{ $t('form.outBoundOrder.searchCriteria.targetDocumentType') }}
+      {{ $t('form.outBoundOrder.process.targetDocumentType') }}
     </template>
     <el-select
       v-model="value"
