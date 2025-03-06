@@ -157,6 +157,11 @@ const resourceDefinition = {
               startStr: null,
               endStr: null
             })
+          } else {
+            commit('setResourceRightLoading', {
+              tableName,
+              isLoading: true
+            })
           }
           if (isEmptyValue(recordId)) {
             recordId = getCurrentRecord()
@@ -181,6 +186,11 @@ const resourceDefinition = {
               isLoading: true,
               startStr: dateStart,
               endStr: dateEnd
+            })
+          } else {
+            commit('setResourceLoading', {
+              tableName,
+              isLoading: true
             })
           }
         }
