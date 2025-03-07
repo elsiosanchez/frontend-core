@@ -39,7 +39,7 @@ const initState = {
   listDocumentLines: [],
   isLoadingDocumentLines: false,
   recordsId: [],
-  recordsSelection: [],
+  linesSelection: [],
   steps: 0,
   isLoadingProcess: false,
   searchCriteria: {
@@ -81,7 +81,7 @@ const OutBoundOrder = {
       state.listDocumentLines = []
       state.isLoadingDocumentLines = false
       state.recordsId = []
-      state.recordsSelection = []
+      state.linesSelection = []
       state.steps = 0
       state.isLoadingProcess = false
       state.searchCriteria = {
@@ -133,8 +133,8 @@ const OutBoundOrder = {
     setRecordsId(state, ids) {
       state.recordsId = ids
     },
-    setRecordsSelection(state, records) {
-      state.recordsSelection = records
+    setLinesSelection(state, records) {
+      state.linesSelection = records
     },
     setOutputSteps(state, steps) {
       state.steps = steps
@@ -181,11 +181,6 @@ const OutBoundOrder = {
     },
     searchListDocumentLine({ commit }, {
       movementTypeId,
-      organizationId,
-      warehouseId,
-      salesRegionId,
-      salesRepresentativeId,
-      documentTypeId,
       recordsId
     }) {
       return new Promise(resolve => {
@@ -194,15 +189,11 @@ const OutBoundOrder = {
           commit('setListDocumentList', [])
           commit('setRecordsId', recordsId)
           commit('setIsLoadingDocumentList', false)
+          commit('setLinesSelection', [])
           return
         }
         requesListDocumentLines({
           movement_type: movementTypeId,
-          organization_id: organizationId,
-          warehouse_id: warehouseId,
-          sales_region_id: salesRegionId,
-          sales_representative_id: salesRepresentativeId,
-          document_type_id: documentTypeId,
           header_ids: recordsId
         })
           .then(response => {
@@ -290,8 +281,8 @@ const OutBoundOrder = {
     getHeaderRecordsId: (state) => {
       return state.recordsId
     },
-    getRecordsSelection: (state) => {
-      return state.recordsSelection
+    getLinesSelection: (state) => {
+      return state.linesSelection
     },
     getOutputSteps: (state) => {
       return state.steps

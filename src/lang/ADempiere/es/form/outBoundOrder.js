@@ -60,7 +60,7 @@ const OutBoundOrder = {
     uomOrder: 'UM (Orden)',
     weight: 'Peso',
     volume: 'Volumen',
-    onHandQuantity: 'Cant. Disponible',
+    onHandQuantity: 'Cant. Existencia',
     quantity: 'Cantidad',
     loadSequence: 'Secuencia de Carga',
     orderedQuantity: 'Cant. Ordenada',
@@ -71,14 +71,14 @@ const OutBoundOrder = {
     deliveryRule: 'Regla de Entrega'
   },
   productInfo: {
-    title: 'Stock de Productos Para Almacén',
+    title: 'Resumen de Inventario por Producto',
     product: 'Producto',
     uom: 'UM',
     warehouse: 'Almacén',
-    quantityInTransit: 'Cantidad en tránsito',
-    onHandQuantity: 'Cantidad Disponible',
+    quantityInTransit: 'Cant. en Tránsito',
+    onHandQuantity: 'Cant. Existencia',
     quantity: 'Cantidad',
-    pickedQuantity: 'Cantidad de Recolección'
+    pickedQuantity: 'Cant. Recolección'
   },
   process: {
     documentDate: 'Fecha del Documento',

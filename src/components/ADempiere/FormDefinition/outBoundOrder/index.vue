@@ -179,7 +179,7 @@ export default defineComponent({
     })
 
     const recordsSelecion = computed(() => {
-      return store.getters.getRecordsSelection
+      return store.getters.getLinesSelection
     })
 
     const recordsId = computed(() => {
@@ -244,7 +244,7 @@ export default defineComponent({
     }
 
     function nextStep(step) {
-      store.commit('setRecordsSelection', [])
+      store.commit('setLinesSelection', [])
       store.commit('setListDocumentList', [])
       store.commit('setRecordsId', [])
       searchRecords()
@@ -277,7 +277,7 @@ export default defineComponent({
 
     function runProcess() {
       const filters = store.getters.getSearchFilterGenerateOrder
-      const lineSelect = store.getters.getRecordsSelection
+      const lineSelect = store.getters.getLinesSelection
 
       const {
         movementTypeId, organizationId, warehouseId, targetDocumentTypeId,

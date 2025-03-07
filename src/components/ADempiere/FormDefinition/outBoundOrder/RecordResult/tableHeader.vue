@@ -29,8 +29,8 @@
       style="width: 100%"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
-      @select="selectionOrder"
-      @select-all="selectionOrder"
+      @select="handleSelectionHeader"
+      @select-all="handleSelectionHeader"
     >
       <el-table-column type="selection" />
 
@@ -205,7 +205,7 @@ import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
-  name: 'TableOrder',
+  name: 'TableHeader',
 
   components: {
     CopyClipboard
@@ -222,10 +222,9 @@ export default defineComponent({
       return store.getters.getListDocument
     })
 
-    function selectionOrder(selection) {
+    function handleSelectionHeader(selection) {
       const {
-        organizationId, movementTypeId, warehouseId,
-        salesRegionId, salesRepresentativeId, documentTypeId
+        organizationId, movementTypeId
       } = store.getters.getSearchFilterGenerateOrder
 
       let movementType = movementTypeId
@@ -236,24 +235,13 @@ export default defineComponent({
         const recordsId = selection.map(data => data.id)
         store.dispatch('searchListDocumentLine', {
           organizationId,
-          movementTypeId: movementType,
-          warehouseId,
-          recordsId: recordsId,
-          salesRegionId,
-          salesRepresentativeId,
-          documentTypeId
+          recordsId: recordsId
         })
       } else {
         store.dispatch('searchListDocumentLine', {
-          organizationId,
           movementTypeId: movementType,
-          warehouseId,
-          recordsId: -1,
-          salesRegionId,
-          salesRepresentativeId,
-          documentTypeId
+          recordsId: -1
         })
-        store.commit('setRecordsSelection', [])
       }
     }
 
@@ -262,12 +250,12 @@ export default defineComponent({
         return
       }
       headerTable.value.clearSelection()
-      const selectedRecords = store.getters.getHeaderRecordsId
-      if (isEmptyValue(selectedRecords)) {
+      const selectedRecordsId = store.getters.getHeaderRecordsId
+      if (isEmptyValue(selectedRecordsId)) {
         return
       }
       records.value.forEach(row => {
-        if (selectedRecords.includes(row.id)) {
+        if (selectedRecordsId.includes(row.id)) {
           headerTable.value.toggleRowSelection(row, true)
         }
       })
@@ -283,7 +271,7 @@ export default defineComponent({
       isLoading,
       records,
       //
-      selectionOrder,
+      handleSelectionHeader,
       //
       formatDate,
       formatQuantity

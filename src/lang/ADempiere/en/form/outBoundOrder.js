@@ -76,7 +76,7 @@ const OutBoundOrder = {
     uom: 'UOM',
     warehouse: 'Warehouse',
     quantityInTransit: 'Qty In Transit',
-    onHandQuantity: 'On Hand Quantity',
+    onHandQuantity: 'On Hand Qty',
     quantity: 'Quantity',
     pickedQuantity: 'Picked Qty'
   },

@@ -29,7 +29,8 @@
       style="width: 100%;"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
-      @select="selectionOrder"
+      @select="handleSelectionLine"
+      @select-all="handleSelectionLine"
     >
       <el-table-column type="selection" />
 
@@ -228,7 +229,7 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -236,7 +237,7 @@ import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
-  name: 'TableOrder',
+  name: 'TableLine',
 
   props: {
     isExpandHeader: {
@@ -257,6 +258,10 @@ export default defineComponent({
       return store.getters.getListDocumentLine
     })
 
+    const selectionsList = computed(() => {
+      return store.getters.getLinesSelection
+    })
+
     const tableHeigth = computed(() => {
       if (!props.isExpandHeader) {
         return '58vh'
@@ -264,22 +269,22 @@ export default defineComponent({
       return '27vh'
     })
 
-    function selectionOrder(selection) {
+    function handleSelectionLine(selection) {
       if (!isEmptyValue(selection)) {
         const newActivateField = {}
         selection.forEach(row => {
           newActivateField[row.id] = true
         })
         activateField.value = newActivateField
-        store.commit('setRecordsSelection', selection)
+        store.commit('setLinesSelection', selection)
       } else {
-        activateField.value = false
-        store.commit('setRecordsSelection', [])
+        activateField.value = {}
+        store.commit('setLinesSelection', [])
       }
     }
 
     function handleQuantityChange(row) {
-      const storeRecords = store.getters.getRecordsSelection
+      const storeRecords = store.getters.getLinesSelection
       const updatedRecords = storeRecords.map(record => {
         if (row.id === record.id) {
           return {
@@ -289,27 +294,38 @@ export default defineComponent({
         }
         return record
       })
-      store.commit('setRecordsSelection', updatedRecords)
+      store.commit('setLinesSelection', updatedRecords)
     }
 
-    watch(records, (newRecords) => {
-      const selectedRecords = store.getters.getRecordsSelection
-      if (selectedRecords && selectedRecords.length > 0) {
-        nextTick(() => {
-          const newActivateField = {}
-          selectedRecords.forEach(row => {
-            const record = newRecords.find(r => r.id === row.id)
-            if (record) {
-              newActivateField[record.id] = true
-              lineTable.value.toggleRowSelection(record, true)
-            }
-          })
-          activateField.value = newActivateField
-        })
-      } else {
-        activateField.value = {}
+    function toggleSelection() {
+      if (isEmptyValue(lineTable.value)) {
+        return
       }
-    }, { deep: true })
+      lineTable.value.clearSelection()
+      if (isEmptyValue(selectionsList.value)) {
+        return
+      }
+
+      const newActivateField = {}
+      const selectedRecordsId = selectionsList.value.map(row => {
+        return row.id
+      })
+      // selectionsList.value.forEach(row => {
+      //   newActivateField[row.id] = true
+      //   lineTable.value.toggleRowSelection(row, true)
+      // })
+      records.value.forEach(row => {
+        if (selectedRecordsId.includes(row.id)) {
+          newActivateField[row.id] = true
+          lineTable.value.toggleRowSelection(row, true)
+        }
+      })
+      activateField.value = newActivateField
+    }
+
+    onMounted(() => {
+      toggleSelection()
+    })
 
     return {
       // Ref
@@ -319,10 +335,11 @@ export default defineComponent({
       isLoading,
       records,
       tableHeigth,
+      selectionsList,
       //
       formatDate,
       formatQuantity,
-      selectionOrder,
+      handleSelectionLine,
       handleQuantityChange
     }
   }

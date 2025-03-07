@@ -17,13 +17,13 @@
 -->
 
 <template>
-  <el-card>
+  <el-card class="list-products-table">
     <el-table
-      ref="listOrderTable"
-      class="list-order-table"
+      ref="productInfoTable"
+      class="products-table"
       sise="mini"
       :data="records"
-      height="30vh"
+      height="80vh"
       border
       style="width: 100%"
       :element-loading-text="$t('notifications.loading')"
@@ -50,6 +50,13 @@
                 type="text"
                 style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
               >
+                <b>
+                  <copy-clipboard
+                    :text="scope.row.product_value"
+                  />
+                  {{ scope.row.product_value }}
+                </b>
+                -
                 {{ scope.row.product }}
               </p>
             </el-popover>
@@ -96,14 +103,14 @@
       </el-table-column>
 
       <el-table-column
-        prop="quantity"
+        prop="totalQuantityToSet"
         :label="$t('form.outBoundOrder.productInfo.quantity')"
         align="left"
         width="160"
       >
         <template slot-scope="scope">
-          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity < 0 }">
-            {{ formatQuantity({ value: scope.row.quantity }) }}
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.totalQuantityToSet < 0 }">
+            {{ formatQuantity({ value: scope.row.totalQuantityToSet }) }}
           </span>
         </template>
       </el-table-column>
@@ -128,6 +135,9 @@
 import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
 
+// Components and Mixins
+import CopyClipboard from '@/components/ADempiere/CopyClipboard'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
@@ -135,34 +145,44 @@ import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 export default defineComponent({
   name: 'InfoPanel',
 
+  components: {
+    CopyClipboard
+  },
+
   setup() {
     const records = computed(() => {
-      const record = store.getters.getRecordsSelection
-      if (isEmptyValue(record)) return
+      const recordLines = store.getters.getLinesSelection
+      if (isEmptyValue(recordLines)) {
+        return []
+      }
       const recordsGroup = {}
-      record.forEach(r => {
-        const product = r.product
-        const on_hand_quantity = parseFloat(r.on_hand_quantity)
-        const quantity = parseFloat(r.quantity)
-        if (recordsGroup[product]) {
-          recordsGroup[product].on_hand_quantity += on_hand_quantity
-          recordsGroup[product].quantity += quantity
+      recordLines.forEach(row => {
+        const { product_id } = row
+        const onHandQuantity = parseFloat(row.on_hand_quantity)
+        const quantityInTransit = parseFloat(row.quantity_in_transit)
+        const quantityToSet = parseFloat(row.quantity)
+        if (recordsGroup[product_id]) {
+          const newQuantity = recordsGroup[product_id].totalQuantityToSet + quantityToSet
+          const pickedQty = onHandQuantity - quantityInTransit - newQuantity
+          recordsGroup[product_id].totalQuantityToSet = newQuantity
+          recordsGroup[product_id].pickedQuantity = pickedQty
         } else {
-          recordsGroup[product] = {
-            ...r,
-            on_hand_quantity: on_hand_quantity,
-            quantity: quantity
+          const sequence = (Object.keys(recordsGroup).length + 1) * 10
+          const pickedQty = onHandQuantity - quantityInTransit - quantityToSet
+          recordsGroup[product_id] = {
+            ...row,
+            totalQuantityToSet: quantityToSet,
+            pickedQuantity: pickedQty,
+            sequence: sequence
           }
         }
       })
-      const resultado = Object.values(recordsGroup).map(product => {
-        const pickedQty = product.on_hand_quantity - product.quantity
-        return {
-          ...product,
-          pickedQuantity: pickedQty
-        }
-      })
-      return resultado
+
+      const productsList = Object.values(recordsGroup)
+        .sort((a, b) => {
+          return a.sequence > b.sequence
+        })
+      return productsList
     })
 
     return {
@@ -173,3 +193,14 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss">
+.list-products-table {
+  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
+    padding: 2px !important
+  }
+  // .el-input--medium .el-input__inner{
+  //   height: 25px !important
+  // }
+}
+</style>
