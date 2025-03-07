@@ -233,7 +233,7 @@ export function requesListDocumentLines({
   sales_region_id,
   sales_representative_id,
   document_type_id,
-  recordsId
+  header_ids
 }) {
   const params = new URLSearchParams()
   params.append('organization_id', organization_id)
@@ -241,12 +241,12 @@ export function requesListDocumentLines({
   params.append('sales_region_id', sales_region_id)
   params.append('sales_representative_id', sales_representative_id)
   params.append('document_type_id', document_type_id)
-  if (!isEmptyValue(recordsId)) {
-    recordsId.forEach((id) => {
+  if (!isEmptyValue(header_ids)) {
+    header_ids.forEach((id) => {
       params.append('header_ids', id)
     })
   } else {
-    params.append('header_ids', recordsId)
+    params.append('header_ids', header_ids)
   }
   return request({
     url: `/forms/out-bound-orders/documents/${movement_type}/lines`,

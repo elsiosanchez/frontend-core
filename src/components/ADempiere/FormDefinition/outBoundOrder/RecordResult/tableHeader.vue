@@ -17,11 +17,11 @@
 -->
 
 <template>
-  <div>
+  <div class="list-headers-table">
     <el-table
-      ref="listOrderTable"
+      ref="headerTable"
       v-loading="isLoading"
-      class="list-order-table"
+      class="headers-table"
       sise="mini"
       height="25vh"
       :data="records"
@@ -155,6 +155,7 @@
         width="110"
       />
       -->
+
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.header.weight')"
@@ -162,7 +163,7 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.weight < 0 }">
             {{ formatQuantity({ value: scope.row.weight }) }}
           </span>
         </template>
@@ -175,7 +176,7 @@
         width="100"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.volume < 0 }">
             {{ formatQuantity({ value: scope.row.volume }) }}
           </span>
         </template>
@@ -186,7 +187,9 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed, ref, watch, nextTick } from '@vue/composition-api'
+import {
+  defineComponent, computed, ref, onMounted
+} from '@vue/composition-api'
 
 // Components and Mixins
 import CopyClipboard from '@/components/ADempiere/CopyClipboard'
@@ -209,7 +212,7 @@ export default defineComponent({
   },
 
   setup() {
-    const listOrderTable = ref()
+    const headerTable = ref(null)
 
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocument
@@ -254,22 +257,28 @@ export default defineComponent({
       }
     }
 
-    watch(records, (newRecords) => {
-      const selectedRecords = store.getters.getRecordsId
-      if (selectedRecords && selectedRecords.length > 0) {
-        nextTick(() => {
-          selectedRecords.forEach(row => {
-            const record = newRecords.find(r => r.id === row)
-            if (record) {
-              listOrderTable.value.toggleRowSelection(record, true)
-            }
-          })
-        })
+    function toggleSelection() {
+      if (isEmptyValue(headerTable.value)) {
+        return
       }
-    }, { deep: true })
+      headerTable.value.clearSelection()
+      const selectedRecords = store.getters.getHeaderRecordsId
+      if (isEmptyValue(selectedRecords)) {
+        return
+      }
+      records.value.forEach(row => {
+        if (selectedRecords.includes(row.id)) {
+          headerTable.value.toggleRowSelection(row, true)
+        }
+      })
+    }
+
+    onMounted(() => {
+      toggleSelection()
+    })
 
     return {
-      listOrderTable,
+      headerTable,
       //
       isLoading,
       records,
@@ -283,8 +292,10 @@ export default defineComponent({
 })
 </script>
 
-<style>
-.list-order-table  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
-  padding: 0px !important
+<style lang="scss">
+.list-headers-table {
+  .th.el-table__cell.is-leaf, .el-table td.el-table__cell {
+    padding: 0px !important
+  }
 }
 </style>

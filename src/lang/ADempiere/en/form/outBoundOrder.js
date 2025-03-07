@@ -31,7 +31,7 @@ const OutBoundOrder = {
     warehouse: 'Warehouse',
     salesRegion: 'Sales Region',
     salesRepresentative: 'Sales Representative',
-    salesOrder: 'Sales order',
+    salesOrder: 'Sales Order',
     distributionOrder: 'Distribution Order'
   },
   header: {
@@ -78,7 +78,7 @@ const OutBoundOrder = {
     quantityInTransit: 'Qty In Transit',
     onHandQuantity: 'On Hand Quantity',
     quantity: 'Quantity',
-    pickedQty: 'Picked Qty'
+    pickedQuantity: 'Picked Qty'
   },
   process: {
     documentDate: 'Document Date',

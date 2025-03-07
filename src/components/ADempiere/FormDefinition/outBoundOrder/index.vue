@@ -183,7 +183,7 @@ export default defineComponent({
     })
 
     const recordsId = computed(() => {
-      return store.getters.getRecordsId
+      return store.getters.getHeaderRecordsId
     })
 
     const isLoadingProcess = computed(() => {
@@ -228,19 +228,19 @@ export default defineComponent({
         salesRepresentativeId,
         documentTypeId
       })
-      let ids = -1
-      if (!isEmptyValue(recordsId.value)) {
-        ids = recordsId.value
+
+      const ids = recordsId.value
+      if (!isEmptyValue(ids)) {
+        store.dispatch('searchListDocumentLine', {
+          organizationId,
+          movementTypeId: movementType,
+          warehouseId,
+          recordsId: ids,
+          salesRegionId,
+          salesRepresentativeId,
+          documentTypeId
+        })
       }
-      store.dispatch('searchListDocumentLine', {
-        organizationId,
-        movementTypeId: movementType,
-        warehouseId,
-        recordsId: ids,
-        salesRegionId,
-        salesRepresentativeId,
-        documentTypeId
-      })
     }
 
     function nextStep(step) {

@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <div style="display: contents; height: 100% !important">
+  <div style="display: contents; height: 100% !important" class="result-step">
     <div style="height: 90% !important;">
       <el-collapse v-model="activeNames">
         <el-collapse-item name="header">
@@ -86,3 +86,11 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss">
+.result-step {
+  .el-collapse-item__content {
+    padding-bottom: 10px;
+  }
+}
+</style>

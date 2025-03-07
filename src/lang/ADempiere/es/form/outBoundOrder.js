@@ -31,7 +31,7 @@ const OutBoundOrder = {
     warehouse: 'Almacén',
     salesRegion: 'Región de Ventas',
     salesRepresentative: 'Representante de Ventas',
-    order: 'Orden de Venta',
+    salesOrder: 'Orden de Venta',
     distributionOrder: 'Orden de Distribución'
   },
   header: {
@@ -78,13 +78,13 @@ const OutBoundOrder = {
     quantityInTransit: 'Cantidad en tránsito',
     onHandQuantity: 'Cantidad Disponible',
     quantity: 'Cantidad',
-    pickedQty: 'Cantidad de Recolección'
+    pickedQuantity: 'Cantidad de Recolección'
   },
   process: {
     documentDate: 'Fecha del Documento',
     shipDate: 'Fecha de Envío',
     documentAction: 'Acción del Documento',
-    locator: 'Localizador',
+    locator: 'Ubicación',
     targetDocumentType: 'Tipo de Documento de Destino',
     deliveryRule: 'Regla de Entrega',
     deliveryVia: 'Vía de Entrega',

@@ -76,7 +76,7 @@
         width="160"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
           </span>
         </template>
@@ -89,7 +89,7 @@
         width="160"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity_in_transit < 0 }">
             {{ formatQuantity({ value: scope.row.quantity_in_transit }) }}
           </span>
         </template>
@@ -102,21 +102,21 @@
         width="160"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity < 0 }">
             {{ formatQuantity({ value: scope.row.quantity }) }}
           </span>
         </template>
       </el-table-column>
 
       <el-table-column
-        prop="pickedQty"
-        :label="$t('form.outBoundOrder.productInfo.pickedQty')"
+        prop="pickedQuantity"
+        :label="$t('form.outBoundOrder.productInfo.pickedQuantity')"
         align="left"
         width="160"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
-            {{ formatQuantity({ value: scope.row.pickedQty }) }}
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity_in_transit < 0 }">
+            {{ formatQuantity({ value: scope.row.pickedQuantity }) }}
           </span>
         </template>
       </el-table-column>
@@ -159,7 +159,7 @@ export default defineComponent({
         const pickedQty = product.on_hand_quantity - product.quantity
         return {
           ...product,
-          pickedQty: pickedQty
+          pickedQuantity: pickedQty
         }
       })
       return resultado

@@ -31,6 +31,7 @@ import {
 
 // Utils and Helper Methods
 import { showNotification } from '@/utils/ADempiere/notification.js'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 const initState = {
   listDocument: [],
@@ -189,6 +190,12 @@ const OutBoundOrder = {
     }) {
       return new Promise(resolve => {
         commit('setIsLoadingDocumentList', true)
+        if (isEmptyValue(recordsId)) {
+          commit('setListDocumentList', [])
+          commit('setRecordsId', recordsId)
+          commit('setIsLoadingDocumentList', false)
+          return
+        }
         requesListDocumentLines({
           movement_type: movementTypeId,
           organization_id: organizationId,
@@ -196,7 +203,7 @@ const OutBoundOrder = {
           sales_region_id: salesRegionId,
           sales_representative_id: salesRepresentativeId,
           document_type_id: documentTypeId,
-          recordsId
+          header_ids: recordsId
         })
           .then(response => {
             const { records } = response
@@ -280,7 +287,7 @@ const OutBoundOrder = {
     getIsLoadingListDocumentLine: (state) => {
       return state.isLoadingDocumentLines
     },
-    getRecordsId: (state) => {
+    getHeaderRecordsId: (state) => {
       return state.recordsId
     },
     getRecordsSelection: (state) => {

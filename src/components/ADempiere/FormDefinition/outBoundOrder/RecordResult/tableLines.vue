@@ -17,16 +17,16 @@
 -->
 
 <template>
-  <div>
+  <div class="list-lines-table">
     <el-table
-      ref="listSelectTable"
+      ref="lineTable"
       v-loading="isLoading"
-      class="list-select-table"
+      class="lines-table"
       sise="mini"
       :height="tableHeigth"
       :data="records"
       border
-      style="width: 100%; height: 85%"
+      style="width: 100%;"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
       @select="selectionOrder"
@@ -58,7 +58,7 @@
               <p
                 slot="reference"
                 type="text"
-                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 14px;font-size: 14px;margin: 0px;"
+                style="color: #606266;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;line-height: 15px;font-size: 14px;margin: 0px;"
               >
                 {{ scope.row.product }}
               </p>
@@ -81,7 +81,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
           </span>
         </template>
@@ -103,7 +103,7 @@
               @input="handleQuantityChange(scope.row)"
             />
           </span>
-          <span v-else>
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity < 0 }">
             {{ scope.row.quantity }}
           </span>
         </template>
@@ -123,7 +123,7 @@
         width="90"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.weight < 0 }">
             {{ formatQuantity({ value: scope.row.weight }) }}
           </span>
         </template>
@@ -136,7 +136,7 @@
         width="90"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.volume < 0 }">
             {{ formatQuantity({ value: scope.row.volume }) }}
           </span>
         </template>
@@ -158,7 +158,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.ordered_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.ordered_quantity }) }}
           </span>
         </template>
@@ -171,7 +171,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.reserved_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.reserved_quantity }) }}
           </span>
         </template>
@@ -184,7 +184,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity_invoiced < 0 }">
             {{ formatQuantity({ value: scope.row.quantity_invoiced }) }}
           </span>
         </template>
@@ -197,7 +197,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.delivered_quantity < 0 }">
             {{ formatQuantity({ value: scope.row.delivered_quantity }) }}
           </span>
         </template>
@@ -210,7 +210,7 @@
         width="140"
       >
         <template slot-scope="scope">
-          <span class="cell-align-right">
+          <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.quantity_in_transit < 0 }">
             {{ formatQuantity({ value: scope.row.quantity_in_transit }) }}
           </span>
         </template>
@@ -247,7 +247,7 @@ export default defineComponent({
 
   setup(props) {
     const activateField = ref({})
-    const listSelectTable = ref()
+    const lineTable = ref()
 
     const isLoading = computed(() => {
       return store.getters.getIsLoadingListDocumentLine
@@ -261,7 +261,7 @@ export default defineComponent({
       if (!props.isExpandHeader) {
         return '58vh'
       }
-      return '25vh'
+      return '27vh'
     })
 
     function selectionOrder(selection) {
@@ -301,7 +301,7 @@ export default defineComponent({
             const record = newRecords.find(r => r.id === row.id)
             if (record) {
               newActivateField[record.id] = true
-              listSelectTable.value.toggleRowSelection(record, true)
+              lineTable.value.toggleRowSelection(record, true)
             }
           })
           activateField.value = newActivateField
@@ -314,7 +314,7 @@ export default defineComponent({
     return {
       // Ref
       activateField,
-      listSelectTable,
+      lineTable,
       // Computed
       isLoading,
       records,
@@ -329,11 +329,13 @@ export default defineComponent({
 })
 </script>
 
-<style>
-.list-select-table  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
-  padding: 0px !important
-}
-.list-select-table .el-input--medium .el-input__inner{
-  height: 25px !important
+<style lang="scss">
+.list-lines-table {
+  th.el-table__cell.is-leaf, .el-table td.el-table__cell {
+    padding: 0px !important
+  }
+  // .el-input--medium .el-input__inner{
+  //   height: 25px !important
+  // }
 }
 </style>
