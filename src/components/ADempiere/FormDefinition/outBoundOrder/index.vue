@@ -257,7 +257,7 @@ export default defineComponent({
         let hasError = false
 
         recordsSelecion.value.forEach(record => {
-          if (record.delivery_rule_value !== 'F' && record.quantity > record.on_hand_quantity) {
+          if ((record.delivery_rule_value !== 'F' || record.delivery_rule_value !== 'M') && record.quantity > record.on_hand_quantity) {
             const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.header.documentNo') + ': ' + record.document_no
             showNotification({
               title: lang.t('notifications.error'),
