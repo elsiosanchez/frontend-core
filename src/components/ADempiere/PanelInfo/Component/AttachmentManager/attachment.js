@@ -216,15 +216,21 @@ export default defineComponent({
         linkImage.click()
         return
       }
+      if (!isEmptyValue(file.content_type) && file.content_type.includes('pdf')) {
+        const response = await fetch(imageURL)
+        const blob = await response.blob()
+        const urlBlob = window.URL.createObjectURL(blob)
+        const linkPDF = document.createElement('a')
+        linkPDF.href = urlBlob
+        linkPDF.download = file.fullName
+        linkPDF.click()
+        window.URL.revokeObjectURL(urlBlob)
+        return
+      }
       const link = document.createElement('a')
       link.href = imageURL
       link.download = file.fullName
       link.click()
-      // const file = document.createElement('a')
-      // file.href = imageURL
-      // file.download = `${file.name}`
-      // file.target = '_blank'
-      // file.click()
       return
     }
 
