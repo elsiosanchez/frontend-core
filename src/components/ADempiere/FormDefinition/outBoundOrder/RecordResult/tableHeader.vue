@@ -235,6 +235,7 @@ export default defineComponent({
         const recordsId = selection.map(data => data.id)
         store.dispatch('searchListDocumentLine', {
           organizationId,
+          movementTypeId: movementType,
           recordsId: recordsId
         })
       } else {
