@@ -163,7 +163,7 @@ export default defineComponent({
   },
 
   setup(props, { refs }) {
-    const bachtEntry = ref(false)
+    const bachtEntry = ref(true)
     const isLoadingPanel = ref(false)
     const attributesBachtEntry = ref({})
     const fieldsListBatchEntry = ref([])
