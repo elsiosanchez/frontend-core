@@ -27,7 +27,13 @@
       @command="handleSelectTemplate"
     >
       <span class="el-dropdown-link">
-        {{ $t('form.pos.order.BusinessPartnerCreate.partnerTemplate') }}<i class="el-icon-arrow-down el-icon--right" />
+        {{ $t('form.pos.order.BusinessPartnerCreate.partnerTemplate') }}
+        <b v-if="!isEmptyValue(currentTemplates)">
+          {{ '(' + currentTemplates + ')' }}
+        </b>
+        <i
+          class="el-icon-arrow-down el-icon--right"
+        />
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
@@ -35,7 +41,10 @@
           :key="index"
           :command="template"
         >
-          <i v-if="template.id === customerTemplate" class="el-icon-d-arrow-right" /> {{ template.name }}
+          <i
+            v-if="template.id === customerTemplate"
+            class="el-icon-d-arrow-right"
+          /> {{ template.name }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -120,7 +129,6 @@ export default defineComponent({
     const activeNames = ref(['1', '2'])
     const isVisibleAddress = ref(false)
     const copyShippingAddress = ref(true)
-    // const customerTemplate = ref({})
     const isLoading = ref(false)
 
     // Computed
@@ -244,6 +252,14 @@ export default defineComponent({
       return store.getters.getCustomerTemplates
     })
 
+    const currentTemplates = computed(() => {
+      if (listTemplate.value) {
+        const template = listTemplate.value.find(template => template.id === customerTemplate.value)
+        if (template) return template.name
+      }
+      return ''
+    })
+
     // Methods
 
     /**
@@ -285,13 +301,14 @@ export default defineComponent({
       // Ref
       isLoading,
       activeNames,
-      customerTemplate,
       isVisibleAddress,
       copyShippingAddress,
       // Computed
       addresses,
       isDisabled,
       listTemplate,
+      currentTemplates,
+      customerTemplate,
       // Methods
       close,
       handleSelectTemplate,
