@@ -74,7 +74,6 @@ export default defineComponent({
       },
       // setter
       set(newValue) {
-        console.log()
         store.commit('updateAttributeCriteriaGenerateOrder', {
           attribute: 'documentActionId',
           value: newValue
@@ -121,6 +120,7 @@ export default defineComponent({
           optionsList.value = records
         })
     }
+    loadRecords(true)
     return {
       // Computeds
       value,

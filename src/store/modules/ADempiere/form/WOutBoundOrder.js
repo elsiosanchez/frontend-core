@@ -64,7 +64,7 @@ const initState = {
     shipperId: -1,
     // process
     listDocumentAction: [],
-    documentActionId: '',
+    documentActionId: 'CO',
     listLocator: [],
     locatorId: -1,
     shipDate: new Date(),
