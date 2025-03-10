@@ -19,7 +19,9 @@
 <template>
   <div style="display: contents; height: 100% !important;">
     <div style="height: 100% !important;">
-      <el-card>
+      <el-card
+        :body-style="{ padding: '20px' }"
+      >
         <el-form
           :inline="true"
           label-position="top"
@@ -79,9 +81,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped>
-.form-base .el-form-item {
-  margin-bottom: 0px !important
-}
-</style>

@@ -203,6 +203,57 @@ export function requestListLocators({
   })
 }
 
+// Filters Generate Freight Order
+
+export function requestListFreightDocumentTypes({
+  pageToken,
+  searchValue,
+  pageSize = RECORD_ROWS_BY_LIST
+}) {
+  return request({
+    url: `/forms/out-bound-orders/freight-document-types`,
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      search_value: searchValue
+    }
+  })
+}
+
+export function requestListVehicles({
+  pageToken,
+  searchValue,
+  pageSize = RECORD_ROWS_BY_LIST,
+  shipper_id
+}) {
+  return request({
+    url: `/forms/out-bound-orders/shippers/${shipper_id}/vehicles`,
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      search_value: searchValue
+    }
+  })
+}
+
+export function requestListDrivers({
+  pageToken,
+  searchValue,
+  pageSize = RECORD_ROWS_BY_LIST
+}) {
+  return request({
+    url: `/forms/out-bound-orders/drivers`,
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      search_value: searchValue
+    }
+  })
+}
+
 // Table
 
 export function requestListDocuments({
@@ -257,7 +308,11 @@ export function requestLoadOrder({
   document_date,
   shipment_date,
   movement_type,
-  orderLineRequest
+  orderLineRequest,
+  is_generate_freight_order,
+  vehicle_id,
+  driver_id,
+  freight_document_type_id
 }) {
   return request({
     url: `/forms/out-bound-orders/load-order/${movement_type}`,
@@ -272,7 +327,11 @@ export function requestLoadOrder({
       document_date,
       shipment_date,
       movement_type,
-      lines: orderLineRequest
+      lines: orderLineRequest,
+      is_generate_freight_order,
+      vehicle_id,
+      driver_id,
+      freight_document_type_id
     }
   })
 }

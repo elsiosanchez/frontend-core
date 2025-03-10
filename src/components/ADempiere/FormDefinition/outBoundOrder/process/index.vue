@@ -47,9 +47,27 @@
             <el-col :span="6">
               <delivery-via-field />
             </el-col>
-            <el-col :span="6">
-              <shipper-field />
+            <el-col
+              v-if="isComplete"
+              :span="6"
+            >
+              <charter-order-field />
             </el-col>
+            <fieldset v-if="isCharterOrder">
+              <legend>{{ $t('form.outBoundOrder.group.title') }}</legend>
+              <el-col :span="6">
+                <shipper-field />
+              </el-col>
+              <el-col :span="6">
+                <driver-field />
+              </el-col>
+              <el-col :span="6">
+                <vehicles-field />
+              </el-col>
+              <el-col :span="6">
+                <freight-document-types-field />
+              </el-col>
+            </fieldset>
           </el-row>
         </el-form>
       </el-card>
@@ -58,8 +76,10 @@
 </template>
 
 <script>
+import store from '@/store'
 import {
-  defineComponent
+  defineComponent,
+  computed
 } from '@vue/composition-api'
 
 // Components and Mixins
@@ -71,7 +91,10 @@ import TargetDocumentTypeField from '@/components/ADempiere/FormDefinition/outBo
 import DeliveryRuleField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/deliveryRuleField.vue'
 import ShipperField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/shipperField.vue'
 import DeliveryViaField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/deliveryViaField.vue'
-
+import DriverField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/driverField.vue'
+import VehiclesField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/vehiclesField.vue'
+import CharterOrderField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/charterOrderField.vue'
+import FreightDocumentTypesField from '@/components/ADempiere/FormDefinition/outBoundOrder/process/freightDocumentTypesField.vue'
 export default defineComponent({
   name: 'Process',
 
@@ -83,7 +106,25 @@ export default defineComponent({
     ShipperField,
     TargetDocumentTypeField,
     DeliveryRuleField,
-    DeliveryViaField
+    DeliveryViaField,
+    DriverField,
+    VehiclesField,
+    CharterOrderField,
+    FreightDocumentTypesField
+  },
+  setup() {
+    const isCharterOrder = computed(() => {
+      const { charterOrder } = store.getters.getSearchFilterGenerateOrder
+      return charterOrder
+    })
+    const isComplete = computed(() => {
+      const { documentActionId } = store.getters.getSearchFilterGenerateOrder
+      return documentActionId === 'CO'
+    })
+    return {
+      isCharterOrder,
+      isComplete
+    }
   }
 })
 </script>

@@ -21,7 +21,7 @@
     style="width: 100%;"
   >
     <template slot="label">
-      {{ $t('form.outBoundOrder.process.documentAction') }}
+      {{ $t('form.outBoundOrder.process.car') }}
     </template>
     <el-select
       v-model="value"
@@ -30,6 +30,7 @@
       filterable
       :default-first-option="true"
       remote
+      :disabled="isEmptyValue(shipper)"
       :remote-method="remoteSearchCurrencies"
       @visible-change="loadRecords"
     >
@@ -37,8 +38,8 @@
         :current-value="value"
       />
       <el-option
-        v-for="item in optionsList"
-        :key="item.uuid"
+        v-for="(item, index) in optionsList"
+        :key="index"
         :label="item.label"
         :value="item.id"
       />
@@ -52,14 +53,17 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import {
-  requestListDocumentActions
+  requestListVehicles
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
-  name: 'DocumentActionField',
+  name: 'DeliveryRuleField',
 
   components: {
     EmptyOptionSelect
@@ -69,44 +73,40 @@ export default defineComponent({
     const value = computed({
       // getter
       get() {
-        const { documentActionId } = store.getters.getSearchFilterGenerateOrder
-        return documentActionId
+        const { vehiclesId } = store.getters.getSearchFilterGenerateOrder
+        return vehiclesId
       },
       // setter
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
-          attribute: 'documentActionId',
+          attribute: 'vehiclesId',
           value: newValue
         })
-        if (newValue !== 'CO') {
-          store.commit('clearFiltersFreightOrder')
-        }
       }
+    })
+    const shipper = computed(() => {
+      const { shipperId } = store.getters.getSearchFilterGenerateOrder
+      if (isEmptyValue(shipperId) || shipperId <= 0) {
+        return -1
+      }
+      return shipperId
     })
     const optionsList = computed({
       get() {
-        const { listDocumentAction } = store.getters.getSearchFilterGenerateOrder
-        if (!isEmptyValue(listDocumentAction)) {
-          if (listDocumentAction.some(item => item.label === undefined)) {
-            const listFormData = listDocumentAction.map(item => {
-              return {
-                id: item.values.KeyColumn,
-                label: item.values.DisplayColumn,
-                uuid: item.values.UUID
-              }
-            })
-            return listFormData
-          }
+        const { listVehicles } = store.getters.getSearchFilterGenerateOrder
+        if (!isEmptyValue(listVehicles)) {
+          return listVehicles
         }
-        return listDocumentAction
+        return []
       },
       set(newValue) {
         store.commit('updateAttributeCriteriaGenerateOrder', {
-          attribute: 'listDocumentAction',
+          attribute: 'listVehicles',
           value: newValue
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -115,19 +115,27 @@ export default defineComponent({
       if (!isFind) {
         return
       }
-      requestListDocumentActions({
-        searchValue
+      requestListVehicles({
+        searchValue,
+        shipper_id: shipper.value
       })
         .then(response => {
           const { records } = response
-          optionsList.value = records
+          optionsList.value = records.map(item => {
+            return {
+              id: item.id,
+              label: item.values.DisplayColumn,
+              uuid: item.values.UUID
+            }
+          })
         })
     }
-    loadRecords(true)
+
     return {
       // Computeds
       value,
       optionsList,
+      shipper,
       // Methods
       loadRecords,
       remoteSearchCurrencies

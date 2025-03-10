@@ -88,7 +88,16 @@ const OutBoundOrder = {
     targetDocumentType: 'Tipo de Documento de Destino',
     deliveryRule: 'Regla de Entrega',
     deliveryVia: 'Vía de Entrega',
-    shipper: 'Transportista'
+    shipper: 'Transportista',
+    driver: 'Conductor',
+    car: 'Vehículo',
+    charterOrder: 'Generar Orden de Flete',
+    yes: 'Si',
+    no: 'No',
+    freightDocumentTypes: 'Tipos de Documentos de Carga'
+  },
+  group: {
+    title: 'Orden de Flete'
   }
 }
 

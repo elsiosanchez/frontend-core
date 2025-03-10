@@ -281,8 +281,8 @@ export default defineComponent({
 
       const {
         movementTypeId, organizationId, warehouseId, targetDocumentTypeId,
-        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId
-      } = filters
+        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId,
+        vehiclesId, driverId, charterOrder, freightDocumentTypesId } = filters
       const orderLineRequest = lineSelect.map(data => {
         return {
           id: data.id,
@@ -311,7 +311,11 @@ export default defineComponent({
         document_date: documentDate,
         shipment_date: shipDate,
         movement_type: movementType,
-        orderLineRequest
+        orderLineRequest,
+        is_generate_freight_order: charterOrder,
+        vehicle_id: vehiclesId,
+        driver_id: driverId,
+        freight_document_type_id: freightDocumentTypesId
       })
     }
 

@@ -68,7 +68,14 @@ const initState = {
     listLocator: [],
     locatorId: -1,
     shipDate: new Date(),
-    documentDate: new Date()
+    documentDate: new Date(),
+    listVehicles: [],
+    vehiclesId: -1,
+    listDriver: [],
+    driverId: -1,
+    charterOrder: false,
+    freightDocumentTypesId: -1,
+    listfreightDocumentTypes: []
   }
 }
 
@@ -105,12 +112,30 @@ const OutBoundOrder = {
         listShipper: [],
         shipperId: -1,
         listDocumentAction: [],
-        documentActionId: '',
+        documentActionId: 'CO',
         listLocator: [],
         locatorId: -1,
         shipDate: new Date(),
-        documentDate: new Date()
+        documentDate: new Date(),
+        listVehicles: [],
+        vehiclesId: -1,
+        listDriver: [],
+        driverId: -1,
+        charterOrder: false,
+        freightDocumentTypesId: -1,
+        listfreightDocumentTypes: []
       }
+    },
+    clearFiltersFreightOrder(state) {
+      state.searchCriteria.listCar = []
+      state.searchCriteria.vehiclesId = ''
+      state.searchCriteria.listDriver = []
+      state.searchCriteria.driverId = ''
+      state.searchCriteria.charterOrder = false
+      state.searchCriteria.freightDocumentTypesId = ''
+      state.searchCriteria.listfreightDocumentTypes = []
+      state.searchCriteria.listShipper = []
+      state.searchCriteria.shipperId = ''
     },
     updateAttributeCriteriaGenerateOrder(state, {
       attribute,
@@ -224,7 +249,11 @@ const OutBoundOrder = {
       document_date,
       shipment_date,
       movement_type,
-      orderLineRequest
+      orderLineRequest,
+      is_generate_freight_order,
+      vehicle_id,
+      driver_id,
+      freight_document_type_id
     }) {
       return new Promise(resolve => {
         commit('setIsLoadingProcess', true)
@@ -238,12 +267,20 @@ const OutBoundOrder = {
           document_date,
           shipment_date,
           movement_type,
-          orderLineRequest
+          orderLineRequest,
+          is_generate_freight_order,
+          vehicle_id,
+          driver_id,
+          freight_document_type_id
         })
           .then(response => {
+            let messageFreight = ''
+            if (!isEmptyValue(response.freight_message)) {
+              messageFreight = response.freight_message
+            }
             showNotification({
               title: lang.t('notifications.completed'),
-              message: response.message,
+              message: response.message + ' ' + messageFreight,
               type: 'success'
             })
             commit('clearOutputOrder')
