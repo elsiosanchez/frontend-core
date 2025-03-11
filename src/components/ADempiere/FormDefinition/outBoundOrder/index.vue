@@ -60,6 +60,13 @@
           class="button-base-icon"
           icon="el-icon-close"
           :disabled="isLoadingProcess"
+          @click="reset()"
+        />
+        <el-button
+          v-show="currentStep >= 1"
+          type="primary"
+          class="button-base-icon"
+          icon="el-icon-arrow-left"
           @click="currentStep--"
         />
         <el-button
@@ -83,7 +90,7 @@
     </div>
     <div v-show="currentStep <= 0" style="height: 14% !important;text-align: end;padding: 0px 15px;">
       <el-button
-        type="success"
+        type="primary"
         class="button-base-icon"
         icon="el-icon-arrow-right"
         :disabled="!isDisabled"
@@ -317,7 +324,9 @@ export default defineComponent({
         freight_document_type_id: freightDocumentTypesId
       })
     }
-
+    function reset() {
+      store.commit('clearOutputOrder')
+    }
     return {
       // Refs
       stepList,
@@ -334,7 +343,8 @@ export default defineComponent({
       nextStep,
       refreshRecords,
       validateNextStep,
-      runProcess
+      runProcess,
+      reset
     }
   }
 })

@@ -83,6 +83,12 @@ const OutBoundOrder = {
   state: initState,
   mutations: {
     clearOutputOrder(state) {
+      const preservedValues = {
+        listOrganization: state.searchCriteria.listOrganization,
+        organizationId: state.searchCriteria.organizationId,
+        listWarehouse: state.searchCriteria.listWarehouse,
+        warehouseId: state.searchCriteria.warehouseId
+      }
       state.listDocument = []
       state.isLoadingDocument = false
       state.listDocumentLines = []
@@ -92,37 +98,37 @@ const OutBoundOrder = {
       state.steps = 0
       state.isLoadingProcess = false
       state.searchCriteria = {
-        listOrganization: [],
-        organizationId: null,
+        listOrganization: preservedValues.listOrganization,
+        organizationId: preservedValues.organizationId,
         movementTypeId: MOVEMENT_TYPE_SALES_ORDER,
         listDocumentType: [],
-        documentTypeId: -1,
-        listWarehouse: [],
-        warehouseId: null,
+        documentTypeId: null,
+        listWarehouse: preservedValues.listWarehouse,
+        warehouseId: preservedValues.warehouseId,
         listSalesRegion: [],
-        salesRegionId: -1,
+        salesRegionId: null,
         listSalesRepresentative: [],
-        salesRepresentativeId: -1,
+        salesRepresentativeId: null,
         listTargetDocumentType: [],
-        targetDocumentTypeId: -1,
+        targetDocumentTypeId: null,
         listDeliveryRule: [],
-        deliveryRuleId: -1,
+        deliveryRuleId: null,
         listDeliveryVia: [],
-        deliveryViaId: -1,
+        deliveryViaId: null,
         listShipper: [],
-        shipperId: -1,
+        shipperId: null,
         listDocumentAction: [],
         documentActionId: 'CO',
         listLocator: [],
-        locatorId: -1,
+        locatorId: null,
         shipDate: new Date(),
         documentDate: new Date(),
         listVehicles: [],
-        vehiclesId: -1,
+        vehiclesId: null,
         listDriver: [],
-        driverId: -1,
+        driverId: null,
         charterOrder: false,
-        freightDocumentTypesId: -1,
+        freightDocumentTypesId: null,
         listfreightDocumentTypes: []
       }
     },
