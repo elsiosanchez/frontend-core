@@ -207,10 +207,10 @@ export default defineComponent({
     })
 
     function refreshRecords() {
-      searchRecords()
+      searchRecords(true)
     }
 
-    function searchRecords() {
+    function searchRecords(refresh = false) {
       const {
         organizationId, movementTypeId, warehouseId,
         salesRegionId, salesRepresentativeId, documentTypeId
@@ -228,14 +228,13 @@ export default defineComponent({
         salesRepresentativeId,
         documentTypeId
       })
-
       const ids = recordsId.value
       if (!isEmptyValue(ids)) {
         store.dispatch('searchListDocumentLine', {
           organizationId,
           movementTypeId: movementType,
           warehouseId,
-          recordsId: ids,
+          recordsId: !refresh ? ids : [],
           salesRegionId,
           salesRepresentativeId,
           documentTypeId
