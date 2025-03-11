@@ -19,6 +19,7 @@
 const OutBoundOrder = {
   title: 'Generate Output Order',
   error: 'The Quantity Cannot be Greater than the Quantity Available.',
+  error2: 'The Quantity Cannot be Greater than the Quantity Ordered',
   step: {
     searchCriteria: 'Search Criteria',
     order: 'Order',

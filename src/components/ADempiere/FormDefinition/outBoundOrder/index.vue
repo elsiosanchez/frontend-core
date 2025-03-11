@@ -270,9 +270,19 @@ export default defineComponent({
       if (!isEmptyValue(recordsSelecion.value)) {
         disabledButton.value = true
         let hasError = false
-
         recordsSelecion.value.forEach(record => {
-          if ((record.delivery_rule_value !== 'F' || record.delivery_rule_value !== 'M') && record.quantity > record.on_hand_quantity) {
+          if (record.delivery_rule_value === 'F' || record.delivery_rule_value === 'M') {
+            return
+          }
+          if (record.quantity > record.ordered_quantity) {
+            const message = lang.t('form.outBoundOrder.error2') + ' ' + lang.t('form.outBoundOrder.header.documentNo') + ': ' + record.document_no
+            showNotification({
+              title: lang.t('notifications.error'),
+              message,
+              type: 'error'
+            })
+            hasError = true
+          } else if (record.quantity > record.on_hand_quantity) {
             const message = lang.t('form.outBoundOrder.error') + ' ' + lang.t('form.outBoundOrder.header.documentNo') + ': ' + record.document_no
             showNotification({
               title: lang.t('notifications.error'),

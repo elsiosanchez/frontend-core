@@ -19,6 +19,7 @@
 const OutBoundOrder = {
   title: 'Generar Orden de Salida',
   error: 'La Cantidad no Puede ser Mayor a la Cantidad Disponible',
+  error2: 'La Cantidad no Puede ser Mayor a la Cantidad Ordenada',
   step: {
     searchCriteria: 'Criterios de Búsqueda',
     order: 'Orden',
