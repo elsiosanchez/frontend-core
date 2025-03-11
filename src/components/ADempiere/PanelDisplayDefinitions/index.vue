@@ -30,6 +30,7 @@
         :button-close-panel="actionClose"
         :details-title="detailsTitle"
         :is-panel-right="isPanelRight"
+        :is-panel-window="isPanelWindow"
         :is-quick-entry="bachtEntry"
       >
         <template v-slot:footer-buttons>
@@ -41,7 +42,7 @@
             @click="actionClose('')"
           />
           <span
-            v-if="!isQuickEntry"
+            v-if="!isQuickEntry && !isPanelWindow"
             style="float: right;margin: 0px"
           >
             <b>
@@ -97,7 +98,11 @@ export default defineComponent({
     },
     typePanel: {
       type: String,
-      required: true
+      required: false
+    },
+    isPanelWindow: {
+      type: Boolean,
+      required: false
     },
     actionClose: {
       type: Function,

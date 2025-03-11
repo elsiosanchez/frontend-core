@@ -262,18 +262,26 @@ export default defineComponent({
     })
 
     const fieldList = computed(() => {
+      let fieldList
       if (
-        isEmptyValue(displayDefinitionMetadata.value) ||
-        isEmptyValue(displayDefinitionMetadata.value.fields)
+        !isEmptyValue(displayDefinitionMetadata.value) &&
+        !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        return []
+        fieldList = displayDefinitionMetadata.value.fields
+      } else {
+        fieldList = props.currentDisplyDefinitions.field_definitions
       }
-      return displayDefinitionMetadata.value.fields
-        .filter(field => field.is_displayed)
-        .map(field => ({
-          ...field,
-          is_show_components: false
-        }))
+      if (
+        !isEmptyValue(fieldList)
+      ) {
+        return fieldList
+          .filter(field => field.is_displayed)
+          .map(field => ({
+            ...field,
+            is_show_components: false
+          }))
+      }
+      return []
     })
 
     localFields.value = groupAndSortFields(fieldList.value)

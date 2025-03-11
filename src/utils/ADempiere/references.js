@@ -382,6 +382,12 @@ export const SUPPORTED_LOOKUPS = [
   SEARCH.id
 ]
 
+export const FIELDS_LIST_AVAILABLE = [
+  TABLE.id,
+  SEARCH.id,
+  TABLE_DIRECT.id
+]
+
 // Some helper methods
 export function isLookup(displayType) {
   return FIELDS_LOOKUP.includes(displayType)
@@ -390,6 +396,14 @@ export function isLookup(displayType) {
 // Some helper methods
 export function isSupportLookup(displayType) {
   return SUPPORTED_LOOKUPS.includes(displayType)
+}
+/**
+ * Function to know if the field is of type Search and is available for creation
+ * @param {Number} displayType
+ * @returns (true || false)
+ */
+export function isSearchAvailableToCreate(displayType) {
+  return FIELDS_LIST_AVAILABLE.includes(displayType)
 }
 
 /**

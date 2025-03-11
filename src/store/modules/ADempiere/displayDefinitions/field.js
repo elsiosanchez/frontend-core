@@ -60,10 +60,12 @@ const displayDefinitionField = {
     setCurrentTabPanelDefinition(state, {
       type,
       currentAttributes = {},
+      displyDefinitions = {},
       additionalAttributes = {}
     }) {
       state.currentTabDefinition = {
         type,
+        displyDefinitions,
         additionalAttributes,
         currentAttributes
       }
@@ -184,6 +186,7 @@ const displayDefinitionField = {
       commit('setCurrentTabPanelDefinition', {
         type,
         currentAttributes,
+        displyDefinitions,
         additionalAttributes
       })
       if (typeof recordId !== 'number') {

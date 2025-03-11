@@ -112,6 +112,7 @@ import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefini
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { IDENTIFIER_COLUMN_SUFFIX, DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 
 export default defineComponent({
@@ -148,6 +149,10 @@ export default defineComponent({
       required: false
     },
     isPanelRight: {
+      type: Boolean,
+      default: false
+    },
+    isPanelWindow: {
       type: Boolean,
       default: false
     },
@@ -201,11 +206,19 @@ export default defineComponent({
     })
 
     const fields = computed(() => {
+      let fieldList
       if (
         !isEmptyValue(displayDefinitionMetadata.value) &&
         !isEmptyValue(displayDefinitionMetadata.value.fields)
       ) {
-        return displayDefinitionMetadata.value.fields.filter(field => field.is_displayed && field.is_insert_record)
+        fieldList = displayDefinitionMetadata.value.fields
+      } else {
+        fieldList = props.currentDisplyDefinitions.field_definitions
+      }
+      if (
+        !isEmptyValue(fieldList)
+      ) {
+        return fieldList.filter(field => field.is_displayed && field.is_insert_record)
       }
       return []
     })
@@ -279,6 +292,15 @@ export default defineComponent({
         isBachtEntry: props.isQuickEntry,
         currentTab
       })
+        .then(response => {
+          if (props.isPanelWindow) {
+            setValueField({
+              displayValue: response.title,
+              columnName: props.currentDisplyDefinitions.table_name + IDENTIFIER_COLUMN_SUFFIX,
+              id: response.id
+            })
+          }
+        })
         .finally(() => {
           isLoading.value = false
           if (props.isQuickEntry) clearField(attributesBachtEntry.value)
@@ -326,6 +348,26 @@ export default defineComponent({
       } else if (quantityFields.length >= 4) {
         return 6
       }
+    }
+
+    function setValueField({
+      displayValue,
+      columnName,
+      id
+    }) {
+      const { containerUuid, parentUuid } = currentTab
+      store.commit('updateValueOfField', {
+        containerUuid,
+        columnName,
+        parentUuid,
+        value: id
+      })
+      store.commit('updateValueOfField', {
+        columnName: DISPLAY_COLUMN_PREFIX + columnName,
+        value: displayValue,
+        containerUuid,
+        parentUuid
+      })
     }
 
     const fieldsDisplay = ref([])

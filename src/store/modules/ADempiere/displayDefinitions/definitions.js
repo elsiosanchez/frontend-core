@@ -26,6 +26,7 @@ import {
 
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
 
 const initState = {
   displayTabDefinitions: {},
@@ -119,17 +120,33 @@ const displayTabDefinition = {
         })
           .then(response => {
             const { record_count } = response
+            let listDisplayDefinitions
             if (record_count > 0) {
               listDefinitions({
                 tableName
               })
                 .then(definition => {
                   const { records } = definition
+                  listDisplayDefinitions = records.map(definitions => {
+                    const field_definitions = definitions.field_definitions.map(field => {
+                      const { display_type } = field
+                      return {
+                        ...field,
+                        value: '',
+                        is_show_components: false,
+                        componentPath: evalutateTypeField(display_type).componentPath
+                      }
+                    })
+                    return {
+                      ...definitions,
+                      field_definitions
+                    }
+                  })
                   commit('setDisplayTabDefinition', {
                     tableName,
-                    listDefinitions: records
+                    listDefinitions: listDisplayDefinitions
                   })
-                  resolve(records)
+                  resolve(listDisplayDefinitions)
                 })
             }
           })

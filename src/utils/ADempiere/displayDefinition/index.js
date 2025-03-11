@@ -1098,7 +1098,7 @@ export const containerManagerFieldDefinition = {
             keyAttribute,
             isBachtEntry
           })
-          resolve()
+          resolve(response)
         })
         .finally(() => {
           resolve()

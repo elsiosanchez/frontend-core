@@ -38,7 +38,7 @@
       />
       <el-dropdown-menu slot="dropdown" :tabindex="tabIndex">
         <template
-          v-for="(option, key) in optionsList"
+          v-for="(option, key) in listAllOptions"
         >
           <el-dropdown-item
             v-if="option.enabled"
@@ -97,7 +97,7 @@
         </el-popover>
 
         <el-menu-item
-          v-for="(option, key) in optionsList"
+          v-for="(option, key) in listAllOptions"
           :key="key"
           :index="option.name"
         >
@@ -117,6 +117,24 @@
         :is-button="isButton"
       />
     </span>
+    <el-dialog
+      :visible.sync="isDialogoPanelDifinition"
+      custom-class="modal-display-definition"
+      :modal-append-to-body="true"
+      :append-to-body="true"
+      :modal="false"
+    >
+      <panel-display-definitions
+        :current-display-definition="currentDisplyDefinitions"
+        :container-manager="containerManager"
+        :parent-uuid="metadata.parentUuid"
+        :details-title="currentDisplyDefinitions.name"
+        :is-panel-right="false"
+        :is-panel-window="true"
+        :current-record="{ id: recordId }"
+        :action-close="closePanel"
+      />
+    </el-dialog>
   </div>
 </template>
 
@@ -128,23 +146,29 @@ import store from '@/store'
 // Components and Mixins
 import LabelField from './LabelField.vue'
 import LabelPopoverOption from './LabelPopoverOption.vue'
-
+import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
 // Utils and Helper Methods
 import {
-  // calculatorOptionItem,
-  infoOptionItem, logsOptionItem, hideThisField,
-  optionsListStandad,
-  documentStatusOptionItem, translateOptionItem,
-  refreshLookup, zoomInOptionItem
+  hideThisField, infoOptionItem,
+  actionsDisplayDefinitionsFields,
+  refreshLookup, zoomInOptionItem,
+  logsOptionItem, optionsListStandad,
+  translateOptionItem, documentStatusOptionItem
 } from '@/components/ADempiere/FieldDefinition/FieldOptions/fieldOptionsList.js'
-import { isSupportLookup } from '@/utils/ADempiere/references.js'
+import {
+  isSupportLookup,
+  isSearchAvailableToCreate
+} from '@/utils/ADempiere/references.js'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+// import { displayDefinitions } from '@/api/ADempiere/displayDefinition.ts'
+
 export default defineComponent({
   name: 'FieldOptions',
 
   components: {
     LabelField,
-    LabelPopoverOption
+    LabelPopoverOption,
+    PanelDisplayDefinitions
   },
   props: {
     metadata: {
@@ -162,6 +186,7 @@ export default defineComponent({
 
   setup(props, { root }) {
     const popoverOption = ref(null)
+    const listAllOptions = ref([])
 
     const isShowedFieldOption = computed({
       get() {
@@ -183,6 +208,15 @@ export default defineComponent({
     const optionColumnName = ref(root.$route.query.fieldColumnName)
     const zoom = ref(null)
     // focus element with tab key
+
+    const recordId = computed(() => {
+      return store.getters.getValueOfFieldOnContainer({
+        parentUuid: props.metadata.parentUuid,
+        containerUuid: props.metadata.containerUuid,
+        columnName: props.metadata.column_name
+      })
+    })
+
     const tabIndex = ref(9999)
 
     const isMobile = computed(() => {
@@ -323,6 +357,22 @@ export default defineComponent({
       return sortOptions(optionsList.concat(menuOptions))
     })
 
+    const isDialogoPanelDifinition = computed({
+      get: () => {
+        return store.getters.getShowPanel({
+          id: currentDisplyDefinitions.value.id
+        })
+      },
+      set: (value) => {
+        store.commit('setShowPanel', {
+          id: currentDisplyDefinitions.value.id,
+          show: value
+        })
+      }
+    })
+
+    const currentDisplyDefinitions = ref({})
+
     function searchZoom(field) {
       props.containerManager.searchFieldZoom({
         id: field.internal_id,
@@ -348,6 +398,29 @@ export default defineComponent({
           optionsList.value.unshift(zoomInOptionItem)
         }
       }
+    }
+
+    function addOptionsNewAndSee(field) {
+      const { display_type, referenceTableName } = field
+      if (isSearchAvailableToCreate(display_type)) {
+        store.dispatch('displayTabDefinition', {
+          tableName: referenceTableName
+        })
+          .then(response => {
+            store.commit('setCurrentTabDefinition', {
+              currentDefinition: response[0],
+              tableName: referenceTableName
+            })
+            response.forEach(element => {
+              listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
+              optionsList.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
+            })
+          })
+      }
+    }
+
+    function closePanel() {
+      isDialogoPanelDifinition.value = false
     }
 
     const openOptionField = computed({
@@ -393,12 +466,11 @@ export default defineComponent({
 
     const closePopover = () => {
       isShowedFieldOption.value = false
-      // store.commit('changeShowRigthPanel', false)
-      // store.commit('changeShowPopoverField', true)
     }
 
     const handleOpen = (key, keyPath) => {
       addOptionsZoom(props.metadata)
+      addOptionsNewAndSee(props.metadata)
       triggerMenu.value = 'hover'
     }
     const handleClose = (key, keyPath) => {
@@ -444,6 +516,7 @@ export default defineComponent({
         value: valueField.value,
         zoom: zoomField.value
       })
+      if (option.displayDefinition) currentDisplyDefinitions.value = option.displayDefinition
 
       if (isMobile.value) {
         store.commit('changeShowRigthPanel', true)
@@ -471,6 +544,8 @@ export default defineComponent({
       })
     }
 
+    listAllOptions.value = optionsList.value
+
     onMounted(() => {
       // disable focus with tab key on label
       setTimeout(() => {
@@ -484,6 +559,8 @@ export default defineComponent({
       isButton,
       zoom,
       // computed
+      isDialogoPanelDifinition,
+      currentDisplyDefinitions,
       currentFieldOption,
       isMobile,
       labelStyle,
@@ -495,9 +572,13 @@ export default defineComponent({
       triggerMenu,
       shortsKey,
       zoomField,
+      recordId,
+      listAllOptions,
       showPanelFieldOption,
       // methods
+      addOptionsNewAndSee,
       closePopover,
+      closePanel,
       keyAction,
       handleClose,
       handleCommand,
