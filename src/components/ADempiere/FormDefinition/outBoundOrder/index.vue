@@ -55,6 +55,15 @@
           @click="refreshRecords();"
         />
         <el-button
+          v-if="'order' === stepList[currentStep].key"
+          type="info"
+          class="button-base-icon"
+          plain
+          @click="clearSearch();"
+        >
+          <svg-icon icon-class="layers-clear" />
+        </el-button>
+        <el-button
           v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
           type="danger"
           class="button-base-icon"
@@ -214,10 +223,10 @@ export default defineComponent({
     })
 
     function refreshRecords() {
-      searchRecords(true)
+      searchRecords()
     }
 
-    function searchRecords(refresh = false) {
+    function searchRecords(clear = false) {
       const {
         organizationId, movementTypeId, warehouseId,
         salesRegionId, salesRepresentativeId, documentTypeId
@@ -241,7 +250,7 @@ export default defineComponent({
           organizationId,
           movementTypeId: movementType,
           warehouseId,
-          recordsId: !refresh ? ids : [],
+          recordsId: clear ? [] : ids,
           salesRegionId,
           salesRepresentativeId,
           documentTypeId
@@ -327,6 +336,9 @@ export default defineComponent({
     function reset() {
       store.commit('clearOutputOrder')
     }
+    function clearSearch() {
+      searchRecords(true)
+    }
     return {
       // Refs
       stepList,
@@ -344,7 +356,8 @@ export default defineComponent({
       refreshRecords,
       validateNextStep,
       runProcess,
-      reset
+      reset,
+      clearSearch
     }
   }
 })

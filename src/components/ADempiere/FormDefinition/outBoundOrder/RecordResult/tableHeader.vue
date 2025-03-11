@@ -33,15 +33,6 @@
       @select-all="handleSelectionHeader"
     >
       <el-table-column type="selection" />
-
-      <!--
-      <el-table-column
-        prop="warehouse"
-        :label="$t('form.outBoundOrder.header.warehouse')"
-        align="left"
-        width="110"
-      />
-      -->
       <el-table-column
         prop="document_no"
         :label="$t('form.outBoundOrder.header.documentNo')"
@@ -128,34 +119,6 @@
           </p>
         </template>
       </el-table-column>
-
-      <!--
-      <el-table-column
-        prop="address1"
-        :label="$t('form.outBoundOrder.header.address1')"
-        align="left"
-        width="110"
-      />
-      <el-table-column
-        prop="address2"
-        :label="$t('form.outBoundOrder.header.address2')"
-        align="left"
-        width="110"
-      />
-      <el-table-column
-        prop="address3"
-        :label="$t('form.outBoundOrder.header.address3')"
-        align="left"
-        width="110"
-      />
-      <el-table-column
-        prop="address4"
-        :label="$t('form.outBoundOrder.header.address4')"
-        align="left"
-        width="110"
-      />
-      -->
-
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.header.weight')"
@@ -188,7 +151,7 @@
 <script>
 import store from '@/store'
 import {
-  defineComponent, computed, ref, onMounted
+  defineComponent, computed, ref, onMounted, watch
 } from '@vue/composition-api'
 
 // Components and Mixins
@@ -218,6 +181,10 @@ export default defineComponent({
       return store.getters.getIsLoadingListDocument
     })
 
+    const selectedRecordsId = computed(() => {
+      return store.getters.getHeaderRecordsId
+    })
+
     const records = computed(() => {
       return store.getters.getListDocument
     })
@@ -231,8 +198,11 @@ export default defineComponent({
       if (isEmptyValue(movementTypeId)) {
         movementType = MOVEMENT_TYPE_SALES_ORDER
       }
+
+      const recordsId = selection.map(data => data.id)
+      store.commit('setRecordsId', recordsId)
+
       if (!isEmptyValue(selection)) {
-        const recordsId = selection.map(data => data.id)
         store.dispatch('searchListDocumentLine', {
           organizationId,
           movementTypeId: movementType,
@@ -245,26 +215,32 @@ export default defineComponent({
         })
       }
     }
-
     function toggleSelection() {
       if (isEmptyValue(headerTable.value)) {
         return
       }
+
       headerTable.value.clearSelection()
-      const selectedRecordsId = store.getters.getHeaderRecordsId
-      if (isEmptyValue(selectedRecordsId)) {
+
+      if (isEmptyValue(selectedRecordsId.value)) {
         return
       }
+
       records.value.forEach(row => {
-        if (selectedRecordsId.includes(row.id)) {
+        if (selectedRecordsId.value.includes(row.id)) {
           headerTable.value.toggleRowSelection(row, true)
         }
       })
     }
-
     onMounted(() => {
       toggleSelection()
     })
+
+    watch(records, () => {
+      setTimeout(() => {
+        toggleSelection()
+      }, 0)
+    }, { deep: true })
 
     return {
       headerTable,

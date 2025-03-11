@@ -142,16 +142,6 @@
           </span>
         </template>
       </el-table-column>
-
-      <!--
-      <el-table-column
-        prop="loadSequence"
-        :label="$t('form.outBoundOrder.lines.loadSequence')"
-        align="left"
-        width="160"
-      />
-      -->
-
       <el-table-column
         prop="ordered_quantity"
         :label="$t('form.outBoundOrder.lines.orderedQuantity')"
@@ -229,7 +219,7 @@
 
 <script>
 import store from '@/store'
-import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted, watch } from '@vue/composition-api'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -303,25 +293,24 @@ export default defineComponent({
       }
       lineTable.value.clearSelection()
       if (isEmptyValue(selectionsList.value)) {
+        activateField.value = {}
+        store.commit('setLinesSelection', [])
         return
       }
-
       const newActivateField = {}
-      const selectedRecordsId = selectionsList.value.map(row => {
-        return row.id
-      })
-      // selectionsList.value.forEach(row => {
-      //   newActivateField[row.id] = true
-      //   lineTable.value.toggleRowSelection(row, true)
-      // })
-      records.value.forEach(row => {
-        if (selectedRecordsId.includes(row.id)) {
-          newActivateField[row.id] = true
-          lineTable.value.toggleRowSelection(row, true)
-        }
+      const selectedRecordsId = selectionsList.value.map(row => row.id)
+      const selectedRows = records.value.filter(row => selectedRecordsId.includes(row.id))
+      selectedRows.forEach(row => {
+        newActivateField[row.id] = true
+        lineTable.value.toggleRowSelection(row, true)
       })
       activateField.value = newActivateField
+      store.commit('setLinesSelection', selectedRows)
     }
+
+    watch(records, () => {
+      toggleSelection()
+    }, { deep: true })
 
     onMounted(() => {
       toggleSelection()
