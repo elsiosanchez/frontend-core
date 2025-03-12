@@ -232,7 +232,7 @@ export default {
     },
     recordUuid(value) {
       if (!isEmptyValue(value)) {
-        this.getValueOfLookup()
+        this.setDisplayedValue()
       }
     }
   },
