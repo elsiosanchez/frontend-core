@@ -412,7 +412,6 @@ export default defineComponent({
               tableName: referenceTableName
             })
             response.forEach(element => {
-              listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
               optionsList.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
             })
           })
