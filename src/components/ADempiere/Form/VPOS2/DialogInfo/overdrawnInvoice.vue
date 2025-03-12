@@ -62,8 +62,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </span>
         <span style="float: right;text-align: end">
           <b>
-            {{ $t('form.pos.collect.overdrawnInvoice.dailyLimit') }}: {{ formatPrice({ value: currentPos.maximum_daily_refund_allowed, currency: currentPos.refund_reference_currency.iso_code }) }}
-            {{ $t('form.pos.collect.overdrawnInvoice.customerLimit') }}: {{ formatPrice({ value: currentPos.maximum_refund_allowed, currency: currentPos.refund_reference_currency.iso_code }) }}
+            {{ $t('form.pos.collect.overdrawnInvoice.dailyLimit') }}: {{ formatPrice({ value: currentPos.maximum_daily_refund_allowed, currency: currentPos.price_list.currency.iso_code }) }}
+            {{ $t('form.pos.collect.overdrawnInvoice.customerLimit') }}: {{ formatPrice({ value: currentPos.maximum_refund_allowed, currency: currentPos.price_list.currency.iso_code }) }}
           </b>
         </span>
       </div>
