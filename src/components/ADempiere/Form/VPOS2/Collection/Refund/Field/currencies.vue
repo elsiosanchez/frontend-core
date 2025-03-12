@@ -130,7 +130,7 @@ export default defineComponent({
         } else {
           store.dispatch('findRate', {
             currencyToId: currency.id,
-            currencyFromId: store.getters.getVPOS.refund_reference_currency.id
+            currencyFromId: store.getters.getVPOS.price_list.currency.id
           })
             .then(response => {
               const {
