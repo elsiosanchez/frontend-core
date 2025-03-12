@@ -231,7 +231,7 @@ export default {
       this.setDisplayedValue()
     },
     recordUuid(value) {
-      if (isEmptyValue(value)) {
+      if (!isEmptyValue(value)) {
         this.getValueOfLookup()
       }
     }
@@ -294,19 +294,19 @@ export default {
       }
 
       // add to list if no exist (with callouts, table record)
-      // const displayedValue = this.displayedValue
-      // if (!isEmptyValue(displayedValue)) {
-      //   // verify if exists to add (in table)
-      //   this.optionsList.push({
-      //     value,
-      //     uuid: option.uuid,
-      //     displayedValue
-      //   })
-      //   return
-      // }
+      const displayedValue = this.displayedValue
+      if (!isEmptyValue(displayedValue)) {
+        // verify if exists to add (in table)
+        this.optionsList.push({
+          value,
+          uuid: option.uuid,
+          displayedValue
+        })
+        return
+      }
 
       // request displayed value
-      // this.getValueOfLookup()
+      this.getValueOfLookup()
     },
 
     // TODO: With remote and filter is enabled not working displayed value
