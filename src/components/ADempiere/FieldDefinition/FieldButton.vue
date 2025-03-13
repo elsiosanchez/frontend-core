@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <el-button-group style="display: block !important;">
+  <el-button-group class="custom-field-button" style="display: block !important;">
     <el-button
       v-popover:info-field
       type="primary"
@@ -257,10 +257,10 @@ export default {
         }
       }
 
-      if (this.metadata.process.isReport) {
+      if (this.metadata.process.is_report) {
         return {
-          is: 'i',
-          class: 'el-icon-data-analysis',
+          is: 'svg-icon',
+          'icon-class': 'skill',
           start: () => generateReportOfWindow.generateReportOfWindow({
             parentUuid: this.parentUuid,
             containerUuid: this.containerUuid,
@@ -427,28 +427,7 @@ export default {
 </script>
 
 <style lang="scss">
-  .custom-field-text {
-    max-height: 36px;
-  }
-  .el-input.is-disabled .el-input__inner {
-    background-color: #dfe5f078;
-    border-color: #dfe4ed;
-    color: #76797e;
-    cursor: not-allowed;
-    font-weight: 630;
-  }
-
-  // indicates if the textarea is adjustable
-  .el-textarea__inner {
-    &.field-in-table {
-      resize: none !important;
-    }
-  }
-
-  // does not superimpose the character counter on the input text
-  .el-textarea {
-    >.el-input__count {
-      line-height: 10px;
-    }
-  }
+  // .custom-field-button {
+  //   height: 80.35px;
+  // }
 </style>
