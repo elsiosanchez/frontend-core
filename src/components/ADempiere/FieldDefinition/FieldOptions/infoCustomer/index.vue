@@ -19,7 +19,7 @@
     v-if="isLoading"
     shadow="never"
   >
-    <!-- <el-row v-if="!isEmptyValue(localFields)">
+    <el-row v-if="!isEmptyValue(localFields)">
       <el-col
         v-for="(group, keyGroup) in localFields"
         :key="keyGroup"
@@ -33,10 +33,10 @@
             size="small"
             class="field-component-display-definition"
           >
-            <template
+            <span
               v-for="field in group.fields"
+              :key="field.sequence"
             >
-              {{ currentCustomer[field.column_name] }} || {{ 12313 }}
               <el-col :span="sizeSpan(group.fields)">
                 <el-form-item
                   :label="field.name"
@@ -47,7 +47,7 @@
                   <fields-display-definitions
                     ref="fieldsDisplay"
                     :field="field"
-                    :current-record="currentRecord"
+                    :current-record="currentCustomer"
                     :display-value="currentRecord[field.column_name]"
                     :current-display-definition="currentDisplyDefinitions"
                     :update-field="updateFieldRecord"
@@ -58,14 +58,14 @@
                   />
                 </el-form-item>
               </el-col>
-            </template>
+            </span>
           </el-form>
         </fieldset>
       </el-col>
-    </el-row> -->
-    <customer-data-edit
+    </el-row>
+    <!-- <customer-data-edit
       :customer="currentCustomer"
-    />
+    /> -->
     <panel
       :all-customer-addresses="currentCustomer.addresses"
       :customer="currentCustomer"

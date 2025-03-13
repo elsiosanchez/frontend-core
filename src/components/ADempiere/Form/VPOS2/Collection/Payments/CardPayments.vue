@@ -6,10 +6,12 @@
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 	GNU General Public License for more details.
+
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
@@ -55,11 +57,11 @@
         </p>
         <p style="margin: 1px 0px;font-size: 16px;text-align: end;padding-right: 5px;">
           <b>
-            {{ formatPrice({ value: payment.amount, currency: displayCurrency({ currencyConvert: payment.currency }) }) }}
+            {{ formatPrice({ value: payment.amount, currency: displayCurrency({ isConver: true, currencyConvert: payment.currency }) }) }}
           </b>
           <br>
           <b>
-            {{ formatPrice({ value: payment.converted_amount, currency: displayCurrency({isConver: true, currencyConvert: payment.currency }) }) }}
+            {{ formatPrice({ value: payment.converted_amount, currency: displayCurrency({ currencyConvert: payment.currency }) }) }}
           </b>
         </p>
       </el-col>
@@ -75,6 +77,7 @@ import {
 } from '@vue/composition-api'
 
 import store from '@/store'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatDate } from '@/utils/ADempiere/valueFormat.js'
@@ -100,6 +103,7 @@ export default defineComponent({
       default: false
     }
   },
+
   setup(props) {
     const isLoading = ref(false)
     const currentOrder = computed(() => {

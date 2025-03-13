@@ -415,7 +415,7 @@ export default defineComponent({
       if (isSupportLookup(display_type)) {
         if (reference && !isEmptyValue(id)) {
           searchZoom(field)
-          optionsList.value.unshift(zoomInOptionItem)
+          listAllOptions.value.unshift(zoomInOptionItem)
         }
       }
     }
@@ -432,7 +432,10 @@ export default defineComponent({
               tableName: referenceTableName
             })
             response.forEach(element => {
-              if (referenceTableName === 'C_BPartner') {
+              if (element.table_name === 'C_BPartner') {
+                // if (element.is_insert_record) {
+                // } else {
+                // }
                 listAllOptions.value.unshift(SeeBusinessPartnerField({ displayDefinition: element }))
               } else {
                 listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))

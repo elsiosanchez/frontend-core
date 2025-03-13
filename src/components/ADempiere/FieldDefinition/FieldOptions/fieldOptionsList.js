@@ -348,6 +348,11 @@ export function SeeBusinessPartnerField({
     componentRender: () => import('@/components/ADempiere/FieldDefinition/FieldOptions/EmptyOption'),
     executeMethod: ({ containerManager, window, fieldAttributes, value, zoom }) => {
       store.commit('setDisplayDefinition', displayDefinition)
+      store.dispatch('changeTabPanelDefinition', {
+        type: displayDefinition.is_insert_record ? 'new' : 'view',
+        displyDefinitions: displayDefinition,
+        recordId
+      })
       const {
         parentUuid,
         column_name,

@@ -436,9 +436,81 @@ export default defineComponent({
         is_refund: true
       })
         .then(() => {
+          if (currency.id === store.getters.getVPOS.price_list.currency.id) {
+            store.commit('setAttributeField', {
+              field: 'fieldsRefunds',
+              attribute: 'amount',
+              value: currentOrder.value.refund_amount
+            })
+          } else {
+            store.dispatch('findRate', {
+              currencyToId: currency.id,
+              currencyFromId: store.getters.getVPOS.price_list.currency.id
+            })
+              .then(response => {
+                const {
+                  multiply_rate,
+                  divide_rate
+                } = response
+                if (
+                  !isEmptyValue(multiply_rate) &&
+                  !isEmptyValue(divide_rate)
+                ) {
+                  const amountRate = (Number(multiply_rate) > Number(divide_rate)) ? multiply_rate : divide_rate
+                  const amountConvert = Number(currentOrder.value.refund_amount) / Number(amountRate)
+                  store.commit('setAttributeField', {
+                    field: 'fieldsRefunds',
+                    attribute: 'amount',
+                    value: amountConvert
+                  })
+                }
+              })
+          }
           isLoadingPay.value = false
         })
     }
+
+    function setAmount() {
+      const currency = store.getters.getAttributeField({
+        field: 'fieldsRefunds',
+        attribute: 'currencie'
+      })
+      if (
+        currency.id === store.getters.getVPOS.price_list.currency.id ||
+        isEmptyValue(currency)
+      ) {
+        store.commit('setAttributeField', {
+          field: 'fieldsRefunds',
+          attribute: 'amount',
+          value: currentOrder.value.refund_amount
+        })
+      } else {
+        store.dispatch('findRate', {
+          currencyToId: currency.id,
+          currencyFromId: store.getters.getVPOS.price_list.currency.id
+        })
+          .then(response => {
+            const {
+              multiply_rate,
+              divide_rate
+            } = response
+            if (
+              !isEmptyValue(multiply_rate) &&
+              !isEmptyValue(divide_rate)
+            ) {
+              const amountRate = (Number(multiply_rate) > Number(divide_rate)) ? multiply_rate : divide_rate
+              const amountConvert = Number(currentOrder.value.refund_amount) / Number(amountRate)
+              store.commit('setAttributeField', {
+                field: 'fieldsRefunds',
+                attribute: 'amount',
+                value: amountConvert
+              })
+            }
+          })
+      }
+    }
+
+    setAmount()
 
     return {
       currentPos,

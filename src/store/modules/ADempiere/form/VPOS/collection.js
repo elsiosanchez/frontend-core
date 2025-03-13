@@ -121,14 +121,14 @@ export default {
             dispatch('overloadOrder', { order: currentOrder })
               .then(() => {
                 defaultValueCollections()
+                commit('setPayAmount', 0)
+                resolve(response)
+                showMessage({
+                  type: 'success',
+                  message: lang.t('pointOfSales.collection.addPayment'),
+                  showClose: true
+                })
               })
-            showMessage({
-              type: 'success',
-              message: lang.t('pointOfSales.collection.addPayment'),
-              showClose: true
-            })
-            commit('setPayAmount', 0)
-            resolve(response)
           })
           .catch(error => {
             console.warn(`Add Payment: ${error.message}. Code: ${error.code}.`)

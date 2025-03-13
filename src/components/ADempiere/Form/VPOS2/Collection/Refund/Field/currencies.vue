@@ -24,6 +24,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       v-model="currencie"
       :disabled="isDisabled"
       style="width: 100%;"
+      @change="handleChange"
     >
       <el-option
         v-for="item in listCurrencies"
@@ -47,6 +48,12 @@ export default defineComponent({
     isRefund: {
       type: Boolean,
       default: false
+    },
+    handleChange: {
+      type: Function,
+      default: (changeValue) => {
+        console.info('Triggers when input value changes (value: string | number)', changeValue)
+      }
     }
   },
   setup(props) {
@@ -141,7 +148,7 @@ export default defineComponent({
                 !isEmptyValue(multiply_rate) &&
                 !isEmptyValue(divide_rate)
               ) {
-                const amountRate = (multiply_rate.value > divide_rate.value) ? multiply_rate.value : divide_rate.value
+                const amountRate = (Number(multiply_rate) > Number(divide_rate)) ? multiply_rate : divide_rate
                 amountConvert = amountConvert / Number(amountRate)
                 store.commit('setAttributeField', {
                   field: 'fieldsRefunds',

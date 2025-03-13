@@ -43,6 +43,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       >
         <card-payments
           :payment="payment"
+          :delete-payment="deletePayment"
         />
       </el-col>
     </el-row>
@@ -66,6 +67,12 @@ export default defineComponent({
   name: 'Payments',
   components: {
     CardPayments
+  },
+  props: {
+    deletePayment: {
+      type: Function,
+      default: (payment) => {}
+    }
   },
   setup() {
     const listPayments = computed(() => {
