@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <el-row :gutter="10" style="margin-top: 10px; font-size: 12px !important;">
+  <el-row :gutter="10" style="margin-top: 10px; font-size: 15px !important;">
     <el-col
       :span="14"
       style="float: left"

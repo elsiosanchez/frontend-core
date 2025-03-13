@@ -39,7 +39,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-card>
     </el-aside>
     <el-main
-      class="panel-main"
+      class="panel-main-pos-v"
     >
       <el-header style="height: auto !important;margin-bottom: 10px;">
         <header-order />
@@ -178,7 +178,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .v-pos {
-  height: 90% !important;
+  height: 100% !important;
   .buttons-and-options {
     text-align: left;
   }
@@ -193,7 +193,7 @@ export default defineComponent({
 .panel-options {
   padding: 0px;
 }
-.panel-main {
-  padding-left: 0px;
+.panel-main-pos-v {
+  padding: 0px 5px;
 }
 </style>
