@@ -135,6 +135,14 @@
         :action-close="closePanel"
       />
     </el-dialog>
+    <el-dialog
+      :visible.sync="showBusinessPartner"
+      :modal-append-to-body="true"
+      :append-to-body="true"
+      :modal="false"
+    >
+      <info-customer />
+    </el-dialog>
   </div>
 </template>
 
@@ -147,8 +155,10 @@ import store from '@/store'
 import LabelField from './LabelField.vue'
 import LabelPopoverOption from './LabelPopoverOption.vue'
 import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
+import infoCustomer from '@/components/ADempiere/FieldDefinition/FieldOptions/infoCustomer'
 // Utils and Helper Methods
 import {
+  SeeBusinessPartnerField,
   hideThisField, infoOptionItem,
   actionsDisplayDefinitionsFields,
   refreshLookup, zoomInOptionItem,
@@ -167,6 +177,7 @@ export default defineComponent({
 
   components: {
     LabelField,
+    infoCustomer,
     LabelPopoverOption,
     PanelDisplayDefinitions
   },
@@ -201,6 +212,15 @@ export default defineComponent({
 
     const isButton = computed(() => {
       return props.metadata.componentPath === 'FieldButton'
+    })
+
+    const showBusinessPartner = computed({
+      get() {
+        return store.getters.getShowBusinessPartner
+      },
+      set(show) {
+        store.commit('setShowBusinessPartner', show)
+      }
     })
 
     const showPopoverPath = ref(false)
@@ -412,7 +432,11 @@ export default defineComponent({
               tableName: referenceTableName
             })
             response.forEach(element => {
-              optionsList.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
+              if (referenceTableName === 'C_BPartner') {
+                listAllOptions.value.unshift(SeeBusinessPartnerField({ displayDefinition: element }))
+              } else {
+                listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
+              }
             })
           })
       }
@@ -495,7 +519,7 @@ export default defineComponent({
     }
 
     const handleOptionSelected = (optionName) => {
-      const option = optionsList.value.find(option => {
+      const option = listAllOptions.value.find(option => {
         return option.name === optionName
       })
       // store.dispatch('setOptionField', {
@@ -508,7 +532,6 @@ export default defineComponent({
         valueField: valueField.value,
         fieldAttributes: props.metadata
       }
-
       option.executeMethod({
         containerManager: props.containerManager,
         fieldAttributes: props.metadata,
@@ -573,6 +596,7 @@ export default defineComponent({
       zoomField,
       recordId,
       listAllOptions,
+      showBusinessPartner,
       showPanelFieldOption,
       // methods
       addOptionsNewAndSee,

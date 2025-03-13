@@ -331,3 +331,80 @@ export function actionsDisplayDefinitionsFields({
     displayDefinition
   }
 }
+
+/**
+ * See Addresses Business Partner
+ */
+export function SeeBusinessPartnerField({
+  displayDefinition
+}) {
+  return {
+    name: displayDefinition.name,
+    enabled: true,
+    svg: false,
+    icon: 'el-icon-news',
+    index: 0,
+    isRender: false,
+    componentRender: () => import('@/components/ADempiere/FieldDefinition/FieldOptions/EmptyOption'),
+    executeMethod: ({ containerManager, window, fieldAttributes, value, zoom }) => {
+      store.commit('setDisplayDefinition', displayDefinition)
+      const {
+        parentUuid,
+        column_name,
+        containerUuid
+      } = fieldAttributes
+      const recordId = store.getters.getValueOfFieldOnContainer({
+        parentUuid,
+        containerUuid,
+        columnName: column_name
+      })
+      store.dispatch('requestBusinessPartner', {
+        displayDefinitionId: displayDefinition.id,
+        recordId
+      })
+      store.commit('setBusinessPartnerId', recordId)
+      store.commit('setShowBusinessPartner', true)
+    },
+    displayDefinition
+  }
+}
+
+/**
+ * Add Addresses Business Partner
+ */
+export function newBusinessPartnerField({
+  displayDefinition
+}) {
+  const { is_insert_record, id } = displayDefinition
+  return {
+    name: 'Agregar Dirección',
+    enabled: true,
+    svg: false,
+    icon: is_insert_record ? 'el-icon-plus' : 'el-icon-news',
+    index: 0,
+    isRender: false,
+    componentRender: () => import('@/components/ADempiere/FieldDefinition/FieldOptions/EmptyOption'),
+    executeMethod: ({ containerManager, window, fieldAttributes, value, zoom }) => {
+      const {
+        parentUuid,
+        column_name,
+        containerUuid
+      } = fieldAttributes
+      const recordId = store.getters.getValueOfFieldOnContainer({
+        parentUuid,
+        containerUuid,
+        columnName: column_name
+      })
+      store.commit('setShowPanel', {
+        id,
+        show: true
+      })
+      store.dispatch('changeTabPanelDefinition', {
+        type: is_insert_record ? 'new' : 'view',
+        displyDefinitions: displayDefinition,
+        recordId
+      })
+    },
+    displayDefinition
+  }
+}

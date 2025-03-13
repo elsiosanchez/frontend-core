@@ -132,6 +132,7 @@ const customers = {
     latitude: '',
     altitude: '',
     email: '',
+    id: 0,
     phone: ''
   }
 }

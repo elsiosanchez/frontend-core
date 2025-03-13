@@ -281,3 +281,50 @@ export function group({
     }
   })
 }
+
+/**
+ * Business Partner
+ */
+export function getBusinessPartner({
+  displayDefinitionId,
+  recordId
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/business-partners/${recordId}`,
+    method: 'get'
+  })
+}
+
+export function updateBusinessPartner({
+  additionalAttributes,
+  displayDefinitionId,
+  description,
+  addresses,
+  recordId,
+  lastName,
+  naics,
+  posId,
+  value,
+  taxId,
+  duns,
+  name,
+  id
+}) {
+  return request({
+    url: `/display-definition/${displayDefinitionId}/business-partners/${recordId}`,
+    method: 'put',
+    data: {
+      id,
+      duns,
+      name,
+      naics,
+      value,
+      addresses,
+      description,
+      pos_id: posId,
+      tax_id: taxId,
+      last_name: lastName,
+      additional_attributes: additionalAttributes
+    }
+  })
+}
