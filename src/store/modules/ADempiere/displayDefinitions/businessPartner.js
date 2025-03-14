@@ -140,12 +140,12 @@ const businessPartner = {
       addresses,
       recordId,
       name2,
-      duns,
-      name,
-      naics,
+      DUNS,
+      Name,
+      NAICS,
       posId,
-      value,
-      taxId,
+      Value,
+      TaxID,
       id
     }) {
       return new Promise(resolve => {
@@ -155,13 +155,13 @@ const businessPartner = {
           recordId,
           addresses,
           description,
-          duns,
+          duns: DUNS,
           id,
-          name,
-          naics,
+          name: Name,
+          naics: NAICS,
           posId,
-          value,
-          taxId,
+          value: Value,
+          taxId: TaxID,
           lastName: name2
         })
           .then(response => {

@@ -124,7 +124,20 @@
       :append-to-body="true"
       :modal="false"
     >
+      <span v-if="currentDisplyDefinitions.table_name === 'C_BPartner'">
+        <panel-display-definitions-bussines-partner
+          :current-display-definition="currentDisplyDefinitions"
+          :container-manager="containerManager"
+          :parent-uuid="metadata.parentUuid"
+          :details-title="currentDisplyDefinitions.name"
+          :is-panel-right="false"
+          :is-panel-window="true"
+          :current-record="{ id: recordId }"
+          :action-close="closePanel"
+        />
+      </span>
       <panel-display-definitions
+        v-else
         :current-display-definition="currentDisplyDefinitions"
         :container-manager="containerManager"
         :parent-uuid="metadata.parentUuid"
@@ -134,14 +147,6 @@
         :current-record="{ id: recordId }"
         :action-close="closePanel"
       />
-    </el-dialog>
-    <el-dialog
-      :visible.sync="showBusinessPartner"
-      :modal-append-to-body="true"
-      :append-to-body="true"
-      :modal="false"
-    >
-      <info-customer />
     </el-dialog>
   </div>
 </template>
@@ -155,10 +160,11 @@ import store from '@/store'
 import LabelField from './LabelField.vue'
 import LabelPopoverOption from './LabelPopoverOption.vue'
 import PanelDisplayDefinitions from '@/components/ADempiere/PanelDisplayDefinitions/index.vue'
-import infoCustomer from '@/components/ADempiere/FieldDefinition/FieldOptions/infoCustomer'
+import PanelDisplayDefinitionsBussinesPartner from '@/components/ADempiere/PanelDisplayDefinitionsBussinesPartner/index.vue'
+
 // Utils and Helper Methods
 import {
-  SeeBusinessPartnerField,
+  // SeeBusinessPartnerField,
   hideThisField, infoOptionItem,
   actionsDisplayDefinitionsFields,
   refreshLookup, zoomInOptionItem,
@@ -177,9 +183,9 @@ export default defineComponent({
 
   components: {
     LabelField,
-    infoCustomer,
     LabelPopoverOption,
-    PanelDisplayDefinitions
+    PanelDisplayDefinitions,
+    PanelDisplayDefinitionsBussinesPartner
   },
   props: {
     metadata: {
@@ -424,7 +430,8 @@ export default defineComponent({
       const { display_type, referenceTableName } = field
       if (isSearchAvailableToCreate(display_type)) {
         store.dispatch('displayTabDefinition', {
-          tableName: referenceTableName
+          tableName: referenceTableName,
+          isOnlyField: true
         })
           .then(response => {
             store.commit('setCurrentTabDefinition', {
@@ -432,14 +439,7 @@ export default defineComponent({
               tableName: referenceTableName
             })
             response.forEach(element => {
-              if (element.table_name === 'C_BPartner') {
-                // if (element.is_insert_record) {
-                // } else {
-                // }
-                listAllOptions.value.unshift(SeeBusinessPartnerField({ displayDefinition: element }))
-              } else {
-                listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
-              }
+              listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
             })
           })
       }

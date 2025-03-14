@@ -64,7 +64,7 @@ import store from '@/store'
 // import language from '@/lang'
 import locationName from '@/components/ADempiere/Form/VPOS2/HeaderOrder/Customer/UpdateCustomer/Fields/AddressEdit/locationName.vue'
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 // components/ADempiere/Form/VPOS2/HeaderOrder/Customer/UpdateCustomer/Fields/AddressEdit/Address.vue
 export default defineComponent({
   name: 'AddAddress',
@@ -78,7 +78,7 @@ export default defineComponent({
     },
     addressEdti: {
       type: Object,
-      default: {}
+      default: () => {}
     }
   },
   setup(props) {
@@ -90,6 +90,11 @@ export default defineComponent({
     })
 
     const locationFieldEdit = computed(() => {
+      const { secuenceComponent } = store.getters.getAttributeFieldLocationsCustomers({
+        typeLocations: 'billingAddress',
+        attribute: 'countries'
+      })
+      if (!isEmptyValue(secuenceComponent)) return secuenceComponent
       return [
         {
           component: () => import('@/components/ADempiere/Form/VPOS2/HeaderOrder/Customer/UpdateCustomer/Fields/AddressEdit/Address')

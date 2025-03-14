@@ -322,6 +322,11 @@ export function actionsDisplayDefinitionsFields({
         id,
         show: true
       })
+      store.dispatch('requestBusinessPartner', {
+        displayDefinitionId: displayDefinition.id,
+        recordId
+      })
+      store.commit('setBusinessPartnerId', recordId)
       store.dispatch('changeTabPanelDefinition', {
         type: is_insert_record ? 'new' : 'view',
         displyDefinitions: displayDefinition,
@@ -348,11 +353,16 @@ export function SeeBusinessPartnerField({
     componentRender: () => import('@/components/ADempiere/FieldDefinition/FieldOptions/EmptyOption'),
     executeMethod: ({ containerManager, window, fieldAttributes, value, zoom }) => {
       store.commit('setDisplayDefinition', displayDefinition)
+      store.dispatch('listDisplayDefinitionFieldsMetadata', { id: displayDefinition.id })
       store.dispatch('changeTabPanelDefinition', {
-        type: displayDefinition.is_insert_record ? 'new' : 'view',
+        type: displayDefinition.is_insert_record ? 'view' : 'view',
         displyDefinitions: displayDefinition,
         recordId
       })
+      // store.commit('setShowPanel', {
+      //   id: displayDefinition.id,
+      //   show: true
+      // })
       const {
         parentUuid,
         column_name,

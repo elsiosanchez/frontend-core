@@ -46,13 +46,15 @@ export function worflowsDefinitions({
 
 export function displayDefinitions({
   tableName,
+  isOnlyField,
   onlyeReferences
 }) {
   return request({
     url: `/display-definition/definitions/${tableName}`,
     method: 'get',
     params: {
-      only_references: onlyeReferences
+      only_references: onlyeReferences,
+      is_only_field: isOnlyField
     }
   })
 }

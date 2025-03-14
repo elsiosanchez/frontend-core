@@ -112,7 +112,8 @@ const displayTabDefinition = {
 
   actions: {
     displayTabDefinition({ commit }, {
-      tableName
+      tableName,
+      isOnlyField = false
     }) {
       return new Promise(resolve => {
         displayDefinitionsExists({
@@ -123,7 +124,8 @@ const displayTabDefinition = {
             let listDisplayDefinitions
             if (record_count > 0) {
               listDefinitions({
-                tableName
+                tableName,
+                isOnlyField
               })
                 .then(definition => {
                   const { records } = definition

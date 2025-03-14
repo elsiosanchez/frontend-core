@@ -19,7 +19,7 @@
     v-if="isLoading"
     shadow="never"
   >
-    <el-row v-if="!isEmptyValue(localFields)">
+    <!-- <el-row v-if="!isEmptyValue(localFields)">
       <el-col
         v-for="(group, keyGroup) in localFields"
         :key="keyGroup"
@@ -62,7 +62,7 @@
           </el-form>
         </fieldset>
       </el-col>
-    </el-row>
+    </el-row> -->
     <!-- <customer-data-edit
       :customer="currentCustomer"
     /> -->
@@ -239,10 +239,6 @@ export default defineComponent({
       }
     }
 
-    function persistenceBachtEntry(value, field) {
-      console.log({ value, field })
-    }
-
     return {
       localFields,
       // Computed
@@ -255,8 +251,7 @@ export default defineComponent({
       close,
       updateBP,
       sizeSpan,
-      updateFieldRecord,
-      persistenceBachtEntry
+      updateFieldRecord
     }
   }
 })

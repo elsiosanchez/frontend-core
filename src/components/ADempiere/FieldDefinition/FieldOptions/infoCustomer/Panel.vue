@@ -84,10 +84,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       class="panel-customer-new"
       width="75%"
     >
-      <address-edti-constumers
-        :type-locations="labelDirecction(currentAddress)"
-        :address-edti="currentAddress"
-      />
+      <address-standard />
       <el-row :gutter="24">
         <el-col :span="24">
           <samp style="float: right; padding-right: 10px;">
@@ -120,13 +117,13 @@ import {
 } from '@vue/composition-api'
 import language from '@/lang'
 import store from '@/store'
-import AddressEdtiConstumers from '@/components/ADempiere/Form/VPOS2/HeaderOrder/Customer/UpdateCustomer/Fields/AddressEdit/index.vue'
+import AddressStandard from '@/components/ADempiere/StandardAddressPanel/AddAddress/index.vue'
 import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'Panel',
   components: {
-    AddressEdtiConstumers
+    AddressStandard
   },
   props: {
     allCustomerAddresses: {
@@ -141,7 +138,27 @@ export default defineComponent({
   setup(props) {
     const showEditAddress = ref(false)
     const isLoading = ref(false)
-    const currentAddress = ref({})
+    const currentAddress = ref({
+      posalCodeAdditional: '',
+      countryId: undefined,
+      regionId: undefined,
+      cityId: undefined,
+      locationName: '',
+      postalCode: '',
+      countries: {},
+      cityLabel: '',
+      longitude: '',
+      reference: '',
+      address1: '',
+      address2: '',
+      address3: '',
+      address4: '',
+      latitude: '',
+      altitude: '',
+      email: '',
+      id: 0,
+      phone: ''
+    })
     function displayCountries(address) {
       const { contries } = address
       if (contries && contries.name) return contries.name
@@ -201,64 +218,34 @@ export default defineComponent({
     }
 
     function openEditAddress(address) {
-      currentAddress.value = address
       showEditAddress.value = true
       if (isEmptyValue(address)) {
-        console.log({ address })
-        store.commit('setValuesEditAddress', {
-          posalCodeAdditional: '',
-          countryId: undefined,
-          regionId: undefined,
-          cityId: undefined,
-          locationName: '',
-          postalCode: '',
-          countries: {},
-          cityLabel: '',
-          longitude: '',
-          reference: '',
-          address1: '',
-          address2: '',
-          address3: '',
-          address4: '',
-          latitude: '',
-          altitude: '',
-          email: '',
-          id: 0,
-          phone: ''
-        })
+        store.commit('setAttributeAddres', {})
         return
       }
+      currentAddress.value = address
+
       const {
         postal_code_additional,
         country_id,
         region,
         city,
         location_name,
-        postal_code,
-        address1,
-        address2,
-        address3,
-        address4,
-        email,
-        phone,
-        id
+        postal_code
       } = address
-      store.commit('setValuesEditAddress', {
-        address1,
-        address2,
-        address3,
-        address4,
-        email,
-        phone,
-        id,
-        countryId: country_id,
-        regionId: isEmptyValue(region) ? undefined : region.id,
-        cityId: isEmptyValue(city) ? undefined : city.id,
-        cityLabel: isEmptyValue(city) ? undefined : city.name,
-        postalCode: postal_code,
-        locationName: location_name,
-        posalCodeAdditional: postal_code_additional
-      })
+      store.dispatch('countriesStandardAddress')
+        .finally(() => {
+          store.commit('setAttributeAddres', {
+            ...address,
+            countryId: country_id,
+            regionId: isEmptyValue(region) ? undefined : region.id,
+            cityId: isEmptyValue(city) ? undefined : city.id,
+            cityLabel: isEmptyValue(city) ? undefined : city.name,
+            postalCode: postal_code,
+            locationName: location_name,
+            posalCodeAdditional: postal_code_additional
+          })
+        })
     }
 
     function close() {
@@ -267,14 +254,19 @@ export default defineComponent({
 
     function updateAddress() {
       isLoading.value = true
-      const addresses = [store.getters.getAttributeEditAddress]
-      const fields = store.getters.getFieldsBusinessPartner
+      const addresses = [store.getters.getAddressFields]
       const recordId = store.getters.getBusinessPartnerId
-
+      const mandatoryAttribute = {
+        DUNS: !isEmptyValue(props.customer.fields['DUNS']) ? props.customer.fields['DUNS'].value : '',
+        Name: !isEmptyValue(props.customer.fields['Name']) ? props.customer.fields['Name'].value : '',
+        NAICS: !isEmptyValue(props.customer.fields['NAICS']) ? props.customer.fields['NAICS'].value : '',
+        Value: !isEmptyValue(props.customer.fields['Value']) ? props.customer.fields['Value'].value : '',
+        TaxID: !isEmptyValue(props.customer.fields['TaxID']) ? props.customer.fields['TaxID'].value : ''
+      }
       store.dispatch('updateBPartner', {
         ...props.customer,
+        ...mandatoryAttribute,
         recordId,
-        ...fields,
         addresses
       })
         .finally(() => {
