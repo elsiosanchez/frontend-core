@@ -389,3 +389,25 @@ export function standardPrecisionContext({
     columnName: GLOBAL_CONTEXT_PREFIX + COLUMNNAME_StdPrecision
   })
 }
+
+export function convertToNumber(value) {
+  // Check if value is null or undefined
+  if (value === null || value === undefined || value === '') {
+    return 0 // Return null if invalid
+  }
+
+  // If number, return original value
+  if (typeof value === 'number') {
+    return value
+  }
+
+  // If string, try to convert to number
+  const numValue = Number(value)
+
+  // Check if the conversion was successful
+  if (!isNaN(numValue)) {
+    return numValue // Return the numeric value
+  }
+
+  return 0 // Return null if unable to convert
+}

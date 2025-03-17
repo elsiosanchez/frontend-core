@@ -51,8 +51,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </div>
               <div style="width: 30%;float: right;margin: 0px">
                 <p style="overflow: hidden;text-overflow: ellipsis;text-align: end;margin: 0px">
-                  {{ formatQuantity({ value: item.quantity_ordered.value }) }}
-                  <!-- {{ item.quantity_ordered }} -->
+                  {{ formatQuantity({ value: item.quantity_ordered }) }}
                 </p>
               </div>
             </div>
@@ -136,6 +135,7 @@ import editQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLi
 // Utils and Helper Methods
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat.js'
 import {
   displayLabel,
   displayValue
@@ -248,7 +248,7 @@ export default defineComponent({
         quantity_ordered
       } = item
       store.dispatch('createRMALine', {
-        quantity: quantity_ordered.value,
+        quantity: convertToNumber(quantity_ordered),
         sourceOrderLineId: id
       })
     }

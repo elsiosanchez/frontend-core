@@ -56,7 +56,7 @@ import store from '@/store'
 // import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn.vue'
 // Utils and Helper Methods
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-// import { isEmptyValue } from '@/utils/ADempiere'
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat.js'
 // import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 // import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 
@@ -70,7 +70,7 @@ export default defineComponent({
     const getItemQuantity = computed(() => {
       const list = store.getters.getShipmentList
       if (list) {
-        const result = list.map(list => list.quantity)
+        const result = list.map(list => convertToNumber(list.quantity))
         return result.reduce((accumulator, currentValue) => {
           return accumulator + currentValue
         })
@@ -85,7 +85,8 @@ export default defineComponent({
       currentShipment,
       getItemQuantity,
       numberOfLines,
-      formatQuantity
+      formatQuantity,
+      convertToNumber
     }
   }
 })
