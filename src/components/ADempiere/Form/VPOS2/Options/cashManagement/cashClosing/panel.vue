@@ -15,77 +15,79 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <el-table
-    v-loading="isLoading"
-    :data="listCashSummary"
-    style="width: 100%"
-    height="250"
-    border
-  >
-    <el-table-column
-      v-if="isDetails"
-      prop="document_no"
-      :label="$t('form.expressMovement.field.documentNo')"
-    />
-    <el-table-column
-      v-if="isDetails"
-      prop="invoice_document_no"
-      :label="$t('form.pos.collect.invoceNr')"
-    />
-    <el-table-column
-      v-if="isDetails"
-      prop="order_document_no"
-      :label="$t('form.pos.collect.orderNr')"
-    />
-    <el-table-column
-      v-if="isDetails"
-      prop="customer.name"
-      :label="$t('form.pos.collect.customer')"
-    />
-    <el-table-column
-      v-if="isDetails"
-      prop="charge.name"
-      width="150"
-      :label="$t('pointOfSales.collection.chargeAmount')"
-    />
-    <el-table-column
-      v-if="isDetails"
-      prop="collecting_agent.name"
-      :label="$t('form.pos.collect.seller')"
-    />
-    <el-table-column
-      :prop="isDetails ? 'payment_method.name' : 'payment_method_name'"
-      width="150"
-      :label="$t('form.pos.collect.paymentMethod')"
-    />
-    <el-table-column
-      v-if="!isRefund"
-      prop="is_refund"
-      width="180"
-      :label="$t('form.VBankStatementMatch.automaticMatch.table.tenderType')"
+  <span class="tablePos">
+    <el-table
+      v-loading="isLoading"
+      :data="listCashSummary"
+      style="width: 100%"
+      height="250"
+      border
     >
-      <template slot-scope="scope">
-        <b v-if="scope.row.is_refund" style="color: #ff4949">
-          {{ $t('form.pos.optionsPoinSales.cashManagement.moneyEgress') }}
-        </b>
-        <b v-else style="color: #13ce66">
-          {{ $t('form.pos.optionsPoinSales.cashManagement.moneyIncome') }}
-        </b>
-      </template>
-    </el-table-column>
-    <el-table-column
-      prop="currency.iso_code"
-      :label="$t('form.pos.collect.Currency')"
-    />
-    <el-table-column
-      label="Monto"
-      align="right"
-    >
-      <template slot-scope="scope">
-        {{ formatPrice({ value: scope.row.amount, currency: scope.row.currency.iso_code}) }}
-      </template>
-    </el-table-column>
-  </el-table>
+      <el-table-column
+        v-if="isDetails"
+        prop="document_no"
+        :label="$t('form.expressMovement.field.documentNo')"
+      />
+      <el-table-column
+        v-if="isDetails"
+        prop="invoice_document_no"
+        :label="$t('form.pos.collect.invoceNr')"
+      />
+      <el-table-column
+        v-if="isDetails"
+        prop="order_document_no"
+        :label="$t('form.pos.collect.orderNr')"
+      />
+      <el-table-column
+        v-if="isDetails"
+        prop="customer.name"
+        :label="$t('form.pos.collect.customer')"
+      />
+      <el-table-column
+        v-if="isDetails"
+        prop="charge.name"
+        width="150"
+        :label="$t('pointOfSales.collection.chargeAmount')"
+      />
+      <el-table-column
+        v-if="isDetails"
+        prop="collecting_agent.name"
+        :label="$t('form.pos.collect.seller')"
+      />
+      <el-table-column
+        :prop="isDetails ? 'payment_method.name' : 'payment_method_name'"
+        width="150"
+        :label="$t('form.pos.collect.paymentMethod')"
+      />
+      <el-table-column
+        v-if="!isRefund"
+        prop="is_refund"
+        width="180"
+        :label="$t('form.VBankStatementMatch.automaticMatch.table.tenderType')"
+      >
+        <template slot-scope="scope">
+          <b v-if="scope.row.is_refund" style="color: #ff4949">
+            {{ $t('form.pos.optionsPoinSales.cashManagement.moneyEgress') }}
+          </b>
+          <b v-else style="color: #13ce66">
+            {{ $t('form.pos.optionsPoinSales.cashManagement.moneyIncome') }}
+          </b>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="currency.iso_code"
+        :label="$t('form.pos.collect.Currency')"
+      />
+      <el-table-column
+        label="Monto"
+        align="right"
+      >
+        <template slot-scope="scope">
+          {{ formatPrice({ value: scope.row.amount, currency: scope.row.currency.iso_code}) }}
+        </template>
+      </el-table-column>
+    </el-table>
+  </span>
 </template>
 
 <script>

@@ -49,7 +49,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             <span class="info-label">
               {{ $t('form.pos.order.type') }}:
               <b class="order-info">
-                {{ display('document_type').value }}
+                {{ display('document_type').name }}
               </b>
             </span>
             <br>

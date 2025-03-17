@@ -59,75 +59,91 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-autocomplete>
       </el-form-item>
     </el-form>
-    <el-table
-      :data="shipmentLines"
-      :empty-text="$t('quickAccess.searchWithEnter')"
-      border
-      fit
-      highlight-current-row
-      @row-click="selectLine"
-      @row-dblclick="exitLine"
-      @current-change="currentLine"
-    >
-      <el-table-column
-        prop="product.value"
-        :label="$t('form.productInfo.code')"
-      />
-      <el-table-column
-        prop="product.name"
-        :label="$t('form.pos.tableProduct.product')"
-      />
-      <el-table-column
-        prop="quantity"
-        :label="$t('form.pos.tableProduct.quantity')"
-        align="right"
+    <span class="tablePos">
+      <el-table
+        :data="shipmentLines"
+        :empty-text="$t('quickAccess.searchWithEnter')"
+        border
+        fit
+        highlight-current-row
+        @row-click="selectLine"
+        @row-dblclick="exitLine"
+        @current-change="currentLine"
       >
-        <template slot-scope="scope">
-          <edit-qty-entered
-            v-if="scope.row.isEditQty"
-            :qty="Number(scope.row.quantity.value)"
-            :handle-change="updateQuantity"
-          />
-          <span v-else>
-            {{ formatQuantity({ value: scope.row.quantity }) }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="uom.uom.name"
-        :label="$t('form.pos.tableProduct.uom')"
-      />
-      <el-table-column
-        prop="quantity"
-        :label="$t('form.pos.tableProduct.movementQuantity')"
-        align="right"
-        width="200px"
-      >
-        <template slot-scope="scope">
-          {{ formatQuantity({ value: scope.row.movement_quantity }) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('form.pos.tableProduct.options')"
-      >
-        <template slot-scope="scope">
-          <shipping-line-info
-            :info-line="scope.row"
-          />
-
-          <el-button
-            size="mini"
-            type="danger"
-            icon="el-icon-delete"
-            style="margin-left: 5px;"
-            :disabled="scope.row.isLoading"
-            :loading="scope.row.isLoading"
-            @click="deleteLine(scope.row)"
-          />
-
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table-column
+          header-align="center"
+          prop="product.value"
+          :label="$t('form.productInfo.code')"
+          width="80"
+        />
+        <el-table-column
+          header-align="center"
+          prop="product.name"
+          :label="$t('form.pos.tableProduct.product')"
+          width="300px"
+        />
+        <el-table-column
+          header-align="center"
+          prop="quantity"
+          :label="$t('form.pos.tableProduct.quantity')"
+          align="right"
+        >
+          <template slot-scope="scope">
+            <edit-qty-entered
+              v-if="scope.row.isEditQty"
+              :qty="Number(scope.row.quantity.value)"
+              :handle-change="updateQuantity"
+            />
+            <span v-else>
+              <p style="margin: 0px !important;">
+                {{ formatQuantity({ value: scope.row.quantity }) }}
+              </p>
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          header-align="center"
+          prop="uom.uom.name"
+          :label="$t('form.pos.tableProduct.uom')"
+        />
+        <el-table-column
+          header-align="center"
+          prop="quantity"
+          :label="$t('form.pos.tableProduct.movementQuantity')"
+          align="right"
+        >
+          <template slot-scope="scope">
+            <p style="margin: 0px !important;">
+              {{ formatQuantity({ value: scope.row.movement_quantity }) }}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('form.pos.tableProduct.options')"
+          align="center"
+          header-align="center"
+          width="120px"
+        >
+          <template slot-scope="scope">
+            <p style="margin: 0px !important;">
+              <shipping-line-info
+                :info-line="scope.row"
+              />
+              <el-button
+                size="mini"
+                type="text"
+                style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #ff4949;"
+                :disabled="scope.row.isLoading"
+                @click="deleteLine(scope.row)"
+              >
+                <i v-if="!scope.row.isLoading" class="el-icon-delete" />
+                <i v-else class="el-icon-loading" />
+              </el-button>
+            </p>
+          </template>
+        </el-table-column>
+      </el-table>
+    </span>
   </el-main>
 </template>
 

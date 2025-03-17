@@ -21,6 +21,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     controls-position="right"
     :precision="precision"
     autofocus
+    size="mini"
     style="text-align-last: end !important;width: 100%;"
     @change="handleChange"
   />

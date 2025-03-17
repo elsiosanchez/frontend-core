@@ -110,12 +110,15 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-row>
     </el-card>
     <el-button
+      v-if="!isEmptyValue(infoLine)"
       slot="reference"
-      icon="el-icon-info"
-      type="primary"
+      type="text"
       size="mini"
-      style="margin-left: 2px;"
-    />
+      style="margin-left: 2px;font-size: 12px;padding: 0px;color: #13ce66;"
+    >
+      <i v-if="!infoLine.isLoading" class="el-icon-info" />
+      <i v-else class="el-icon-loading" />
+    </el-button>
   </el-popover>
 </template>
 

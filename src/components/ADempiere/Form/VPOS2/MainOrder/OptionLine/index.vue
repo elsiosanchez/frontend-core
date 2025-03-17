@@ -18,19 +18,22 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <p style="margin: 0px;text-align: center;">
     <info-line
       :info-line="line"
+      style="padding: 0px 5px;"
     />
     <edit-line
       :edit-line="line"
+      style="padding: 0px 5px;"
     />
     <el-button
-      size="mini"
-      type="danger"
-      icon="el-icon-delete"
-      style="margin-left: 2px;"
-      :loading="line.isLoading"
+      v-if="!isEmptyValue(line)"
+      type="text"
+      style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #ff4949;"
       :disabled="line.isLoading"
       @click="deleteLine()"
-    />
+    >
+      <i v-if="!line.isLoading" class="el-icon-delete" />
+      <i v-else class="el-icon-loading" />
+    </el-button>
   </p>
 </template>
 

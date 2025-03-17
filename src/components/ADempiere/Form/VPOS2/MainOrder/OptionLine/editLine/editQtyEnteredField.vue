@@ -23,6 +23,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       controls-position="right"
       :precision="precision"
       autofocus
+      size="mini"
       style="text-align-last: end !important;width: 100%;"
       @change="handleChange"
       @blur="customFocusLost"
@@ -31,6 +32,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       v-show="!isFocus"
       v-model="displayValue"
       readonly
+      size="mini"
       style="text-align-last: end !important;width: 100%;"
       @focus="customFocusGained"
     />

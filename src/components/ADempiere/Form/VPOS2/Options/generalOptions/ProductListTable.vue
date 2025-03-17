@@ -34,61 +34,62 @@
         />
       </el-form-item>
     </el-form>
-    <el-table
-      v-loading="isLoading"
-      :data="listProducto"
-      :empty-text="$t('quickAccess.searchWithEnter')"
-      highlight-current-row
-      :border="true"
-      :height="height"
-      fit
-      @current-change="addProduct"
-    >
-      <index-column
-        :page-number="1"
-        :page-size="50"
-      />
-      <el-table-column
-        :label="$t('form.productInfo.code')"
-        width="190"
+    <span class="tablePos">
+      <el-table
+        v-loading="isLoading"
+        :data="listProducto"
+        :empty-text="$t('quickAccess.searchWithEnter')"
+        highlight-current-row
+        :border="true"
+        :height="height"
+        fit
+        @current-change="addProduct"
       >
-        <template slot-scope="scope">
-          <el-button
-            type="text"
-            icon="el-icon-document-copy"
-            @click="copyCode(scope.row)"
-          />
-          {{ scope.row.product.value }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="product.name"
-        :label="$t('form.productInfo.name')"
-        min-width="200"
-      />
-      <el-table-column
-        prop="quantity_on_hand"
-        :label="$t('form.productInfo.quantityOnHand')"
-        align="right"
-      />
-      <el-table-column
-        :label="$t('form.productInfo.price')"
-        align="right"
-      >
-        <template slot-scope="scope">
-          {{ displayAmount(scope.row) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('form.pos.collect.convertedAmount')"
-        align="right"
-      >
-        <template slot-scope="scope">
-          {{ displayAmount(scope.row) }}
-        </template>
-      </el-table-column>
-    </el-table>
-
+        <index-column
+          :page-number="1"
+          :page-size="50"
+        />
+        <el-table-column
+          :label="$t('form.productInfo.code')"
+          width="190"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="text"
+              icon="el-icon-document-copy"
+              @click="copyCode(scope.row)"
+            />
+            {{ scope.row.product.value }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="product.name"
+          :label="$t('form.productInfo.name')"
+          min-width="200"
+        />
+        <el-table-column
+          prop="quantity_on_hand"
+          :label="$t('form.productInfo.quantityOnHand')"
+          align="right"
+        />
+        <el-table-column
+          :label="$t('form.productInfo.price')"
+          align="right"
+        >
+          <template slot-scope="scope">
+            {{ displayAmount(scope.row) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          :label="$t('form.pos.collect.convertedAmount')"
+          align="right"
+        >
+          <template slot-scope="scope">
+            {{ displayAmount(scope.row) }}
+          </template>
+        </el-table-column>
+      </el-table>
+    </span>
     <p>
       <custom-pagination
         style="float: right;"

@@ -394,7 +394,7 @@ export default {
             showMessage({
               type: 'error',
               message,
-              showClose: true
+              showClose: false
             })
             resolve({})
           })

@@ -15,10 +15,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <span>
+  <span class="tablePos">
     <el-table
-      id="linesOrder"
-      ref="linesTable"
+      id="tablePos"
+      ref="tablePos"
       :data="lines"
       :border="true"
       height="60vh"
@@ -39,12 +39,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           :align="valueOrder.isNumeric ? 'right' : 'left'"
         >
           <template slot-scope="scope">
-            <el-button
-              v-show="valueOrder.columnName === 'LineDescription'"
-              type="text"
-              icon="el-icon-document-copy"
-              @click="copyCode(scope.row)"
-            />
             <span
               v-if="scope.row.isEditCurrentPrice && valueOrder.columnName === 'CurrentPrice'"
             >
@@ -101,14 +95,25 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               />
             </span>
             <span v-else>
-              {{ displayValue({ row: scope.row, columnName: valueOrder.columnName}) }}
+              <p style="margin: 0px !important;">
+                <el-button
+                  v-show="valueOrder.columnName === 'LineDescription'"
+                  icon="el-icon-document-copy"
+                  style="padding: 0px;"
+                  type="text"
+                  @click="copyCode(scope.row)"
+                />
+                {{ displayValue({ row: scope.row, columnName: valueOrder.columnName}) }}
+              </p>
             </span>
           </template>
         </el-table-column>
       </template>
       <el-table-column
         :label="$t('form.pos.tableProduct.options')"
-        width="150"
+        :align="'center'"
+        header-align="center"
+        width="160"
         style="padding: 0px !important;"
       >
         <option-line
@@ -572,4 +577,40 @@ export default defineComponent({
     overflow: auto;
     height: calc(100vh - 335px) !important
   }
+</style>
+<style lang="scss">
+.tablePos {
+  height: 100%;
+  overflow: auto;
+  .el-table {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  .el-table .el-table__cell {
+    padding: 0px !important;
+    line-height: 1.5 !important;
+  }
+  .el-table .success-row {
+    background: #e8f4ff;
+  }
+  .el-table .cell {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 1.5 !important;
+  }
+  .el-table .cell:hover {
+    border: 1px solid blue;
+    overflow: hidden;
+  }
+  .el-table th.el-table__cell > .cell{
+    padding-left: 5px !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+}
 </style>

@@ -18,9 +18,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <el-input-number
     ref="fieldAmount"
     v-model="valueAmount"
-    controls-position="right"
-    :precision="precision"
     autofocus
+    size="mini"
+    :precision="precision"
+    controls-position="right"
     style="text-align-last: end !important;width: 100%;"
     @change="handleChange"
   />

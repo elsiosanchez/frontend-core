@@ -182,12 +182,15 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-form>
     </el-card>
     <el-button
+      v-if="!isEmptyValue(editLine)"
       slot="reference"
-      style="margin-left: 2px;"
-      icon="el-icon-edit"
-      type="success"
+      style="margin-left: 2px;font-size: 12px;padding: 0px;color: #1890ff;"
+      type="text"
       size="mini"
-    />
+    >
+      <i v-if="!editLine.isLoading" class="el-icon-edit" />
+      <i v-else class="el-icon-loading" />
+    </el-button>
   </el-popover>
 </template>
 

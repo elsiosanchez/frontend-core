@@ -20,61 +20,71 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <el-main
     class="product-list-content"
   >
-    <el-table
-      :data="listLineRMA"
-      :empty-text="$t('quickAccess.searchWithEnter')"
-      border
-      fit
-      highlight-current-row
-      @row-click="selectLine"
-      @row-dblclick="exitLine"
-      @current-change="currentLine"
-    >
-      <template v-for="(valueOrder, key) in orderLineDefinition">
+    <span class="tablePos">
+      <el-table
+        :data="listLineRMA"
+        :empty-text="$t('quickAccess.searchWithEnter')"
+        border
+        fit
+        highlight-current-row
+        @row-click="selectLine"
+        @row-dblclick="exitLine"
+        @current-change="currentLine"
+      >
+        <template v-for="(valueOrder, key) in orderLineDefinition">
+          <el-table-column
+            v-if="displayLabel({ row: valueOrder })"
+            :key="key"
+            :column-key="valueOrder.columnName"
+            :label="valueOrder.label"
+            :align="valueOrder.isNumeric ? 'right' : 'left'"
+          >
+            <template slot-scope="scope">
+              <span v-if="scope.row.isEditQty && valueOrder.columnName === 'QtyEntered'">
+                <el-button v-if="scope.row.isLoading" :loading="scope.row.isLoading" />
+                <edit-qty-entered
+                  v-else
+                  :qty="Number(scope.row.quantity_ordered.value)"
+                  :handle-change="updateQuantity"
+                />
+              </span>
+              <span v-else>
+                <p style="margin: 0px !important;">
+                  <el-button
+                    v-show="valueOrder.columnName === 'LineDescription'"
+                    icon="el-icon-document-copy"
+                    style="padding: 0px;"
+                    type="text"
+                    @click="copyCode(scope.row)"
+                  />
+                  {{ displayValue({ row: scope.row, columnName: valueOrder.columnName }) }}
+                </p>
+              </span>
+            </template>
+          </el-table-column>
+        </template>
         <el-table-column
-          v-if="displayLabel({ row: valueOrder })"
-          :key="key"
-          :column-key="valueOrder.columnName"
-          :label="valueOrder.label"
-          :align="valueOrder.isNumeric ? 'right' : 'left'"
+          :label="$t('form.pos.tableProduct.options')"
+          :align="'center'"
         >
           <template slot-scope="scope">
-            <el-button
-              v-show="valueOrder.columnName === 'LineDescription'"
-              type="text"
-              icon="el-icon-document-copy"
-              @click="copyCode(scope.row)"
-            />
-            <span v-if="scope.row.isEditQty && valueOrder.columnName === 'QtyEntered'">
-              <el-button v-if="scope.row.isLoading" :loading="scope.row.isLoading" />
-              <edit-qty-entered
-                v-else
-                :qty="Number(scope.row.quantity_ordered.value)"
-                :handle-change="updateQuantity"
-              />
-            </span>
-            <span v-else>
-              {{ displayValue({ row: scope.row, columnName: valueOrder.columnName }) }}
-            </span>
+            <p style="margin: 0px !important;">
+              <el-button
+                size="mini"
+                type="text"
+                icon="el-icon-delete"
+                style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #ff4949;"
+                :disabled="scope.row.isLoading"
+                @click="deleteLine(scope.row)"
+              >
+                <i v-if="!scope.row.isLoading" class="el-icon-delete" />
+                <i v-else class="el-icon-loading" />
+              </el-button>
+            </p>
           </template>
         </el-table-column>
-      </template>
-      <el-table-column
-        :label="$t('form.pos.tableProduct.options')"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="danger"
-            icon="el-icon-delete"
-            style="margin-left: 5px;"
-            :disabled="scope.row.isLoading"
-            :loading="scope.row.isLoading"
-            @click="deleteLine(scope.row)"
-          />
-        </template>
-      </el-table-column>
-    </el-table>
+      </el-table>
+    </span>
     <info-r-m-a />
     <br>
     <span v-if="isShowCheck" style="float: right;margin-top: 10px;">

@@ -82,10 +82,13 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     </el-card>
     <el-button
       slot="reference"
-      icon="el-icon-info"
-      type="primary"
+      style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #13ce66;"
+      type="text"
       size="mini"
-    />
+    >
+      <i v-if="!infoLine.isLoading" class="el-icon-info" />
+      <i v-else class="el-icon-loading" />
+    </el-button>
   </el-popover>
 </template>
 
