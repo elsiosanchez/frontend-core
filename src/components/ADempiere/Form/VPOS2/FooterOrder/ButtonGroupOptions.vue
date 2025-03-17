@@ -37,6 +37,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         v-show="!isEmptyValue(order) && !isEmptyValue(currentLine)"
         type="danger"
         icon="el-icon-delete"
+        :disabled="validateProcess"
         @click="deleteOrderLine(currentLine)"
       />
       <el-button
@@ -53,7 +54,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         icon="el-icon-bank-card"
         @click="openShowCollections"
       >
-        {{ $t('form.pos.order.collect') }}
+        {{ labelButtonCollections }}
       </el-button>
     </el-col>
   </el-row>
@@ -62,6 +63,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
 import store from '@/store'
+import lang from '@/lang'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 
@@ -74,6 +76,18 @@ export default defineComponent({
 
     const currentLine = computed(() => {
       return store.getters.getCurrentLine
+    })
+
+    const validateProcess = computed(() => {
+      const { is_processed, is_processing } = order.value
+      return is_processed || is_processing
+    })
+
+    const labelButtonCollections = computed(() => {
+      if (validateProcess.value) {
+        return lang.t('form.pos.order.collections')
+      }
+      return lang.t('form.pos.order.collect')
     })
 
     function releaseOrder(order) {
@@ -99,6 +113,8 @@ export default defineComponent({
       // Computed
       order,
       currentLine,
+      validateProcess,
+      labelButtonCollections,
       // Methods
       releaseOrder,
       deleteOrderLine,

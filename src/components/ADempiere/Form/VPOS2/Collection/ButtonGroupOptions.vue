@@ -38,7 +38,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         type="primary"
         icon="el-icon-shopping-cart-full"
         class="button-base-icon"
-        :disabled="isLoadingProcess || isLoading"
+        :disabled="isLoadingProcess || isLoading || validateProcess"
         :loading="isLoadingProcess"
         @click="processOrdes"
       />
@@ -78,6 +78,11 @@ export default defineComponent({
 
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
+    })
+
+    const validateProcess = computed(() => {
+      const { is_processed, is_processing } = currentOrder.value
+      return is_processed || is_processing
     })
 
     function addPayment() {
@@ -199,10 +204,11 @@ export default defineComponent({
     return {
       isLoading,
       payAmount,
-      currentOrder,
       currentPos,
+      currentOrder,
       currentAccount,
       isLoadingProcess,
+      validateProcess,
       close,
       addPayment,
       processOrdes

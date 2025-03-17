@@ -88,7 +88,7 @@
     </el-col>
 
     <!-- completePreparedOrder -->
-    <el-col :span="8">
+    <el-col v-if="!validateProcess" :span="8">
       <div @click="completePreparedOrder">
         <el-card
           shadow="never"
@@ -350,7 +350,7 @@
     </el-col>
 
     <!-- applyDiscountOnOrder -->
-    <el-col v-if="isAllowsApplyDiscount" :span="8">
+    <el-col v-if="isAllowsApplyDiscount && !validateProcess" :span="8">
       <el-popover
         ref="showApplyDiscountOnOrder"
         placement="bottom"
@@ -426,7 +426,7 @@
     </el-col>
 
     <!-- applyDiscountToAllLines -->
-    <el-col v-if="isAllowsApplyDiscount" :span="8">
+    <el-col v-if="isAllowsApplyDiscount && !validateProcess" :span="8">
       <el-popover
         ref="showApplyDiscountToAllLines"
         placement="bottom"
@@ -620,6 +620,11 @@ export default defineComponent({
 
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
+    })
+
+    const validateProcess = computed(() => {
+      const { is_processed, is_processing } = currentOrder.value
+      return is_processed || is_processing
     })
 
     const isAllowsPrintDocument = computed(() => {
@@ -981,6 +986,7 @@ export default defineComponent({
       IsCancelOrder,
       isDisableClass,
       isShowShipment,
+      validateProcess,
       isNewOrderFromRMA,
       isConfirmShipment,
       isAllowsReturnOrder,

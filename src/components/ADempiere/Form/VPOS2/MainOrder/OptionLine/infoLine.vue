@@ -140,6 +140,10 @@ export default defineComponent({
     infoLine: {
       type: Object,
       default: () => {}
+    },
+    isProcessed: {
+      type: Boolean,
+      default: false
     }
   },
   setup() {

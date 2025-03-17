@@ -248,6 +248,15 @@ export default defineComponent({
       return store.getters.getVPOS
     })
 
+    const currentOrder = computed(() => {
+      return store.getters.getCurrentOrder
+    })
+
+    const validateProcess = computed(() => {
+      const { is_processed, is_processing } = currentOrder.value
+      return is_processed || is_processing
+    })
+
     /**
      * Methods copyCode
      * @param {*} value - The object containing the product information.
@@ -329,6 +338,7 @@ export default defineComponent({
      */
 
     function editLine(row, column, cell) {
+      if (validateProcess.value) return
       const { columnKey } = column
       if (columnKey === 'CurrentPrice') row.isEditCurrentPrice = true
       if (columnKey === 'QtyEntered') row.isEditQtyEntered = true
@@ -545,9 +555,11 @@ export default defineComponent({
       isLoadingQty,
       // Computed
       lines,
-      orderLineDefinition,
       isLoading,
       currentPos,
+      currentOrder,
+      validateProcess,
+      orderLineDefinition,
       // Methods
       handleCurrentChangeOrderLine,
       displayLabel,

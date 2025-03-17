@@ -53,6 +53,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 :value-amount="displayLineProductPriceValue({ row: editLine })"
                 :value-display="displayLinePrice({ row: editLine })"
                 :handle-change="updatePrice"
+                :disabled="isProcessed"
               />
             </el-form-item>
           </el-col>
@@ -64,6 +65,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             >
               <el-select
                 v-model="valueUOM"
+                :disabled="isProcessed"
                 @change="updateUOM"
                 @visible-change="showListUOM"
               >
@@ -86,6 +88,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 :qty="Number(editLine.quantity)"
                 :display-value="editLine.quantity"
                 :handle-change="updateQuantity"
+                :disabled="isProcessed"
               />
             </el-form-item>
           </el-col>
@@ -138,6 +141,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 :value-amount="Number(editLine.discount_rate.value)"
                 :value-display="editLine.discount_rate"
                 :handle-change="updateDiscount"
+                :disabled="isProcessed"
               />
             </el-form-item>
           </el-col>
@@ -150,6 +154,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               <el-select
                 v-model="valueStock"
                 style="width: 100%;"
+                :disabled="isProcessed"
                 @change="updateStock"
                 @visible-change="showListStock"
               >
@@ -218,6 +223,10 @@ export default defineComponent({
     editLine: {
       type: Object,
       default: () => {}
+    },
+    isProcessed: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {

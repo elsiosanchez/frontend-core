@@ -18,17 +18,19 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <p style="margin: 0px;text-align: center;">
     <info-line
       :info-line="line"
+      :is-processed="validateProcess"
       style="padding: 0px 5px;"
     />
     <edit-line
       :edit-line="line"
+      :is-processed="validateProcess"
       style="padding: 0px 5px;"
     />
     <el-button
       v-if="!isEmptyValue(line)"
       type="text"
       style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #ff4949;"
-      :disabled="line.isLoading"
+      :disabled="line.isLoading || validateProcess"
       @click="deleteLine()"
     >
       <i v-if="!line.isLoading" class="el-icon-delete" />
@@ -38,7 +40,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import store from '@/store'
 // Components and Mixins
 import infoLine from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/infoLine'
@@ -57,6 +59,15 @@ export default defineComponent({
     }
   },
   setup(props) {
+    const currentOrder = computed(() => {
+      return store.getters.getCurrentOrder
+    })
+
+    const validateProcess = computed(() => {
+      const { is_processed, is_processing } = currentOrder.value
+      return is_processed || is_processing
+    })
+
     function deleteLine() {
       props.line.isLoading = true
       store.dispatch('deleteCurrentLine', {
@@ -64,6 +75,8 @@ export default defineComponent({
       })
     }
     return {
+      currentOrder,
+      validateProcess,
       deleteLine
     }
   }

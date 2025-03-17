@@ -368,6 +368,7 @@ export default {
         const pos = getters.getVPOS
         const order = getters.getCurrentOrder
         const getListLines = getters.getListOrderLines
+        const indexDelete = getListLines.findIndex((line) => line.id === lineId)
         if (isEmptyValue(lineId)) resolve({})
         deleteOrderLine({
           posId: pos.id,
@@ -375,7 +376,6 @@ export default {
           lineId
         })
           .then(() => {
-            const indexDelete = getListLines.findIndex((line) => line.id === lineId)
             getListLines.splice(indexDelete, 1)
             commit('setOrder', {})
             dispatch('overloadOrder', {
@@ -385,6 +385,20 @@ export default {
             resolve({})
           })
           .catch(error => {
+            dispatch('overloadOrder', {
+              order,
+              isListLine: false
+            })
+            const listLines = getListLines.map(list => {
+              if (list.id === lineId) {
+                return {
+                  ...list,
+                  isLoading: false
+                }
+              }
+              return list
+            })
+            commit('setListOrderLines', listLines)
             console.warn(`Delete Order: ${error.message}. Code: ${error.code}.`)
             let message = error.message
             if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
