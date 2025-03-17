@@ -123,7 +123,7 @@ export default defineComponent({
       if (total === 0) {
         isLoadingProcess.value = true
         store.dispatch('process', {})
-          .then(() => {
+          .finally(() => {
             isLoadingProcess.value = false
           })
       } else if (Number(open_amount) > 0) {
@@ -139,7 +139,7 @@ export default defineComponent({
                 doneMethod: () => {
                   isLoadingProcess.value = true
                   store.dispatch('process', {})
-                    .then(() => {
+                    .finally(() => {
                       isLoadingProcess.value = false
                     })
                 },
@@ -149,7 +149,11 @@ export default defineComponent({
               })
               return
             }
+            isLoadingProcess.value = true
             store.dispatch('process', {})
+              .finally(() => {
+                isLoadingProcess.value = false
+              })
           },
           componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/openBalance.vue'),
           isShowed: true
@@ -167,7 +171,7 @@ export default defineComponent({
                 doneMethod: () => {
                   isLoadingProcess.value = true
                   store.dispatch('process', {})
-                    .then(() => {
+                    .finally(() => {
                       isLoadingProcess.value = false
                     })
                 },
@@ -177,7 +181,11 @@ export default defineComponent({
               })
               return
             }
+            isLoadingProcess.value = true
             store.dispatch('process', {})
+              .finally(() => {
+                isLoadingProcess.value = false
+              })
           },
           componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/overdrawnInvoice.vue'),
           isShowed: true
