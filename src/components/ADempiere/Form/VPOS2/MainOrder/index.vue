@@ -583,19 +583,12 @@ export default defineComponent({
   padding-right: 5px;
 }
 </style>
-
-<style scope>
-  .el-table{
-    overflow: auto;
-    height: calc(100vh - 335px) !important
-  }
-</style>
 <style lang="scss">
 .tablePos {
   height: 100%;
   overflow: auto;
   .el-table {
-    height: 100% !important;
+    height: calc(100vh - 335px) !important;
     overflow: hidden !important;
   }
   .el-table .el-table__cell {
