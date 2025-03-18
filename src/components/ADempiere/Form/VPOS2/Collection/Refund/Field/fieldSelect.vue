@@ -31,7 +31,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import { computed, defineComponent, watch } from '@vue/composition-api'
+import { computed, defineComponent } from '@vue/composition-api'
 
 import store from '@/store'
 import { isEmptyValue } from '@/utils/ADempiere'
@@ -86,56 +86,12 @@ export default defineComponent({
       }
     })
 
-    function findConverRate(currency) {
-      const { price_list } = currentOrder.value
-      let amountConvert = Number(store.getters.getCurrentOrder.open_amount.value)
-      if (
-        isEmptyValue(currency) ||
-        !isEmptyValue(price_list) &&
-        currency.id === price_list.currency.id
-      ) {
-        store.commit('setPayAmount', amountConvert)
-      } else {
-        const rate = store.getters.getRate({ date: currentOrder.value.date_ordered })
-        if (!isEmptyValue(rate)) {
-          amountConvert = amountConvert / dayRate.value
-          store.commit('setPayAmount', amountConvert)
-        } else {
-          store.dispatch('findRate', {
-            currencyToId: currency.id
-          })
-            .then(response => {
-              const {
-                multiply_rate,
-                divide_rate
-              } = response
-              if (
-                !isEmptyValue(multiply_rate) &&
-                !isEmptyValue(divide_rate)
-              ) {
-                const amountRate = (multiply_rate.value > divide_rate.value) ? multiply_rate.value : divide_rate.value
-                amountConvert = amountConvert / amountRate.value
-                store.commit('setPayAmount', amountConvert)
-              }
-            })
-        }
-      }
-    }
-
-    watch(currencie, (newValue, oldValue) => {
-      if (!isEmptyValue(newValue) && newValue !== oldValue) {
-        const currency = listCurrencies.value.find(list => list.id === newValue)
-        findConverRate(currency)
-      }
-    })
-
     return {
       dayRate,
       currencie,
       isDisabled,
       currentOrder,
-      listCurrencies,
-      findConverRate
+      listCurrencies
     }
   }
 })

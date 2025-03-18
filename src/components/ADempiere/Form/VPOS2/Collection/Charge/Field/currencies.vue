@@ -127,8 +127,8 @@ export default defineComponent({
                 !isEmptyValue(multiply_rate) &&
                 !isEmptyValue(divide_rate)
               ) {
-                const amountRate = (multiply_rate.value > divide_rate.value) ? multiply_rate.value : divide_rate.value
-                amountConvert = amountConvert / amountRate.value
+                const amountRate = (multiply_rate > divide_rate) ? multiply_rate : divide_rate
+                amountConvert = amountConvert / amountRate
                 store.commit('setPayAmount', amountConvert)
               }
             })

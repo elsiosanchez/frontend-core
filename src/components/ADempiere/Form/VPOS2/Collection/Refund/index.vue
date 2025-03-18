@@ -45,7 +45,9 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           />
         </el-col>
         <el-col :span="8">
-          <currencie />
+          <currencie
+            :handle-change="changeCurrency"
+          />
         </el-col>
         <el-col v-if="typeOptions === '2'" :span="8">
           <banks-accounts />
@@ -510,6 +512,32 @@ export default defineComponent({
       }
     }
 
+    function changeCurrency(currencyId) {
+      if (currencyId === currentOrder.value.price_list.currency.id) {
+        store.commit('setPayAmount', Number(currentOrder.value.refund_amount))
+        updateAmount(Number(currentOrder.value.refund_amount))
+        return
+      }
+      store.dispatch('findRate', {
+        currencyToId: currencyId
+      })
+        .then(response => {
+          const {
+            multiply_rate,
+            divide_rate
+          } = response
+          if (
+            !isEmptyValue(multiply_rate) &&
+            !isEmptyValue(divide_rate)
+          ) {
+            const amountRate = (multiply_rate > divide_rate) ? multiply_rate : divide_rate
+            const amountConvert = Number(currentOrder.value.refund_amount) / Number(amountRate)
+            store.commit('setPayAmount', amountConvert)
+            updateAmount(amountConvert)
+          }
+        })
+    }
+
     setAmount()
 
     return {
@@ -531,6 +559,7 @@ export default defineComponent({
       addPayment,
       formatPrice,
       updateAmount,
+      changeCurrency,
       changePaymentMethods,
       isDisplayFieldPayment
     }
