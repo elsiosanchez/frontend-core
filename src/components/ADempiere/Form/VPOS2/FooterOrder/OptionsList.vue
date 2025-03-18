@@ -295,6 +295,7 @@ export default defineComponent({
       store.dispatch('listCampaigns')
       store.dispatch('listAvailableWarehouse')
       store.dispatch('listAvailableDocumentTypes')
+      store.dispatch('listAvailableDiscounts')
       store.dispatch('listAvailableSellers')
     }
 

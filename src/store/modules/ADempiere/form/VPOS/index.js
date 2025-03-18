@@ -29,8 +29,8 @@ import {
   listCampaigns,
   listAvailableSellers,
   // listAvailableCurrencies,
-  listAvailableDocumentTypes
-  // listAvailableDiscounts,
+  listAvailableDocumentTypes,
+  listAvailableDiscounts
 } from '@/api/ADempiere/form/VPOS'
 import {
   listCommandShortcut
@@ -45,6 +45,7 @@ const VPOS = {
   listWarehouses: [],
   listCurrencies: [],
   listCampaigns: [],
+  listDiscounts: [],
   listCommand: [],
   listSellers: [],
   listPrices: [],
@@ -72,6 +73,9 @@ export default {
     },
     setListSellers(state, list) {
       state.listSellers = list
+    },
+    setListDiscounts(state, list) {
+      state.listDiscounts = list
     },
     setListDocumentTypes(state, list) {
       state.listDocumentTypes = list
@@ -369,6 +373,41 @@ export default {
       })
     },
     /**
+     * List of Available Discounts
+     * @param {Number} posId
+     */
+    listAvailableDiscounts({ commit, getters }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(currentPos)) {
+          resolve([])
+          return
+        }
+        listAvailableDiscounts({
+          posId: currentPos.id
+        })
+          .then(response => {
+            const { discounts } = response
+            commit('setListDiscounts', discounts)
+            resolve(discounts)
+          })
+          .catch(error => {
+            console.warn(`List of Discounts: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve([])
+          })
+      })
+    },
+    /**
      * List of Available Warehouses
      * @param {Number} posId
      */
@@ -456,9 +495,9 @@ export default {
     getListCampaigns: (state) => {
       return state.listCampaigns
     },
-    // getListSellers: (state) => {
-    //   return state.listSellers
-    // },
+    getListDiscounts: (state) => {
+      return state.listDiscounts
+    },
     getListDocumentTypes: (state) => {
       return state.listDocumentTypes
     },

@@ -501,6 +501,38 @@
       </el-popover>
     </el-col>
 
+    <!-- applyDiscountToAllLines -->
+    <el-col v-if="isAllowsApplySchemaDiscount && !validateProcess" :span="8">
+      <div>
+        <el-card
+          shadow="never"
+          class="custom-card-options"
+          :body-style="{ padding: '10px' }"
+        >
+          <p
+            :class="isDisableClass"
+          >
+            <el-dropdown trigger="click" @command="handleCommandAddress">
+              <span class="el-dropdown-link">
+                <svg-icon icon-class="discount" />
+                <br>
+                {{ $t('form.pos.applyDiscountToAllLines') }} <i class="el-icon-arrow-down el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="(item, index) in listDiscounts"
+                  :key="index"
+                  :command="item"
+                >
+                  {{ item.name }}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </p>
+        </el-card>
+      </div>
+    </el-col>
+
     <!-- Create New Order RMA -->
     <el-col v-if="isRMA" :span="8">
       <div @click="returnProduct">
@@ -594,6 +626,10 @@ export default defineComponent({
     const messageReverseSales = ref('')
     const applyDiscountAmount = ref(0)
 
+    const listDiscounts = computed(() => {
+      return store.getters.getListDiscounts
+    })
+
     const isShowOrdersHistory = computed({
       get() {
         return store.getters.getShowOrdersHistory
@@ -684,6 +720,17 @@ export default defineComponent({
         return false
       }
       return is_allows_apply_discount
+    })
+
+    const isAllowsApplySchemaDiscount = computed(() => {
+      const { is_allows_apply_schema_discount } = currentPointOfSales.value
+      if (is_allows_apply_schema_discount) {
+        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'DR') {
+          return is_allows_apply_schema_discount
+        }
+        return false
+      }
+      return is_allows_apply_schema_discount
     })
 
     const isRMA = computed(() => {
@@ -962,6 +1009,34 @@ export default defineComponent({
       })
     }
 
+    function handleCommandAddress(availableDiscount) {
+      const { is_pos_required_pin, id, flat_discount_percetage } = availableDiscount
+      const { maximum_schema_discount_allowed } = currentPointOfSales.value
+      if (
+        is_pos_required_pin ||
+        (
+          Number(maximum_schema_discount_allowed) > 0 &&
+          Number(maximum_schema_discount_allowed) > Number(flat_discount_percetage)
+        )
+      ) {
+        store.dispatch('setModalPin', {
+          title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.pinMessage.newOrder'),
+          doneMethod: () => {
+            store.dispatch('updateCurrentOrder', {
+              discount_schema_id: id,
+              isListLine: true
+            })
+          },
+          requestedAccess: 'is_allows_apply_schema_discount',
+          isShowed: true
+        })
+      }
+      store.dispatch('updateCurrentOrder', {
+        discount_schema_id: id,
+        isListLine: true
+      })
+    }
+
     return {
       // Ref
       IsCopyOrder,
@@ -984,6 +1059,7 @@ export default defineComponent({
       isRMA,
       currentOrder,
       IsCancelOrder,
+      listDiscounts,
       isDisableClass,
       isShowShipment,
       validateProcess,
@@ -994,6 +1070,7 @@ export default defineComponent({
       isAllowsPrintDocument,
       isAllowsApplyDiscount,
       IsAllowsPreviewDocument,
+      isAllowsApplySchemaDiscount,
       //  Methods
       newOrder,
       copyOrder,
@@ -1010,6 +1087,7 @@ export default defineComponent({
       closeReverseSales,
       closeApplyDiscount,
       completePreparedOrder,
+      handleCommandAddress,
       cancelSaleTransaction,
       confirmShipmentAllProducts
     }

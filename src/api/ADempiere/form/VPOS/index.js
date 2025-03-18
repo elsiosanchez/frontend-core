@@ -439,6 +439,7 @@ export function updateOrder({
   campaign_id,
   discount_rate,
   discount_rate_off,
+  discount_schema_id,
   discount_amount_off,
   sales_representative_id
 }) {
@@ -453,6 +454,7 @@ export function updateOrder({
       campaign_id,
       discount_rate,
       discount_rate_off,
+      discount_schema_id,
       discount_amount_off,
       sales_representative_id
     }

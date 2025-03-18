@@ -430,6 +430,7 @@ export default {
       discount_rate,
       document_type_id,
       discount_rate_off,
+      discount_schema_id,
       discount_amount_off,
       sales_representative_id
     }) {
@@ -451,6 +452,7 @@ export default {
           campaign_id,
           discount_rate,
           discount_rate_off,
+          discount_schema_id,
           discount_amount_off,
           sales_representative_id
         })
