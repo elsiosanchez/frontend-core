@@ -308,6 +308,11 @@ export default {
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentOrder.id)
         ) resolve({})
+        showMessage({
+          type: 'info',
+          message: lang.t('notifications.processing'),
+          showClose: true
+        })
         processOrder({
           posId: currentPos.id,
           orderId: currentOrder.id,
