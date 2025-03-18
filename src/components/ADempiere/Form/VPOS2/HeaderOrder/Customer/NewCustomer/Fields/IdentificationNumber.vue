@@ -18,12 +18,13 @@
 
 <template>
   <el-form-item
+    v-if="isEditTaxId"
     class="field-standard"
     style="margin: 0px;width: 100%;"
   >
     <template slot="label">
       <span class="field-title-name">
-        {{ $t('form.pointOfSales.customer.fieldCutomer.identificationNumber') }}
+        {{ labelField }}
       </span>
       <span style="color: #f34b4b"> * </span>
     </template>
@@ -38,12 +39,19 @@
 import { computed, defineComponent } from '@vue/composition-api'
 
 import store from '@/store'
+import lang from '@/lang'
 // import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'IdentificationNumber',
 
   setup() {
+    const isEditTaxId = computed(() => {
+      return store.getters.getShowTax
+    })
+    const labelField = computed(() => {
+      return lang.t('form.pointOfSales.customer.fieldCutomer.identificationNumber')
+    })
     const identificationNumber = computed({
       get() {
         return store.getters.getAttributeFieldCustomer({
@@ -61,6 +69,8 @@ export default defineComponent({
 
     return {
       // Computed
+      labelField,
+      isEditTaxId,
       identificationNumber
     }
   }

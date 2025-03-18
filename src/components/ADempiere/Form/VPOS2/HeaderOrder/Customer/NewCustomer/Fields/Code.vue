@@ -53,10 +53,6 @@ export default defineComponent({
           attribute: 'code',
           value
         })
-        store.commit('setAttributeFieldCustomer', {
-          attribute: 'identificationNumber',
-          value
-        })
       }
     })
 

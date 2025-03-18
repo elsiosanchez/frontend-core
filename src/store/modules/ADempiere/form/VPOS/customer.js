@@ -44,6 +44,7 @@ const customers = {
   recordCount: 0,
   currentCustomer: {},
   pageToken: '',
+  showTaxId: false,
   fields: {
     code: '',
     identificationNumber: '',
@@ -195,6 +196,9 @@ export default {
     },
     setCurrentTemplates(state, templates) {
       state.currentTemplates = templates
+    },
+    setShowTax(state, show) {
+      state.showTaxId = show
     }
   },
   /**
@@ -681,6 +685,9 @@ export default {
     },
     getCurrentTemplates: (state) => {
       return state.currentTemplates
+    },
+    getShowTax: (state) => {
+      return state.showTaxId
     }
   }
 }

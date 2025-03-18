@@ -67,6 +67,12 @@
             style="float: right;margin: 0px;"
           />
           <el-checkbox
+            v-model="isEditTaxId"
+            :label="$t('form.pointOfSales.customer.fieldCutomer.isEditTax')"
+            :border="true"
+            style="float: right;margin: 0px;"
+          />
+          <el-checkbox
             v-if="isVisibleAddress"
             v-model="copyShippingAddress"
             :label="$t('form.byInvoice.copyShippingAddress')"
@@ -130,6 +136,21 @@ export default defineComponent({
     const isVisibleAddress = ref(false)
     const copyShippingAddress = ref(true)
     const isLoading = ref(false)
+    const isEditTaxId = computed({
+      get() {
+        return store.getters.getShowTax
+      },
+      // setter
+      set(value) {
+        if (value) {
+          store.commit('setAttributeFieldCustomer', {
+            attribute: 'identificationNumber',
+            value: ''
+          })
+        }
+        store.commit('setShowTax', value)
+      }
+    })
 
     // Computed
     const isDisabled = computed(() => {
@@ -300,6 +321,7 @@ export default defineComponent({
     return {
       // Ref
       isLoading,
+      isEditTaxId,
       activeNames,
       isVisibleAddress,
       copyShippingAddress,

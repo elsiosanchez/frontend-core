@@ -27,6 +27,8 @@ const pointOfSales = {
     fieldCutomer: {
       code: 'Cédula',
       identificationNumber: 'Número Identificación',
+      rut: 'RUT',
+      isEditTax: 'Editar Identificador de Impuestos',
       typePerson: 'Tipo de Persona',
       taxPayer: 'Contribuyente',
       taxpayerType: 'Tipo de Contribuyente',
