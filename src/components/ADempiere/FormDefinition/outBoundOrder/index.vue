@@ -69,7 +69,7 @@
           class="button-base-icon"
           icon="el-icon-close"
           :disabled="isLoadingProcess"
-          @click="reset()"
+          @click="exit()"
         />
         <el-button
           v-show="currentStep >= 1"
@@ -123,6 +123,7 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import lang from '@/lang'
 import store from '@/store'
+import router from '@/router'
 
 // Components and Mixins
 import SearchCriteria from './SearchCriteria/index.vue'
@@ -343,7 +344,14 @@ export default defineComponent({
         freight_document_type_id: freightDocumentTypesId
       })
     }
-    function reset() {
+    function exit() {
+      const currentRoute = router.app._route
+      const tabViewsVisited = store.getters.visitedViews
+      store.dispatch('tagsView/delView', currentRoute)
+      const oldRouter = tabViewsVisited[tabViewsVisited.length - 1]
+      router.push({
+        path: oldRouter.path
+      }, () => {})
       store.commit('clearOutputOrder')
     }
     function clearSearch() {
@@ -366,7 +374,7 @@ export default defineComponent({
       refreshRecords,
       validateNextStep,
       runProcess,
-      reset,
+      exit,
       clearSearch
     }
   }
