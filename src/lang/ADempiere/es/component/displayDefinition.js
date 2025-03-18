@@ -23,6 +23,7 @@ const displayDefinition = {
   cardDelete: 'Eliminar',
   seeMore: 'Ver más',
   seeLess: 'Ver menos',
+  copy: 'Copiar Contenido',
   fieldEmpty: 'No se Encontraron Campos'
 }
 

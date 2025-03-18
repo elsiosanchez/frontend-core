@@ -68,6 +68,20 @@
         </p>
       </el-button>
       <el-button
+        class="see-detail-button"
+        style="float: left;"
+        @click="copycontent()"
+      >
+        <p class="see-detail-button-paragraph">
+          <i
+            class="see-detail-icon el-icon-document"
+          />
+          <span class="see-detail-text">
+            {{ $t('component.displayDefinition.copy') }}
+          </span>
+        </p>
+      </el-button>
+      <el-button
         type="danger"
         class="button-base-icon"
         icon="el-icon-close"
@@ -82,6 +96,7 @@
 import store from '@/store'
 import router from '@/router'
 import { defineComponent, computed } from '@vue/composition-api'
+import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 
 export default defineComponent({
   name: 'PanelNotifications',
@@ -103,12 +118,18 @@ export default defineComponent({
         name: 'ProcessActivity'
       }, () => {})
     }
-
+    function copycontent() {
+      copyToClipboard({
+        text: notificationsDetails.value.message,
+        isShowMessage: true
+      })
+    }
     return {
       isNotification,
       notificationsDetails,
       // Methods
-      zoomProcess
+      zoomProcess,
+      copycontent
     }
   }
 })
