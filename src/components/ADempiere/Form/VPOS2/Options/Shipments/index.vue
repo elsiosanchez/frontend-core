@@ -50,8 +50,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </div>
               <div style="width: 30%;float: right;margin: 0px">
                 <p style="overflow: hidden;text-overflow: ellipsis;text-align: end;margin: 0px">
-                  {{ formatQuantity({ value: item.quantity_ordered.value }) }}
-                  <!-- {{ item.quantity_ordered }} -->
+                  {{ formatQuantity({ value: item.remaining_quantity }) }}
                 </p>
               </div>
             </div>
@@ -165,21 +164,34 @@ export default defineComponent({
   setup() {
     const searchProduct = ref('')
     const line = ref({})
-    const lines = computed(() => {
-      return store.getters.getListOrderLines
-    })
 
     const shipmentLines = computed(() => {
       return store.getters.getShipmentList
     })
 
+    const listproduct = computed(() => {
+      return subtractQuantities(store.getters.getListOrderLines, shipmentLines.value)
+    })
+
     // Methods
+
+    function subtractQuantities(orderLines, shipmentLines) {
+      const shipmentMap = new Map(shipmentLines.map(({ order_line_id, movement_quantity }) => [order_line_id, parseFloat(movement_quantity)]))
+      return orderLines
+        .map(orderLine => {
+          const quantityOrdered = parseFloat(orderLine.quantity_ordered)
+          const movementQuantity = shipmentMap.get(orderLine.id) || 0
+          const remainingQuantity = (quantityOrdered - movementQuantity).toFixed(2)
+          return { ...orderLine, remaining_quantity: remainingQuantity }
+        })
+        .filter(({ remaining_quantity }) => parseFloat(remaining_quantity) > 0)
+    }
 
     /**
      * Query Search
      */
     function querySearch(queryString, callback) {
-      var results = queryString ? lines.value.filter(productFilter(queryString)) : lines.value
+      var results = queryString ? listproduct.value.filter(productFilter(queryString)) : listproduct.value
       callback(results)
     }
 
@@ -196,7 +208,7 @@ export default defineComponent({
         quantity_ordered
       } = item
       store.dispatch('createShipmentLine', {
-        quantity: quantity_ordered.value,
+        quantity: quantity_ordered,
         orderLineId: id
       })
     }
@@ -240,7 +252,7 @@ export default defineComponent({
       // Ref
       searchProduct,
       // Computed
-      lines,
+      listproduct,
       shipmentLines,
       // Methods
       exitLine,

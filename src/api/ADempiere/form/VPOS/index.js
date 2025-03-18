@@ -1057,7 +1057,7 @@ export function createShipmentLine({
     data: {
       description,
       order_line_id: orderLineId,
-      quantity: quantity.toString()
+      quantity: quantity
     }
   })
 }
