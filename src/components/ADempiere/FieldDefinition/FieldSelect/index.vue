@@ -257,7 +257,7 @@ export default {
     },
     findOption(value) {
       // const option = this.optionsList.find(item => item.value === value)
-      const option = this.getStoredLookupAll.find(item => item.value === value)
+      const option = this.optionsList.find(item => item.value === value)
       if (option && option.displayedValue) {
         return option
       }
