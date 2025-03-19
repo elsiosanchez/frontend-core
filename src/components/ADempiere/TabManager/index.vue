@@ -1127,7 +1127,11 @@ export default defineComponent({
         })
     }
     const isDisplayPanelDefinitions = computed(() => {
-      return store.getters.getCurrentDisplayTabDefinitions({ tableName: currentTabTableName.value })
+      const display = store.getters.getCurrentDisplayTabDefinitions({ tableName: currentTabTableName.value })
+      if (display.display_type !== 'X') {
+        return display
+      }
+      return undefined
     })
 
     findRecordLogs(props.allTabsList[0])

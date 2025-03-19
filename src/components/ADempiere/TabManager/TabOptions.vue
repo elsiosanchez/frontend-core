@@ -239,7 +239,16 @@ export default defineComponent({
     })
 
     const listOptionsDisplayDefenitions = computed(() => {
-      return store.getters.getListDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+      const list = []
+      const displays = store.getters.getListDisplayTabDefinitions({ tableName: props.tabAttributes.table_name })
+      if (!isEmptyValue(displays)) {
+        displays.forEach(display => {
+          if (display.display_type !== 'X') {
+            list.push(display)
+          }
+        })
+      }
+      return list
     })
 
     const tabData = computed(() => {

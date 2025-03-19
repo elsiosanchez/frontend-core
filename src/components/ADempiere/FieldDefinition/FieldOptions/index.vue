@@ -439,7 +439,7 @@ export default defineComponent({
               tableName: referenceTableName
             })
             response.forEach(element => {
-              listAllOptions.value.unshift(actionsDisplayDefinitionsFields({ displayDefinition: element }))
+              listAllOptions.value.splice(1, 0, actionsDisplayDefinitionsFields({ displayDefinition: element }))
             })
           })
       }
