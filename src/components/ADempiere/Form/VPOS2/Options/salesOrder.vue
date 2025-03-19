@@ -516,7 +516,7 @@
               <span class="el-dropdown-link">
                 <svg-icon icon-class="discount" />
                 <br>
-                {{ $t('form.pos.applyDiscountToAllLines') }} <i class="el-icon-arrow-down el-icon--right" />
+                {{ $t('form.pos.applySchemaDiscount') }} <i class="el-icon-arrow-down el-icon--right" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -1016,7 +1016,7 @@ export default defineComponent({
         is_pos_required_pin ||
         (
           Number(maximum_schema_discount_allowed) > 0 &&
-          Number(maximum_schema_discount_allowed) > Number(flat_discount_percetage)
+          Number(flat_discount_percetage) > Number(maximum_schema_discount_allowed)
         )
       ) {
         store.dispatch('setModalPin', {

@@ -297,6 +297,7 @@ export default {
       fieldDiscountAmount: 'Monto de Descuento',
       salesDiscountOff: 'Aplicar Descuento en Venta',
       applyDiscountToAllLines: 'Aplicar Descuento a Todas las Lineas',
+      applySchemaDiscount: 'Aplicar Descuento por Esquema',
       returnProduct: 'Devolver Producto',
       createNewOrderRMA: 'Crear Nueva Orden desde el RMA',
       discountRate: '% Discounto',

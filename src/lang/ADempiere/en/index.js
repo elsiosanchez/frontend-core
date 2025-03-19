@@ -296,6 +296,7 @@ export default {
       fieldDiscountAmount: 'Discount Amount',
       salesDiscountOff: 'Apply Discount on Sale',
       applyDiscountToAllLines: 'Apply Discount to All Lines',
+      applySchemaDiscount: 'Apply Schema Discount',
       returnProduct: 'Return Product',
       createNewOrderRMA: 'Create New Order from RMA',
       discountRate: '% Descuent',
