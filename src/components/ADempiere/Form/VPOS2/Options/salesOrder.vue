@@ -516,7 +516,7 @@
               <span class="el-dropdown-link">
                 <svg-icon icon-class="discount" />
                 <br>
-                {{ $t('form.pos.applySchemaDiscount') }} <i class="el-icon-arrow-down el-icon--right" />
+                {{ $t('form.pos.applySchemaDiscount') }}
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -1020,7 +1020,7 @@ export default defineComponent({
         )
       ) {
         store.dispatch('setModalPin', {
-          title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.pinMessage.newOrder'),
+          title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.applySchemaDiscount'),
           doneMethod: () => {
             store.dispatch('updateCurrentOrder', {
               discount_schema_id: id,
