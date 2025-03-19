@@ -25,7 +25,8 @@ const pointOfSales = {
     updateCustomer: 'Update Customer',
     updateBusinessPartner: 'Update Business Partner',
     fieldCutomer: {
-      code: 'Cédula',
+      code: 'Value',
+      codePlaceholder: 'If the code is not filled in, it will be generated automatically.',
       identificationNumber: 'Identification Number',
       rut: 'RUT',
       isEditTax: 'Edit Tax Identifier',

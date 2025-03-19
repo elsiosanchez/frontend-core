@@ -154,15 +154,16 @@ export default defineComponent({
 
     // Computed
     const isDisabled = computed(() => {
-      const code = store.getters.getAttributeFieldCustomer({
-        attribute: 'code'
+      const taxId = store.getters.getAttributeFieldCustomer({
+        attribute: 'identificationNumber'
       })
       const name = store.getters.getAttributeFieldCustomer({
         attribute: 'name'
       })
-      if (isEmptyValue(name) || isEmptyValue(code)) {
-        return true
-      }
+
+      if (isEmptyValue(name)) return true
+
+      if (isEditTaxId.value && isEmptyValue(taxId)) return true
 
       if (isVisibleAddress.value) {
         if (!copyShippingAddress.value) {

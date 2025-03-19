@@ -25,7 +25,8 @@ const pointOfSales = {
     updateCustomer: 'Actualizar Cliente',
     updateBusinessPartner: 'Actualizar Socio de Negocio',
     fieldCutomer: {
-      code: 'Cédula',
+      code: 'Código',
+      codePlaceholder: 'Si no se llena el Código se generara automaticamente',
       identificationNumber: 'Número Identificación',
       rut: 'RUT',
       isEditTax: 'Editar Identificador de Impuestos',

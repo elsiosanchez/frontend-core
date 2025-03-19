@@ -23,10 +23,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       <span class="field-title-name">
         {{ $t('form.pointOfSales.customer.fieldCutomer.code') }}
       </span>
-      <span style="color: #f34b4b"> * </span>
     </template>
     <el-input
       v-model="code"
+      :placeholder="$t('form.pointOfSales.customer.fieldCutomer.codePlaceholder')"
       size="medium"
     />
   </el-form-item>
