@@ -74,11 +74,8 @@
       >
         <p class="see-detail-button-paragraph">
           <i
-            class="see-detail-icon el-icon-document"
+            class="see-detail-icon el-icon-document-copy"
           />
-          <span class="see-detail-text">
-            {{ $t('component.displayDefinition.copy') }}
-          </span>
         </p>
       </el-button>
       <el-button
