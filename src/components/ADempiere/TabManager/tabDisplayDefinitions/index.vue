@@ -441,7 +441,8 @@ export default defineComponent({
   }
   .el-dialog__body {
     padding: 0px;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     border-radius: 10px;
     border: 1px solid #e6ebf5;
   }

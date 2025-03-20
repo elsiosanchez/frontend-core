@@ -239,6 +239,7 @@ export default defineComponent({
 .box-card-panel-display-definition {
   .el-card__body {
     padding: 2px !important;
+    padding-left: 0.75em !important;
     margin-top: 5px !important;
   }
 }

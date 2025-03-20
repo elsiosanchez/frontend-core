@@ -51,7 +51,7 @@
               <el-form
                 label-position="top"
                 label-width="100px"
-                size="small"
+                size="mini"
                 class="field-component-display-definition"
               >
                 <template
