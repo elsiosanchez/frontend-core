@@ -180,6 +180,10 @@ export default defineComponent({
       })
     })
 
+    const contextCountrytId = computed(() => {
+      return store.getters.getSessionContextCountrytId
+    })
+
     function labelDirecction(address) {
       if (isEmptyValue(address)) return ''
       const {
@@ -220,7 +224,16 @@ export default defineComponent({
     function openEditAddress(address) {
       showEditAddress.value = true
       if (isEmptyValue(address)) {
-        store.commit('setAttributeAddres', {})
+        store.dispatch('countriesStandardAddress', {})
+          .finally(() => {
+            store.commit('setAttributeAddres', {
+              countryId: contextCountrytId.value,
+              listCountries: store.getters.getAttributeFieldStandardAddress({
+                attribute: 'listCountries'
+              })
+            })
+            store.dispatch('countrieStandardAddress', { countryId: contextCountrytId.value })
+          })
         return
       }
       currentAddress.value = address
@@ -238,6 +251,9 @@ export default defineComponent({
           store.commit('setAttributeAddres', {
             ...address,
             countryId: country_id,
+            listCountries: store.getters.getAttributeFieldStandardAddress({
+              attribute: 'listCountries'
+            }),
             regionId: isEmptyValue(region) ? undefined : region.id,
             cityId: isEmptyValue(city) ? undefined : city.id,
             cityLabel: isEmptyValue(city) ? undefined : city.name,
@@ -245,6 +261,7 @@ export default defineComponent({
             locationName: location_name,
             posalCodeAdditional: postal_code_additional
           })
+          store.dispatch('countrieStandardAddress', { countryId: country_id })
         })
     }
 
@@ -290,9 +307,10 @@ export default defineComponent({
 
     return {
       isLoading,
+      addressEdti,
       currentAddress,
       showEditAddress,
-      addressEdti,
+      contextCountrytId,
       // Methdos
       close,
       typeTag,

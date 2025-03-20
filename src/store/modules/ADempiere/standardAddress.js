@@ -27,7 +27,7 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { setComponentSequenceStandardNewAddressPanel, setComponentSequenceStandardAddressPanel } from '@/utils/ADempiere/dictionary/field/locationAddress'
+import { setComponentSequenceStandardAddressPanel } from '@/utils/ADempiere/dictionary/field/locationAddress'
 
 const standardAddress = {
   showPanelAddress: false,
@@ -60,7 +60,7 @@ const standardAddress = {
   },
   newAddress: {
     shippingAddress: {
-      is_default_billing: false,
+      is_default_billing: true,
       is_default_shipping: true,
       posalCodeAdditional: '',
       countryId: undefined,
@@ -93,7 +93,7 @@ const standardAddress = {
       locationName: '',
       listCountries: [],
       is_default_billing: true,
-      is_default_shipping: false,
+      is_default_shipping: true,
       listRegions: [],
       listCities: [],
       postalCode: '',
@@ -128,8 +128,8 @@ export default {
       state.address[attribute] = value
     },
     setAttributeAddres(state, {
-      is_default_shipping = false,
-      is_default_billing = false,
+      is_default_shipping = true,
+      is_default_billing = true,
       posalCodeAdditional = '',
       countryId = undefined,
       regionId = undefined,
@@ -215,15 +215,6 @@ export default {
         listCountriesRequest({})
           .then(response => {
             const { countries } = response
-            if (!isEmptyValue(typeLocations)) {
-              commit('setAttributeFieldAddressNew', {
-                typeLocations,
-                attribute: 'listCountries',
-                value: countries
-              })
-              resolve(response)
-              return
-            }
             commit('setAttributeFieldAddress', {
               attribute: 'listCountries',
               value: countries
@@ -252,37 +243,18 @@ export default {
       typeLocations = ''
     }) {
       return new Promise(resolve => {
-        let countryId = getters.getAttributeFieldStandardAddress({
+        const countryId = getters.getAttributeFieldStandardAddress({
           attribute: 'countryId'
         })
-        let regionId = getters.getAttributeFieldStandardAddress({
+        const regionId = getters.getAttributeFieldStandardAddress({
           attribute: 'regionId'
         })
-        if (!isEmptyValue(typeLocations)) {
-          countryId = getters.getAttributeFieldStandardNewAddress({
-            typeLocations,
-            attribute: 'countryId'
-          })
-          regionId = getters.getAttributeFieldStandardNewAddress({
-            typeLocations,
-            attribute: 'regionId'
-          })
-        }
         listCitiesRequest({
           countryId,
           regionId
         })
           .then(response => {
             const { cities } = response
-            if (!isEmptyValue(typeLocations)) {
-              commit('setAttributeFieldAddressNew', {
-                attribute: 'listCities',
-                typeLocations,
-                value: cities
-              })
-              resolve(response)
-              return
-            }
             commit('setAttributeFieldAddress', {
               attribute: 'listCities',
               value: cities
@@ -315,18 +287,6 @@ export default {
           id: countryId
         })
           .then(response => {
-            if (!isEmptyValue(typeLocations)) {
-              commit('setAttributeFieldAddressNew', {
-                attribute: 'countries',
-                typeLocations,
-                value: {
-                  ...response,
-                  secuenceComponent: setComponentSequenceStandardNewAddressPanel(response)
-                }
-              })
-              resolve(response)
-              return
-            }
             commit('setAttributeFieldAddress', {
               attribute: 'countries',
               value: {
@@ -358,29 +318,14 @@ export default {
       typeLocations = ''
     }) {
       return new Promise(resolve => {
-        let countryId = getters.getAttributeFieldStandardAddress({
+        const countryId = getters.getAttributeFieldStandardAddress({
           attribute: 'countryId'
         })
-        if (!isEmptyValue(typeLocations)) {
-          countryId = getters.getAttributeFieldStandardNewAddress({
-            typeLocations,
-            attribute: 'countryId'
-          })
-        }
         listRegionsRequest({
           countryId
         })
           .then(response => {
             const { regions } = response
-            if (!isEmptyValue(typeLocations)) {
-              commit('setAttributeFieldAddressNew', {
-                attribute: 'listRegions',
-                typeLocations,
-                value: regions
-              })
-              resolve(response)
-              return
-            }
             commit('setAttributeFieldAddress', {
               attribute: 'listRegions',
               value: regions

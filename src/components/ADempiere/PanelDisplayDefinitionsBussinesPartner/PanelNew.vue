@@ -89,12 +89,8 @@
           </el-row>
         </div>
       </el-card>
-      <!-- <panel
-        v-if="!isEmptyValue(customer)"
-        :all-customer-addresses="customer.addresses"
-        :customer="customer"
-      /> -->
-      <address-new v-if="isVisibleAddress" />
+      <!-- <address-new  /> -->
+      <address-standard v-if="isVisibleAddress" />
       <el-button
         type="primary"
         class="button-base-icon"
@@ -124,7 +120,8 @@ import store from '@/store'
 import language from '@/lang'
 
 // Components and Mixins
-import AddressNew from '@/components/ADempiere/StandardAddressPanel/AddressNew/index.vue'
+// import AddressNew from '@/components/ADempiere/StandardAddressPanel/AddressNew/index.vue'
+import AddressStandard from '@/components/ADempiere/StandardAddressPanel/AddAddress/index.vue'
 import Panel from '@/components/ADempiere/FieldDefinition/FieldOptions/infoCustomer/Panel.vue'
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
@@ -138,7 +135,8 @@ export default defineComponent({
 
   components: {
     Panel,
-    AddressNew,
+    // AddressNew,
+    AddressStandard,
     LoadingView,
     FieldsDisplayDefinitions
   },
@@ -197,8 +195,8 @@ export default defineComponent({
     // Computed
     const updateFIeldDisplay = computed(() => {
       const { displyDefinitions } = store.getters.getCurrentTabPanelDefinition
-      const { isDisplayField, isReadOnlyField } = displyDefinitions
-      return isDisplayField || isReadOnlyField
+      const { isReadOnlyField } = displyDefinitions
+      return isReadOnlyField
     })
     const displayDefinitionMetadata = computed(() => {
       return store.getters.getDisplayTabDefinition({
@@ -251,6 +249,10 @@ export default defineComponent({
         return fieldList.filter(field => field.is_displayed && field.is_insert_record)
       }
       return []
+    })
+
+    const contextCountrytId = computed(() => {
+      return store.getters.getSessionContextCountrytId
     })
 
     // Constants
@@ -324,7 +326,7 @@ export default defineComponent({
         currentTab
       })
         .then(response => {
-          if (props.isPanelWindow && !isUpdateCurrentField) {
+          if (!isUpdateCurrentField) {
             setValueField({
               displayValue: response.title,
               columnName: props.currentDisplyDefinitions.table_name + IDENTIFIER_COLUMN_SUFFIX,
@@ -340,37 +342,12 @@ export default defineComponent({
               TaxID: !isEmptyValue(response.fields['TaxID']) ? response.fields['TaxID'].value : ''
             }
 
-            let addresses = []
-            const billingAddress = store.getters.getAllAddressCreating({
-              typeLocations: 'billingAddress'
-            })
-
-            const shippingAddress = store.getters.getAllAddressCreating({
-              typeLocations: 'shippingAddress'
-            })
-
-            if (store.getters.getShowShippingAddress) {
-              addresses = [
-                billingAddress,
-                {
-                  ...billingAddress,
-                  is_default_billing: true,
-                  is_default_shipping: true
-                }
-              ]
-            } else {
-              addresses = [
-                billingAddress,
-                shippingAddress
-              ]
-            }
-
             store.dispatch('updateBPartner', {
               ...response,
               ...mandatoryAttribute,
               displayDefinitionId: props.currentDisplyDefinitions.id,
               recordId: response.id,
-              addresses
+              addresses: [store.getters.getAddressFields]
             })
               .finally(() => {
                 cleanAddress()
@@ -470,10 +447,24 @@ export default defineComponent({
       })
     }
 
+    function setDeafultCountries() {
+      store.dispatch('countriesStandardAddress', {})
+        .finally(() => {
+          store.commit('setAttributeAddres', {
+            countryId: contextCountrytId.value,
+            listCountries: store.getters.getAttributeFieldStandardAddress({
+              attribute: 'listCountries'
+            })
+          })
+          store.dispatch('countrieStandardAddress', { countryId: contextCountrytId.value })
+        })
+    }
+
     setTimeout(() => {
+      setDeafultCountries()
       focusFirstInput()
     }, 500)
-    cleanAddress()
+    // cleanAddress()
 
     return {
       // Ref
@@ -488,6 +479,7 @@ export default defineComponent({
       addCurrentAttributes,
       attributesBachtEntry,
       updateFIeldDisplay,
+      contextCountrytId,
       localFields,
       fields,
       // methods
@@ -497,6 +489,7 @@ export default defineComponent({
       isDisplayField,
       validateMandatory,
       updateFieldRecord,
+      setDeafultCountries,
       persistenceBachtEntry,
       containerManagerFieldDefinition
     }
