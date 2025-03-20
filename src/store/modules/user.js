@@ -342,11 +342,10 @@ const actions = {
   currencyPrecision({ commit }, {
     id
   }) {
+    if (isEmptyValue(id)) {
+      return
+    }
     return new Promise((resolve, reject) => {
-      if (isEmptyValue(id)) {
-        reject('Empty currency precision ID')
-        return
-      }
       getCurrencyPrecision({
         id
       })
@@ -366,6 +365,9 @@ const actions = {
   unitOfMeasurePrecision({ commit }, {
     id
   }) {
+    if (isEmptyValue(id)) {
+      return
+    }
     return new Promise((resolve, reject) => {
       getUnitOfMeasure({
         id
