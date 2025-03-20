@@ -20,23 +20,24 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     style="margin: 0px;width: 100%;"
   >
     <template slot="label">
-      <span class="field-title-name">
-        {{ $t('field.locationsAddress.country') }}
+      <span v-if="!isEmptyValue(regionName)" class="field-title-name">
+        {{ regionName }}
       </span>
-      <span style="color: #f34b4b"> * </span>
+      <span v-else class="field-title-name">
+        {{ $t('field.locationsAddress.region') }}
+      </span>
     </template>
     <el-select
-      v-model="country"
+      v-model="region"
       style="width: 100%;"
       filterable
       clearable
       size="mini"
       :default-first-option="true"
-      @visible-change="showCountry"
-      @change="changeCountry"
+      @visible-change="showRegions"
     >
       <el-option
-        v-for="(item, key) in listCountry"
+        v-for="(item, key) in listRegions"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -49,10 +50,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 import { computed, defineComponent } from '@vue/composition-api'
 
 import store from '@/store'
-import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
 export default defineComponent({
-  name: 'Country',
+  name: 'Regions',
   props: {
     isShipping: {
       type: Boolean,
@@ -64,45 +65,51 @@ export default defineComponent({
       if (props.isShipping) return 'shippingAddress'
       return 'billingAddress'
     })
-    const listCountry = computed(() => {
-      return store.getters.getAttributeFieldStandardAddress({
-        attribute: 'listCountries'
+    const listRegions = computed(() => {
+      return store.getters.getAttributeFieldStandardNewAddress({
+        typeLocations: fieldsLocation.value,
+        attribute: 'listRegions'
       })
     })
 
-    const country = computed({
+    const regionName = computed(() => {
+      const { region_name } = store.getters.getAttributeFieldStandardNewAddress({
+        typeLocations: fieldsLocation.value,
+        attribute: 'countries'
+      })
+      return region_name
+    })
+
+    const region = computed({
       get() {
-        return store.getters.getAttributeFieldStandardAddress({
-          attribute: 'countryId'
+        return store.getters.getAttributeFieldStandardNewAddress({
+          typeLocations: fieldsLocation.value,
+          attribute: 'regionId'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeFieldAddress', {
-          attribute: 'countryId',
+        store.commit('setAttributeFieldAddressNew', {
+          typeLocations: fieldsLocation.value,
+          attribute: 'regionId',
           value
         })
       }
     })
 
-    function changeCountry(countryId) {
-      if (isEmptyValue(countryId)) return
-      store.dispatch('countrieStandardAddress', { countryId })
-    }
-
-    function showCountry(show) {
-      if (!show || !isEmptyValue(listCountry.value)) return
-      store.dispatch('countriesStandardAddress', {})
+    function showRegions(show) {
+      if (!show || !isEmptyValue(listRegions.value)) return
+      store.dispatch('regionsStandardAddress', { typeLocations: fieldsLocation.value })
     }
 
     return {
       // Computed
-      country,
-      listCountry,
+      region,
+      regionName,
+      listRegions,
       fieldsLocation,
       // Methods
-      showCountry,
-      changeCountry
+      showRegions
     }
   }
 })

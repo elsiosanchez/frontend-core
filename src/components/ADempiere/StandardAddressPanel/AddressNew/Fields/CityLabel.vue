@@ -21,27 +21,13 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   >
     <template slot="label">
       <span class="field-title-name">
-        {{ $t('field.locationsAddress.country') }}
+        {{ $t('field.locationsAddress.city') }}
       </span>
-      <span style="color: #f34b4b"> * </span>
     </template>
-    <el-select
-      v-model="country"
-      style="width: 100%;"
-      filterable
-      clearable
+    <el-input
+      v-model="cityLabel"
       size="mini"
-      :default-first-option="true"
-      @visible-change="showCountry"
-      @change="changeCountry"
-    >
-      <el-option
-        v-for="(item, key) in listCountry"
-        :key="key"
-        :label="item.name"
-        :value="item.id"
-      />
-    </el-select>
+    />
   </el-form-item>
 </template>
 
@@ -49,10 +35,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 import { computed, defineComponent } from '@vue/composition-api'
 
 import store from '@/store'
-import { isEmptyValue } from '@/utils/ADempiere'
+// import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
-  name: 'Country',
+  name: 'CityLabel',
   props: {
     isShipping: {
       type: Boolean,
@@ -64,46 +50,36 @@ export default defineComponent({
       if (props.isShipping) return 'shippingAddress'
       return 'billingAddress'
     })
-    const listCountry = computed(() => {
-      return store.getters.getAttributeFieldStandardAddress({
-        attribute: 'listCountries'
-      })
-    })
-
-    const country = computed({
+    const cityLabel = computed({
       get() {
-        return store.getters.getAttributeFieldStandardAddress({
-          attribute: 'countryId'
+        return store.getters.getAttributeFieldStandardNewAddress({
+          typeLocations: fieldsLocation.value,
+          attribute: 'cityLabel'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeFieldAddress', {
-          attribute: 'countryId',
+        store.commit('setAttributeFieldAddressNew', {
+          typeLocations: fieldsLocation.value,
+          attribute: 'cityLabel',
           value
         })
       }
     })
 
-    function changeCountry(countryId) {
-      if (isEmptyValue(countryId)) return
-      store.dispatch('countrieStandardAddress', { countryId })
-    }
-
-    function showCountry(show) {
-      if (!show || !isEmptyValue(listCountry.value)) return
-      store.dispatch('countriesStandardAddress', {})
-    }
-
     return {
       // Computed
-      country,
-      listCountry,
-      fieldsLocation,
-      // Methods
-      showCountry,
-      changeCountry
+      cityLabel,
+      fieldsLocation
     }
   }
 })
 </script>
+<style>
+.field-title-name {
+    color: #909399 !important;
+    &:hover {
+      color: #303133 !important;
+    }
+  }
+</style>

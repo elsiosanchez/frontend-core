@@ -76,6 +76,16 @@
                 </el-form>
               </fieldset>
             </el-col>
+            <el-col :span="24">
+              <samp style="float: right; padding-right: 10px;">
+                <el-checkbox
+                  v-model="isVisibleAddress"
+                  :label="$t('form.pos.order.BusinessPartnerCreate.addAddress')"
+                  :border="true"
+                  style="float: right;margin: 0px;"
+                />
+              </samp>
+            </el-col>
           </el-row>
         </div>
       </el-card>
@@ -84,6 +94,7 @@
         :all-customer-addresses="customer.addresses"
         :customer="customer"
       /> -->
+      <address-new v-if="isVisibleAddress" />
       <el-button
         type="primary"
         class="button-base-icon"
@@ -113,6 +124,7 @@ import store from '@/store'
 import language from '@/lang'
 
 // Components and Mixins
+import AddressNew from '@/components/ADempiere/StandardAddressPanel/AddressNew/index.vue'
 import Panel from '@/components/ADempiere/FieldDefinition/FieldOptions/infoCustomer/Panel.vue'
 import FieldsDisplayDefinitions from '@/components/ADempiere/FieldsDisplayDefinitions'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
@@ -126,6 +138,7 @@ export default defineComponent({
 
   components: {
     Panel,
+    AddressNew,
     LoadingView,
     FieldsDisplayDefinitions
   },
@@ -179,8 +192,14 @@ export default defineComponent({
     const attributesBachtEntry = ref({})
     const isLoading = ref(false)
     const localFields = ref([])
+    const isVisibleAddress = ref(false)
 
     // Computed
+    const updateFIeldDisplay = computed(() => {
+      const { displyDefinitions } = store.getters.getCurrentTabPanelDefinition
+      const { isDisplayField, isReadOnlyField } = displyDefinitions
+      return isDisplayField || isReadOnlyField
+    })
     const displayDefinitionMetadata = computed(() => {
       return store.getters.getDisplayTabDefinition({
         id: props.currentDisplyDefinitions.id
@@ -293,6 +312,7 @@ export default defineComponent({
         ...additionalAttributes.value,
         ...attributes.value
       }
+      const isUpdateCurrentField = updateFIeldDisplay.value
       containerManagerFieldDefinition.createNewRecord({
         parentUuid: props.parentUuid,
         displayDefinitionId: props.currentDisplyDefinitions.id,
@@ -304,16 +324,62 @@ export default defineComponent({
         currentTab
       })
         .then(response => {
-          if (props.isPanelWindow) {
+          if (props.isPanelWindow && !isUpdateCurrentField) {
             setValueField({
               displayValue: response.title,
               columnName: props.currentDisplyDefinitions.table_name + IDENTIFIER_COLUMN_SUFFIX,
               id: response.id
             })
           }
+          if (isVisibleAddress.value) {
+            const mandatoryAttribute = {
+              DUNS: !isEmptyValue(response.fields['DUNS']) ? response.fields['DUNS'].value : '',
+              Name: !isEmptyValue(response.fields['Name']) ? response.fields['Name'].value : '',
+              NAICS: !isEmptyValue(response.fields['NAICS']) ? response.fields['NAICS'].value : '',
+              Value: !isEmptyValue(response.fields['Value']) ? response.fields['Value'].value : '',
+              TaxID: !isEmptyValue(response.fields['TaxID']) ? response.fields['TaxID'].value : ''
+            }
+
+            let addresses = []
+            const billingAddress = store.getters.getAllAddressCreating({
+              typeLocations: 'billingAddress'
+            })
+
+            const shippingAddress = store.getters.getAllAddressCreating({
+              typeLocations: 'shippingAddress'
+            })
+
+            if (store.getters.getShowShippingAddress) {
+              addresses = [
+                billingAddress,
+                {
+                  ...billingAddress,
+                  is_default_billing: true,
+                  is_default_shipping: true
+                }
+              ]
+            } else {
+              addresses = [
+                billingAddress,
+                shippingAddress
+              ]
+            }
+
+            store.dispatch('updateBPartner', {
+              ...response,
+              ...mandatoryAttribute,
+              displayDefinitionId: props.currentDisplyDefinitions.id,
+              recordId: response.id,
+              addresses
+            })
+              .finally(() => {
+                cleanAddress()
+              })
+          }
         })
         .finally(() => {
           isLoading.value = false
+          cleanAddress()
           if (props.isQuickEntry) clearField(attributesBachtEntry.value)
         })
     }
@@ -384,6 +450,7 @@ export default defineComponent({
     const fieldsDisplay = ref([])
 
     function focusFirstInput() {
+      cleanAddress()
       nextTick(() => {
         if (fieldsDisplay.value.length > 0) {
           const firstField = fieldsDisplay.value[0]
@@ -394,21 +461,33 @@ export default defineComponent({
       })
     }
 
+    function cleanAddress() {
+      store.dispatch('clearFieldStandardAddress', {
+        typeLocations: 'shippingAddress'
+      })
+      store.dispatch('clearFieldStandardAddress', {
+        typeLocations: 'billingAddress'
+      })
+    }
+
     setTimeout(() => {
       focusFirstInput()
     }, 500)
+    cleanAddress()
 
     return {
       // Ref
       attributes,
       isLoading,
       fieldsDisplay,
+      isVisibleAddress,
       // computeds
       isLoadingDisplayDefinitions,
       displayDefinitionMetadata,
       additionalAttributes,
       addCurrentAttributes,
       attributesBachtEntry,
+      updateFIeldDisplay,
       localFields,
       fields,
       // methods

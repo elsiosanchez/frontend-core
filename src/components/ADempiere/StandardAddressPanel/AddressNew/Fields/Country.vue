@@ -65,20 +65,23 @@ export default defineComponent({
       return 'billingAddress'
     })
     const listCountry = computed(() => {
-      return store.getters.getAttributeFieldStandardAddress({
+      return store.getters.getAttributeFieldStandardNewAddress({
+        typeLocations: fieldsLocation.value,
         attribute: 'listCountries'
       })
     })
 
     const country = computed({
       get() {
-        return store.getters.getAttributeFieldStandardAddress({
+        return store.getters.getAttributeFieldStandardNewAddress({
+          typeLocations: fieldsLocation.value,
           attribute: 'countryId'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeFieldAddress', {
+        store.commit('setAttributeFieldAddressNew', {
+          typeLocations: fieldsLocation.value,
           attribute: 'countryId',
           value
         })
@@ -87,12 +90,12 @@ export default defineComponent({
 
     function changeCountry(countryId) {
       if (isEmptyValue(countryId)) return
-      store.dispatch('countrieStandardAddress', { countryId })
+      store.dispatch('countrieStandardAddress', { countryId, typeLocations: fieldsLocation.value })
     }
 
     function showCountry(show) {
       if (!show || !isEmptyValue(listCountry.value)) return
-      store.dispatch('countriesStandardAddress', {})
+      store.dispatch('countriesStandardAddress', { typeLocations: fieldsLocation.value })
     }
 
     return {

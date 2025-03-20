@@ -27,11 +27,14 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { setComponentSequenceStandardAddressPanel } from '@/utils/ADempiere/dictionary/field/locationAddress'
+import { setComponentSequenceStandardNewAddressPanel, setComponentSequenceStandardAddressPanel } from '@/utils/ADempiere/dictionary/field/locationAddress'
 
 const standardAddress = {
   showPanelAddress: false,
+  isCopyShippingAddress: true,
   address: {
+    is_default_shipping: false,
+    is_default_billing: false,
     posalCodeAdditional: '',
     countryId: undefined,
     regionId: undefined,
@@ -54,6 +57,60 @@ const standardAddress = {
     email: '',
     phone: '',
     id: 0
+  },
+  newAddress: {
+    shippingAddress: {
+      is_default_billing: false,
+      is_default_shipping: true,
+      posalCodeAdditional: '',
+      countryId: undefined,
+      regionId: undefined,
+      cityId: undefined,
+      locationName: '',
+      listCountries: [],
+      listRegions: [],
+      listCities: [],
+      postalCode: '',
+      countries: {},
+      cityLabel: '',
+      longitude: '',
+      reference: '',
+      address1: '',
+      address2: '',
+      address3: '',
+      address4: '',
+      latitude: '',
+      altitude: '',
+      email: '',
+      phone: '',
+      id: 0
+    },
+    billingAddress: {
+      posalCodeAdditional: '',
+      countryId: undefined,
+      regionId: undefined,
+      cityId: undefined,
+      locationName: '',
+      listCountries: [],
+      is_default_billing: true,
+      is_default_shipping: false,
+      listRegions: [],
+      listCities: [],
+      postalCode: '',
+      countries: {},
+      cityLabel: '',
+      longitude: '',
+      reference: '',
+      address1: '',
+      address2: '',
+      address3: '',
+      address4: '',
+      latitude: '',
+      altitude: '',
+      email: '',
+      phone: '',
+      id: 0
+    }
   }
 }
 
@@ -71,6 +128,8 @@ export default {
       state.address[attribute] = value
     },
     setAttributeAddres(state, {
+      is_default_shipping = false,
+      is_default_billing = false,
       posalCodeAdditional = '',
       countryId = undefined,
       regionId = undefined,
@@ -95,6 +154,8 @@ export default {
       id = 0
     }) {
       state.address = {
+        is_default_shipping,
+        is_default_billing,
         posalCodeAdditional,
         countryId,
         regionId,
@@ -118,6 +179,22 @@ export default {
         phone,
         id
       }
+    },
+    setAttributeFieldAddressNew(state, {
+      typeLocations,
+      attribute,
+      value
+    }) {
+      state.newAddress[typeLocations][attribute] = value
+    },
+    setAttributeFieldAddressNewInitial(state, {
+      typeLocations,
+      value
+    }) {
+      state.newAddress[typeLocations] = value
+    },
+    setShowShippingAddress(state, show) {
+      state.isCopyShippingAddress = show
     }
   },
   actions: {
@@ -131,11 +208,22 @@ export default {
     countriesStandardAddress({
       state,
       commit
+    }, {
+      typeLocations = ''
     }) {
       return new Promise(resolve => {
         listCountriesRequest({})
           .then(response => {
             const { countries } = response
+            if (!isEmptyValue(typeLocations)) {
+              commit('setAttributeFieldAddressNew', {
+                typeLocations,
+                attribute: 'listCountries',
+                value: countries
+              })
+              resolve(response)
+              return
+            }
             commit('setAttributeFieldAddress', {
               attribute: 'listCountries',
               value: countries
@@ -160,20 +248,41 @@ export default {
     citiesStandardAddress({
       commit,
       getters
+    }, {
+      typeLocations = ''
     }) {
       return new Promise(resolve => {
-        const countryId = getters.getAttributeFieldStandardAddress({
+        let countryId = getters.getAttributeFieldStandardAddress({
           attribute: 'countryId'
         })
-        const regionId = getters.getAttributeFieldStandardAddress({
+        let regionId = getters.getAttributeFieldStandardAddress({
           attribute: 'regionId'
         })
+        if (!isEmptyValue(typeLocations)) {
+          countryId = getters.getAttributeFieldStandardNewAddress({
+            typeLocations,
+            attribute: 'countryId'
+          })
+          regionId = getters.getAttributeFieldStandardNewAddress({
+            typeLocations,
+            attribute: 'regionId'
+          })
+        }
         listCitiesRequest({
           countryId,
           regionId
         })
           .then(response => {
             const { cities } = response
+            if (!isEmptyValue(typeLocations)) {
+              commit('setAttributeFieldAddressNew', {
+                attribute: 'listCities',
+                typeLocations,
+                value: cities
+              })
+              resolve(response)
+              return
+            }
             commit('setAttributeFieldAddress', {
               attribute: 'listCities',
               value: cities
@@ -199,13 +308,25 @@ export default {
       commit
     }, {
       countryId,
-      typeLocations
+      typeLocations = ''
     }) {
       return new Promise(resolve => {
         getCountryRequest({
           id: countryId
         })
           .then(response => {
+            if (!isEmptyValue(typeLocations)) {
+              commit('setAttributeFieldAddressNew', {
+                attribute: 'countries',
+                typeLocations,
+                value: {
+                  ...response,
+                  secuenceComponent: setComponentSequenceStandardNewAddressPanel(response)
+                }
+              })
+              resolve(response)
+              return
+            }
             commit('setAttributeFieldAddress', {
               attribute: 'countries',
               value: {
@@ -233,16 +354,33 @@ export default {
     regionsStandardAddress({
       commit,
       getters
+    }, {
+      typeLocations = ''
     }) {
       return new Promise(resolve => {
-        const countryId = getters.getAttributeFieldStandardAddress({
+        let countryId = getters.getAttributeFieldStandardAddress({
           attribute: 'countryId'
         })
+        if (!isEmptyValue(typeLocations)) {
+          countryId = getters.getAttributeFieldStandardNewAddress({
+            typeLocations,
+            attribute: 'countryId'
+          })
+        }
         listRegionsRequest({
           countryId
         })
           .then(response => {
             const { regions } = response
+            if (!isEmptyValue(typeLocations)) {
+              commit('setAttributeFieldAddressNew', {
+                attribute: 'listRegions',
+                typeLocations,
+                value: regions
+              })
+              resolve(response)
+              return
+            }
             commit('setAttributeFieldAddress', {
               attribute: 'listRegions',
               value: regions
@@ -269,10 +407,19 @@ export default {
      */
     clearFieldStandardAddress({
       commit
+    }, {
+      typeLocations
     }) {
       return new Promise(resolve => {
-        commit('setAttributeAddres')
-        resolve()
+        if (!isEmptyValue(typeLocations)) {
+          commit('setAttributeFieldAddressNewInitial', {
+            typeLocations,
+            value: standardAddress.newAddress[typeLocations]
+          })
+          resolve()
+        }
+        // commit('setAttributeAddres')
+        // resolve()
       })
     }
   },
@@ -285,6 +432,18 @@ export default {
     },
     getAttributeFieldStandardAddress: (state) => ({ attribute }) => {
       return state.address[attribute]
+    },
+    getAddressNewFields: (state) => ({ typeLocations }) => {
+      return state.newAddress[typeLocations]
+    },
+    getAttributeFieldStandardNewAddress: (state) => ({ attribute, typeLocations }) => {
+      return state.newAddress[typeLocations][attribute]
+    },
+    getShowShippingAddress: (state) => {
+      return state.isCopyShippingAddress
+    },
+    getAllAddressCreating: (state) => ({ typeLocations }) => {
+      return state.newAddress[typeLocations]
     }
   }
 }

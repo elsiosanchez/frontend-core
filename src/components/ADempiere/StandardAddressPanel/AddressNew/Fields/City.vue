@@ -21,22 +21,20 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   >
     <template slot="label">
       <span class="field-title-name">
-        {{ $t('field.locationsAddress.country') }}
+        {{ $t('field.locationsAddress.city') }}
       </span>
-      <span style="color: #f34b4b"> * </span>
     </template>
     <el-select
-      v-model="country"
+      v-model="city"
       style="width: 100%;"
       filterable
       clearable
       size="mini"
       :default-first-option="true"
-      @visible-change="showCountry"
-      @change="changeCountry"
+      @visible-change="showCity"
     >
       <el-option
-        v-for="(item, key) in listCountry"
+        v-for="(item, key) in listCities"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -52,7 +50,7 @@ import store from '@/store'
 import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
-  name: 'Country',
+  name: 'City',
   props: {
     isShipping: {
       type: Boolean,
@@ -64,45 +62,43 @@ export default defineComponent({
       if (props.isShipping) return 'shippingAddress'
       return 'billingAddress'
     })
-    const listCountry = computed(() => {
-      return store.getters.getAttributeFieldStandardAddress({
-        attribute: 'listCountries'
+
+    const listCities = computed(() => {
+      return store.getters.getAttributeFieldStandardNewAddress({
+        typeLocations: fieldsLocation.value,
+        attribute: 'listCities'
       })
     })
 
-    const country = computed({
+    const city = computed({
       get() {
-        return store.getters.getAttributeFieldStandardAddress({
-          attribute: 'countryId'
+        return store.getters.getAttributeFieldStandardNewAddress({
+          typeLocations: fieldsLocation.value,
+          attribute: 'cityId'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeFieldAddress', {
-          attribute: 'countryId',
+        store.commit('setAttributeFieldAddressNew', {
+          typeLocations: fieldsLocation.value,
+          attribute: 'cityId',
           value
         })
       }
     })
 
-    function changeCountry(countryId) {
-      if (isEmptyValue(countryId)) return
-      store.dispatch('countrieStandardAddress', { countryId })
-    }
-
-    function showCountry(show) {
-      if (!show || !isEmptyValue(listCountry.value)) return
-      store.dispatch('countriesStandardAddress', {})
+    function showCity(show) {
+      if (!show || !isEmptyValue(listCities.value)) return
+      store.dispatch('citiesStandardAddress', { typeLocations: fieldsLocation.value })
     }
 
     return {
       // Computed
-      country,
-      listCountry,
+      city,
+      listCities,
       fieldsLocation,
       // Methods
-      showCountry,
-      changeCountry
+      showCity
     }
   }
 })

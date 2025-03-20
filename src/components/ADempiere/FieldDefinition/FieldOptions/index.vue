@@ -447,6 +447,12 @@ export default defineComponent({
 
     function closePanel() {
       isDialogoPanelDifinition.value = false
+      store.dispatch('clearFieldStandardAddress', {
+        typeLocations: 'shippingAddress'
+      })
+      store.dispatch('clearFieldStandardAddress', {
+        typeLocations: 'billingAddress'
+      })
     }
 
     const openOptionField = computed({

@@ -402,6 +402,7 @@ export default {
           successfullyCreated: 'Socio de Negocio Creado Exitosamente',
           customerData: 'Datos del Cliente',
           addBillingAddress: 'Agregar Dirección de Facturación',
+          addAddress: 'Agregar Dirección',
           partnerTemplate: 'Plantilla de Socio de Socio',
           billingAddress: 'Dirección de Facturación',
           shippingAddress: 'Dirección de Envío',

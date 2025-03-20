@@ -329,7 +329,13 @@ export function actionsDisplayDefinitionsFields({
       store.commit('setBusinessPartnerId', recordId)
       store.dispatch('changeTabPanelDefinition', {
         type: is_insert_record ? 'new' : 'view',
-        displyDefinitions: displayDefinition,
+        displyDefinitions: {
+          ...displayDefinition,
+          isDisplayField: containerManager.isDisplayedDefault({
+            ...fieldAttributes
+          }),
+          isReadOnlyField: containerManager.isReadOnlyField(fieldAttributes)
+        },
         recordId
       })
     },

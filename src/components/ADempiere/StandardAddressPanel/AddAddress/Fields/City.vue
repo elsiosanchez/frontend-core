@@ -72,14 +72,12 @@ export default defineComponent({
     const city = computed({
       get() {
         return store.getters.getAttributeFieldStandardAddress({
-          typeLocations: fieldsLocation.value,
           attribute: 'cityId'
         })
       },
       // setter
       set(value) {
         store.commit('setAttributeFieldAddress', {
-          typeLocations: fieldsLocation.value,
           attribute: 'cityId',
           value
         })
@@ -88,7 +86,7 @@ export default defineComponent({
 
     function showCity(show) {
       if (!show || !isEmptyValue(listCities.value)) return
-      store.dispatch('citiesStandardAddress', fieldsLocation.value)
+      store.dispatch('citiesStandardAddress', {})
     }
 
     return {

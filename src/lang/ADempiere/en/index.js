@@ -401,6 +401,7 @@ export default {
           successfullyCreated: 'Business Partner Successfully Created',
           customerData: 'Customer Data',
           addBillingAddress: 'Add Billing Address',
+          addAddress: 'Add Address',
           partnerTemplate: 'Partner Template',
           billingAddress: 'Billing Address',
           shippingAddress: 'Shipping Address',

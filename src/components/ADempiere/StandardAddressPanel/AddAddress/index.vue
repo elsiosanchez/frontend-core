@@ -46,6 +46,22 @@
                 :is="fieldAttributes.component"
               />
             </el-col>
+            <el-col v-if="addressID === 0" :span="24">
+              <samp style="float: right; padding-top: 5px;">
+                <el-checkbox
+                  v-model="isDefaultBilling"
+                  :label="$t('form.pos.order.BusinessPartnerCreate.billingAddress')"
+                  :border="true"
+                  style="float: right;margin-right: 5px;"
+                />
+                <el-checkbox
+                  v-model="isDefaultShipping"
+                  :label="$t('form.pos.order.BusinessPartnerCreate.shippingAddress')"
+                  :border="true"
+                  style="float: right;margin-right: 5px;"
+                />
+              </samp>
+            </el-col>
           </el-card>
         </el-col>
       </el-form>
@@ -69,6 +85,10 @@ export default defineComponent({
     isCopyShippingAddress: {
       type: Boolean,
       default: false
+    },
+    isAddAddresses: {
+      type: Boolean,
+      default: false
     }
   },
   setup(props) {
@@ -77,6 +97,40 @@ export default defineComponent({
       return store.getters.getAttributeFieldStandardAddress({
         attribute: 'countryId'
       })
+    })
+
+    const addressID = computed(() => {
+      return store.getters.getAttributeFieldStandardAddress({
+        attribute: 'id'
+      })
+    })
+
+    const isDefaultBilling = computed({
+      get() {
+        return store.getters.getAttributeFieldStandardAddress({
+          attribute: 'is_default_billing'
+        })
+      },
+      set(value) {
+        store.commit('setAttributeFieldAddress', {
+          attribute: 'is_default_billing',
+          value
+        })
+      }
+    })
+
+    const isDefaultShipping = computed({
+      get() {
+        return store.getters.getAttributeFieldStandardAddress({
+          attribute: 'is_default_shipping'
+        })
+      },
+      set(value) {
+        store.commit('setAttributeFieldAddress', {
+          attribute: 'is_default_shipping',
+          value
+        })
+      }
     })
 
     const spanCol = computed(() => {
@@ -123,7 +177,10 @@ export default defineComponent({
     return {
       country,
       spanCol,
-      fieldListAddress
+      addressID,
+      fieldListAddress,
+      isDefaultBilling,
+      isDefaultShipping
     }
   }
 })

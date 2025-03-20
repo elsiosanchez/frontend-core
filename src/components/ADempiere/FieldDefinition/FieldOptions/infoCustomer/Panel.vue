@@ -233,7 +233,7 @@ export default defineComponent({
         location_name,
         postal_code
       } = address
-      store.dispatch('countriesStandardAddress')
+      store.dispatch('countriesStandardAddress', {})
         .finally(() => {
           store.commit('setAttributeAddres', {
             ...address,

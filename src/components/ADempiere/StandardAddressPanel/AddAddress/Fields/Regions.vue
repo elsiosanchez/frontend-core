@@ -67,14 +67,12 @@ export default defineComponent({
     })
     const listRegions = computed(() => {
       return store.getters.getAttributeFieldStandardAddress({
-        typeLocations: fieldsLocation.value,
         attribute: 'listRegions'
       })
     })
 
     const regionName = computed(() => {
       const { region_name } = store.getters.getAttributeFieldStandardAddress({
-        typeLocations: fieldsLocation.value,
         attribute: 'countries'
       })
       return region_name
@@ -83,14 +81,12 @@ export default defineComponent({
     const region = computed({
       get() {
         return store.getters.getAttributeFieldStandardAddress({
-          typeLocations: fieldsLocation.value,
           attribute: 'regionId'
         })
       },
       // setter
       set(value) {
         store.commit('setAttributeFieldAddress', {
-          typeLocations: fieldsLocation.value,
           attribute: 'regionId',
           value
         })
@@ -99,7 +95,7 @@ export default defineComponent({
 
     function showRegions(show) {
       if (!show || !isEmptyValue(listRegions.value)) return
-      store.dispatch('regionsStandardAddress')
+      store.dispatch('regionsStandardAddress', {})
     }
 
     return {
