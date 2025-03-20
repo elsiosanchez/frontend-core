@@ -547,6 +547,9 @@ export default {
     getListResources() {
       return new Promise((resolve, reject) => {
         const { table_name } = this.currentTab
+        if (isEmptyValue(this.recordId)) {
+          return
+        }
         requestListResources({
           clientId: this.clientUuid,
           // containerId: action_id,
