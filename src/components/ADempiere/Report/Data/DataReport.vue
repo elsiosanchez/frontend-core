@@ -481,7 +481,11 @@ export default defineComponent({
           return
         }
         const totalSum = recursiveSum(data, column.code)
-        if (column.is_hide_grand_total) sums[index] = totalSum === 0 ? '' : formatQuantity({ value: totalSum })
+        if (column.is_hide_grand_total) {
+          sums[index] = ''
+          return
+        }
+        sums[index] = formatQuantity({ value: totalSum })
       })
       nextTick(() => {
         highlightNegativeFooterValues()
