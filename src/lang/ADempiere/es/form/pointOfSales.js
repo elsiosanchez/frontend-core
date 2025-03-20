@@ -100,6 +100,9 @@ const pointOfSales = {
   print: {
     cloudNotConnectPirnter: 'No se ha podido conectar con la impresora'
   },
+  shipment: {
+    updateLineSuccess: 'Linea de Entrega Actualizada Exitosamente'
+  },
   withoutPOSTerminal: 'Sin Terminal POS',
   withoutPriceList: 'Sin Lista de Precios'
 }

@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 const pointOfSales = {
@@ -99,6 +99,9 @@ const pointOfSales = {
   },
   print: {
     cloudNotConnectPirnter: 'Could not connect to the printer'
+  },
+  shipment: {
+    updateLineSuccess: 'Shipment Line Successfully Updated'
   },
   withoutPOSTerminal: 'Without POS Terminal',
   withoutPriceList: 'Without Price List'

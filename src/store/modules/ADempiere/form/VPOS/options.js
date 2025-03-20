@@ -40,8 +40,8 @@ import {
   createShipment,
   processShipment,
   listShipmentLines,
-  createShipmentLine,
-  updateShipmentLine,
+  createShipmentLineRequest,
+  updateShipmentLineRequest,
   deleteShipmentLine,
   printShipmentPreview,
   createOrderFromRMA,
@@ -410,6 +410,7 @@ export default {
           })
       })
     },
+
     newShipment({
       getters,
       commit,
@@ -423,7 +424,9 @@ export default {
         if (
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentOrder.id)
-        ) resolve({})
+        ) {
+          resolve({})
+        }
         createShipment({
           posId: currentPos.id,
           isCreateLinesFromOrder,
@@ -468,10 +471,10 @@ export default {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         const currentShipment = getters.getCurrentShipment
-        if (
-          isEmptyValue(currentPos.id)
-        ) resolve({})
-        createShipmentLine({
+        if (isEmptyValue(currentPos.id)) {
+          resolve({})
+        }
+        createShipmentLineRequest({
           posId: currentPos.id,
           quantity,
           shipmentId: currentShipment.id,
@@ -479,7 +482,6 @@ export default {
           orderLineId
         })
           .then(response => {
-            dispatch('listShipmentLines')
             resolve(response)
           })
           .catch(error => {
@@ -496,6 +498,9 @@ export default {
             })
             resolve({})
           })
+          .finally(() => {
+            dispatch('listShipmentLines')
+          })
       })
     },
     updateShipmentLine({
@@ -511,15 +516,21 @@ export default {
         if (
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentShipment.id)
-        ) resolve({})
-        updateShipmentLine({
+        ) {
+          resolve({})
+        }
+        updateShipmentLineRequest({
           posId: currentPos.id,
           lineId,
           quantity,
           shipmentId: currentShipment.id
         })
           .then(response => {
-            dispatch('listShipmentLines')
+            showMessage({
+              type: 'success',
+              message: lang.t('form.pointOfSales.shipment.updateLineSuccess'),
+              showClose: true
+            })
             resolve(response)
           })
           .catch(error => {
@@ -535,6 +546,9 @@ export default {
               showClose: true
             })
             resolve({})
+          })
+          .finally(() => {
+            dispatch('listShipmentLines')
           })
       })
     },

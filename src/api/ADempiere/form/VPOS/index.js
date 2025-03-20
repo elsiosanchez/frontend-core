@@ -1046,7 +1046,7 @@ export function createShipment({
 /**
  * Create Shipment Line
  */
-export function createShipmentLine({
+export function createShipmentLineRequest({
   posId,
   quantity,
   shipmentId,
@@ -1067,7 +1067,7 @@ export function createShipmentLine({
 /**
  * Update Order Line
  */
-export function updateShipmentLine({
+export function updateShipmentLineRequest({
   posId,
   lineId,
   quantity,

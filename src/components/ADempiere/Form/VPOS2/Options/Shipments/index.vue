@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -58,6 +58,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-autocomplete>
       </el-form-item>
     </el-form>
+
     <span class="tablePos">
       <el-table
         :data="shipmentLines"
@@ -75,12 +76,14 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           :label="$t('form.productInfo.code')"
           width="80"
         />
+
         <el-table-column
           header-align="center"
           prop="product.name"
           :label="$t('form.pos.tableProduct.product')"
           width="300px"
         />
+
         <el-table-column
           header-align="center"
           prop="quantity"
@@ -90,7 +93,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           <template slot-scope="scope">
             <edit-qty-entered
               v-if="scope.row.isEditQty"
-              :qty="Number(scope.row.quantity.value)"
+              :qty="convertToNumber(scope.row.quantity)"
               :handle-change="updateQuantity"
             />
             <span v-else>
@@ -100,11 +103,13 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </span>
           </template>
         </el-table-column>
+
         <el-table-column
           header-align="center"
           prop="uom.uom.name"
           :label="$t('form.pos.tableProduct.uom')"
         />
+
         <el-table-column
           header-align="center"
           prop="quantity"
@@ -117,6 +122,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </p>
           </template>
         </el-table-column>
+
         <el-table-column
           :label="$t('form.pos.tableProduct.options')"
           align="center"
@@ -149,11 +155,13 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import store from '@/store'
+
 // // Components and Mixins
 import shippingLineInfo from '@/components/ADempiere/Form/VPOS2/Options/Shipments/lineInfo.vue'
 import editQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editQtyEntered.vue'
+
 // Utils and Helper Methods
-import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { convertToNumber, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'Shipments',
@@ -204,11 +212,11 @@ export default defineComponent({
 
     function handleSelect(item) {
       const {
-        id,
-        quantity_ordered
+        // quantity_ordered,
+        id
       } = item
       store.dispatch('createShipmentLine', {
-        quantity: quantity_ordered,
+        // quantity: '1', // quantity_ordered,
         orderLineId: id
       })
     }
@@ -263,6 +271,7 @@ export default defineComponent({
       handleSelect,
       productFilter,
       updateQuantity,
+      convertToNumber,
       formatQuantity
     }
   }
