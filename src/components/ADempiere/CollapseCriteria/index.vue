@@ -106,14 +106,6 @@ export default defineComponent({
         containerUuid: props.containerUuid
       })
     })
-
-    // const fieldsList = computed(() => {
-    //   return props.containerManager.getFieldsList({
-    //     parentUuid: props.parentUuid,
-    //     containerUuid: props.containerUuid
-    //   })
-    // })
-
     const isCollapse = computed({
       get() {
         const panel = storedPanel.value
@@ -145,7 +137,6 @@ export default defineComponent({
     function handlePanel(show) {
       isCollapse.value = !show
     }
-
     return {
       // Computeds
       // fieldsList,

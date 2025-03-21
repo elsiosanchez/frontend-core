@@ -72,7 +72,6 @@ export default {
             id: browser.internal_id,
             uuid: browserUuid
           })
-
           const browserDefinition = generatePanelAndFields({
             containerUuid: browserUuid,
             panelMetadata: {
@@ -86,7 +85,6 @@ export default {
             evaluateDefaultFieldShowed,
             evaluateDefaultColumnShowed
           })
-
           browserDefinition.elementsList = {}
           browserDefinition.columnsList = {}
           browserDefinition.fieldsList.forEach(fieldItem => {
@@ -102,7 +100,7 @@ export default {
               browserDefinition.columnsList[fieldItem.elementNameTo] = fieldItem.columnNameTo
             }
           })
-
+          browserDefinition.isShowedCriteria = browserDefinition.fieldsList.some(field => field.is_query_criteria && field.isMandatory && isEmptyValue(field.defaultValue))
           commit('addBrowserToList', browserDefinition)
 
           dispatch('setBrowserActionsMenu', {
