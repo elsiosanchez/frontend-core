@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <el-container style="height: 100%;" class="tab-panel">
+  <el-container style="height: 100%;" class="tab-panel" :class="{ 'collapsed': collapseWindow }">
     <el-header :style="styleHeadPanel" class="tab-panel-header">
       <tab-options
         :parent-uuid="parentUuid"
@@ -35,6 +35,7 @@
             :border="true"
             size="small"
             :label="$t('table.dataTable.batchEntry')"
+            @change="changeBatchEntry"
           />
         </template>
       </tab-options>
@@ -192,6 +193,15 @@ export default defineComponent({
       )
     })
 
+    function changeBatchEntry(value) {
+      isBachtEntry.value = value
+      if (value) {
+        store.commit('setisBatchEntry', {
+          value: value,
+          containerUuid: currentTab.value.firstTabUuid
+        })
+      }
+    }
     const storedWindow = computed(() => {
       return store.getters.getStoredWindow(props.parentUuid)
     })
@@ -253,7 +263,9 @@ export default defineComponent({
         containerUuid: props.tabAttributes.uuid
       })
     })
-
+    const collapseWindow = computed(() => {
+      return !isEmptyValue(store.getters.getCollapseWindow)
+    })
     const currentPageNumber = computed(() => {
       if (props.containerManager.getPageNumber) {
         return parseInt(props.containerManager.getPageNumber({
@@ -384,6 +396,7 @@ export default defineComponent({
       recordUuid,
       styleScroll,
       showFullGridMode,
+      collapseWindow,
       // pagination
       styleHeadPanel,
       styleFooterPanel,
@@ -398,7 +411,8 @@ export default defineComponent({
       // methods
       loadOpenWindows,
       handleChangePage,
-      handleChangeSizePage
+      handleChangeSizePage,
+      changeBatchEntry
     }
   }
 
@@ -423,8 +437,8 @@ export default defineComponent({
 </style>
 
 <style>
-#tab-manager .el-tabs--border-card > .el-tabs__content {
-  height: calc(100vh - 175px) !important
+.tab-panel-body {
+  height: calc(100vh - 366px) !important
 }
 .el-tabs--border-card > .el-tabs__content {
   /* padding: 15px; */

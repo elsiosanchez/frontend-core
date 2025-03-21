@@ -232,9 +232,14 @@ export default defineComponent({
     const showFullGridMode = computed(() => {
       return store.getters['settings/getFullGridMode']
     })
-
+    const collapseWindow = computed(() => {
+      return store.getters.getCollapseWindow
+    })
     const styleScroll = computed(() => {
       if (showFullGridMode.value) return 'overflow: auto;'
+      if (!isEmptyValue(collapseWindow)) {
+        return 'auto'
+      }
       return 'min-height: 84vh !important;'
     })
     const displayTabDefinition = computed(() => {

@@ -52,6 +52,8 @@ import { generatePageToken } from '@/utils/ADempiere/dataUtils'
 import { isDateField, isDecimalField } from '@/utils/ADempiere/references'
 
 const initState = {
+  collapseWindow: '',
+  isBatchentry: {},
   tabData: {},
   oldTabData: {},
   // container uuid: record uuid
@@ -266,6 +268,15 @@ const windowManager = {
 
     resetStateWindowManager(state) {
       state = initState
+    },
+    setCollapseWindown(state, value) {
+      state.collapseWindow = value
+    },
+    setisBatchEntry(state, {
+      value,
+      containerUuid
+    }) {
+      Vue.set(state.isBatchentry, containerUuid, value)
     }
   },
 
@@ -1264,6 +1275,12 @@ const windowManager = {
       return getters.getTabOldData({
         containerUuid
       }).currentRecordUuid
+    },
+    getCollapseWindow: (state) => {
+      return state.collapseWindow
+    },
+    getIsBatchEntry: (state) => (containerUuid) => {
+      return state.isBatchentry[containerUuid]
     }
   }
 }

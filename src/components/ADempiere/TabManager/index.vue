@@ -15,7 +15,6 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
-
 <template>
   <div
     class="tab-manager-container"
@@ -42,46 +41,82 @@
         :disabled="isDisabledTab(key)"
         :style="tabStyle"
       >
-        <tab-label
-          slot="label"
-          :is-active-tab="tabAttributes.uuid === tabUuid"
-          :parent-uuid="parentUuid"
-          :container-uuid="tabAttributes.uuid"
-          :container-manager="containerManager"
-        />
-        <div
-          style="display: block;height: 100%;overflow: hidden;"
-          @click="selectTab(tabsList[parseInt(currentTab)])"
-        >
-          <tab-panel
-            v-if="isEmptyValue(isDisplayPanelDefinitions)"
-            id="tab-panel"
-            :parent-uuid="parentUuid"
-            :container-manager="containerManager"
-            :tabs-list="tabsList"
-            :all-tabs-list="allTabsList"
-            :tab-uuid="tabUuid"
-            :tab-attributes="tabAttributes"
-            :actions-manager="actionsManager"
-            :style="'height: 100% !important;'"
-          />
-          <tab-display-definitions
-            v-else
-            id="tab-panel"
-            :parent-uuid="parentUuid"
-            :container-manager="containerManager"
-            :tabs-list="tabsList"
-            :all-tabs-list="allTabsList"
-            :tab-uuid="tabUuid"
-            :tab-attributes="tabAttributes"
-            :actions-manager="actionsManager"
-            :style="'height: 100% !important;'"
-          />
-        </div>
-        <!-- </div> -->
+        <template slot="label">
+          <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <tab-label
+              :is-active-tab="tabAttributes.uuid === tabUuid"
+              :parent-uuid="parentUuid"
+              :container-uuid="tabAttributes.uuid"
+              :container-manager="containerManager"
+            />
+          </div>
+        </template>
+        <el-collapse v-if="isBatchEntry" v-model="activeCollapses">
+          <el-collapse-item :name="String(key)" :title="title">
+            <div
+              style="display: block;height: 100%;overflow: hidden;"
+              @click="selectTab(tabsList[parseInt(currentTab)])"
+            >
+              <tab-panel
+                v-if="isEmptyValue(isDisplayPanelDefinitions)"
+                id="tab-panel"
+                :parent-uuid="parentUuid"
+                :container-manager="containerManager"
+                :tabs-list="tabsList"
+                :all-tabs-list="allTabsList"
+                :tab-uuid="tabUuid"
+                :tab-attributes="tabAttributes"
+                :actions-manager="actionsManager"
+                style="height: 100% !important;"
+              />
+              <tab-display-definitions
+                v-else
+                id="tab-panel"
+                :parent-uuid="parentUuid"
+                :container-manager="containerManager"
+                :tabs-list="tabsList"
+                :all-tabs-list="allTabsList"
+                :tab-uuid="tabUuid"
+                :tab-attributes="tabAttributes"
+                :actions-manager="actionsManager"
+                style="height: 100% !important;"
+              />
+            </div>
+          </el-collapse-item>
+        </el-collapse>
+        <span v-else>
+          <div
+            style="display: block;height: 100%;overflow: hidden;"
+            @click="selectTab(tabsList[parseInt(currentTab)])"
+          >
+            <tab-panel
+              v-if="isEmptyValue(isDisplayPanelDefinitions)"
+              id="tab-panel"
+              :parent-uuid="parentUuid"
+              :container-manager="containerManager"
+              :tabs-list="tabsList"
+              :all-tabs-list="allTabsList"
+              :tab-uuid="tabUuid"
+              :tab-attributes="tabAttributes"
+              :actions-manager="actionsManager"
+              style="height: 100% !important;"
+            />
+            <tab-display-definitions
+              v-else
+              id="tab-panel"
+              :parent-uuid="parentUuid"
+              :container-manager="containerManager"
+              :tabs-list="tabsList"
+              :all-tabs-list="allTabsList"
+              :tab-uuid="tabUuid"
+              :tab-attributes="tabAttributes"
+              :actions-manager="actionsManager"
+              style="height: 100% !important;"
+            />
+          </div>
+        </span>
       </el-tab-pane>
     </el-tabs>
-
     <div :style="sizeBadgeRight">
       <el-button
         v-if="isMobile"
@@ -91,9 +126,7 @@
         circle
         @click="openRecordLogs('getRecordLogs')"
       >
-        <i
-          class="el-icon-arrow-left"
-        />
+        <i class="el-icon-arrow-left" />
       </el-button>
       <el-button
         v-else
@@ -104,7 +137,6 @@
       >
         <svg-icon icon-class="tree-table" />
       </el-button>
-
       <el-badge v-show="showAttachmentAvailable && !isMobile" :value="countAttachment" class="item" type="primary">
         <el-button
           v-show="showAttachmentAvailable"
@@ -246,7 +278,6 @@ export default defineComponent({
     TabLabel,
     TabOptions
   },
-
   props: {
     parentUuid: {
       type: String,
@@ -290,7 +321,6 @@ export default defineComponent({
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
-
     const isDrawerWidth = computed(() => {
       if (isMobile.value) {
         return '100%'
@@ -318,7 +348,6 @@ export default defineComponent({
     })
 
     // Panel Info
-
     const currentRecordLogs = ref({})
 
     const drawer = ref(false)
@@ -353,7 +382,6 @@ export default defineComponent({
     const showContainerInfo = computed(() => {
       return store.getters.getShowLogs
     })
-
     const clientUuid = computed(() => {
       const { client } = store.getters['user/getRole']
       return client.uuid
@@ -389,7 +417,23 @@ export default defineComponent({
       }
       return {}
     })
-
+    const activeCollapses = computed({
+      get() {
+        store.getters.getCollapseWindow
+      },
+      set(value) {
+        store.commit('setCollapseWindown', value)
+        if (!isEmptyValue(value)) {
+          store.commit('setisBatchEntry', {
+            value: false,
+            containerUuid: currentTabMetadata.value.containerUuid
+          })
+        }
+      }
+    })
+    const isBatchEntry = computed(() => {
+      return store.getters.getIsBatchEntry(currentTabMetadata.value.containerUuid)
+    })
     const recordId = computed(() => {
       if (isEmptyValue(currentTabPanelInfo.value)) return 1
       const { table } = currentTabPanelInfo.value
@@ -538,7 +582,6 @@ export default defineComponent({
         tab: tabindex
       })
     }
-
     const setTabNumber = (tabNumber = '0') => {
       if (isEmptyValue(tabNumber)) {
         tabNumber = '0'
@@ -695,7 +738,15 @@ export default defineComponent({
         })
       })
     }
-
+    const title = computed(() => {
+      const record = store.getters.getTabSelectionsList({
+        containerUuid: currentTabMetadata.value.uuid
+      })
+      if (!isEmptyValue(record)) {
+        return record.at(0)[currentTabTableName.value + '_ID'].toString()
+      }
+      return ''
+    })
     function focusLost(currentTab) {
       const { containerUuid } = currentTab
       const columnName = store.getters.getFieldFocusColumnName
@@ -1162,6 +1213,7 @@ export default defineComponent({
     }
 
     return {
+      isBatchEntry,
       tabUuid,
       currentTab,
       currentTabId,
@@ -1202,6 +1254,8 @@ export default defineComponent({
       currentTabPanelInfo,
       emptyMandatoryFields,
       recordId,
+      activeCollapses,
+      title,
       // methods
       ActionAltZ,
       ActionAltN,
