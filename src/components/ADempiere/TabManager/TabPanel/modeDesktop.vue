@@ -196,10 +196,12 @@ export default defineComponent({
     function changeBatchEntry(value) {
       isBachtEntry.value = value
       if (value) {
-        store.commit('setisBatchEntry', {
-          value: value,
-          containerUuid: currentTab.value.firstTabUuid
-        })
+        if (!props.tabAttributes.isParentTab) {
+          store.commit('setisBatchEntry', {
+            value: value,
+            containerUuid: currentTab.value.firstTabUuid
+          })
+        }
       }
     }
     const storedWindow = computed(() => {
