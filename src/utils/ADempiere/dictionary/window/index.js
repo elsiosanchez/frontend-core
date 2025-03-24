@@ -70,16 +70,6 @@ export function isEditableRecord({ parentUuid, containerUuid }) {
     return false
   }
 
-  // is active value of record
-  const isActiveRecord = store.getters.getValueOfField({
-    parentUuid,
-    containerUuid,
-    columnName: COLUMNNAME_IsActive
-  })
-  if (!convertStringToBoolean(isActiveRecord)) {
-    return false
-  }
-
   // is processed value of record
   const isProcessedRecord = store.getters.getValueOfField({
     parentUuid,
