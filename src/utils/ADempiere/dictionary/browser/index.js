@@ -17,6 +17,7 @@
  */
 
 import store from '@/store'
+import language from '@/lang'
 
 // Constants
 import {
@@ -31,6 +32,7 @@ import { requestSaveBrowseCustomization } from '@/api/ADempiere/user-customizati
 import { isHiddenField } from '@/utils/ADempiere/references'
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils.js'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
+import { showNotification } from '@/utils/ADempiere/notification.js'
 
 /**
  * Is displayed field in panel query criteria
@@ -488,6 +490,36 @@ export const containerManager = {
       column_name: columnName,
       table_name: tabTableName,
       valueField
+    })
+  },
+  refreshRecords({
+    containerUuid
+  }) {
+    store.dispatch('getBrowserSearch', {
+      containerUuid
+    })
+  },
+  runProcess({
+    containerUuid
+  }) {
+    store.commit('setBrowserProcessAll', {
+      uuid: containerUuid,
+      isAll: false
+    })
+    const selection = store.getters.getBrowserSelectionsList({
+      containerUuid
+    })
+    if (isEmptyValue(selection)) {
+      showNotification({
+        title: language.t('data.selectionRequired'),
+        type: 'warning'
+      })
+      return
+    }
+    const process = store.getters.getProcessOfBrowser(containerUuid)
+    store.commit('setShowedModalDialog', {
+      containerUuid: process.uuid,
+      isShowed: true
     })
   }
 }

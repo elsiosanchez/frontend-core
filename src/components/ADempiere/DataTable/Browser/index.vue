@@ -96,8 +96,26 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <!-- pagination table, set custom or use default change page method -->
+    <div style="text-align: end; margin-right: 80px;">
+      <el-button
+        type="success"
+        class="button-base-icon"
+        icon="el-icon-refresh-right"
+        @click="refreshRecord()"
+      />
+      <el-button
+        type="danger"
+        class="button-base-icon"
+        icon="el-icon-close"
+        @click="closeBrowser()"
+      />
+      <el-button
+        type="primary"
+        class="button-base-icon"
+        icon="el-icon-check"
+        @click="runProcess()"
+      />
+    </div>
     <custom-pagination
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid"
@@ -187,7 +205,7 @@ export default defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, { root }) {
     const panelMain = document.getElementById('mainBrowseDataTable')
     const multipleTable = ref(null)
 
@@ -482,7 +500,25 @@ export default defineComponent({
         toggleSelection(selectionsList.value)
       }, 100)
     }
-
+    function refreshRecord() {
+      props.containerManager.refreshRecords({
+        containerUuid: props.panelMetadata.uuid
+      })
+    }
+    function runProcess() {
+      props.containerManager.runProcess({
+        containerUuid: props.panelMetadata.uuid
+      })
+    }
+    function closeBrowser() {
+      const currentRoute = router.app._route
+      const tabViewsVisited = store.getters.visitedViews
+      store.dispatch('tagsView/delView', currentRoute)
+      const oldRouter = tabViewsVisited[tabViewsVisited.length - 1]
+      router.push({
+        path: oldRouter.path
+      }, () => {})
+    }
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -539,7 +575,10 @@ export default defineComponent({
       loadSelection,
       handleChangeSizePage,
       activateAll,
-      widthColumn
+      widthColumn,
+      refreshRecord,
+      runProcess,
+      closeBrowser
     }
   }
 })
@@ -567,7 +606,7 @@ export default defineComponent({
   }
   .el-table__body-wrapper {
     overflow: auto;
-    height: calc(100vh - 310px);
+    height: calc(100vh - 355px);
   }
   .el-table thead tr {
     height: 40px!important
