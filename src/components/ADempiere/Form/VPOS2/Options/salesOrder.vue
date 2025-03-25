@@ -504,15 +504,15 @@
     <!-- applyDiscountToAllLines -->
     <el-col v-if="isAllowsApplySchemaDiscount && !validateProcess" :span="8">
       <div>
-        <el-card
-          shadow="never"
-          class="custom-card-options"
-          :body-style="{ padding: '10px' }"
-        >
-          <p
-            :class="isDisableClass"
+        <el-dropdown trigger="click" @command="handleCommandAddress">
+          <el-card
+            shadow="never"
+            class="custom-card-options"
+            :body-style="{ padding: '10px' }"
           >
-            <el-dropdown trigger="click" @command="handleCommandAddress">
+            <p
+              :class="isDisableClass"
+            >
               <span class="el-dropdown-link">
                 <svg-icon icon-class="discount" />
                 <br>
@@ -527,9 +527,9 @@
                   {{ item.name }}
                 </el-dropdown-item>
               </el-dropdown-menu>
-            </el-dropdown>
-          </p>
-        </el-card>
+            </p>
+          </el-card>
+        </el-dropdown>
       </div>
     </el-col>
 
