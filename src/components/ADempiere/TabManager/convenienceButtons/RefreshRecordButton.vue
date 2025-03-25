@@ -86,9 +86,6 @@ export default defineComponent({
     })
 
     const isRefreshRecord = computed(() => {
-      if (isEmptyValue(recordId.value)) {
-        return false
-      }
       return !isExistsChanges.value
     })
 

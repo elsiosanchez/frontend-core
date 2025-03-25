@@ -61,8 +61,14 @@ export default defineComponent({
       return store.state.app.device === 'mobile'
     })
 
+    const currentRow = computed(() => {
+      return store.getters.getTabCurrentRow({ containerUuid: props.containerUuid })
+    })
+
     const recordUuid = computed(() => {
-      return store.getters.getUuidOfContainer(props.containerUuid)
+      const recordUuid = store.getters.getUuidOfContainer(props.containerUuid)
+      if (isEmptyValue(recordUuid)) return -1
+      return recordUuid
     })
 
     const tabAttributes = computed(() => {
@@ -93,15 +99,12 @@ export default defineComponent({
     })
 
     function editMode() {
-      const row = store.getters.getTabCurrentRow({
-        containerUuid: props.containerUuid
-      })
-      row.isEditRow = true
-      row.isSelectedRow = true
+      currentRow.value.isEditRow = true
+      currentRow.value.isSelectedRow = true
       store.dispatch('changeTabAttribute', {
         attributeName: 'currentRowSelect',
         attributeNameControl: undefined,
-        attributeValue: row,
+        attributeValue: currentRow.value,
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid
       })
@@ -129,6 +132,7 @@ export default defineComponent({
 
     return {
       isMobile,
+      currentRow,
       isUndoChanges,
       // Methods
       undoChanges
