@@ -1,6 +1,6 @@
 <!--
   ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-  Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
   Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/Elsiosanchez
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,7 +17,10 @@
 -->
 
 <template>
-  <el-main class="default-table" style="border-top: 1px solid #dde6fa;padding-bottom: 1%;padding-top: 1%;border-bottom: 1px solid #dde6fa">
+  <el-main
+    class="default-table"
+    style="border-top: 1px solid #dde6fa;padding-bottom: 1%;padding-top: 1%;border-bottom: 1px solid #dde6fa"
+  >
     <el-divider class="divider" />
 
     <el-row style="display: flex;">
@@ -28,6 +31,7 @@
           </b>
         </div>
       </el-col>
+
       <!-- <el-col :span="4">
         <filter-fields
           :parent-uuid="parentUuid"

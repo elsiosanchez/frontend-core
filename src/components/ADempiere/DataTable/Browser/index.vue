@@ -25,6 +25,7 @@
     :onLoad="adjustSize()"
     :onresize="setTableHeight()"
   >
+
     <el-row>
       <el-col :span="24">
         <filter-fields
@@ -52,6 +53,7 @@
       size="small"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
+      :class="tableClass"
       :row-class-name="tableRowClassName"
       @cell-click="handleCellClick"
       @row-click="handleRowClick"
@@ -96,6 +98,7 @@
         </template>
       </el-table-column>
     </el-table>
+
     <custom-pagination
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid"
@@ -108,7 +111,8 @@
       :handle-change-page-number="handleChangePage"
       :handle-change-page-size="handleChangeSizePage"
     />
-    <div class="footer" style="margin-top: 10px !important; display: flex; justify-content: space-between; align-items: center">
+
+    <div class="browser-footer" style="margin-top: 10px !important; display: flex; justify-content: space-between; align-items: center">
       <div style="float: left">
         <el-button
           type="success"
@@ -121,17 +125,24 @@
           type="primary"
           trigger="click"
           style="margin-left: 10px; font-size: 39px;"
+          class="export-button"
           :disabled="!disableExport"
           @click="exportRecords()"
           @command="exportAllRecords"
         >
-          <i class="el-icon-download" />
+          <i class="el-icon-download" style="font-size: 27px;" />
+
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item command="onlyRecord" icon="el-icon-download">{{ $t('actionMenu.exportSelectedRecords') }}</el-dropdown-item>
-            <el-dropdown-item command="allRecord" icon="el-icon-download">{{ $t('smartBrowser.exportAllRecords.title') }}</el-dropdown-item>
+            <el-dropdown-item command="onlyRecord" icon="el-icon-download">
+              {{ $t('actionMenu.exportSelectedRecords') }}
+            </el-dropdown-item>
+            <el-dropdown-item command="allRecord" icon="el-icon-download">
+              {{ $t('smartBrowser.exportAllRecords.title') }}
+            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
+
       <div style="float: right">
         <el-button
           type="danger"
@@ -169,9 +180,11 @@ import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditIn
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { isWidthColumn } from '@/utils/ADempiere/references'
+
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
  */
@@ -278,6 +291,7 @@ export default defineComponent({
         return false
       })
     })
+
     function widthColumn(fieldAttributes) {
       const { name, display_type } = fieldAttributes
       const size = 12
@@ -290,6 +304,7 @@ export default defineComponent({
       }
       return caracter * size
     }
+
     const selectionsLength = computed(() => {
       return props.containerManager.getSelection({
         containerUuid: props.containerUuid
@@ -353,6 +368,36 @@ export default defineComponent({
         return heightSize.value - 400
       }
       return defaultSize.value
+    })
+
+    const storedPanel = computed(() => {
+      return props.containerManager.getPanel({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid
+      })
+    })
+
+    const isCollapse = computed(() => {
+      const panel = storedPanel.value
+      if (!isEmptyValue(panel)) {
+        if (panel.isShowedCriteria) {
+          // open criteria
+          return true
+        }
+      }
+      // by default criteria if closed
+      return false
+    })
+
+    // TODO: Add rows visible
+    const tableClass = computed(() => {
+      let classCss = 'browser-table'
+      if (isCollapse.value) {
+        classCss += ' browser-criteria-expand'
+      } else {
+        classCss += ' browser-criteria-collapse'
+      }
+      return classCss
     })
 
     /**
@@ -442,6 +487,7 @@ export default defineComponent({
         recordsSelected: selections
       })
     }
+
     function activateAll() {
       let index = 0
       recordsWithFilter.value.forEach((row) => {
@@ -451,6 +497,7 @@ export default defineComponent({
       })
       handleSelectionAll(recordsWithFilter.value)
     }
+
     /**
      * Select or unselect rows
      * USE ONLY MOUNTED
@@ -492,7 +539,9 @@ export default defineComponent({
         if (row.isSelectedRow) {
           currentSelection.push(row)
         } else {
-          currentSelection = currentSelection.filter(rowSelected => row[keyColumn.value] !== rowSelected[keyColumn.value])
+          currentSelection = currentSelection.filter(rowSelected => {
+            return row[keyColumn.value] !== rowSelected[keyColumn.value]
+          })
         }
         handleSelectionAll(currentSelection)
         toggleSelection(currentSelection)
@@ -542,6 +591,7 @@ export default defineComponent({
         containerUuid: props.panelMetadata.uuid
       })
     }
+
     function closeBrowser() {
       const currentRoute = router.app._route
       const tabViewsVisited = store.getters.visitedViews
@@ -551,6 +601,7 @@ export default defineComponent({
         path: oldRouter.path
       }, () => {})
     }
+
     function exportAllRecords() {
       props.containerManager.exportAllRecords({
         containerUuid: props.panelMetadata.uuid
@@ -569,6 +620,7 @@ export default defineComponent({
         exportAllRecords()
       }
     }
+
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -614,6 +666,7 @@ export default defineComponent({
       selectionsLength,
       defaultSize,
       sizeViewTable,
+      tableClass,
       isMobile,
       currentRowSelect,
       isSelectDefault,
@@ -643,8 +696,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.footer .el-dropdown .el-button-group {
-  height: 39px
+.browser-footer {
+  .el-dropdown {
+    .el-button-group {
+      height: 39px;
+
+      .el-button {
+        padding-left: 8px;
+        padding-right: 8px;
+
+        &.el-dropdown__caret-button {
+          padding-left: 5px;
+          padding-right: 5px;
+        }
+      }
+    }
+  }
 }
 .multipleTableBrowser {
   height: 85%;
@@ -665,9 +732,17 @@ export default defineComponent({
     padding-left: 10px;
     padding-right: 10px;
   }
-  .el-table__body-wrapper {
-    overflow: auto;
-    height: calc(100vh - 355px);
+  .browser-criteria-collapse {
+    .el-table__body-wrapper {
+      overflow: auto;
+      height: calc(100vh - 365px);
+    }
+  }
+  .browser-criteria-expand {
+    .el-table__body-wrapper {
+      overflow: auto;
+      height: calc(80vh - 450px);
+    }
   }
   .el-table thead tr {
     height: 40px!important
