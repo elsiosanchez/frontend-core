@@ -20,6 +20,7 @@
   <div style="display: contents; height: 100% !important;">
     <div style="height: 100% !important">
       <el-card
+        style="border-radius: 20px;"
         :body-style="{ padding: '20px !important' }"
       >
         <el-form
@@ -55,7 +56,7 @@
             >
               <charter-order-field />
             </el-col>
-            <fieldset v-if="isCharterOrder" style="padding: 0.35em 0.75em 0.625em;border-radius: 6px;border: 1px solid #1890ff7a;">
+            <fieldset v-if="isCharterOrder" style="padding: 0.35em 0.75em 0.625em;border-radius: 6px;border: 1px solid #1890ff7a; min-width: 100%">
               <legend>{{ $t('form.outBoundOrder.group.title') }}</legend>
               <el-col :span="6">
                 <shipper-field />

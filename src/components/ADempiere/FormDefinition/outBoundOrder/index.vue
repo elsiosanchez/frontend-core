@@ -88,11 +88,12 @@
         />
         <el-button
           v-if="'process' === stepList[currentStep].key"
+          :key="buttonKey"
           type="primary"
           class="button-base-icon"
           icon="el-icon-check"
           :loading="isLoadingProcess"
-          :disabled="isLoadingProcess"
+          :disabled="isDisableProcess"
           @click="runProcess"
         />
       </div>
@@ -119,7 +120,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 
 import lang from '@/lang'
 import store from '@/store'
@@ -171,6 +172,7 @@ export default defineComponent({
      */
     const showPanel = ref(false)
     const disabledButton = ref(false)
+    const buttonKey = ref(0)
 
     const stepList = ref([
       {
@@ -205,6 +207,19 @@ export default defineComponent({
 
     const isLoadingProcess = computed(() => {
       return store.getters.getIsLoadingProcess
+    })
+
+    const isDisableProcess = computed(() => {
+      if (isLoadingProcess.value) {
+        return true
+      }
+      const {
+        charterOrder, vehiclesId, driverId, freightDocumentTypesId, shipperId
+      } = store.getters.getSearchFilterGenerateOrder
+      if (charterOrder) {
+        return isEmptyValue(vehiclesId) || isEmptyValue(driverId) || isEmptyValue(freightDocumentTypesId) || isEmptyValue(shipperId)
+      }
+      return false
     })
 
     const currentStep = computed({
@@ -357,18 +372,29 @@ export default defineComponent({
     function clearSearch() {
       searchRecords(true)
     }
+
+    watch(
+      () => store.getters.getSearchFilterGenerateOrder,
+      () => {
+        buttonKey.value++
+      },
+      { deep: true }
+    )
+
     return {
       // Refs
       stepList,
       currentStep,
       showPanel,
       disabledButton,
+      buttonKey,
       // Computed
       isDisabled,
       isMobile,
       recordsSelecion,
       recordsId,
       isLoadingProcess,
+      isDisableProcess,
       // Methods
       nextStep,
       refreshRecords,

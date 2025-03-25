@@ -19,6 +19,7 @@
 <template>
   <el-form-item
     style="width: 100%;"
+    required
   >
     <template slot="label">
       {{ $t('form.outBoundOrder.process.driver') }}
