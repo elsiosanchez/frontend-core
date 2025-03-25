@@ -33,6 +33,11 @@ import { isHiddenField } from '@/utils/ADempiere/references'
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils.js'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 import { showNotification } from '@/utils/ADempiere/notification.js'
+import { exportFileFromJson, exportRecords } from '@/utils/ADempiere/exportUtil.js'
+import { clientDateTime } from '@/utils/ADempiere/formatValue/dateFormat'
+import { formatField } from '@/utils/ADempiere/valueFormat'
+import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
+import { DEFAULT_EXPORT_TYPE } from '@/utils/ADempiere/exportUtil.js'
 
 /**
  * Is displayed field in panel query criteria
@@ -521,5 +526,105 @@ export const containerManager = {
       containerUuid: process.uuid,
       isShowed: true
     })
+  },
+  enableExport({
+    containerUuid
+  }) {
+    const emptyMandatory = store.getters.getBrowserFieldsEmptyMandatory({
+      containerUuid
+    })
+    if (!isEmptyValue(emptyMandatory)) {
+      return false
+    }
+    const recordCount = store.getters.getBrowserRecordCount({
+      containerUuid
+    })
+    if (isEmptyValue(recordCount) || recordCount <= 0) {
+      return false
+    }
+    return true
+  },
+  exportAllRecords({
+    containerUuid,
+    parentUuid
+  }) {
+    store.dispatch('getBrowserExportRecords', {
+      containerUuid
+    }).then(response => {
+      const currentSelection = response
+      const fieldsList = this.getFieldsList({
+        containerUuid
+      })
+      const fieldsListAvailable = fieldsList.filter(fieldItem => {
+        const {
+          isShowedTableFromUser,
+          is_encrypted
+        } = fieldItem
+        // Hide encrypted fields
+        if (is_encrypted) {
+          return false
+        }
+
+        if (this.isDisplayedColumn(fieldItem)) {
+          const isMandatoryGenerated = this.isMandatoryColumn(fieldItem)
+          const isDisplayedDefault = this.isDisplayedDefaultTable({
+            ...fieldItem,
+            is_mandatory: isMandatoryGenerated
+          })
+          // madatory, not parent column and without default value to window, mandatory or with default value to others
+          if (isDisplayedDefault) {
+            return true
+          }
+          // showed by user
+          return isShowedTableFromUser
+        }
+
+        return false
+      }).sort((a, b) => a.sequence - b.sequence)
+      const headerList = fieldsListAvailable.map(fieldItem => {
+        return decodeHtmlEntities(fieldItem.name)
+      })
+      const data = currentSelection.map(row => {
+        const newRow = {}
+        fieldsListAvailable.forEach(field => {
+          const { column_name, displayColumnName, display_type } = field
+          const value = formatField({
+            displayType: display_type,
+            value: row[column_name],
+            displayedValue: row[displayColumnName]
+          })
+          newRow[column_name] = value
+        })
+        return newRow
+      })
+      const title = this.getPanel({
+        parentUuid,
+        containerUuid
+      }).name
+      exportFileFromJson({
+        header: headerList,
+        data,
+        fileName: `${title} ${clientDateTime()}`,
+        exportType: DEFAULT_EXPORT_TYPE
+      })
+    })
+  },
+  exportOnlyRecords({
+    root,
+    parentUuid,
+    containerUuid,
+    containerManager
+  }) {
+    const selection = store.getters.getBrowserSelectionsList({
+      containerUuid
+    })
+    if (isEmptyValue(selection)) {
+      showNotification({
+        title: language.t('data.selectionRequired'),
+        type: 'warning'
+      })
+      return
+    }
+    exportRecords({ root, parentUuid, containerUuid, containerManager, formatToExport: DEFAULT_EXPORT_TYPE })
   }
 }

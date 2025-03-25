@@ -96,26 +96,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <div style="text-align: end; margin-right: 80px;">
-      <el-button
-        type="success"
-        class="button-base-icon"
-        icon="el-icon-refresh-right"
-        @click="refreshRecord()"
-      />
-      <el-button
-        type="danger"
-        class="button-base-icon"
-        icon="el-icon-close"
-        @click="closeBrowser()"
-      />
-      <el-button
-        type="primary"
-        class="button-base-icon"
-        icon="el-icon-check"
-        @click="runProcess()"
-      />
-    </div>
     <custom-pagination
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid"
@@ -128,6 +108,45 @@
       :handle-change-page-number="handleChangePage"
       :handle-change-page-size="handleChangeSizePage"
     />
+    <div class="footer" style="margin-top: 10px !important; display: flex; justify-content: space-between; align-items: center">
+      <div style="float: left">
+        <el-button
+          type="success"
+          class="button-base-icon"
+          icon="el-icon-refresh-right"
+          @click="refreshRecord()"
+        />
+        <el-dropdown
+          split-button
+          type="primary"
+          trigger="click"
+          style="margin-left: 10px; font-size: 39px;"
+          :disabled="!disableExport"
+          @click="exportRecords()"
+          @command="exportAllRecords"
+        >
+          <i class="el-icon-download" />
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="onlyRecord" icon="el-icon-download">{{ $t('actionMenu.exportSelectedRecords') }}</el-dropdown-item>
+            <el-dropdown-item command="allRecord" icon="el-icon-download">{{ $t('smartBrowser.exportAllRecords.title') }}</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <div style="float: right">
+        <el-button
+          type="danger"
+          class="button-base-icon"
+          icon="el-icon-close"
+          @click="closeBrowser()"
+        />
+        <el-button
+          type="primary"
+          class="button-base-icon"
+          icon="el-icon-check"
+          @click="runProcess()"
+        />
+      </div>
+    </div>
   </div>
 
   <loading-view
@@ -150,7 +169,6 @@ import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditIn
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { isWidthColumn } from '@/utils/ADempiere/references'
@@ -214,7 +232,11 @@ export default defineComponent({
     const isChangeOptions = ref(false)
     const heightSize = ref()
     const currentRowSelect = ref({})
-
+    const disableExport = computed(() => {
+      return props.containerManager.enableExport({
+        containerUuid: props.containerUuid
+      })
+    })
     const isLoadingDataTale = computed(() => {
       if (props.containerManager && props.containerManager.isLoadedRecords) {
         return !props.containerManager.isLoadedRecords({
@@ -519,6 +541,24 @@ export default defineComponent({
         path: oldRouter.path
       }, () => {})
     }
+    function exportAllRecords() {
+      props.containerManager.exportAllRecords({
+        containerUuid: props.panelMetadata.uuid
+      })
+    }
+    function exportRecords(command) {
+      if (command === 'onlyRecord') {
+        props.containerManager.exportOnlyRecords({
+          root,
+          parentUuid: props.parentUuid,
+          containerUuid: props.panelMetadata.uuid,
+          containerManager: props.containerManager
+        })
+      }
+      if (command === 'allRecord') {
+        exportAllRecords()
+      }
+    }
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -562,6 +602,7 @@ export default defineComponent({
       sizeViewTable,
       isMobile,
       currentRowSelect,
+      disableExport,
       // Methods
       setTableHeight,
       adjustSize,
@@ -578,13 +619,18 @@ export default defineComponent({
       widthColumn,
       refreshRecord,
       runProcess,
-      closeBrowser
+      closeBrowser,
+      exportRecords,
+      exportAllRecords
     }
   }
 })
 </script>
 
 <style lang="scss">
+.footer .el-dropdown .el-button-group {
+  height: 39px
+}
 .multipleTableBrowser {
   height: 85%;
   .el-table {
