@@ -467,6 +467,16 @@ export default defineComponent({
       }
     }
 
+    function isSelectDefault() {
+      const browser = store.getters.getStoredBrowser(props.containerUuid)
+      if (!isEmptyValue(browser)) {
+        const { is_selected_by_default } = browser
+        if (is_selected_by_default) {
+          activateAll()
+        }
+      }
+    }
+
     /**
      * Handle Cell Click
      * @param {object} row
@@ -566,6 +576,10 @@ export default defineComponent({
       }, 500)
     })
 
+    watch(recordsWithFilter, () => {
+      isSelectDefault()
+    })
+
     onUpdated(() => {
       const main = document.getElementById('mainBrowse')
       if (!isEmptyValue(main) &&
@@ -602,6 +616,7 @@ export default defineComponent({
       sizeViewTable,
       isMobile,
       currentRowSelect,
+      isSelectDefault,
       disableExport,
       // Methods
       setTableHeight,
