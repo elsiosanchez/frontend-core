@@ -20,7 +20,7 @@
   <div style="display: contents; height: 100% !important;">
     <div style="height: 100% !important;">
       <el-card
-        :body-style="{ padding: '20px' }"
+        :body-style="{ padding: '20px !important' }"
       >
         <el-form
           :inline="true"
