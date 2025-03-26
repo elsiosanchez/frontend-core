@@ -143,7 +143,9 @@ export default defineComponent({
     const previewList = computed(() => {
       return attachmentList.value.map(file => file.src)
     })
-
+    const isImageFile = (file) => {
+      return file.content_type && file.content_type.startsWith('image/')
+    }
     const resourceReference = computed({
       set(value) {
         store.commit('setResourceReference', value)
@@ -433,7 +435,8 @@ export default defineComponent({
       clearDescriptionHeader,
       updateDescriptionHeader,
       handlePictureCardPreview,
-      addAttachmentDescriptionHeader
+      addAttachmentDescriptionHeader,
+      isImageFile
     }
   }
 })

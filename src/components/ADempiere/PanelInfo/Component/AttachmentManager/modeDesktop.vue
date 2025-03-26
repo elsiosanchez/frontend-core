@@ -82,13 +82,24 @@
                 {{ file.name }}
               </p>
               <p style="width: 100%;text-align: center;margin: 0px;">
-                <el-image
-                  class="image-card-attachment"
-                  :src="file.src"
-                  fit="contain"
-                  :preview-src-list="previewList"
-                  style="padding-left: 0px;padding-right: 0px;border: 1px solid rgba(184, 186, 188, 0.64);width: 150px;height: 200px;"
-                />
+                <span v-if="isImageFile(file)">
+                  <el-image
+                    class="image-card-attachment"
+                    :src="file.src"
+                    fit="contain"
+                    :preview-src-list="[file.src]"
+                    style="padding-left: 0px; padding-right: 0px; border: 1px solid rgba(184, 186, 188, 0.64); width: 150px; height: 200px;"
+                  />
+                </span>
+                <span v-else>
+                  <el-image
+                    class="image-card-attachment"
+                    :src="file.src"
+                    fit="contain"
+                    style="padding-left: 0px; padding-right: 0px; border: 1px solid rgba(184, 186, 188, 0.64); width: 150px; height: 200px; cursor: pointer;"
+                    @click="handleDownload(file)"
+                  />
+                </span>
               </p>
               <!-- Buttons -->
               <div style="text-align: center;padding: 10px 5px;">
@@ -114,67 +125,6 @@
                     plain
                   />
                 </el-popover>
-                <!-- <el-popover
-                  :value="isShowMessage"
-                  placement="bottom"
-                  trigger="click"
-                  class="class-group-botton-option"
-                >
-                  <el-form
-                    label-position="top"
-                    class="form-min-label"
-                  >
-                    <el-form-item
-                      :label="$t('component.attachment.addDescription')"
-                    >
-                      <el-input
-                        v-model="addDescription"
-                        maxlength="255"
-                        show-word-limit
-                      />
-                    </el-form-item>
-                    <el-form-item
-                      :label="$t('component.attachment.addMessage')"
-                    >
-                      <el-input
-                        v-model="addMessage"
-                        type="textarea"
-                        maxlength="2000"
-                        show-word-limit
-                      />
-                    </el-form-item>
-                  </el-form>
-
-                  <p style="text-align: end;">
-                    <el-button
-                      plain
-                      type="info"
-                      class="button-base-icon"
-                      style="font-size: 25px;"
-                      @click="cleanMessage()"
-                    >
-                      <svg-icon icon-class="layers-clear" />
-                    </el-button>
-                    <el-button
-                      type="danger"
-                      class="button-base-icon"
-                      icon="el-icon-close"
-                      @click="closeMessage(file)"
-                    />
-                    <el-button
-                      type="primary"
-                      class="button-base-icon"
-                      icon="el-icon-check"
-                      @click="sendMessage(file)"
-                    />
-                  </p>
-                  <el-button
-                    slot="reference"
-                    icon="el-icon-chat-line-square"
-                    plain
-                    @click="openMessage(file)"
-                  />
-                </el-popover> -->
                 <file-share
                   :image-id="file.id"
                   :resource-name="file.file_name"
