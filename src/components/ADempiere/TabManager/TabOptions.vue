@@ -95,15 +95,9 @@
         <slot name="convenience-additional-options" style="display: contents;" />
       </template>
     </convenience-buttons>
-
-    <!--
-    <full-screen-container
-      style="float: right;"
-      :parent-uuid="parentUuid"
-      :container-uuid="currentTabUuid"
-    />
-    -->
-
+    <span v-if="storedTab && !isEmptyValue(recordTitle)" style="position: absolute; left: 50%">
+      {{ recordTitle }}
+    </span>
     <action-menu
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
@@ -147,6 +141,7 @@ import ChangeRecord from '@/components/ADempiere/DataTable/Components/ChangeReco
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 export default defineComponent({
   name: 'TabOptions',
@@ -200,7 +195,19 @@ export default defineComponent({
       // const filteredOptions = response.filter(option => option.display_type === 'K' || option.display_type === 'C' || option.display_type === 'R')
       return response
     })
-
+    const recordTitle = computed(() => {
+      const tab = store.getters.getTabCurrentRow({
+        containerUuid: props.containerUuid
+      })
+      if (!isEmptyValue(tab) && !isEmptyValue(props.tabAttributes.table_name)) {
+        const title = tab[DISPLAY_COLUMN_PREFIX + props.tabAttributes.table_name + '_ID']
+        if (!isEmptyValue(title)) {
+          return title.toString()
+        }
+        return ''
+      }
+      return ''
+    })
     const selectedOption = computed(() => {
       const tabOptions = store.getters.getTabOptions
       if (!isEmptyValue(tabOptions)) {
@@ -385,6 +392,7 @@ export default defineComponent({
       showMenuMobile,
       isShowedTableRecords,
       tableName,
+      recordTitle,
       // methods
       changeShowedRecords,
       handleCommandActions,

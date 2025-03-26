@@ -51,8 +51,17 @@
             />
           </div>
         </template>
-        <el-collapse v-if="isBatchEntry" v-model="activeCollapses">
-          <el-collapse-item :name="String(key)" :title="title">
+        <div v-if="isBatchEntry" style="display: flex; justify-content: space-between">
+          <span />
+          <span>{{ title }}</span>
+          <el-button
+            style="border: none; float: right"
+            icon="el-icon-bottom"
+            @click="activeCollapses"
+          />
+        </div>
+        <transition>
+          <div v-show="!isBatchEntry">
             <div
               style="display: block;height: 100%;overflow: hidden;"
               @click="selectTab(tabsList[parseInt(currentTab)])"
@@ -82,39 +91,8 @@
                 style="height: 100% !important;"
               />
             </div>
-          </el-collapse-item>
-        </el-collapse>
-        <span v-else>
-          <div
-            style="display: block;height: 100%;overflow: hidden;"
-            @click="selectTab(tabsList[parseInt(currentTab)])"
-          >
-            <tab-panel
-              v-if="isEmptyValue(isDisplayPanelDefinitions)"
-              id="tab-panel"
-              :parent-uuid="parentUuid"
-              :container-manager="containerManager"
-              :tabs-list="tabsList"
-              :all-tabs-list="allTabsList"
-              :tab-uuid="tabUuid"
-              :tab-attributes="tabAttributes"
-              :actions-manager="actionsManager"
-              style="height: 100% !important;"
-            />
-            <tab-display-definitions
-              v-else
-              id="tab-panel"
-              :parent-uuid="parentUuid"
-              :container-manager="containerManager"
-              :tabs-list="tabsList"
-              :all-tabs-list="allTabsList"
-              :tab-uuid="tabUuid"
-              :tab-attributes="tabAttributes"
-              :actions-manager="actionsManager"
-              style="height: 100% !important;"
-            />
           </div>
-        </span>
+        </transition>
       </el-tab-pane>
     </el-tabs>
     <div :style="sizeBadgeRight">
@@ -265,6 +243,7 @@ import {
   refreshRecord,
   undoChange
 } from '@/utils/ADempiere/dictionary/window'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 export default defineComponent({
   name: 'TabManager',
@@ -417,20 +396,12 @@ export default defineComponent({
       }
       return {}
     })
-    const activeCollapses = computed({
-      get() {
-        store.getters.getCollapseWindow
-      },
-      set(value) {
-        store.commit('setCollapseWindown', value)
-        if (!isEmptyValue(value)) {
-          store.commit('setisBatchEntry', {
-            value: false,
-            containerUuid: currentTabMetadata.value.containerUuid
-          })
-        }
-      }
-    })
+    function activeCollapses() {
+      store.commit('setisBatchEntry', {
+        value: false,
+        containerUuid: currentTabMetadata.value.containerUuid
+      })
+    }
     const isBatchEntry = computed(() => {
       return store.getters.getIsBatchEntry(currentTabMetadata.value.containerUuid)
     })
@@ -739,11 +710,15 @@ export default defineComponent({
       })
     }
     const title = computed(() => {
-      const record = store.getters.getTabSelectionsList({
+      const tab = store.getters.getTabCurrentRow({
         containerUuid: currentTabMetadata.value.uuid
       })
-      if (!isEmptyValue(record)) {
-        return record.at(0)[currentTabTableName.value + '_ID'].toString()
+      if (!isEmptyValue(tab)) {
+        const title = tab[DISPLAY_COLUMN_PREFIX + currentTabTableName.value + '_ID']
+        if (!isEmptyValue(title)) {
+          return title.toString()
+        }
+        return ''
       }
       return ''
     })
