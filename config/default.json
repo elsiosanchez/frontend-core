@@ -7,12 +7,28 @@
   },
   "adempiere": {
     "api": {
+      "url": "http://192.168.0.106/api/",
+      "url": "http://192.168.1.109/api/",
+      "url": "http://192.168.5.192/api/",
+      "url": "http://192.168.1.110/api/",
+      "url": "http://20.12.0.23:8081/api/",
+      "url": "https://jo.solopcloud.com/api/",
+      "url": "https://demo.solopcloud.com/api/",
+      "url": "https://mabi.dev.solopcloud.com/api/",
+      "url": "https://dan.dev.solopcloud.com/api/",
+      "url": "https://jo.dev.solopcloud.com/api/",
+      "url": "http://192.168.5.102/api/",
       "url": "http://localhost/api/",
+      "url": "https://jo.dev.solopcloud.com/api/",
+      "url": "https://patches.dev.solopcloud.com/api/",
+      "url": "http://192.168.5.102/api/",
+      "url": "http://192.168.5.192/api/",
+      "url": "https://dyd.dev.solopcloud.com/api/",
       "timeout": 99999999
     }
   },
   "repository": {
-    "url": "https://api.github.com",
+    "url": "https://api.github.com",  
     "releaseNo": "releaseNoForDocumentation"
   },
   "taskManager": {
