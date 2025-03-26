@@ -95,9 +95,9 @@
         <slot name="convenience-additional-options" style="display: contents;" />
       </template>
     </convenience-buttons>
-    <span v-if="storedTab && !isEmptyValue(recordTitle)" style="position: absolute; left: 50%">
+    <!-- <span v-if="storedTab && !isEmptyValue(recordTitle)" style="left: 50%">
       {{ recordTitle }}
-    </span>
+    </span> -->
     <action-menu
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
