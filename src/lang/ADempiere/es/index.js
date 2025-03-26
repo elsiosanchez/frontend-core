@@ -530,7 +530,7 @@ export default {
       salesRepresentative: 'Agente Comercial',
       onlyAllocated: 'Solo asignado al punto de venta actual',
       businessPartner: 'Socio de Negocio',
-      copyShippingAddress: 'Copiar dirección para el envío',
+      copyShippingAddress: 'Usar misma dirección para el envío',
       documentNo: 'Nro. Documento',
       invoiceNo: 'Nro. Factura',
       emptyList: 'Utilice los filtros para realizar la busqueda de las ordenes'

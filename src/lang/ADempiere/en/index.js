@@ -529,7 +529,7 @@ export default {
       salesRepresentative: 'Sales Agent',
       onlyAllocated: 'Only allocated to current point of sales',
       businessPartner: 'Business Partner',
-      copyShippingAddress: 'Copy shipping address',
+      copyShippingAddress: 'Use same address for shipping',
       documentNo: 'Document No',
       invoiceNo: 'Invoice No',
       emptyList: 'Use the filters to search for orders'
