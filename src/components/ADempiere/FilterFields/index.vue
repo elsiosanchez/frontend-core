@@ -27,6 +27,9 @@
       id="RightPanelFieldOptions"
       :class="isClassOptions"
     >
+      <slot
+        name="title-record"
+      />
       <el-select
         v-model="fieldsListShowed"
         :filterable="!isMobile"

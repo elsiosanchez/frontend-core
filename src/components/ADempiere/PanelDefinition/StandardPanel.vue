@@ -35,7 +35,14 @@
             :fields-to-hidden="containerManager.getFieldsToHidden"
             :is-filter-records="isFilterRecords"
             :container-manager="containerManager"
-          />
+          >
+            <template v-slot:title-record>
+              <title-records
+                :container-uuid="containerUuid"
+                :parent-uuid="parentUuid"
+              />
+            </template>
+          </filter-fields>
 
           <el-card
             :shadow="shadowGroup"
@@ -72,6 +79,7 @@ import { FOCUSABLE_FIELDS_LIST } from '@/utils/ADempiere/componentUtils'
 // Components and Mixins
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
+import TitleRecords from '@/components/ADempiere/FilterFields/titleRecord.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -81,7 +89,8 @@ export default defineComponent({
 
   components: {
     FieldDefinition,
-    FilterFields
+    FilterFields,
+    TitleRecords
   },
 
   props: {

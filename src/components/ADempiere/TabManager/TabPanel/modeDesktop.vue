@@ -50,7 +50,14 @@
         :is-filter-records="true"
         :in-table="isShowedTableRecords"
         :container-manager="containerManager"
-      />
+      >
+        <template v-slot:title-record>
+          <title-records
+            :container-uuid="tabAttributes.uuid"
+            :parent-uuid="parentUuid"
+          />
+        </template>
+      </filter-fields>
     </el-header>
 
     <el-main id="tab-panel-body" class="tab-panel-body">
@@ -120,12 +127,15 @@ import DefaultTable from '@/components/ADempiere/DataTable/Windows/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TabOptions from '@/components/ADempiere/TabManager/TabOptions.vue'
+import TitleRecords from '@/components/ADempiere/FilterFields/titleRecord.vue'
+
 // Constants
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
+import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 
 export default defineComponent({
   name: 'modeDesktop',
@@ -136,7 +146,8 @@ export default defineComponent({
     FilterFields,
     PanelDefinition,
     TabOptions,
-    BatchEntry
+    BatchEntry,
+    TitleRecords
   },
 
   props: {
@@ -184,6 +195,14 @@ export default defineComponent({
 
     const isShowedTableRecords = computed(() => {
       return currentTab.value.isShowedTableRecords
+    })
+    const isParent = computed(() => {
+      const storedTab = store.getters.getStoredTab(
+        props.parentUuid,
+        props.tabAttributes.uuid
+      )
+      const { isParentTab } = storedTab
+      return isParentTab
     })
 
     const currentTab = computed(() => {
@@ -384,6 +403,12 @@ export default defineComponent({
       return 'min-height: 84vh !important;'
     })
 
+    function copyContent() {
+      copyToClipboard({
+        text: props.recordTitle,
+        isShowMessage: true
+      })
+    }
     loadOpenWindows()
 
     return {
@@ -399,6 +424,7 @@ export default defineComponent({
       styleScroll,
       showFullGridMode,
       collapseWindow,
+      isParent,
       // pagination
       styleHeadPanel,
       styleFooterPanel,
@@ -414,7 +440,8 @@ export default defineComponent({
       loadOpenWindows,
       handleChangePage,
       handleChangeSizePage,
-      changeBatchEntry
+      changeBatchEntry,
+      copyContent
     }
   }
 

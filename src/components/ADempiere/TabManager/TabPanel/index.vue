@@ -33,7 +33,6 @@
 
 <script>
 import { defineComponent, computed, onMounted } from '@vue/composition-api'
-
 import store from '@/store'
 
 export default defineComponent({
