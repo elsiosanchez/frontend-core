@@ -22,7 +22,7 @@ import Vue from 'vue'
 import { getBusinessPartner, updateBusinessPartner } from '@/api/ADempiere/displayDefinition.ts'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere'
 // import { getStartAndEndOfCurrentMonth } from '@/utils/ADempiere/valueFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 
@@ -192,7 +192,10 @@ const businessPartner = {
 
   getters: {
     getBusinessPartnerDefinition: (state) => ({ recordId }) => {
-      return state.definition[recordId].businessPartner || {}
+      if (!isEmptyValue(state.definition[recordId]) && !isEmptyValue(state.definition[recordId].businessPartner)) {
+        return state.definition[recordId].businessPartner
+      }
+      return {}
     },
     getBusinessPartnerDefinitionLoading: (state) => ({ recordId }) => {
       return state.definition[recordId].isLoading || {}

@@ -298,7 +298,7 @@ export const optionsListAdvancedQuery = [
 export function actionsDisplayDefinitionsFields({
   displayDefinition
 }) {
-  const { name, is_insert_record, id } = displayDefinition
+  const { name, is_insert_record, id, is_info_record } = displayDefinition
   return {
     name: name,
     enabled: true,
@@ -322,10 +322,12 @@ export function actionsDisplayDefinitionsFields({
         id,
         show: true
       })
-      store.dispatch('requestBusinessPartner', {
-        displayDefinitionId: displayDefinition.id,
-        recordId
-      })
+      if (is_info_record && !isEmptyValue(value)) {
+        store.dispatch('requestBusinessPartner', {
+          displayDefinitionId: displayDefinition.id,
+          recordId
+        })
+      }
       store.commit('setBusinessPartnerId', recordId)
       store.dispatch('changeTabPanelDefinition', {
         type: is_insert_record ? 'new' : 'view',

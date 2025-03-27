@@ -192,11 +192,13 @@ const displayDefinitionField = {
       if (typeof recordId !== 'number') {
         return
       }
-      dispatch('readRecordData', {
-        recordId,
-        displayDefinitionId: displyDefinitions.id,
-        isResource: displyDefinitions.is_resource
-      })
+      if (type === 'view') {
+        dispatch('readRecordData', {
+          recordId,
+          displayDefinitionId: displyDefinitions.id,
+          isResource: displyDefinitions.is_resource
+        })
+      }
     },
 
     /**
