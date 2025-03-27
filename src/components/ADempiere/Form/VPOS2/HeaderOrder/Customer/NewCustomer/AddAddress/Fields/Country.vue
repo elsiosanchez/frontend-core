@@ -94,7 +94,7 @@ export default defineComponent({
 
     function showCountry(show) {
       if (!show || !isEmptyValue(listCountry.value)) return
-      store.dispatch('countriesCustomers')
+      store.dispatch('countriesCustomers', fieldsLocation.value)
     }
 
     return {

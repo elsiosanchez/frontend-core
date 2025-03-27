@@ -22,11 +22,6 @@
     :body-style="{ padding: '5px' }"
     class="customer-data"
   >
-    <div slot="header" class="clearfix">
-      <span style="font-size: 15px;">
-        {{ $t('form.pos.order.BusinessPartnerCreate.billingAddress') }}
-      </span>
-    </div>
     <el-row :gutter="20">
       <el-form
         label-position="top"
@@ -39,6 +34,11 @@
             :body-style="{ padding: '5px' }"
             class="customer-data"
           >
+            <div slot="header" class="clearfix">
+              <span style="font-size: 15px;">
+                {{ $t('form.pos.order.BusinessPartnerCreate.billingAddress') }}
+              </span>
+            </div>
             <el-col :span="12">
               <location-name />
             </el-col>
@@ -59,6 +59,11 @@
             :body-style="{ padding: '5px' }"
             class="customer-data"
           >
+            <div slot="header" class="clearfix">
+              <span style="font-size: 15px;">
+                {{ $t('form.pos.order.BusinessPartnerCreate.shippingAddress') }}
+              </span>
+            </div>
             <el-col :span="12">
               <location-name :is-shipping="true" />
             </el-col>

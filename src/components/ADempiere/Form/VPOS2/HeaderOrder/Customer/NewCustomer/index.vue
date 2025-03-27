@@ -206,16 +206,8 @@ export default defineComponent({
             phone,
             email,
             is_default_billing: true,
-            is_default_shipping: false,
-            location_name: billingAddress.locationName
-          },
-          {
-            ...billingAddress,
-            phone,
-            email,
-            is_default_billing: true,
             is_default_shipping: true,
-            location_name: shippingAddress.locationName
+            location_name: billingAddress.locationName
           }
         ]
       }
@@ -233,7 +225,7 @@ export default defineComponent({
             ...shippingAddress,
             phone,
             email,
-            is_default_billing: true,
+            is_default_billing: false,
             is_default_shipping: true,
             location_name: shippingAddress.locationName
           }

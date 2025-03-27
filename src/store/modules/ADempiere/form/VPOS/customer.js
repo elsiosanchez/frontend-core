@@ -267,6 +267,7 @@ export default {
             const { countries } = response
             commit('setAttributeFieldCustomer', {
               attribute: 'listCountries',
+              typeLocations: typeLocations,
               value: countries
             })
             resolve(countries)
