@@ -1154,7 +1154,7 @@ export default defineComponent({
     }
     const isDisplayPanelDefinitions = computed(() => {
       const display = store.getters.getCurrentDisplayTabDefinitions({ tableName: currentTabTableName.value })
-      if (display.display_type !== 'X') {
+      if (!isEmptyValue(display) && display.display_type !== 'X') {
         return display
       }
       return undefined
