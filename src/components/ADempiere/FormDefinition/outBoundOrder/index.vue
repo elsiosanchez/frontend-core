@@ -39,30 +39,32 @@
         v-show="'process' === stepList[currentStep].key"
       />
       <div style="height: 14% !important;text-align: end;padding: 0px 15px; padding-top: 25px">
-        <el-button
-          v-if="'order' === stepList[currentStep].key"
-          type="primary"
-          class="button-base-icon"
-          icon="el-icon-s-grid"
-          @click="showPanel = true"
-        />
-        <el-button
-          v-if="'order' === stepList[currentStep].key"
-          type="success"
-          class="button-base-icon"
-          icon="el-icon-refresh-right"
-          size="small"
-          @click="refreshRecords();"
-        />
-        <el-button
-          v-if="'order' === stepList[currentStep].key"
-          type="info"
-          class="button-base-icon"
-          plain
-          @click="clearSearch();"
-        >
-          <svg-icon icon-class="layers-clear" />
-        </el-button>
+        <span style="float: left">
+          <el-button
+            v-if="'order' === stepList[currentStep].key"
+            type="primary"
+            class="button-base-icon"
+            icon="el-icon-s-grid"
+            @click="showPanel = true"
+          />
+          <el-button
+            v-if="'order' === stepList[currentStep].key"
+            type="success"
+            class="button-base-icon"
+            icon="el-icon-refresh-right"
+            size="small"
+            @click="refreshRecords();"
+          />
+          <el-button
+            v-if="'order' === stepList[currentStep].key"
+            type="info"
+            class="button-base-icon"
+            plain
+            @click="clearSearch();"
+          >
+            <svg-icon icon-class="layers-clear" />
+          </el-button>
+        </span>
         <el-button
           v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
           type="danger"
