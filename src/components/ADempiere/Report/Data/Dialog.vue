@@ -71,7 +71,7 @@ export default defineComponent({
     },
     process: {
       type: Object,
-      required: true
+      required: false
     },
     recordId: {
       type: Number,

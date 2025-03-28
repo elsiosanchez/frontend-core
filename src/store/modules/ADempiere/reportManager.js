@@ -347,7 +347,8 @@ const reportManager = {
             const printFormatsList = printFormatResponse.print_formats.map(printFormatItem => {
               return {
                 ...printFormatItem,
-                reportId: reportId
+                reportId: reportId,
+                isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0
               }
             })
 
@@ -414,7 +415,7 @@ const reportManager = {
 
                 return {
                   ...printFormatItem,
-                  // reportUuid: reportDefinition.uuid,
+                  isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0,
                   reportId: reportId
                 }
               })

@@ -18,7 +18,7 @@
 -->
 
 <template>
-  <span v-if="!isEmptyValue(process) && process.is_report">
+  <span v-if="(!isEmptyValue(process) && process.is_report) || !isEmptyValue(printFormatsList)">
     <el-dropdown
       v-if="!isEmptyValue(printFormatsList) || currentTableName === FINANCIAL_REPORT_TABLE_NAME"
       split-button
@@ -45,6 +45,7 @@
           v-for="(process, index) in printFormatsList"
           :key="index"
           :command="process"
+          :icon="isLegacy ? 'el-icon-document' : 'el-icon-document-add' "
         >
           {{ process.name }}
         </el-dropdown-item>
@@ -176,7 +177,6 @@ export default defineComponent({
       }
       return store.getters.getStoredReport(process.uuid)
     })
-
     const printFormatsList = computed(() => {
       if (isEmptyValue(process)) {
         return []
@@ -250,16 +250,25 @@ export default defineComponent({
         summary: process.description,
         type: 'info'
       })
-      store.dispatch('runReport', {
-        containerUuid: process.uuid,
-        reportUuid: process.uuid,
-        recordId: recordId.value,
-        reportId: process.internal_id,
-        printFormatId: command.id,
-        tableName: command.table_name,
-        filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
-        isView: false
-      })
+      if (command.isLegacy) {
+        store.dispatch('runReport', {
+          containerUuid: process.uuid,
+          reportUuid: process.uuid,
+          recordId: recordId.value,
+          reportId: process.internal_id,
+          printFormatId: command.id,
+          tableName: command.table_name,
+          filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
+          isView: false
+        })
+      } else {
+        store.dispatch('buildReport', {
+          containerUuid: process.uuid,
+          tableName: currentTableName.value,
+          isSummary: true,
+          printFormatId: command.id
+        })
+      }
     }
 
     function loadProcessData() {
