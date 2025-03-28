@@ -18,7 +18,7 @@
 -->
 
 <template>
-  <span v-if="(!isEmptyValue(process) && process.is_report) || !isEmptyValue(printFormatsList)">
+  <span>
     <el-dropdown
       v-if="!isEmptyValue(printFormatsList) || currentTableName === FINANCIAL_REPORT_TABLE_NAME"
       split-button
@@ -42,12 +42,12 @@
 
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
-          v-for="(process, index) in printFormatsList"
+          v-for="(printFormat, index) in printFormatsList"
           :key="index"
-          :command="process"
-          :icon="isLegacy ? 'el-icon-document' : 'el-icon-document-add' "
+          :command="printFormat"
+          :icon="printFormat.isLegacy ? 'el-icon-document' : 'el-icon-document-add' "
         >
-          {{ process.name }}
+          {{ printFormat.name }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -58,7 +58,7 @@
       type="info"
       size="small"
       style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
-      :disabled="isLoading"
+      :disabled="isLoading || isEmptyValue(process) || !process.is_report || isEmptyValue(printFormatsList)"
       :loading="isLoading"
       @click="printProcess()"
     >
@@ -178,12 +178,8 @@ export default defineComponent({
       return store.getters.getStoredReport(process.uuid)
     })
     const printFormatsList = computed(() => {
-      if (isEmptyValue(process)) {
-        return []
-      }
-      return store.getters.getPrintFormatsList(process.internal_id)
+      return store.getters.getPrintFormatsListTableName(currentTableName.value)
     })
-
     /**
      * Methods
      */
@@ -272,15 +268,7 @@ export default defineComponent({
     }
 
     function loadProcessData() {
-      if (isEmptyValue(process)) {
-        return
-      }
-      if (!isEmptyValue(getReportDefinition.value)) {
-        return
-      }
-      const { id } = process
-      store.dispatch('getReportDefinitionFromServer', {
-        id,
+      store.dispatch('listPrintFormatWindow', {
         tableName: currentTableName.value
       })
     }

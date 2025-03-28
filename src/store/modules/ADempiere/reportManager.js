@@ -122,6 +122,9 @@ const reportManager = {
     setPrintFormatsList(state, { reportId, printFormatsList }) {
       Vue.set(state.printFormatsList, reportId, printFormatsList)
     },
+    setPrintFormatsListTableName(state, { tableName, printFormatsList }) {
+      Vue.set(state.printFormatsList, tableName, printFormatsList)
+    },
     setReportViewsList(state, { containerUuid, reportViewsList }) {
       Vue.set(state.reportViewsList, containerUuid, reportViewsList)
     },
@@ -399,7 +402,18 @@ const reportManager = {
         }
         listPrintFormatsTableRequest({ tableName })
           .then(async printFormatResponse => {
-            const printFormatsList = await Promise.all(
+            const printFormatsList = printFormatResponse.print_formats.map(printFormatItem => {
+              return {
+                ...printFormatItem,
+                reportId: reportId,
+                isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0
+              }
+            })
+            commit('setPrintFormatsListTableName', {
+              tableName,
+              printFormatsList
+            })
+            await Promise.all(
               printFormatResponse.print_formats.map(async printFormatItem => {
                 await Promise.allSettled([
                   dispatch('getReportViewsFromServer', {
@@ -420,12 +434,6 @@ const reportManager = {
                 }
               })
             )
-
-            commit('setPrintFormatsList', {
-              reportId,
-              printFormatsList: printFormatsList
-            })
-
             resolve(printFormatsList)
           })
           .catch(error => {
@@ -1178,6 +1186,9 @@ const reportManager = {
     },
     getPrintFormatsList: (state) => (reportId) => {
       return state.printFormatsList[reportId] || []
+    },
+    getPrintFormatsListTableName: (state) => (tableName) => {
+      return state.printFormatsList[tableName] || []
     },
     getPrintFormat: (state, getters) => ({ reportId, printFormatId }) => {
       return getters.getPrintFormatsList(reportId).find(printFormat => {
