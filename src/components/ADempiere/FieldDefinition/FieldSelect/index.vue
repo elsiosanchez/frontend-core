@@ -53,7 +53,9 @@ import selectMixin from '@/components/ADempiere/FieldDefinition/FieldSelect/mixi
 
 // Constants
 import { LIST } from '@/utils/ADempiere/references'
-
+import {
+  IDENTIFIER_COLUMN_SUFFIX
+} from '@/utils/ADempiere/dictionaryUtils'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
@@ -138,7 +140,6 @@ export default {
       },
       set(value) {
         const { column_name, containerUuid, inTable } = this.metadata
-
         // table records values
         if (inTable) {
           this.containerManager.setCell({
@@ -188,6 +189,17 @@ export default {
 
     recordUuid() {
       return this.$store.getters.getUuidOfContainer(this.metadata.containerUuid)
+    },
+    parentTabs() {
+      const { parentTabs } = this.currentTab
+      if (!isEmptyValue(parentTabs)) {
+        return parentTabs[0]
+      }
+      return {}
+    },
+    parentTabColumName() {
+      if (isEmptyValue(this.parentTabs)) return ''
+      return this.parentTabs.table_name + IDENTIFIER_COLUMN_SUFFIX
     }
   },
 
@@ -274,11 +286,9 @@ export default {
       if (isEmptyValue(value)) {
         this.displayedValue = undefined
         this.uuidValue = undefined
-        if (this.metadata.isGetServerValue) {
-          this.getValueOfLookup()
-        }
-        return
       }
+      // request displayed value
+      this.getValueOfLookup()
 
       this.optionsList = this.getStoredLookupAll
       this.forceRerender()
@@ -304,9 +314,6 @@ export default {
         })
         return
       }
-
-      // request displayed value
-      this.getValueOfLookup()
     },
 
     // TODO: With remote and filter is enabled not working displayed value
@@ -326,9 +333,33 @@ export default {
         .then(responseLookupItem => {
           // with value response update local component list
           if (!isEmptyValue(responseLookupItem) && !isEmptyValue(responseLookupItem.value)) {
-            this.value = responseLookupItem.value
-            this.displayedValue = responseLookupItem.displayedValue
-            this.uuidValue = responseLookupItem.uuid
+            if (
+              isEmptyValue(this.metadata.default_value) &&
+              // !this.metadata.isGetServerValue &&
+              !this.currentTab.isParentTab &&
+              !isEmptyValue(this.parentTabs)
+            ) {
+              const {
+                parentUuid,
+                column_name,
+                displayColumnName
+              } = this.metadata
+              if (
+                !isEmptyValue(this.parentTabColumName) &&
+                this.parentTabColumName === column_name
+              ) {
+                this.setParentValue({
+                  containerUuid: this.parentTabs.uuid,
+                  parentUuid,
+                  columnName: column_name,
+                  displayColumnName
+                })
+              }
+            } else {
+              this.value = responseLookupItem.value
+              this.displayedValue = responseLookupItem.displayedValue
+              this.uuidValue = responseLookupItem.uuid
+            }
           }
         })
         .finally(() => {
@@ -439,6 +470,23 @@ export default {
           // set empty value
           this.value = this.blankOption.value
         })
+    },
+    setParentValue({
+      containerUuid,
+      parentUuid,
+      columnName,
+      displayColumnName
+    }) {
+      this.value = this.$store.getters.getValueOfFieldOnContainer({
+        containerUuid,
+        parentUuid,
+        columnName
+      })
+      this.displayedValue = this.$store.getters.getValueOfFieldOnContainer({
+        containerUuid,
+        parentUuid,
+        columnName: displayColumnName
+      })
     }
   }
 
