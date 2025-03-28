@@ -52,11 +52,13 @@
           </div>
         </template>
         <div v-if="isBatchEntry" style="display: flex; justify-content: space-between">
-          <span />
-          <span>{{ title }}</span>
+          <title-records
+            :container-uuid="tabAttributes.uuid"
+            :parent-uuid="parentUuid"
+          />
           <el-button
             style="border: none; float: right"
-            icon="el-icon-bottom"
+            icon="el-icon-full-screen"
             @click="activeCollapses"
           />
         </div>
@@ -222,6 +224,7 @@ import PanelInfo from '../PanelInfo/index.vue'
 import TabPanel from '@/components/ADempiere/TabManager/TabPanel/index.vue'
 import TabOptions from './TabOptions.vue'
 import TabDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayDefinitions/index.vue'
+import TitleRecords from '@/components/ADempiere/FilterFields/titleRecord.vue'
 
 // Constants
 import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
@@ -255,7 +258,8 @@ export default defineComponent({
     TabPanel,
     PanelInfo,
     TabLabel,
-    TabOptions
+    TabOptions,
+    TitleRecords
   },
   props: {
     parentUuid: {
