@@ -205,15 +205,22 @@ export default defineComponent({
 
     function hangleChangeRecord(action) {
       if (
-        action !== 'changeNextRecord' &&
         isExistsChanges.value
       ) {
+        const currentReccord = store.getters.getTabCurrentRow({
+          containerUuid: props.containerUuid
+        })
+        let recordId = -1
+        if (!isEmptyValue(currentReccord[tabAttributes.value.table_name + '_ID'])) {
+          recordId = currentReccord[tabAttributes.value.table_name + '_ID']
+        }
         store.dispatch('flushPersistenceQueue', {
           parentUuid: props.parentUuid,
           containerUuid: props.containerUuid,
-          tableName: tabAttributes.value.tableName,
+          tableName: tabAttributes.value.table_name,
           tabId: tabAttributes.value.internal_id,
-          recordUuid: recordUuid.value
+          recordUuid: recordUuid.value,
+          recordId
         })
           .then(() => {
             if (action === 'changeNextRecord') return changeNextRecord()
