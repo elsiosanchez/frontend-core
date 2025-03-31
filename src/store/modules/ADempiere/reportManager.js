@@ -453,6 +453,9 @@ const reportManager = {
       tableName
     }) {
       return new Promise(resolve => {
+        if (isEmptyValue(reportId) && isEmptyValue(tableName)) {
+          return resolve()
+        }
         listReportViewsRequest({ reportId, tableName })
           .then(reportViewResponse => {
             const reportViewsList = reportViewResponse.report_views.map(reportViewItem => {

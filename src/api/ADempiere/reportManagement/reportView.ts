@@ -38,9 +38,9 @@ export function listReportViewsRequest({
   pageToken,
   pageSize = ROWS_OF_RECORDS_BY_PAGE
 }) {
-  if (isEmptyValue(tableName)) {
+  if (!isEmptyValue(tableName)) {
     return request({
-      url: `/report-management/report-views/${tableName}`,
+      url: `/report-management/report-views/table/${tableName}`,
       method: 'get',
       params: {
         page_size: pageSize,
