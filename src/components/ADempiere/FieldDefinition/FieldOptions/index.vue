@@ -434,7 +434,7 @@ export default defineComponent({
           isOnlyField: true
         })
           .then(response => {
-            store.commit('setCurrentTabDefinition', {
+            store.commit('setFieldCurrentTabDefinition', {
               currentDefinition: response[0],
               tableName: referenceTableName
             })

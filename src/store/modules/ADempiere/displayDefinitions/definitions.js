@@ -29,6 +29,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
 
 const initState = {
+  displayFieldDefinitions: {},
   displayTabDefinitions: {},
   displayPanelRightDefinitions: {},
   currentListDefinition: [],
@@ -85,11 +86,27 @@ const displayTabDefinition = {
         listDefinitions
       })
     },
+    setFieldDisplayTabDefinition(state, {
+      currentDefinition = {},
+      listDefinitions = [],
+      tableName
+    }) {
+      Vue.set(state.displayFieldDefinitions, tableName, {
+        currentDefinition,
+        listDefinitions
+      })
+    },
     setCurrentTabDefinition(state, {
       currentDefinition,
       tableName
     }) {
       Vue.set(state.displayTabDefinitions[tableName], 'currentDefinition', currentDefinition)
+    },
+    setFieldCurrentTabDefinition(state, {
+      currentDefinition,
+      tableName
+    }) {
+      Vue.set(state.displayFieldDefinitions[tableName], 'currentDefinition', currentDefinition)
     },
     // Panel Right
     setDisplayPanelRightDefinition(state, {
@@ -144,10 +161,17 @@ const displayTabDefinition = {
                       field_definitions
                     }
                   })
-                  commit('setDisplayTabDefinition', {
-                    tableName,
-                    listDefinitions: listDisplayDefinitions
-                  })
+                  if (isOnlyField) {
+                    commit('setFieldDisplayTabDefinition', {
+                      tableName,
+                      listDefinitions: listDisplayDefinitions
+                    })
+                  } else {
+                    commit('setDisplayTabDefinition', {
+                      tableName,
+                      listDefinitions: listDisplayDefinitions
+                    })
+                  }
                   resolve(listDisplayDefinitions)
                 })
             }
