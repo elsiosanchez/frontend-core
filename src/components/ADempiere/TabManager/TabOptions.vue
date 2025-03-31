@@ -90,11 +90,23 @@
       :container-uuid="tabAttributes.uuid"
       :container-manager="containerManager"
       :tab-attributes="tabAttributes"
+      style="margin-right: 100px;"
     >
       <template v-slot:additional-options>
         <slot name="convenience-additional-options" style="display: contents;" />
       </template>
     </convenience-buttons>
+    <el-button
+      v-if="!isBatchEntry && storedTab"
+      size="mini"
+      class="button-collapse"
+      type="primary"
+      plain
+      style="float: right; margin-right: -20px; margin-left: 5px; padding: 10px 5px !important"
+      @click="activeCollapses()"
+    >
+      <svg-icon icon-class="collapse" />
+    </el-button>
     <action-menu
       :parent-uuid="parentUuid"
       :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
@@ -264,7 +276,9 @@ export default defineComponent({
     })
 
     const currentRoute = router.app._route
-
+    const isBatchEntry = computed(() => {
+      return store.getters.getIsBatchEntry(props.containerUuid)
+    })
     const currentRecordId = computed(() => {
       const { currentTab } = store.getters.getContainerInfo
       if (!isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) return Number(currentRoute.query.recordId)
@@ -358,7 +372,12 @@ export default defineComponent({
       if (type === 'H') return 'groups'
       return ''
     }
-
+    function activeCollapses() {
+      store.commit('setisBatchEntry', {
+        value: true,
+        containerUuid: props.containerUuid
+      })
+    }
     return {
       // ref
       displayOptions,
@@ -376,10 +395,12 @@ export default defineComponent({
       showMenuMobile,
       isShowedTableRecords,
       tableName,
+      isBatchEntry,
       // methods
       changeShowedRecords,
       handleCommandActions,
-      getIcon
+      getIcon,
+      activeCollapses
     }
   }
 
