@@ -269,14 +269,27 @@ export const refreshLookup = {
   index: 1,
   componentRender: () => import('@/components/ADempiere/FieldDefinition/FieldOptions/EmptyOption'),
   executeMethod: ({ containerManager, fieldAttributes, value }) => {
+    const { referenceTableName, containerUuid, internal_id, column_name, parentUuid, reference, columnUuid, uuid } = fieldAttributes
+
     store.dispatch('deleteLookup', {
-      parentUuid: fieldAttributes.parentUuid,
-      containerUuid: fieldAttributes.containerUuid,
-      contextColumnNames: fieldAttributes.reference.context_column_names,
       contextColumnNamesByDefaultValue: fieldAttributes.context_column_names,
-      uuid: fieldAttributes.uuid,
-      //
+      contextColumnNames: reference.context_column_names,
+      containerUuid,
+      parentUuid,
+      uuid: uuid,
       value
+    })
+
+    containerManager.getLookupList({
+      contextColumnNames: reference.context_column_names,
+      tableName: referenceTableName,
+      referenceUuid: reference.uuid,
+      columnName: column_name,
+      columnUuid: columnUuid,
+      id: internal_id,
+      containerUuid,
+      parentUuid,
+      uuid: uuid
     })
   }
 }
