@@ -421,7 +421,7 @@ export default defineComponent({
       nextTick(() => {
         const fieldEmptyIndex = fieldsListBatchEntry.value.findIndex(element => isEmptyValue(element.value))
         const main = document.getElementById('fieldsDisplay')
-        if (!isEmptyValue(main)) {
+        if (!isEmptyValue(main) && !isEmptyValue(main.children) && !isEmptyValue(main.children[fieldEmptyIndex])) {
           main.children[fieldEmptyIndex].__vue__.$children[0].$children[1].$children[0].$children[0].focus()
         }
       })
