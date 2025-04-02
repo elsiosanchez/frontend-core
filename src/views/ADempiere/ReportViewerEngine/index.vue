@@ -39,7 +39,9 @@
     <modal-dialog
       :container-manager="containerManager"
       :container-uuid="containerUuid"
+      :report-output="storedReportOutput"
     />
+
     <el-drawer
       :visible.sync="isShowPanelConfig"
       :with-header="true"

@@ -15,6 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <el-card class="containerReportEnginer">
     <!-- <options-report
@@ -25,7 +26,7 @@
       :is-report-enginer="false"
       :is-loading-report="isLoadingReport"
     /> -->
-    <dialogShareReport
+    <dialog-share-report
       :report-output="reportOutput"
       :container-uuid="containerUuid"
     />
@@ -37,28 +38,33 @@
     />
   </el-card>
 </template>
+
 <script>
 import {
   defineComponent,
   computed
 } from '@vue/composition-api'
+
 import store from '@/store'
+
 // Components
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
-import dialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
+import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
 import DataReport from '@/components/ADempiere/Report/Data/DataReport.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReportViewer.vue'
 
 export default defineComponent({
-  name: 'reportPanel',
+  name: 'ReportPanel',
+
   components: {
     CustomPagination,
     InfoReport,
     DataReport,
-    dialogShareReport,
+    DialogShareReport,
     OptionsReport
   },
+
   props: {
     containerManager: {
       type: Object,
@@ -77,10 +83,12 @@ export default defineComponent({
       required: false
     }
   },
+
   setup() {
     const isLoadingReport = computed(() => {
       return store.getters.getReportIsLoading
     })
+
     return {
       // Computed
       isLoadingReport

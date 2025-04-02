@@ -29,6 +29,7 @@
           </el-row>
         </el-card>
       </el-col>
+
       <el-col :span="12">
         <el-card>
           <template #header>
@@ -49,12 +50,14 @@
         </el-card>
       </el-col>
     </el-row>
+
     <el-row :gutter="12" style="margin-top: 20px;">
       <el-col :span="24">
         <el-card>
           <template #header>
             <p>{{ $t('report.reportEnginer.optionsImport.sendDownload') }}</p>
           </template>
+
           <el-row :gutter="12">
             <el-col :span="6" style="width: 30%; text-align: center;">
               <el-radio
@@ -92,6 +95,7 @@
               </el-radio>
             </el-col>
           </el-row>
+
           <el-row v-if="checkedItemGeneral === 1" :gutter="12" style="margin-top: 25px; display: flex; justify-content: center;">
             <el-col :span="24">
               <el-form>
@@ -106,6 +110,7 @@
               </el-form>
             </el-col>
           </el-row>
+
           <el-row v-if="checkedItemGeneral === 2" :gutter="12" style="margin-top: 50px; text-align: center;">
             <p style="width: 630px; margin: 0 auto; font-size: 14px; text-align: center;">
               {{ $t('component.attachment.share.description') }}
@@ -119,13 +124,24 @@
               v-model="validTime"
               style="display: flex; justify-content: center; padding-bottom: 1%;"
             >
-              <el-radio class="radio-padding" :label="3600">1 {{ ' ' + $t('component.attachment.share.time.hour') }}</el-radio>
-              <el-radio class="radio-padding" :label="21600">6 {{ ' ' + $t('component.attachment.share.time.hours') }}</el-radio>
-              <el-radio class="radio-padding" :label="86400">1 {{ ' ' + $t('component.attachment.share.time.day') }}</el-radio>
-              <el-radio class="radio-padding" :label="259200">3 {{ ' ' + $t('component.attachment.share.time.days') }}</el-radio>
-              <el-radio class="radio-padding" :label="604800">7 {{ ' ' + $t('component.attachment.share.time.days') }}</el-radio>
+              <el-radio class="radio-padding" :label="3600">
+                1 {{ ' ' + $t('component.attachment.share.time.hour') }}
+              </el-radio>
+              <el-radio class="radio-padding" :label="21600">
+                6 {{ ' ' + $t('component.attachment.share.time.hours') }}
+              </el-radio>
+              <el-radio class="radio-padding" :label="86400">
+                1 {{ ' ' + $t('component.attachment.share.time.day') }}
+              </el-radio>
+              <el-radio class="radio-padding" :label="259200">
+                3 {{ ' ' + $t('component.attachment.share.time.days') }}
+              </el-radio>
+              <el-radio class="radio-padding" :label="604800">
+                7 {{ ' ' + $t('component.attachment.share.time.days') }}
+              </el-radio>
             </el-radio-group>
           </el-row>
+
           <el-col v-if="checkedItemGeneral === 1" :span="24" style="margin-top: 2%">
             <div style="margin-bottom: 3%;">
               <label>{{ $t('report.reportEnginer.subject') }}</label>
@@ -146,6 +162,7 @@
           </el-col>
         </el-card>
       </el-col>
+
       <el-col style="margin-top: 1%">
         <el-button
           class="button-base-icon"
@@ -229,9 +246,16 @@ export default defineComponent({
         close: ['esc']
       }
     })
-    const showDialog = computed(() => {
-      return store.getters.getReportShowDialog
+
+    const showDialog = computed({
+      set(newValue) {
+        store.commit('setShowDialog', newValue)
+      },
+      get() {
+        return store.getters.getReportShowDialog
+      }
     })
+
     const storedMailTemplatesList = computed(() => {
       return store.getters.getListMailTemplates
     })
@@ -239,6 +263,26 @@ export default defineComponent({
       return {
         listMailTemplates: storedMailTemplatesList.value
       }
+    })
+
+    const isSummary = computed(() => {
+      return store.getters.getIsSummary
+    })
+
+    const exportData = computed(() => {
+      return store.getters.getExportReport
+    })
+
+    const typeNotify = computed(() => {
+      return store.getters.getTypeNotify
+    })
+
+    const contactSend = computed(() => {
+      return store.getters.getContactSend
+    })
+
+    const disableButtom = computed(() => {
+      return checkedItemGeneral.value === 1 && (isEmptyValue(typeNotify.value) || isEmptyValue(contactSend.value))
     })
 
     const isCollapseComments = ref(false)
@@ -261,6 +305,7 @@ export default defineComponent({
     const markdownContent = ref(store.getters.getDefaultBody)
     const oldContent = ref(markdownContent.value)
     const allReport = ref(1)
+
     const pageSize = computed(() => {
       if (allReport.value) {
         return undefined
@@ -270,18 +315,21 @@ export default defineComponent({
       }
       return 25
     })
+
     const pageToken = computed(() => {
       if (isEmptyValue(props.reportOutput)) {
         return 1
       }
       return props.reportOutput.pageToken
     })
+
     function isToolbar() {
       isTemplateSelected.value = true
       nextTick(() => {
         updateMardown(markdownContent.value)
       })
     }
+
     function updateMardown(newValue) {
       const newContent = newValue.trim()
       const value = newContent.replace(oldContent.value.trim(), '').trim()
@@ -299,6 +347,7 @@ export default defineComponent({
       isTemplateSelected.value = false
       store.commit('setDefaultBody', markdownContent.value)
     }
+
     const getStoreReport = computed(() => {
       let containerUuid = ''
       if (!isEmptyValue(props.reportMetadata)) {
@@ -309,6 +358,7 @@ export default defineComponent({
       }
       return store.getters.getStoredReport(containerUuid)
     })
+
     function loadData() {
       isLoading.value = true
       requestShareResources({
@@ -322,9 +372,11 @@ export default defineComponent({
           isLoading.value = false
         })
     }
+
     function setCheckedItemGeneral(check) {
       checkedItemGeneral.value = check
     }
+
     function getOptionFormat() {
       const options = store.getters.getStoredActionsMenu({
         containerUuid: props.containerUuid
@@ -334,9 +386,11 @@ export default defineComponent({
       }
       return options
     }
+
     function viewShowDialog() {
       store.commit('setShowDialog', false)
     }
+
     function sendNotify() {
       if (checkedItemGeneral.value === 0) {
         downloadFile()
@@ -352,9 +406,7 @@ export default defineComponent({
       })
       store.commit('setShowDialog', false)
     }
-    const isSummary = computed(() => {
-      return store.getters.getIsSummary
-    })
+
     function downloadFile() {
       store.dispatch('exportReport', {
         reportId: getStoreReport.value.internal_id,
@@ -365,10 +417,13 @@ export default defineComponent({
         pageSize: pageSize.value,
         pageToken: pageToken.value,
         isSummary: isSummary.value,
+        recordId: props.reportOutput.recordId,
+        tableName: props.reportOutput.tableName,
         isLegacy: props.isLegacy
       })
       blankValue()
     }
+
     function shareUrl() {
       store.dispatch('exportReport', {
         reportId: getStoreReport.value.internal_id,
@@ -381,6 +436,8 @@ export default defineComponent({
         pageSize: pageSize.value,
         pageToken: pageToken.value,
         isSummary: isSummary.value,
+        recordId: props.reportOutput.recordId,
+        tableName: props.reportOutput.tableName,
         isLegacy: props.isLegacy
       })
         .then(fileNameResource => {
@@ -431,18 +488,7 @@ export default defineComponent({
       link.download = titleDocument.value
       link.click()
     }
-    const exportData = computed(() => {
-      return store.getters.getExportReport
-    })
-    const typeNotify = computed(() => {
-      return store.getters.getTypeNotify
-    })
-    const contactSend = computed(() => {
-      return store.getters.getContactSend
-    })
-    const disableButtom = computed(() => {
-      return checkedItemGeneral.value === 1 && (isEmptyValue(typeNotify.value) || isEmptyValue(contactSend.value))
-    })
+
     function sendLink() {
       const user_id = store.getters['user/userInfo'].id
       store.dispatch('exportReport', {
@@ -456,6 +502,8 @@ export default defineComponent({
         pageSize: pageSize.value,
         pageToken: pageToken.value,
         isSummary: isSummary.value,
+        recordId: props.reportOutput.recordId,
+        tableName: props.reportOutput.tableName,
         isLegacy: props.isLegacy
       })
         .then(fileNameResource => {
@@ -493,6 +541,7 @@ export default defineComponent({
             })
         })
     }
+
     function blankValue() {
       store.commit('setContactSend', '')
       store.commit('setTypeNotify', '')
@@ -507,6 +556,7 @@ export default defineComponent({
       const padding = '\n'.repeat(10)
       markdownContent.value = menuDefault + `${padding}[${link}](www.123892138.com)`
     }
+
     function copyValue() {
       let textToCopy = linkShare.value
       if (isEmptyValue(textToCopy)) {
@@ -525,7 +575,9 @@ export default defineComponent({
     function updateContent(content) {
       markdownContent.value = content
     }
+
     blankValue()
+
     return {
       isCollapseComments,
       editorToolbarList,

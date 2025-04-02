@@ -826,15 +826,25 @@ const reportManager = {
                 }
               }, () => {})
             }
-            commit('setReportOutput', {
+
+            const reportDefinition = getters.getStoredReport(containerUuid)
+
+            const reportOutput = {
               ...reportResponse,
-              containerUuid,
-              rowCells: reportResponse.rows,
               instanceUuid: reportId,
+              reportId: reportDefinition.internal_id,
+              reportUuid: reportDefinition.uuid,
+              isReport: true,
+              containerUuid,
+              tableName,
+              recordId,
+              rowCells: reportResponse.rows,
               pageSize,
               pageToken
-            })
+            }
+            commit('setReportOutput', reportOutput)
             commit('setInstanceId', instance_id)
+
             showNotification({
               title: language.t('notifications.succesful'),
               message: name,
@@ -876,6 +886,8 @@ const reportManager = {
       pageToken,
       isDownload = true,
       isSummary,
+      tableName,
+      recordId,
       isLegacy
     }) {
       const storedReportGenerated = getters.getReportGenerated(containerUuid)
@@ -911,6 +923,8 @@ const reportManager = {
             pageSize,
             pageToken,
             filters,
+            tableName,
+            recordId,
             isSummary
           })
             .then(response => {

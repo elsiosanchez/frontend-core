@@ -202,17 +202,18 @@ export default {
               dispatch('startReport', {
                 parentUuid: tabUuid,
                 containerUuid: process.uuid,
-                recordUuid,
                 tableName: table_name,
+                recordUuid,
+                recordId,
                 pageSize: 500
               })
             } else {
               dispatch('runReport', {
                 parentUuid: tabUuid,
                 containerUuid: process.uuid,
+                tableName: table_name,
                 recordUuid,
-                recordId,
-                tableName: table_name
+                recordId
               })
             }
           }

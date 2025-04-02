@@ -184,25 +184,26 @@ import lang from '@/lang'
 
 // Components adn Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
+import RefreshButton from './options/refreshButton'
+import ReportSummary from './options/reportSumary.vue'
+import DownloadButtom from './options/downloadButtom.vue'
+import PrintFormat from './options/printFormat.vue'
+import ReportView from './options/reportViews.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
-import refreshButton from './options/refreshButton'
-import reportSummary from './options/reportSumary.vue'
-import downloadButtom from './options/downloadButtom.vue'
-import printFormat from './options/printFormat.vue'
-import reportView from './options/reportViews.vue'
+
 export default defineComponent({
   name: 'optionsReportViewer',
 
   components: {
     CollapseCriteria,
-    refreshButton,
-    reportSummary,
-    downloadButtom,
-    printFormat,
-    reportView
+    RefreshButton,
+    ReportSummary,
+    DownloadButtom,
+    PrintFormat,
+    ReportView
   },
 
   props: {

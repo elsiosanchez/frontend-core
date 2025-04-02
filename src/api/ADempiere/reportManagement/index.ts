@@ -157,7 +157,10 @@ export function runExport({
   pageSize,
   pageToken,
   filters,
-  isSummary
+  isSummary,
+  // window
+  tableName,
+  recordId
 }) {
   return request({
     url: `/report-engine/export/${reportId}/${format}`,
@@ -168,6 +171,8 @@ export function runExport({
       page_size: pageSize,
       page_token: `${pageToken}`,
       filters,
+      table_name: tableName,
+      record_id: recordId,
       is_summary: isSummary
     }
   })
