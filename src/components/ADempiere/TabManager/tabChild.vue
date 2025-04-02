@@ -446,11 +446,6 @@ export default defineComponent({
             parentUuid: props.parentUuid,
             containerUuid: props.tabsList[currentTabNo.value].uuid
           })
-        } else {
-          // if there is no petition in progress
-          if (!tabData.value.isLoading) {
-            getData()
-          }
         }
       }
     })
@@ -460,9 +455,7 @@ export default defineComponent({
         const hasEditRow = tabData.value.recordsList.some((data, index) => {
           return data.isEditRow && index !== 0
         })
-        if (!hasEditRow) {
-          getData()
-        }
+        if (!hasEditRow) getData()
       } else {
         getData()
       }
