@@ -20,7 +20,7 @@
   <span class="title-record-container">
     <el-popover
       v-if="shouldShowPopover"
-      placement="top-start"
+      placement="bottom"
       trigger="hover"
     >
       <el-row>
@@ -86,7 +86,7 @@ export default defineComponent({
   props: {
     truncateLength: {
       type: Number,
-      default: 30
+      default: 50
     },
     containerUuid: {
       type: [String, Number],
@@ -171,7 +171,7 @@ export default defineComponent({
 
 .truncated-text {
   display: inline-block;
-  max-width: 300px;
+  max-width: 450px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
