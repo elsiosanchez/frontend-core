@@ -59,7 +59,14 @@
         :container-manager="containerManager"
         style="float: right;"
       />
-      <print-process
+      <print-reports
+        v-if="!isMobile"
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :tab-attributes="tabAttributes"
+        :container-manager="containerManager"
+      />
+      <print-formats
         v-if="!isMobile"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
@@ -86,7 +93,7 @@ import store from '@/store'
 
 // Components and Mixins
 import AdvancedTabQuery from '@/components/ADempiere/TabManager/AdvancedTabQuery.vue'
-import PrintProcess from '@/components/ADempiere/TabManager/convenienceButtons/PrintProcess.vue'
+import PrintReports from '@/components/ADempiere/TabManager/convenienceButtons/PrintReports.vue'
 import DocumentAction from '@/components/ADempiere/TabManager/convenienceButtons/documentAction.vue'
 import NewRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/NewRecordButton.vue'
 import SaveRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/SaveRecordButton.vue'
@@ -94,12 +101,13 @@ import UndoChangeButton from '@/components/ADempiere/TabManager/convenienceButto
 import OptionsSecuence from '@/components/ADempiere/TabManager/convenienceButtons/OptionsSecuence.vue'
 import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/DeleteRecordButton.vue'
 import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
+import PrintFormats from '@/components/ADempiere/TabManager/convenienceButtons/PrintFormats.vue'
 
 export default defineComponent({
   name: 'ConvenienceButtons',
 
   components: {
-    PrintProcess,
+    PrintReports,
     DocumentAction,
     NewRecordButton,
     OptionsSecuence,
@@ -107,7 +115,8 @@ export default defineComponent({
     SaveRecordButton,
     UndoChangeButton,
     DeleteRecordButton,
-    RefreshRecordButton
+    RefreshRecordButton,
+    PrintFormats
   },
 
   props: {
