@@ -52,7 +52,7 @@ import store from '@/store'
 
 // Constants
 import {
-  ROWS_OF_RECORDS_BY_PAGE, NUMBER_RECORDS_PER_PAGE, totalRowByPage, indexRowByPage
+  ROWS_OF_RECORDS_BY_PAGE, ROWS_OF_RECORDS_BY_PAGE_REPORT, NUMBER_RECORDS_PER_PAGE, totalRowByPage, indexRowByPage
 } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Helper Methods
@@ -133,6 +133,10 @@ export default defineComponent({
     isEmptyIndex: {
       type: Boolean,
       default: false
+    },
+    isReport: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -150,6 +154,9 @@ export default defineComponent({
     const currentPageSize = computed(() => {
       if (!isEmptyValue(props.pageSize)) {
         return props.pageSize
+      }
+      if (props.isReport) {
+        return ROWS_OF_RECORDS_BY_PAGE_REPORT
       }
       // return store.getters.getTabPageSize({ containerUuid })
       return ROWS_OF_RECORDS_BY_PAGE

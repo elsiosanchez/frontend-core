@@ -127,6 +127,7 @@
                 :page-number="currentPageNumber"
                 :handle-change-page-size="handleChangeSizePage"
                 :handle-change-page-number="handleChangePage"
+                :is-report="true"
               />
             </el-col>
           </el-row>
