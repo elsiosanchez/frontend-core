@@ -74,7 +74,7 @@ import {
 
 import lang from '@/lang'
 import store from '@/store'
-import router from '@/router'
+// import router from '@/router'
 // Components and Mixins
 import FullCalendar from '@fullcalendar/vue'
 import SeeDetailsCalendar from '@/components/ADempiere/TabManager/tabDisplayDefinitions/componentPanel/seeDetailsCalendar.vue'
@@ -311,8 +311,12 @@ export default defineComponent({
       recordId = currentRecord.value[props.tabAttributes.table_name + '_ID']
 
       if (isEmptyValue(recordId)) {
-        const currentRoute = router.app._route.query
-        recordId = currentRoute.recordId
+        // const currentRoute = router.app._route.query
+        // recordId = currentRoute.recordId
+        recordId = store.getters.getIdOfContainer({
+          containerUuid: props.tabAttributes.containerUuid,
+          tableName: props.tabAttributes.table_name
+        })
       }
       // console.log({
       //   listFilters: store.getters.getDisplayFilters({ tableName: props.tabAttributes.table_name })

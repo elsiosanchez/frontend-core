@@ -37,15 +37,11 @@ import {
 } from '@/utils/ADempiere/constants/systemColumns'
 export function getCurrentRecord(recordId) {
   const { currentTab } = store.getters.getContainerInfo
-  const { query } = router.app._route
   if (isEmptyValue(recordId)) {
-    if (!isEmptyValue(query.recordId)) return query.recordId
-    if (!isEmptyValue(currentTab)) {
-      return store.getters.getIdOfContainer({
-        containerUuid: currentTab.containerUuid,
-        tableName: currentTab.table_name
-      })
-    }
+    return store.getters.getIdOfContainer({
+      containerUuid: currentTab.containerUuid,
+      tableName: currentTab.table_name
+    })
   }
   return recordId
 }

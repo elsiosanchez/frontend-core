@@ -182,7 +182,6 @@ export default defineComponent({
     const nameTab = ref('getRecordLogs')
     const recordsListStoreProduct = ref([])
     const isLoadingListReference = ref(false)
-    const currentRoute = router.app._route
     if (!isEmptyValue(props.defaultOpenedTab)) {
       nameTab.value = props.defaultOpenedTab
     }
@@ -484,19 +483,13 @@ export default defineComponent({
 
     // Current Record ID
     const currentRecordId = computed(() => {
-      if (!isEmptyValue(currentRoute.query) && !isEmptyValue(currentRoute.query.recordId)) return Number(currentRoute.query.recordId)
-      if (!isEmptyValue(currentRoute.params) && !isEmptyValue(currentRoute.params.recordId)) return Number(currentRoute.params.recordId)
-      if (currentTab.value) {
-        const { table } = currentTab.value
-        const { key_columns, table_name } = table
-        const currentRecord = store.getters.getTabCurrentRow({
-          containerUuid: currentTab.value.containerUuid
+      if (!isEmptyValue(currentTab.value)) {
+        return store.getters.getIdOfContainer({
+          containerUuid: currentTab.value.containerUuid,
+          tableName: currentTab.value.table_name
         })
-        if (!isEmptyValue(currentRecord[table_name + '_ID'])) return currentRecord[table_name + '_ID']
-        if (!isEmptyValue(key_columns)) return currentRecord[key_columns[0]]
-        return 1
       }
-      return ''
+      return -1
     })
 
     // Store Product
