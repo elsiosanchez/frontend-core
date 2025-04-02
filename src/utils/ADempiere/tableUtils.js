@@ -49,7 +49,7 @@ export const ROW_KEY_ATTRIBUTES = Object.keys(ROW_ATTRIBUTES)
  */
 export const ROWS_OF_RECORDS_BY_PAGE = 50
 export const ROWS_OF_RECORDS_BY_PAGE_HIGH = 100
-export const ROWS_OF_RECORDS_BY_PAGE_REPORT = 500
+
 /**
  * Number of records list per page
  * Default 50
