@@ -335,7 +335,7 @@ export function actionsDisplayDefinitionsFields({
         id,
         show: true
       })
-      if (is_info_record && !isEmptyValue(value)) {
+      if (is_info_record && !isEmptyValue(value) && displayDefinition.table_name === 'C_BPartner') {
         store.dispatch('requestBusinessPartner', {
           displayDefinitionId: displayDefinition.id,
           recordId
