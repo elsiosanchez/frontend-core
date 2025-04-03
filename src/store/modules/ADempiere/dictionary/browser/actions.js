@@ -135,6 +135,7 @@ export default {
             dispatch('setModalDialog', {
               containerUuid: process.uuid,
               title: process.name,
+              description: process.description,
               doneMethod: () => {
                 const fieldsList = rootGetters.getStoredFieldsFromProcess(process.uuid)
                 const emptyMandatory = rootGetters.getFieldsListEmptyMandatory({

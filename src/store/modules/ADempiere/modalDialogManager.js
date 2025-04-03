@@ -39,6 +39,7 @@ const modalDialogManager = {
       isDisabledDone,
       loadData,
       title,
+      description,
       isShowed
     }) {
       Vue.set(state.modalDialogManager, containerUuid, {
@@ -51,6 +52,7 @@ const modalDialogManager = {
         isDisabledDone,
         loadData,
         title,
+        description,
         isShowed
       })
     },
@@ -81,6 +83,7 @@ const modalDialogManager = {
       cancelMethod = function() {},
       loadData = function() {},
       title,
+      description,
       isShowed = false
     }) {
       commit('setModalDialog', {
@@ -93,6 +96,7 @@ const modalDialogManager = {
         loadData,
         cancelMethod,
         title,
+        description,
         isShowed
       })
     }

@@ -22,10 +22,12 @@
     width="80%"
     @close="closeDialog"
   >
-    <span slot="title">
+    <span slot="title" class="title-description-container">
       {{ title }}
+      <span class="description-text">
+        {{ description }}
+      </span>
     </span>
-
     <span class="content-modal-dialog">
       <span v-if="isLoaded">
         <component
@@ -204,7 +206,12 @@ export default defineComponent({
       }
       return storedModalDialog.value.title
     })
-
+    const description = computed(() => {
+      if (isEmptyValue(storedModalDialog.value)) {
+        return ''
+      }
+      return storedModalDialog.value.description
+    })
     const componentRender = computed(() => {
       return storedModalDialog.value.componentPath
     })
@@ -296,6 +303,7 @@ export default defineComponent({
       isShowed,
       isMobile,
       title,
+      description,
       // methods
       clearParameters,
       cancelButton,
@@ -305,3 +313,20 @@ export default defineComponent({
   }
 })
 </script>
+
+<style>
+.title-description-container {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.description-text {
+  white-space: normal;
+  word-break: break-word;
+  max-width: 95%;
+  font-size: 12px;
+  color: rgb(130, 132, 138);
+  margin-top: 1px;
+}
+</style>
