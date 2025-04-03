@@ -286,6 +286,10 @@ export default {
       if (isEmptyValue(value)) {
         this.displayedValue = undefined
         this.uuidValue = undefined
+        if (this.metadata.isGetServerValue) {
+          this.getValueOfLookup()
+        }
+        return
       }
       // request displayed value
       this.getValueOfLookup()
@@ -314,6 +318,8 @@ export default {
         })
         return
       }
+
+      this.getValueOfLookup()
     },
 
     // TODO: With remote and filter is enabled not working displayed value
