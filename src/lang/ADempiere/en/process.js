@@ -19,9 +19,9 @@
 const process = {
   clearParameters: {
     title: 'Clear Parameters',
-    description: 'Clears the values by setting the default values',
-    whithoutAssociatedReport: 'Without Associated Report'
-  }
+    description: 'Clears the values by setting the default values'
+  },
+  whithoutAssociatedReport: 'Without Associated Report'
 }
 
 export default process

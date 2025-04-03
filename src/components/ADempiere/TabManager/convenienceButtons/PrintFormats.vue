@@ -26,13 +26,13 @@
       trigger="click"
       class="print-button"
       style="margin-left: 8px; padding-right: 9px;"
-      @click="printProcess"
+      @click="printWithFormat"
       @command="handleCommandActions"
     >
-      <svg-icon
+      <i
         v-if="!isLoading"
-        style="font-size: 23px;"
-        icon-class="print"
+        style="font-size: 21px;"
+        class="el-icon-data-analysis"
       />
       <i
         v-else
@@ -58,14 +58,14 @@
       type="info"
       size="small"
       style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
-      :disabled="isLoading || isEmptyValue(process) || !process.is_report || isEmptyValue(printFormatsList)"
+      :disabled="isLoading || isEmptyValue(printFormatsList)"
       :loading="isLoading"
-      @click="printProcess()"
+      @click="printWithFormat()"
     >
-      <svg-icon
+      <i
         v-if="!isLoading"
         style="font-size: 21px;"
-        icon-class="print"
+        class="el-icon-data-analysis"
       />
       <i
         v-else
@@ -86,6 +86,7 @@
 import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import language from '@/lang'
+import router from '@/router'
 import store from '@/store'
 
 // Constants
@@ -95,10 +96,13 @@ import {
 import {
   FINANCIAL_REPORT_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
+import {
+  REPORT_VIEWER_ENGINE_NAME
+} from '@/utils/ADempiere/dictionary/report'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { showNotification } from '@/utils/ADempiere/notification.js'
+import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 // Components and Mixins
@@ -136,7 +140,6 @@ export default defineComponent({
      * Const
      */
     const containerUuid = props.tabAttributes.uuid
-    const { process } = props.tabAttributes
 
     /**
      * Computed
@@ -171,15 +174,17 @@ export default defineComponent({
       })
     })
 
-    const getReportDefinition = computed(() => {
-      if (isEmptyValue(process) || isEmptyValue(process.uuid)) {
-        return []
-      }
-      return store.getters.getStoredReport(process.uuid)
-    })
+    // const getReportDefinition = computed(() => {
+    //   if (isEmptyValue(process) || isEmptyValue(process.uuid)) {
+    //     return []
+    //   }
+    //   return store.getters.getStoredReport(process.uuid)
+    // })
+
     const printFormatsList = computed(() => {
       return store.getters.getPrintFormatsListTableName(currentTableName.value)
     })
+
     /**
      * Methods
      */
@@ -191,7 +196,8 @@ export default defineComponent({
       }
       return []
     })
-    function printProcess() {
+
+    function printWithFormat() {
       store.commit('setIsLoadingDialog', false)
 
       // set context values
@@ -217,10 +223,8 @@ export default defineComponent({
         store.commit('setViewDialog', true)
       } else {
         if (isEmptyValue(process)) {
-          showNotification({
-            title: language.t('notifications.whithoutAssociatedReport'),
-            message: process.name,
-            summary: process.description,
+          showMessage({
+            message: language.t('process.whithoutAssociatedReport'),
             type: 'info'
           })
           return
@@ -246,40 +250,73 @@ export default defineComponent({
         summary: process.description,
         type: 'info'
       })
-      if (command.isLegacy) {
-        store.dispatch('runReport', {
-          containerUuid: process.uuid,
-          reportUuid: process.uuid,
-          recordId: recordId.value,
-          reportId: process.internal_id,
-          printFormatId: command.id,
-          tableName: command.table_name,
-          filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
-          isView: false
+      // if (command.isLegacy) {
+      //   store.dispatch('runReport', {
+      //     containerUuid: process.uuid,
+      //     reportUuid: process.uuid,
+      //     recordId: recordId.value,
+      //     reportId: process.internal_id,
+      //     printFormatId: command.id,
+      //     tableName: command.table_name,
+      //     filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
+      //     isView: false
+      //   })
+      // } else {
+      store.dispatch('buildReport', {
+        // containerUuid: process.uuid,
+        tableName: currentTableName.value,
+        recordId: recordId.value,
+        isSummary: true,
+        printFormatId: command.id,
+        isChangePanel: true
+      })
+        .then(reportResponse => {
+          const {
+            // id,
+            name,
+            instance_id
+          } = reportResponse
+          router.push({
+            path: `/report-viewer-engine/${command.id}/${command.uuid}`,
+            name: REPORT_VIEWER_ENGINE_NAME,
+            params: {
+              reportId: command.id,
+              instanceUuid: instance_id,
+              fileName: name,
+              reportUuid: command.uuid,
+              // menuParentUuid,
+              name: name,
+              tableName: currentTableName.value
+            },
+            query: {
+              reportId: command.id,
+              instanceUuid: instance_id,
+              fileName: name,
+              reportUuid: command.uuid,
+              name: name,
+              tableName: currentTableName.value
+            }
+          }, () => {})
         })
-      } else {
-        store.dispatch('buildReport', {
-          containerUuid: process.uuid,
-          tableName: currentTableName.value,
-          isSummary: true,
-          printFormatId: command.id
-        })
-      }
+      // }
     }
+
     function loadProcessData() {
-      if (isEmptyValue(process)) {
-        return
-      }
-      if (!isEmptyValue(getReportDefinition.value)) {
-        return
-      }
-      const { id } = process
-      store.dispatch('getReportDefinitionFromServer', {
-        id,
+      // if (isEmptyValue(process)) {
+      //   return
+      // }
+      // if (!isEmptyValue(getReportDefinition.value)) {
+      //   return
+      // }
+      // const { id } = process
+      store.dispatch('listPrintFormatWindow', {
+        // id,
         tableName: currentTableName.value
       })
     }
+
     loadProcessData()
+
     return {
       // Ref
       isLoading,
@@ -292,9 +329,9 @@ export default defineComponent({
       recordId,
       printFormatsList,
       currentTableName,
-      getReportDefinition,
+      // getReportDefinition,
       // Methods
-      printProcess,
+      printWithFormat,
       handleCommandActions
     }
   }

@@ -109,6 +109,9 @@ export default {
     fieldsList = []
   }) => {
     const reportDefinition = rootGetters.getStoredReport(reportId)
+    if (isEmptyValue(reportDefinition)) {
+      return []
+    }
     if (isEmptyValue(fieldsList)) {
       fieldsList = reportDefinition.fieldsList // getters.getStoredFieldsFromReport(containerUuid)
     }

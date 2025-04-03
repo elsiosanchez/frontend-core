@@ -662,13 +662,16 @@ const reportManager = {
         }
       }
       const instanceId = getters.getInstanceId
+
       const reportDefinition = getters.getStoredReport(containerUuid)
-      const {
-        internal_id,
-        name,
-        description,
-        fieldsList
-      } = reportDefinition
+      let internal_id, name, description, fieldsList
+      if (!isEmptyValue(reportDefinition)) {
+        uuid = reportDefinition.uuid
+        internal_id = reportDefinition.internal_id
+        name = reportDefinition.name
+        description = reportDefinition.description
+        fieldsList = reportDefinition.fieldsList
+      }
       const storedReportGenerated = getters.getReportGenerated(containerUuid)
       if (!isEmptyValue(storedReportGenerated)) {
         if (isEmptyValue(reportType)) {
@@ -695,7 +698,7 @@ const reportManager = {
         reportName = action.name
       }
       commit('setReportIsLoading', true)
-      if ((isEmptyValue(instanceUuid) || reportDefinition.is_process_before_launch) && !isChangePanel) {
+      if ((isEmptyValue(instanceUuid) || isEmptyValue(reportDefinition) || reportDefinition.is_process_before_launch) && !isChangePanel) {
         dispatch('startReport', {
           containerUuid,
           reportType,
@@ -732,20 +735,21 @@ const reportManager = {
           instanceId
         })
           .then(reportResponse => {
-            commit('setReportOutput', {
+            const reportOutput = {
               ...reportResponse,
               containerUuid,
               rowCells: reportResponse.rows,
               instanceUuid: internal_id,
               pageSize,
               pageToken
-            })
+            }
+            commit('setReportOutput', reportOutput)
             showNotification({
               title: language.t('notifications.succesful'),
               message: name,
               type: 'success'
             })
-            resolve(reportResponse)
+            resolve(reportOutput)
           })
           .catch(error => {
             showNotification({
@@ -827,13 +831,11 @@ const reportManager = {
               }, () => {})
             }
 
-            const reportDefinition = getters.getStoredReport(containerUuid)
-
             const reportOutput = {
               ...reportResponse,
               instanceUuid: reportId,
-              reportId: reportDefinition.internal_id,
-              reportUuid: reportDefinition.uuid,
+              reportId: reportId,
+              reportUuid: reportUuid,
               isReport: true,
               containerUuid,
               tableName,

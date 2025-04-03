@@ -20,19 +20,19 @@
 <template>
   <span>
     <el-dropdown
-      v-if="!isEmptyValue(reportsLists)"
+      v-if="!isEmptyValue(reportsLists) || currentTableName === FINANCIAL_REPORT_TABLE_NAME"
       size="small"
       trigger="click"
       class="print-button"
       split-button
       style="margin-left: 8px; padding-right: 9px;"
-      @click="runReport"
+      @click="printProcess"
       @command="handleCommandActions"
     >
       <svg-icon
         v-if="!isLoading"
         style="font-size: 21px;"
-        icon-class="slide"
+        icon-class="print"
       />
       <i
         v-else
@@ -65,7 +65,7 @@
       <svg-icon
         v-if="!isLoading"
         style="font-size: 21px;"
-        icon-class="slide"
+        icon-class="print"
       />
       <i
         v-else
@@ -73,6 +73,7 @@
         class="el-icon-loading"
       />
     </el-button>
+
     <dialog-legacy
       :table-name="currentTableName"
       :process="process"
@@ -99,7 +100,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { showNotification } from '@/utils/ADempiere/notification.js'
+import { showMessage } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import {
   generateReportOfWindow
@@ -107,6 +108,7 @@ import {
 
 // Components and Mixins
 import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
+import { mergeArrays } from '@/utils/ADempiere/formatValue/iterableFormat'
 
 export default defineComponent({
   name: 'PrintProcess',
@@ -149,6 +151,19 @@ export default defineComponent({
     /**
      * Computed
      */
+    const recordUuid = computed(() => {
+      return store.getters.getUuidOfContainer(props.containerUuid)
+    })
+
+    const selectionsList = computed(() => {
+      if (props.containerManager.getSelection) {
+        return props.containerManager.getSelection({
+          containerUuid: containerUuid
+        })
+      }
+      return []
+    })
+
     const relatedColumsNames = computed(() => {
       let relatedColumns = []
       const parentColumns = props.tabAttributes.fieldsList
@@ -177,32 +192,70 @@ export default defineComponent({
         tableName: currentTableName.value
       })
     })
-    const reportsLists = computed(() => {
+
+    const reportsListsByTable = computed(() => {
       const list = store.getters.getListProcess({
         tableName: currentTableName.value
       })
-      if (!isEmptyValue(list)) {
-        const listReport = list.filter(lis => lis.is_report)
-        if (!isEmptyValue(process)) {
-          listReport.push(process)
-        }
-        return listReport
+      if (isEmptyValue(list)) {
+        return []
       }
-      return []
+      const listReport = list.filter(reportItem => {
+        return reportItem.is_report
+      })
+      if (isEmptyValue(listReport)) {
+        return []
+      }
+      return listReport
     })
+
+    const reportsListsByFields = computed(() => {
+      const fieldsList = props.tabAttributes.fieldsList
+      if (isEmptyValue(fieldsList)) {
+        return []
+      }
+      const listReport = fieldsList
+        .filter(fieldItem => {
+          return fieldItem.process_id > 0 &&
+            fieldItem.process.is_report
+        })
+        .map(fieldItem => {
+          return fieldItem.process
+        })
+      if (isEmptyValue(listReport)) {
+        return []
+      }
+      return listReport
+    })
+
+    const reportsLists = computed(() => {
+      const tabProcess = []
+      if (!isEmptyValue(process) && process.is_report) {
+        tabProcess.push(process)
+      }
+
+      const allReports = mergeArrays(
+        'uuid',
+        tabProcess,
+        reportsListsByTable.value,
+        reportsListsByFields.value
+      )
+      return allReports
+    })
+
     /**
      * Methods
      */
-    const selectionsList = computed(() => {
-      if (props.containerManager.getSelection) {
-        return props.containerManager.getSelection({
-          containerUuid: containerUuid
-        })
-      }
-      return []
-    })
+
     function printProcess() {
       store.commit('setIsLoadingDialog', false)
+      if (isEmptyValue(process)) {
+        showMessage({
+          message: language.t('process.whithoutAssociatedReport'),
+          type: 'info'
+        })
+        return
+      }
 
       // set context values
       const parentValues = getContextAttributes({
@@ -223,14 +276,12 @@ export default defineComponent({
         attributes: parentValues
       })
 
-      if (!isEmptyValue(selectionsList) && !isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
+      if (!isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
         store.commit('setViewDialog', true)
       } else {
         if (isEmptyValue(process)) {
-          showNotification({
-            title: language.t('notifications.whithoutAssociatedReport'),
-            message: process.name,
-            summary: process.description,
+          showMessage({
+            message: language.t('process.whithoutAssociatedReport'),
             type: 'info'
           })
           return
@@ -248,68 +299,17 @@ export default defineComponent({
           })
       }
     }
-    const recordUuid = computed(() => {
-      return store.getters.getUuidOfContainer(props.containerUuid)
-    })
-    function runReport() {
-      store.commit('setIsLoadingDialog', false)
 
-      // set context values
-      const parentValues = getContextAttributes({
-        parentUuid: props.parentUuid,
-        containerUuid: containerUuid,
-        contextColumnNames: relatedColumsNames.value
-      })
-      parentValues.push({
-        columnName: COLUMNNAME_AD_Table_ID,
-        value: props.tabAttributes.table.internal_id
-      })
-      parentValues.push({
-        columnName: COLUMNNAME_Record_ID,
-        value: recordId.value
-      })
-      store.dispatch('updateValuesOfContainer', {
-        containerUuid: process.uuid,
-        attributes: parentValues
-      })
-
-      if (!isEmptyValue(selectionsList) && !isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
-        store.commit('setViewDialog', true)
-      } else {
-        if (isEmptyValue(process)) {
-          showNotification({
-            title: language.t('notifications.whithoutAssociatedReport'),
-            message: process.name,
-            summary: process.description,
-            type: 'info'
-          })
-          return
-        }
-        isLoading.value = true
-        store.dispatch('runReport', {
-          containerUuid: process.uuid,
-          reportId: process.internal_id,
-          //
-          recordId: recordId.value,
-          tableName: currentTableName.value
-        })
-          .finally(() => {
-            isLoading.value = false
-          })
-      }
-    }
     function handleCommandActions(action) {
       generateReportOfWindow.generateReportOfWindow({
-        root,
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        containerId: action.containerId,
-        instanceUuid,
-        containerManager: props.containerManager,
-        recordUuid: recordUuid.value,
+        // containerManager: props.containerManager,
+        // recordUuid: recordUuid.value,
         uuid: action.uuid
       })
     }
+
     return {
       // Ref
       isLoading,
@@ -320,11 +320,14 @@ export default defineComponent({
       containerUuid,
       // Computed
       recordId,
+      recordUuid,
+      instanceUuid,
       reportsLists,
+      reportsListsByTable,
+      reportsListsByFields,
       currentTableName,
       // Methods
       printProcess,
-      runReport,
       // loadProcessData,
       handleCommandActions
     }

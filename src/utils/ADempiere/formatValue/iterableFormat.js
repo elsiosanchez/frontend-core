@@ -134,3 +134,34 @@ export function convertHasMapToObject({ map }) {
   // })
   // return result
 }
+
+/**
+ * Merge multiple arrays with objects
+ * @param {String} key unique value to compare
+ * @param {Array} arrays ideterminate params as arrays
+ * @returns sigle array without repeat items
+ */
+export function mergeArrays(key = 'uuid', ...arrays) {
+  const uniqueKeys = new Set()
+  const mergedArray = []
+
+  // Function to add elements of an array to the mergedArray if they are not already included.
+  function addUniqueItemsFromArray(array) {
+    if (!Array.isArray(array)) {
+      // Ensures that it is an array
+      return
+    }
+    for (const item of array) {
+      // Use the dynamic key
+      if (item?.[key] && !uniqueKeys.has(item[key])) {
+        mergedArray.push(item)
+        uniqueKeys.add(item[key])
+      }
+    }
+  }
+
+  // Adds elements from all provided arrays (filters out invalid arrays)
+  arrays.filter(Array.isArray).forEach(addUniqueItemsFromArray)
+
+  return mergedArray
+}
