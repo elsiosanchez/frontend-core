@@ -99,13 +99,11 @@
     <el-button
       v-if="!isBatchEntry && storedTab"
       size="mini"
-      class="button-collapse"
-      type="primary"
       plain
-      style="float: right; margin-right: -20px; margin-left: 5px; padding: 10px 5px !important"
+      style="float: right; margin-right: -20px; margin-left: 5px; padding: 10px 5px !important; border:none"
       @click="activeCollapses()"
     >
-      <svg-icon icon-class="collapse" />
+      <svg-icon icon-class="keyboardArrowDown" />
     </el-button>
     <action-menu
       :parent-uuid="parentUuid"

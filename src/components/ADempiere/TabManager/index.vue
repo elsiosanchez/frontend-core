@@ -57,10 +57,13 @@
             :parent-uuid="parentUuid"
           />
           <el-button
+            size="mini"
+            plain
             style="border: none; float: right"
-            icon="el-icon-full-screen"
             @click="activeCollapses"
-          />
+          >
+            <svg-icon icon-class="keyboardArrowUp" />
+          </el-button>
         </div>
         <transition>
           <div v-show="!isBatchEntry">
