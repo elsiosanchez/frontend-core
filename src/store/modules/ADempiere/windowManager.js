@@ -1168,21 +1168,15 @@ const windowManager = {
       const recordsList = getters.getTabRecordsList({ containerUuid })
 
       let row = {}
-      if (!isEmptyValue(rowIndex)) {
-        row = recordsList[rowIndex]
-      }
 
-      if (isEmptyValue(row) && !isEmptyValue(recordUuid)) {
-        row = recordsList.find(itemData => {
-          if (itemData.UUID === recordUuid) {
-            return true
-          }
-        })
-      }
+      if (!isEmptyValue(rowIndex)) row = recordsList[rowIndex]
 
-      if (!isEmptyValue(row)) {
-        return row[columnName]
-      }
+      if (isEmptyValue(recordUuid)) recordUuid = getters.getUuidOfContainer(containerUuid)
+
+      if (isEmptyValue(row) && !isEmptyValue(recordUuid)) row = recordsList.find(itemData => itemData.UUID === recordUuid)
+
+      if (!isEmptyValue(row)) return row[columnName]
+
       return undefined
     },
     getTabRowIndex: (state, getters) => ({ containerUuid, recordUuid }) => {

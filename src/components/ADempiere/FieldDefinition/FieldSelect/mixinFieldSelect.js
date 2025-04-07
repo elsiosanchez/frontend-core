@@ -90,7 +90,15 @@ export default {
     // Get default values from table
     getDefaulValuesTable() {
       const { parentUuid, containerUuid, displayColumnName } = this.metadata
-      const displayedValue = store.getters.getValueOfFieldOnContainer({ parentUuid, containerUuid, columnName: displayColumnName })
+      let displayedValue = store.getters.getValueOfFieldOnContainer({ parentUuid, containerUuid, columnName: displayColumnName })
+      if (isEmptyValue(displayedValue)) {
+        displayedValue = this.containerManager.getCell({
+          containerUuid,
+          rowIndex: this.metadata.rowIndex,
+          rowUid: this.metadata.rowUid,
+          columnName: displayColumnName
+        })
+      }
       return [
         {
           value: this.value,
