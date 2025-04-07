@@ -55,7 +55,7 @@
       element-loading-background="rgba(255, 255, 255, 0.8)"
       :class="tableClass"
       :row-class-name="tableRowClassName"
-      @cell-click="handleCellClick"
+      :cell-class-name="getColumnStyle"
       @row-click="handleRowClick"
       @row-dblclick="handleRowDblClick"
       @select="handleSelection"
@@ -75,6 +75,7 @@
         :column-key="fieldAttributes.columnName"
         :prop="fieldAttributes.columnName"
         sortable
+        :label="fieldAttributes.columnName"
         :sort-by="fieldAttributes.sortByProperty"
         :width="widthColumn(fieldAttributes)"
         :fixed="fieldAttributes.isFixedTableColumn"
@@ -86,15 +87,31 @@
           {{ fieldAttributes.name }}
         </template>
         <template slot-scope="scope">
-          <!-- formatted displayed value -->
-          <cell-edit-info
-            :parent-uuid="parentUuid"
-            :container-uuid="containerUuid"
-            :field-attributes="fieldAttributes"
-            :container-manager="containerManager"
-            :scope="scope"
-            :data-row="scope.row"
-          />
+          <p
+            style="margin: 0px;display: list-item;"
+            @click="editCell(scope.row, fieldAttributes)"
+          >
+            <field-definition
+              v-if="isEditing && editingRow === scope.row && editingColumn === fieldAttributes"
+              key="field-definition"
+              :container-uuid="containerUuid"
+              :container-manager="containerManager"
+              :is-data-table="true"
+              :is-show-label="false"
+              :in-table="true"
+              :metadata-field="{
+                ...fieldAttributes,
+                rowIndex: scope.row.$index,
+                rowUid: scope.row.rowUid,
+                recordUuid: scope.row.UUID
+              }"
+              size="mini"
+              size-field-input="mini"
+            />
+            <span v-else>
+              {{ displayValueColum({ row: scope.row, fieldAttributes }) }}
+            </span>
+          </p>
         </template>
       </el-table-column>
     </el-table>
@@ -173,17 +190,20 @@ import router from '@/router'
 import store from '@/store'
 
 // Constants
+import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColumns'
+import { BINARY_DATA, BUTTON, IMAGE } from '@/utils/ADempiere/references'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
-
 // Components and Mixins
-import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
+import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
+import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
@@ -192,8 +212,9 @@ export default defineComponent({
   name: 'BrowserTable',
 
   components: {
-    CellEditInfo,
     CustomPagination,
+    FieldDefinition,
+    CellEditInfo,
     FilterFields,
     LoadingView
   },
@@ -239,6 +260,9 @@ export default defineComponent({
   setup(props, { root }) {
     const panelMain = document.getElementById('mainBrowseDataTable')
     const multipleTable = ref(null)
+    const isEditing = ref(true)
+    const editingRow = ref(null)
+    const editingColumn = ref(null)
 
     const heightTable = ref()
     const timeOut = ref(null)
@@ -406,12 +430,8 @@ export default defineComponent({
      * @param {string} column
      */
     function handleRowClick(row, column, event) {
-      if (column.type === 'selection') {
+      if (!isEmptyValue(column) && column.type === 'selection') {
         return
-      }
-      if (row.isSelectedRow) {
-        // enable edit mode
-        row.isEditRow = true
       }
     }
 
@@ -421,15 +441,9 @@ export default defineComponent({
      * @param {string} column
      */
     function handleRowDblClick(row, column, event) {
-      // disable edit mode
-      if (props.containerManager.confirmRowChanges && row.isSelectedRow && row.isEditRow) {
-        row.isEditRow = false
-        props.containerManager.confirmRowChanges({
-          parentUuid: props.parentUuid,
-          containerUuid: props.containerUuid,
-          row
-        })
-      }
+      isEditing.value = false
+      editingRow.value = null
+      editingColumn.value = null
     }
 
     /**
@@ -532,21 +546,7 @@ export default defineComponent({
      * @param {*} event
      */
     function handleCellClick(row, column, cell, event) {
-      if (column.type === 'selection') {
-        let currentSelection = selectionsList.value
-        row.isSelectedRow = !row.isSelectedRow
-        row.isEditRow = row.isSelectedRow
-        if (row.isSelectedRow) {
-          currentSelection.push(row)
-        } else {
-          currentSelection = currentSelection.filter(rowSelected => {
-            return row[keyColumn.value] !== rowSelected[keyColumn.value]
-          })
-        }
-        handleSelectionAll(currentSelection)
-        toggleSelection(currentSelection)
-        return
-      }
+      row.isEditRow = !row.isEditRow
     }
 
     function tableRowClassName(params) {
@@ -621,6 +621,58 @@ export default defineComponent({
       }
     }
 
+    function getColumnStyle({
+      row,
+      column,
+      rowIndex,
+      columnIndex
+    }) {
+      const { columnKey } = column
+      const currentCell = headerList.value.find(list => list.column_name === columnKey)
+      if (
+        !isEmptyValue(currentCell)
+      ) {
+        if ([BINARY_DATA.id, BUTTON.id, IMAGE.id].includes(currentCell.display_type)) {
+          return ''
+        }
+        if (!currentCell.is_read_only) {
+          return 'highlight'
+        }
+      }
+      return ''
+    }
+
+    function displayColumnName(fieldAttributes) {
+      if (isEmptyValue(fieldAttributes.displayColumnName)) {
+        return DISPLAY_COLUMN_PREFIX + fieldAttributes.column_name
+      }
+      return fieldAttributes.displayColumnName
+    }
+
+    function displayValueColum({
+      row,
+      fieldAttributes
+    }) {
+      if (fieldAttributes.is_encrypted) {
+        return '••••••••••••••••••'
+      }
+      const currentValue = row[fieldAttributes.column_name]
+      return formatField({
+        value: currentValue,
+        currency: row[DISPLAY_COLUMN_PREFIX + COLUMNNAME_C_Currency_ID],
+        displayedValue: row[displayColumnName(fieldAttributes)],
+        displayType: fieldAttributes.display_type,
+        columnName: fieldAttributes.column_name
+      })
+    }
+
+    function editCell(row, column) {
+      if (!row.isSelectedRow) return
+      isEditing.value = true
+      editingRow.value = row
+      editingColumn.value = column
+    }
+
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -654,6 +706,10 @@ export default defineComponent({
       isChangeOptions,
       heightTable,
       heightSize,
+      //
+      isEditing,
+      editingRow,
+      editingColumn,
       // Computeds
       headerList,
       isLoadingDataTale,
@@ -672,6 +728,10 @@ export default defineComponent({
       isSelectDefault,
       disableExport,
       // Methods
+      editCell,
+      getColumnStyle,
+      displayValueColum,
+      //
       setTableHeight,
       adjustSize,
       tableRowClassName,
@@ -696,6 +756,21 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.cell-info-edit {
+  width: 100%;
+  display: inline-block;
+}
+
+// style in cursor if cell is no edit
+.cell-no-edit {
+  cursor: not-allowed !important;
+}
+</style>
+
+<style lang="scss">
+.highlight {
+  background-color: #F2F6FC; /* Color para Juan */
+}
 .browser-footer {
   .el-dropdown {
     .el-button-group {
