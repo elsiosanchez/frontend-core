@@ -190,20 +190,70 @@ export const runProcessOfBrowser = {
       return
     }
 
-    const process = store.getters.getProcessOfBrowser(containerUuid)
-    /*
-    const storedProcess = store.getters.getStoredProcess(process.uuid)
-    if (isEmptyValue(storedProcess)) {
-      store.dispatch('getProcessDefinitionFromServer', {
-        uuid: process.uuid
-      })
+    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
+    const storedProcess = store.getters.getStoredProcess(browserProcess.uuid)
+    if (!isEmptyValue(storedProcess)) {
+      const { fieldsList, show_help } = storedProcess
+      if (isEmptyValue(fieldsList) && show_help === 'N') {
+        isShowed = false
+        const isAllSelection = store.getters.getStoredBrowserProcessAll(containerUuid)
+        store.commit('setIsloadingProcessOfBrowser', {
+          isLoading: true,
+          parentUuid: containerUuid,
+          containerUuid: browserProcess.uuid
+        })
+        store.dispatch('startProcessOfBrowser', {
+          parentUuid: containerUuid,
+          containerUuid: browserProcess.uuid,
+          isAllSelection
+        })
+          .finally(() => {
+            store.commit('setIsloadingProcessOfBrowser', {
+              isLoading: false,
+              parentUuid: containerUuid,
+              containerUuid: browserProcess.uuid
+            })
+          })
+      }
     }
-    */
 
-    store.commit('setShowedModalDialog', {
-      containerUuid: process.uuid,
-      isShowed: true
+    let isShowed = true
+    store.dispatch('getProcessDefinitionFromServer', {
+      id: browserProcess.uuid,
+      containerUuidAssociated: containerUuid
     })
+      .then(processResponse => {
+        if (!isEmptyValue(processResponse)) {
+          const { fieldsList, show_help } = processResponse
+          if (isEmptyValue(fieldsList) && show_help === 'N') {
+            isShowed = false
+            const isAllSelection = store.getters.getStoredBrowserProcessAll(containerUuid)
+            store.commit('setIsloadingProcessOfBrowser', {
+              isLoading: true,
+              parentUuid: containerUuid,
+              containerUuid: browserProcess.uuid
+            })
+            store.dispatch('startProcessOfBrowser', {
+              parentUuid: containerUuid,
+              containerUuid: browserProcess.uuid,
+              isAllSelection
+            })
+              .finally(() => {
+                store.commit('setIsloadingProcessOfBrowser', {
+                  isLoading: false,
+                  parentUuid: containerUuid,
+                  containerUuid: browserProcess.uuid
+                })
+              })
+          }
+        }
+      })
+      .finally(() => {
+        store.commit('setShowedModalDialog', {
+          containerUuid: browserProcess.uuid,
+          isShowed
+        })
+      })
   }
 }
 
