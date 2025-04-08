@@ -19,9 +19,14 @@
 import language from '@/lang'
 import store from '@/store'
 
+// Utils and Helper Methods
 import {
   containerManager as containerManagerProcess
 } from '@/utils/ADempiere/dictionary/process'
+import {
+  isEmptyValue
+} from '@/utils/ADempiere/valueUtils.js'
+import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 
 /**
  * Prefix to generate unique key
@@ -195,6 +200,67 @@ export function changeFieldAttribure({
     attributeName,
     attributeValue
   })
+}
+
+/**
+ * Convert children records
+ * @param {Array} children
+ * @param {String} parentLevel
+ * @param {String} parentColumnKey
+ * @param {String} parentDisplayValue
+ * @returns {Array}
+ */
+export function hasChildren(children, parentLevel, parentColumnKey, parentDisplayValue) {
+  if (isEmptyValue(children)) {
+    return children
+  }
+  return children.map((child, indexChild) => {
+    const index = parentLevel + indexChild
+    let value = ''
+    if (!isEmptyValue(parentColumnKey)) {
+      value = child.cells[parentColumnKey].display_value
+    }
+    const newRow = {
+      ...child,
+      children: hasChildren(child.children, index.toString(), parentColumnKey, value),
+      level: index,
+      rowUid: getUuidv4(),
+      zoom_windows: [],
+      isLoadingZoom: false
+    }
+    if (child.is_parent && value === parentDisplayValue && !isEmptyValue(parentColumnKey)) {
+      // clean all values on same cell
+      newRow.cells[parentColumnKey].display_value = ''
+      newRow.cells[parentColumnKey].value = ''
+    }
+    return newRow
+  })
+}
+
+export function generateRecordsList(rows) {
+  const recordsList = rows.map((row, rowIndex) => {
+    let isTopLevel = false
+    if (row.level < 1) {
+      isTopLevel = !isTopLevel
+    }
+    const index = rowIndex + 1
+    const parentColumnKey = Object.keys(row.cells).find(key => {
+      return row.cells[key].display_value !== ''
+    })
+    let value = ''
+    if (!isEmptyValue(parentColumnKey)) {
+      value = row.cells[parentColumnKey].display_value
+    }
+    const newRow = {
+      ...row,
+      children: hasChildren(row.children, index.toString(), parentColumnKey, value),
+      level: index,
+      rowUid: getUuidv4(),
+      isTopLevel
+    }
+    return newRow
+  })
+  return recordsList
 }
 
 /**

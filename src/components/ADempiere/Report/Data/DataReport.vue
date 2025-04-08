@@ -28,7 +28,7 @@
         show-summary
         :summary-method="getSummaries"
         :border="true"
-        row-key="level"
+        row-key="rowUid"
         :height="height"
         style="width: 100%; font-size: 12px !important;"
         :default-expand-all="false"
@@ -50,6 +50,7 @@
           <template slot="header">
             {{ fieldAttributes.title }}
           </template>
+
           <template slot-scope="scope">
             <!-- Show cell only if it should not be hidden -->
             <data-cells
@@ -66,6 +67,7 @@
           </template>
         </el-table-column>
       </el-table>
+
       <div style="padding-bottom: -10px;">
         <el-form
           label-position="top"
@@ -153,9 +155,9 @@ import store from '@/store'
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 import DataCells from '@/components/ADempiere/Report/Data/DataCells.vue'
-import printFormat from '@/components/ADempiere/ReportManager/Setup/options/printFormat.vue'
-import reportView from '@/components/ADempiere/ReportManager/Setup/options/reportViews.vue'
-import refreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton'
+import PrintFormat from '@/components/ADempiere/ReportManager/Setup/options/printFormat.vue'
+import ReportView from '@/components/ADempiere/ReportManager/Setup/options/reportViews.vue'
+import RefreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton'
 import reportSummary from '@/components/ADempiere/ReportManager/Setup/options/reportSumary.vue'
 import downloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
 
@@ -173,9 +175,9 @@ export default defineComponent({
     CustomPagination,
     InfoReport,
     DataCells,
-    printFormat,
-    reportView,
-    refreshButton,
+    PrintFormat,
+    ReportView,
+    RefreshButton,
     reportSummary,
     downloadButtom
   },
@@ -216,6 +218,7 @@ export default defineComponent({
         containerUuid: props.containerUuid
       })
     })
+
     const containerManagerReportViwer = computed(() => {
       const modalDialogStored = storedPanelReport.value
       if (!isEmptyValue(modalDialogStored) && !isEmptyValue(modalDialogStored.containerManager)) {
@@ -227,13 +230,6 @@ export default defineComponent({
       return {
         ...props.containerManager
       }
-    })
-    const data = computed(() => {
-      const { rowCells } = props.reportOutput
-      if (isEmptyValue(rowCells)) {
-        return []
-      }
-      return rowCells
     })
 
     const tableHeight = computed(() => {
@@ -254,27 +250,11 @@ export default defineComponent({
     })
 
     const dataList = computed(() => {
-      return data.value.map((row, rowIndex) => {
-        let isTopLevel = false
-        if (row.level < 1) {
-          isTopLevel = !isTopLevel
-        }
-        const index = rowIndex + 1
-        const parentColumnKey = Object.keys(row.cells).find(key => {
-          return row.cells[key].display_value !== ''
-        })
-        let value = ''
-        if (!isEmptyValue(parentColumnKey)) {
-          value = row.cells[parentColumnKey].display_value
-        }
-        const newRow = {
-          ...row,
-          children: hasChildren(row.children, index.toString(), parentColumnKey, value),
-          level: index,
-          isTopLevel
-        }
-        return newRow
-      })
+      const { recordsList } = props.reportOutput
+      if (isEmptyValue(recordsList)) {
+        return []
+      }
+      return recordsList
     })
 
     const expanded = computed(() => {
@@ -558,7 +538,7 @@ export default defineComponent({
      * @param newValue - New Assessed Property value
      * @param oldValue - Old Assessed Property value
      */
-    watch(data, () => {
+    watch(dataList, () => {
       nextTick(() => {
         expandedRowAll()
       })

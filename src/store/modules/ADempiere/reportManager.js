@@ -59,7 +59,8 @@ import {
 } from '@/utils/ADempiere/resource.js'
 import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
 import {
-  containerManager
+  containerManager,
+  generateRecordsList
 } from '@/utils/ADempiere/dictionary/report'
 import {
   requestShareResources
@@ -735,14 +736,19 @@ const reportManager = {
           instanceId
         })
           .then(reportResponse => {
+            const { rows } = reportResponse
+            const recordsList = generateRecordsList(rows)
+
             const reportOutput = {
               ...reportResponse,
               containerUuid,
-              rowCells: reportResponse.rows,
+              rowCells: rows,
+              recordsList,
               instanceUuid: internal_id,
               pageSize,
               pageToken
             }
+
             commit('setReportOutput', reportOutput)
             showNotification({
               title: language.t('notifications.succesful'),
@@ -770,7 +776,7 @@ const reportManager = {
      * @param {string} uuid report universal unique identifier
      * @returns
      */
-    generateReportViwer({ commit, getters, rootGetters }, {
+    generateReportViwer({ commit }, {
       reportId,
       reportType,
       filters,
@@ -831,6 +837,9 @@ const reportManager = {
               }, () => {})
             }
 
+            const { rows } = reportResponse
+            const recordsList = generateRecordsList(rows)
+
             const reportOutput = {
               ...reportResponse,
               instanceUuid: reportId,
@@ -840,7 +849,8 @@ const reportManager = {
               containerUuid,
               tableName,
               recordId,
-              rowCells: reportResponse.rows,
+              rowCells: rows,
+              recordsList,
               pageSize,
               pageToken
             }

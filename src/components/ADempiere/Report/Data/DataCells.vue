@@ -15,6 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <span>
     <!-- Show cell label -->
@@ -25,11 +26,16 @@
       @visible-change="loadZoom"
       @command="zoomInWindow"
     >
-      <el-dropdown v-if="attributes.column_name === 'Record_ID' && !rowData.is_parent">
-        <span v-if="rowData.cells[attributes.code].value !== 0" @click="searchZoom(attributes.code, rowData)"><i class="el-icon-zoom-in" style="font-weight: bolder;" />
+      <el-dropdown v-if="attributes.column_name === COLUMNNAME_Record_ID && !rowData.is_parent">
+        <span
+          v-if="rowData.cells[attributes.code].value !== 0"
+          @click="searchZoom(attributes.code, rowData)"
+        >
+          <i class="el-icon-zoom-in" style="font-weight: bolder;" />
         </span>
         <span v-else />
       </el-dropdown>
+
       <span v-else :class="'el-dropdown-link ' + cellStyle(attributes, rowData)">
         {{ displayLabel(attributes, rowData) }}
       </span>
@@ -41,6 +47,7 @@
           <i class="el-icon-loading" />
         </el-dropdown-item>
       </el-dropdown-menu>
+
       <el-dropdown-menu v-else slot="dropdown">
         <el-dropdown-item
           v-for="(zoom, key) in rowData.zoom_windows"
@@ -49,14 +56,17 @@
         >
           <i class="el-icon-zoom-in" style="font-weight: bolder;" />
           <b>
-            {{ $t('page.processActivity.zoomIn') }} {{ ' - ' + zoom.name + ' ( ' + displayLabel(attributes, rowData) + ' )' }}
+            {{ $t('page.processActivity.zoomIn') }}
+            {{ ' - ' + zoom.name + ' ( ' + displayLabel(attributes, rowData) + ' )' }}
           </b>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+
     <span v-else>
       {{ displayLabel(attributes, rowData) }}
     </span>
+
     <!-- Show popover only if the row is selected and is parent -->
     <el-popover
       v-if="currentSelectedColumn === attributes.code && rowData.is_parent"
@@ -80,6 +90,9 @@ import {
   computed,
   ref
 } from '@vue/composition-api'
+
+// Constants
+import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Components and Mixins
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
@@ -143,6 +156,7 @@ export default defineComponent({
   setup(props) {
     // Ref
     const isLoaded = ref(false)
+
     // Computed
     const show = computed({
       get() {
@@ -171,6 +185,7 @@ export default defineComponent({
       }
       return false
     }
+
     function styleFont(font) {
       let fontStyle = ''
       if (!isEmptyValue(font.color)) {
@@ -222,20 +237,22 @@ export default defineComponent({
       if (isEmptyValue(row.cells)) {
         return
       }
-      const rowData = row.cells[field.code]
+      const { code, column_name, display_type } = field
+      const cellData = row.cells[code]
+      if (isEmptyValue(cellData)) {
+        return
+      }
       const { datePattern } = store.getters['getCurrentLanguageDefinition']
       const precision = store.getters['user/getCurrencyPrecision'].standard_precision
-      if (!isEmptyValue(rowData)) {
-        const { display_value, value: currentValue } = rowData
-        return formatField({
-          value: currentValue,
-          displayedValue: display_value,
-          displayType: field.display_type,
-          columnName: field.column_name,
-          precision,
-          optionalFormat: datePattern
-        })
-      }
+      const { display_value, value: currentValue } = cellData
+      return formatField({
+        value: currentValue,
+        displayedValue: display_value,
+        displayType: display_type,
+        columnName: column_name,
+        precision,
+        optionalFormat: datePattern
+      })
     }
 
     function loadZoom(show) {
@@ -305,6 +322,7 @@ export default defineComponent({
         }
       })
     }
+
     function searchZoom(code, row) {
       if (
         !isEmptyValue(row) &&
@@ -341,6 +359,8 @@ export default defineComponent({
     }
 
     return {
+      // Constants
+      COLUMNNAME_Record_ID,
       // Ref
       isLoaded,
       // Computed
