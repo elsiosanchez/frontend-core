@@ -78,7 +78,8 @@
       <el-table-column
         prop="on_hand_quantity"
         :label="$t('form.outBoundOrder.lines.onHandQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">
@@ -91,7 +92,8 @@
       <el-table-column
         prop="quantity"
         :label="$t('form.outBoundOrder.lines.quantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="150"
       >
         <template slot-scope="scope">
@@ -113,14 +115,16 @@
       <el-table-column
         prop="order_uom"
         :label="$t('form.outBoundOrder.lines.uomOrder')"
-        align="left"
+        align="right"
+        header-align="right"
         width="115"
       />
 
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.header.weight')"
-        align="left"
+        align="right"
+        header-align="right"
         width="90"
       >
         <template slot-scope="scope">
@@ -133,7 +137,8 @@
       <el-table-column
         prop="volume"
         :label="$t('form.outBoundOrder.header.volume')"
-        align="left"
+        align="right"
+        header-align="right"
         width="90"
       >
         <template slot-scope="scope">
@@ -145,7 +150,8 @@
       <el-table-column
         prop="ordered_quantity"
         :label="$t('form.outBoundOrder.lines.orderedQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">
@@ -158,7 +164,8 @@
       <el-table-column
         prop="reserved_quantity"
         :label="$t('form.outBoundOrder.lines.reservedQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">
@@ -171,7 +178,8 @@
       <el-table-column
         prop="quantity_invoiced"
         :label="$t('form.outBoundOrder.lines.quantityInvoiced')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">
@@ -184,7 +192,8 @@
       <el-table-column
         prop="delivered_quantity"
         :label="$t('form.outBoundOrder.lines.deliveredQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">
@@ -197,7 +206,8 @@
       <el-table-column
         prop="quantity_in_transit"
         :label="$t('form.outBoundOrder.lines.quantityInTransit')"
-        align="left"
+        align="right"
+        header-align="right"
         width="140"
       >
         <template slot-scope="scope">

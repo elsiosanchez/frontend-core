@@ -122,7 +122,8 @@
       <el-table-column
         prop="weight"
         :label="$t('form.outBoundOrder.header.weight')"
-        align="left"
+        align="right"
+        header-align="right"
         width="100"
       >
         <template slot-scope="scope">
@@ -135,7 +136,8 @@
       <el-table-column
         prop="volume"
         :label="$t('form.outBoundOrder.header.volume')"
-        align="left"
+        align="right"
+        header-align="right"
         width="100"
       >
         <template slot-scope="scope">
