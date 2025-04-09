@@ -21,7 +21,11 @@ import Vue from 'vue'
 import language from '@/lang'
 
 // Constants
-import { LOG_COLUMNS_NAME_LIST, UUID } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_DocAction, COLUMNNAME_Record_ID,
+  LOG_COLUMNS_NAME_LIST,
+  UUID
+} from '@/utils/ADempiere/constants/systemColumns'
 import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
 import {
   DISPLAY_COLUMN_PREFIX, IDENTIFIER_COLUMN_SUFFIX, IS_ADVANCED_QUERY
@@ -151,7 +155,7 @@ const persistence = {
         }
 
         if (isSupportLookup(field.display_type) || IMAGE.id === field.display_type ||
-          (['DocAction', 'Record_ID'].includes(columnName) && BUTTON.id === field.display_type)) {
+          ([COLUMNNAME_DocAction, COLUMNNAME_Record_ID].includes(columnName) && BUTTON.id === field.display_type)) {
           let displayedValue
           if (!isEmptyValue(currentRecord)) {
             displayedValue = currentRecord[field.displayColumnName]

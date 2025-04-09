@@ -392,7 +392,7 @@ export function standardPrecisionContext({
 
 export function convertToNumber(value) {
   // Check if value is null or undefined
-  if (value === null || value === undefined || value === '') {
+  if (value === null || value === undefined || value === '' || isNaN(value)) {
     return 0 // Return null if invalid
   }
 

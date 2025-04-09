@@ -100,7 +100,9 @@ export default {
               browserDefinition.columnsList[fieldItem.elementNameTo] = fieldItem.columnNameTo
             }
           })
-          browserDefinition.isShowedCriteria = browserDefinition.fieldsList.some(field => field.is_query_criteria && field.isMandatory && isEmptyValue(field.defaultValue))
+          browserDefinition.isShowedCriteria = browserDefinition.fieldsList.some(field => {
+            return field.is_query_criteria && field.isMandatory && isEmptyValue(field.defaultValue)
+          })
           commit('addBrowserToList', browserDefinition)
 
           dispatch('setBrowserActionsMenu', {
@@ -345,6 +347,7 @@ export default {
         isSOTrxDictionary: isSalesTransactionContext,
         fieldsList
       })
+      console.log(defaultAttributesWithColumn)
 
       // elements of colums
       const defaultAttributesWithElement = defaultAttributesWithColumn.map(attribute => {

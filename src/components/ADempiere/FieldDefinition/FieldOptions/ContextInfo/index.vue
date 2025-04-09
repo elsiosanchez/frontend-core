@@ -81,14 +81,14 @@
         </el-form-item>
 
         <el-form-item
-          v-if="!isEmptyValue(fieldAttributes.default_value)"
+          v-if="!isEmptyValue(fieldAttributes.default_value) || String(fieldAttributes.default_value).trim() === '-1'"
           :label="$t('fieldOptions.info.defaultValue')"
           class="justify-text"
         >
           <pre>{{ fieldAttributes.default_value }}</pre>
         </el-form-item>
         <el-form-item
-          v-if="fieldAttributes.is_range && !isEmptyValue(fieldAttributes.default_value_to)"
+          v-if="fieldAttributes.is_range && !isEmptyValue(fieldAttributes.default_value_to) || String(fieldAttributes.default_value_to).trim() === '-1'"
           :label="$t('fieldOptions.info.defaultValueTo')"
           class="justify-text"
         >
