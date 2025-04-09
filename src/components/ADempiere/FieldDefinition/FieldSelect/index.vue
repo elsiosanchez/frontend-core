@@ -291,8 +291,6 @@ export default {
         }
         return
       }
-      // request displayed value
-      this.getValueOfLookup()
 
       this.optionsList = this.getStoredLookupAll
       this.forceRerender()
@@ -319,6 +317,7 @@ export default {
         return
       }
 
+      // request displayed value
       this.getValueOfLookup()
     },
 
