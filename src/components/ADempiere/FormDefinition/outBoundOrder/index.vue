@@ -28,85 +28,24 @@
       </el-steps>
     </div>
     <div style="height: 80% !important; padding: 0px 15px">
-      <search-criteria
-        v-show="'searchCriteria' === stepList[currentStep].key"
-        :metadata="metadata"
+      <component
+        :is="componentRender"
       />
-      <record-result
-        v-show="'order' === stepList[currentStep].key"
-      />
-      <process
-        v-show="'process' === stepList[currentStep].key"
-      />
-      <div style="height: 14% !important;text-align: end;padding: 0px 15px; padding-top: 25px">
-        <span style="float: left">
-          <el-button
-            v-if="'order' === stepList[currentStep].key"
-            type="primary"
-            class="button-base-icon"
-            icon="el-icon-s-grid"
-            @click="showPanel = true"
-          />
-          <el-button
-            v-if="'order' === stepList[currentStep].key"
-            type="success"
-            class="button-base-icon"
-            icon="el-icon-refresh-right"
-            size="small"
-            @click="refreshRecords();"
-          />
-          <el-button
-            v-if="'order' === stepList[currentStep].key"
-            type="info"
-            class="button-base-icon"
-            plain
-            @click="clearSearch();"
-          >
-            <svg-icon icon-class="layers-clear" />
-          </el-button>
-        </span>
-        <el-button
-          v-if="'order' === stepList[currentStep].key || 'process' === stepList[currentStep].key"
-          type="danger"
-          class="button-base-icon"
-          icon="el-icon-close"
-          :disabled="isLoadingProcess"
-          @click="exit()"
-        />
-        <el-button
-          v-show="currentStep >= 1"
-          type="primary"
-          class="button-base-icon"
-          icon="el-icon-arrow-left"
-          @click="currentStep--"
-        />
-        <el-button
-          v-if="'order' === stepList[currentStep].key"
-          type="primary"
-          class="button-base-icon"
-          icon="el-icon-check"
-          :disabled="isEmptyValue(recordsSelecion)"
-          @click="validateNextStep"
-        />
-        <el-button
-          v-if="'process' === stepList[currentStep].key"
-          :key="buttonKey"
-          type="primary"
-          class="button-base-icon"
-          icon="el-icon-check"
-          :loading="isLoadingProcess"
-          :disabled="isDisableProcess"
-          @click="runProcess"
-        />
-      </div>
     </div>
-    <div v-show="currentStep <= 0" style="height: 14% !important;text-align: end;padding: 0px 15px;">
-      <el-button
-        type="primary"
-        class="button-base-icon"
-        icon="el-icon-arrow-right"
-        :disabled="!isDisabled"
-        @click="nextStep"
+    <div style="height: 14% !important;text-align: end;padding: 0px 15px;">
+      <footer-buttons
+        :current-step="stepList[currentStep].key"
+        :records-selecion="isEmptyValue(recordsSelecion)"
+        :is-disabled-organizations="isDisabled"
+        :is-loading-process="isLoadingProcess"
+        :is-disable-process="isDisableProcess"
+        :open-panel-right="openPanel"
+        :previos-step="previosStep"
+        :action-clear="clearSearch"
+        :refresh="refreshRecords"
+        :action-run="runProcess"
+        :next-step="nextStep"
+        :action-close="exit"
       />
     </div>
     <el-drawer
@@ -116,6 +55,11 @@
       :size="isMobile ? '100%' : '65%'"
       :title="$t('form.outBoundOrder.productInfo.title')"
     >
+      <span slot="title">
+        <p style="color: #606266; font-weight: bold;margin: 0px;text-align: center;">
+          {{ $t('form.outBoundOrder.productInfo.title') }}
+        </p>
+      </span>
       <info-panel />
     </el-drawer>
   </div>
@@ -129,10 +73,8 @@ import store from '@/store'
 import router from '@/router'
 
 // Components and Mixins
-import SearchCriteria from './SearchCriteria/index.vue'
-import RecordResult from './RecordResult/index.vue'
-import Process from './process/index.vue'
 import InfoPanel from './RecordResult/infoPanel.vue'
+import FooterButtons from '@/components/ADempiere/FormDefinition/outBoundOrder/footer'
 // import Summary from './components/Summary'
 
 // Constants
@@ -153,9 +95,7 @@ export default defineComponent({
   name: 'OutBoundOrder',
 
   components: {
-    SearchCriteria,
-    RecordResult,
-    Process,
+    FooterButtons,
     InfoPanel
   },
 
@@ -236,6 +176,25 @@ export default defineComponent({
       }
     })
 
+    const componentRender = computed(() => {
+      let panel
+      switch (stepList.value[currentStep.value].key) {
+        case 'searchCriteria':
+          panel = () => import('@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria')
+          break
+        case 'order':
+          panel = () => import('@/components/ADempiere/FormDefinition/outBoundOrder/RecordResult/index.vue')
+          break
+        case 'process':
+          panel = () => import('@/components/ADempiere/FormDefinition/outBoundOrder/process')
+          break
+        default:
+          panel = () => import('@/components/ADempiere/FormDefinition/outBoundOrder/SearchCriteria')
+          break
+      }
+      return panel
+    })
+
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
     })
@@ -282,6 +241,10 @@ export default defineComponent({
       store.commit('setRecordsId', [])
       searchRecords()
       currentStep.value++
+    }
+
+    function previosStep() {
+      currentStep.value--
     }
 
     function validateNextStep() {
@@ -374,6 +337,9 @@ export default defineComponent({
     function clearSearch() {
       searchRecords(true)
     }
+    function openPanel() {
+      showPanel.value = true
+    }
 
     watch(
       () => store.getters.getSearchFilterGenerateOrder,
@@ -397,8 +363,11 @@ export default defineComponent({
       recordsId,
       isLoadingProcess,
       isDisableProcess,
+      componentRender,
       // Methods
       nextStep,
+      previosStep,
+      openPanel,
       refreshRecords,
       validateNextStep,
       runProcess,
