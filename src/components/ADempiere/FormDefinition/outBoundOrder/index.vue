@@ -236,9 +236,13 @@ export default defineComponent({
     }
 
     function nextStep(step) {
-      store.commit('setLinesSelection', [])
-      store.commit('setListDocumentList', [])
-      store.commit('setRecordsId', [])
+      if (currentStep.value <= 0) {
+        store.commit('setLinesSelection', [])
+        store.commit('setListDocumentList', [])
+        store.commit('setRecordsId', [])
+        store.commit('clearFiltersFreightOrder')
+        store.commit('clearOutputOrder')
+      }
       searchRecords()
       currentStep.value++
     }

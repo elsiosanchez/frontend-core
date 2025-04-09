@@ -79,7 +79,8 @@
       <el-table-column
         prop="on_hand_quantity"
         :label="$t('form.outBoundOrder.productInfo.onHandQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="160"
       >
         <template slot-scope="scope">
@@ -92,7 +93,8 @@
       <el-table-column
         prop="quantity_in_transit"
         :label="$t('form.outBoundOrder.productInfo.quantityInTransit')"
-        align="left"
+        align="right"
+        header-align="right"
         width="160"
       >
         <template slot-scope="scope">
@@ -105,7 +107,8 @@
       <el-table-column
         prop="totalQuantityToSet"
         :label="$t('form.outBoundOrder.productInfo.quantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="160"
       >
         <template slot-scope="scope">
@@ -118,7 +121,8 @@
       <el-table-column
         prop="pickedQuantity"
         :label="$t('form.outBoundOrder.productInfo.pickedQuantity')"
-        align="left"
+        align="right"
+        header-align="right"
         width="160"
       >
         <template slot-scope="scope">

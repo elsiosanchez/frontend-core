@@ -27,8 +27,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     class="button-base-icon"
     @click="acttionButton"
   >
-    <i v-if="!isEmptyValue(icon)" :class="icon" />
-    <svg-icon v-else :icon-class="svg" />
+    <span v-show="!loading">
+      <i v-if="!isEmptyValue(icon)" :class="icon" />
+      <svg-icon v-else :icon-class="svg" />
+    </span>
   </el-button>
 </template>
 
