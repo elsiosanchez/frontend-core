@@ -1,7 +1,7 @@
 <!--
   ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
   Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-  Contributor(s): Elsio Sanchez elsiosanches@gmail.com www.erpya.com https://github.com/elsiosanchez
+  Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/elsiosanchez
   Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -86,9 +86,10 @@
           </span>
           {{ fieldAttributes.name }}
         </template>
+
         <template slot-scope="scope">
           <p
-            style="margin: 0px;display: list-item;"
+            style="margin: 0px;"
             @click="editCell(scope.row, fieldAttributes)"
           >
             <field-definition
@@ -184,7 +185,9 @@
 </template>
 
 <script>
-import { defineComponent, computed, onMounted, onUpdated, ref, watch } from '@vue/composition-api'
+import {
+  defineComponent, computed, onMounted, onUpdated, ref, watch
+} from '@vue/composition-api'
 
 import router from '@/router'
 import store from '@/store'
@@ -194,12 +197,14 @@ import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColu
 import { BINARY_DATA, BUTTON, IMAGE } from '@/utils/ADempiere/references'
 import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
+
 // Components and Mixins
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
+
 // Utils and Helper Methods
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
@@ -269,11 +274,13 @@ export default defineComponent({
     const isChangeOptions = ref(false)
     const heightSize = ref()
     const currentRowSelect = ref({})
+
     const disableExport = computed(() => {
       return props.containerManager.enableExport({
         containerUuid: props.containerUuid
       })
     })
+
     const isLoadingDataTale = computed(() => {
       if (props.containerManager && props.containerManager.isLoadedRecords) {
         return !props.containerManager.isLoadedRecords({
@@ -725,9 +732,9 @@ export default defineComponent({
       tableClass,
       isMobile,
       currentRowSelect,
-      isSelectDefault,
       disableExport,
       // Methods
+      isSelectDefault,
       editCell,
       getColumnStyle,
       displayValueColum,
@@ -765,12 +772,11 @@ export default defineComponent({
 .cell-no-edit {
   cursor: not-allowed !important;
 }
-</style>
 
-<style lang="scss">
 .highlight {
-  background-color: #F2F6FC; /* Color para Juan */
+  background-color: #F2F6FC;
 }
+
 .browser-footer {
   .el-dropdown {
     .el-button-group {
@@ -792,21 +798,27 @@ export default defineComponent({
   height: 85%;
   .el-table {
     height: 100% !important;
+
+    .success-row {
+      background: #e8f4ff;
+    }
+
+    // .caret-wrapper {
+    //   height: 20px;
+    // }
+    .cell {
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-all;
+      line-height: 15px;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
   }
-  .el-table .success-row {
-    background: #e8f4ff;
-  }
-  .el-table .cell {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: normal;
-    word-break: break-all;
-    line-height: 15px;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+
   .browser-criteria-collapse {
     .el-table__body-wrapper {
       overflow: auto;
