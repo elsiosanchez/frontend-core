@@ -89,7 +89,7 @@
 
         <template slot-scope="scope">
           <p
-            style="margin: 0px;"
+            style="margin: 0px; height: 100%; width: 100%; display: block ruby;"
             @click="editCell(scope.row, fieldAttributes)"
           >
             <field-definition
@@ -262,7 +262,7 @@ export default defineComponent({
     }
   },
 
-  setup(props, { root }) {
+  setup(props) {
     const panelMain = document.getElementById('mainBrowseDataTable')
     const multipleTable = ref(null)
     const isEditing = ref(true)
@@ -448,9 +448,7 @@ export default defineComponent({
      * @param {string} column
      */
     function handleRowDblClick(row, column, event) {
-      isEditing.value = false
-      editingRow.value = null
-      editingColumn.value = null
+      noEditCell(row, column)
     }
 
     /**
@@ -617,7 +615,6 @@ export default defineComponent({
     function exportRecords(command) {
       if (command === 'onlyRecord') {
         props.containerManager.exportOnlyRecords({
-          root,
           parentUuid: props.parentUuid,
           containerUuid: props.panelMetadata.uuid,
           containerManager: props.containerManager
@@ -674,10 +671,17 @@ export default defineComponent({
     }
 
     function editCell(row, column) {
-      if (!row.isSelectedRow) return
+      if (!row.isSelectedRow) {
+        return
+      }
       isEditing.value = true
       editingRow.value = row
       editingColumn.value = column
+    }
+    function noEditCell(row, column) {
+      isEditing.value = false
+      editingRow.value = null
+      editingColumn.value = null
     }
 
     watch(currentOption, (newValue, oldValue) => {
@@ -736,6 +740,7 @@ export default defineComponent({
       // Methods
       isSelectDefault,
       editCell,
+      noEditCell,
       getColumnStyle,
       displayValueColum,
       //

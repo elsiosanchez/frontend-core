@@ -24,6 +24,7 @@ import {
   DISPLAY_COLUMN_PREFIX
 } from '@/utils/ADempiere/dictionaryUtils'
 import { BUTTON } from '@/utils/ADempiere/references'
+import { DEFAULT_EXPORT_TYPE } from '@/utils/ADempiere/exportUtil.js'
 
 // API Request Methods
 import { requestSaveBrowseCustomization } from '@/api/ADempiere/user-customization/browsers'
@@ -37,7 +38,6 @@ import { exportFileFromJson, exportRecords } from '@/utils/ADempiere/exportUtil.
 import { clientDateTime } from '@/utils/ADempiere/formatValue/dateFormat'
 import { formatField } from '@/utils/ADempiere/valueFormat'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
-import { DEFAULT_EXPORT_TYPE } from '@/utils/ADempiere/exportUtil.js'
 
 /**
  * Is displayed field in panel query criteria
@@ -677,7 +677,6 @@ export const containerManager = {
     })
   },
   exportOnlyRecords({
-    root,
     parentUuid,
     containerUuid,
     containerManager
@@ -692,6 +691,11 @@ export const containerManager = {
       })
       return
     }
-    exportRecords({ root, parentUuid, containerUuid, containerManager, formatToExport: DEFAULT_EXPORT_TYPE })
+    exportRecords({
+      parentUuid,
+      containerUuid,
+      containerManager,
+      formatToExport: DEFAULT_EXPORT_TYPE
+    })
   }
 }
