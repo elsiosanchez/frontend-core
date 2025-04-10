@@ -347,7 +347,6 @@ export default {
         isSOTrxDictionary: isSalesTransactionContext,
         fieldsList
       })
-      console.log(defaultAttributesWithColumn)
 
       // elements of colums
       const defaultAttributesWithElement = defaultAttributesWithColumn.map(attribute => {

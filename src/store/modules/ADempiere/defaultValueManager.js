@@ -183,9 +183,28 @@ const defaultValueManager = {
           .then(valueResponse => {
             const { values, is_active } = valueResponse
             if (isEmptyValue(values)) {
+              commit('updateValueOfField', {
+                parentUuid,
+                containerUuid,
+                columnName
+                // value: newValueByServer
+              })
+              commit('updateValueOfField', {
+                parentUuid,
+                containerUuid,
+                columnName: DISPLAY_COLUMN_PREFIX + columnName
+                // value: newValueByServer
+              })
+              commit('updateValueOfField', {
+                parentUuid,
+                containerUuid,
+                columnName: columnName + UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
+                // value: newValueByServer
+              })
+              console.warn(`Without server response to '${columnName}', clear value `, value)
               resolve({
                 ...defaultEmptyResponse,
-                reason: 'Without server value'
+                reason: `Without server response to '${columnName}', clear value ` + value
               })
               return
             }
