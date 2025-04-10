@@ -316,6 +316,7 @@ const windowManager = {
             containerUuid
           })
         }
+        const tabDefinition = rootGetters.getStoredTab(parentUuid, containerUuid)
         const {
           isParentTab,
           is_has_tree,
@@ -325,7 +326,7 @@ const windowManager = {
           link_column_name,
           parent_column_name,
           context_column_names
-        } = rootGetters.getStoredTab(parentUuid, containerUuid)
+        } = tabDefinition
         if (!isEmptyValue(filters) && typeof filters !== 'object') {
           const parseFilter = JSON.parse(filters)
           filters = [parseFilter]

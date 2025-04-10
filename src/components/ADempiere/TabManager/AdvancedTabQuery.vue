@@ -372,10 +372,21 @@ export default defineComponent({
         containerUuid: props.containerUuid,
         searchValue: searchText
       })
+        .then(response => {
+          const tabData = store.getters.getTabData({
+            containerUuid: props.containerUuid
+          })
+          props.containerManager.seekRecord({
+            parentUuid: props.parentUuid,
+            containerUuid: props.containerUuid,
+            recordUuid: tabData.currentRecordUuid
+          })
+        })
         .finally(() => {
           isLoadingSearch.value = false
         })
     }
+
     const tableName = computed(() => {
       const { currentTab } = store.getters.getContainerInfo
       if (!isEmptyValue(currentTab) && !isEmptyValue(currentTab.table_name)) return currentTab.table_name
