@@ -66,7 +66,8 @@ const initState = {
       orderDateTo: undefined,
       orderId: undefined,
       grandTotalFrom: undefined,
-      grandTotalTo: undefined
+      grandTotalTo: undefined,
+      orderReference: undefined
     }
   },
   orderData: {},
@@ -224,7 +225,7 @@ const fieldOrder = {
         }
         if (!isEmptyValue(storedInfoData.nextPageToken)) pageToken = storedInfoData.nextPageToken + pageNumber
 
-        commit('setBusinessPartnerIsLoading', {
+        commit('setOrderFieldIsLoading', {
           containerUuid,
           isLoading: true
         })
@@ -327,7 +328,7 @@ const fieldOrder = {
           })
           .finally(() => {
             setTimeout(() => {
-              commit('setBusinessPartnerIsLoading', {
+              commit('setOrderFieldIsLoading', {
                 containerUuid,
                 isLoading: false
               })
@@ -335,10 +336,14 @@ const fieldOrder = {
           })
       })
     },
-    orderBusinessPartnerList({ commit }, searchValue) {
+    orderBusinessPartnerList({ commit }, {
+      currentValue,
+      searchValue
+    }) {
       return new Promise(resolve => {
         let list
         requestListBusinessPartners({
+          current_value: currentValue,
           search_value: searchValue,
           page_size: 300
         })

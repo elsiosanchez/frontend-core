@@ -29,6 +29,7 @@ const order = {
   orderDate: 'Order Date',
   delivered: 'Delivered',
   businessPartnerOrderReference: 'Business Partner Order Reference',
+  orderReference: 'Order Reference',
   grandTotal: 'Grand Total',
   currency: 'Currency',
   converted: 'Converted',

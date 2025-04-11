@@ -35,10 +35,11 @@ export function requestListBusinessPartners({
   search_value,
   context_attributes,
   is_only_active_records,
+  current_value,
   is_sales_transaction
 }) {
   return request({
-    url: '/fields/orders/customers',
+    url: '/fields/orders/business-partners',
     method: 'get',
     params: {
       filters,
@@ -50,6 +51,7 @@ export function requestListBusinessPartners({
       search_value,
       context_attributes,
       is_only_active_records,
+      current_value,
       is_sales_transaction
     }
   })
@@ -80,6 +82,7 @@ export function requestListOrderInfo({
   isDelivered,
   documentNo,
   orderId,
+  orderReference,
   isWithoutValidation
 }) {
   // TODO: Search for a more optimal way to compare and build the route.
@@ -130,7 +133,8 @@ export function requestListOrderInfo({
       order_date_to: orderDateTo,
       order_id: orderId,
       grand_total_from: grandTotalFrom,
-      grand_total_to: grandTotalTo
+      grand_total_to: grandTotalTo,
+      order_reference: orderReference
     }
   })
 }

@@ -30,6 +30,7 @@ const order = {
   orderDate: 'Fecha de la Orden',
   delivered: 'Entregado',
   businessPartnerOrderReference: 'Referencia de Orden de Socio del Negocio',
+  orderReference: 'Referencia de Orden',
   grandTotal: 'Gran Total',
   currency: 'Moneda',
   converted: 'Convertido',

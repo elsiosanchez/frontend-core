@@ -22,14 +22,14 @@
     :index="indexTable"
     label="#"
     class-name="index-column number-align-right"
-    :width="width"
+    :width="withByPage"
     min-width="15"
     header-align="center"
   />
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 
 // Utils and Helper Methods
 import { indexRowByPage, ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
@@ -57,6 +57,12 @@ export default defineComponent({
   },
 
   setup(props) {
+    const withByPage = computed(() => {
+      const total = props.pageNumber * props.pageSize
+      const digitsLength = total.toString().length
+      return 35 + (digitsLength - 1) * 5
+    })
+
     function indexTable(index) {
       return indexRowByPage({
         indexRow: index,
@@ -66,6 +72,9 @@ export default defineComponent({
     }
 
     return {
+      // Computeds
+      withByPage,
+      // Methods
       indexTable
     }
   }

@@ -224,7 +224,7 @@ const fieldInvoice = {
         }
         const pageToken = generatePageToken({ pageNumber })
 
-        commit('setBusinessPartnerIsLoading', {
+        commit('setInvoiceFieldIsLoading', {
           containerUuid,
           isLoading: true
         })
@@ -322,7 +322,7 @@ const fieldInvoice = {
           })
           .finally(() => {
             setTimeout(() => {
-              commit('setBusinessPartnerIsLoading', {
+              commit('setInvoiceFieldIsLoading', {
                 containerUuid,
                 isLoading: false
               })

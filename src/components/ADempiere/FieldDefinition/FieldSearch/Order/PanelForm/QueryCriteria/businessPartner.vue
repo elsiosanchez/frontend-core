@@ -46,8 +46,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 import { computed, defineComponent, ref } from '@vue/composition-api'
 
 import store from '@/store'
+
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
@@ -116,7 +118,9 @@ export default defineComponent({
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
         isLoading.value = true
-        store.dispatch('invoiceBusinessPartnerList', searchValue)
+        store.dispatch('orderBusinessPartnerList', {
+          searchValue
+        })
           .finally(() => {
             isLoading.value = false
           })
@@ -124,7 +128,9 @@ export default defineComponent({
     }
 
     if (!isEmptyValue(BPartnerContext.value)) {
-      store.dispatch('invoiceBusinessPartnerList')
+      store.dispatch('orderBusinessPartnerList', {
+        // currentValue: BPartnerContext.value
+      })
         .finally(() => {
           currentValue.value = BPartnerContext.value
         })

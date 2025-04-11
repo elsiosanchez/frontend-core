@@ -83,6 +83,12 @@
               :uuid-form="uuidForm"
             />
           </el-col>
+
+          <el-col :span="6">
+            <order-reference-field
+              :uuid-form="uuidForm"
+            />
+          </el-col>
         </el-row>
         <el-skeleton v-else />
       </el-form>
@@ -110,6 +116,7 @@ import BusinessPartner from './businessPartner.vue'
 import SaleTransactionField from './SalesTransactionField.vue'
 import DeliveredField from './DeliveredField.vue'
 import OrderField from './OrderField.vue'
+import OrderReferenceField from './orderReferenceField.vue'
 import billingDateField from './billingDateField.vue'
 import GrandTotalField from './grandTotalField.vue'
 
@@ -126,6 +133,7 @@ export default defineComponent({
     SaleTransactionField,
     DeliveredField,
     OrderField,
+    OrderReferenceField,
     billingDateField,
     GrandTotalField
   },
