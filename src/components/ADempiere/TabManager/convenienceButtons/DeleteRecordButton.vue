@@ -105,6 +105,7 @@
           v-for="(item, index) in tabAttributes.identifierColumns"
           :key="index"
           :label="item.name"
+          :content-style="{'max-height': '200px', 'display': 'block', 'overflow': 'auto'}"
         >
           <cell-display-info
             v-for="(record, key) in listOfRecordsToDeleted"
