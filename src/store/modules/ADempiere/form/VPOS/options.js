@@ -47,7 +47,16 @@ import {
   createOrderFromRMA,
   listCashMovements,
   processCashClosing,
-  listCashSummaryMovements
+  listCashSummaryMovements,
+  // Gift Card
+  createGiftCard,
+  // updateGiftCard,
+  getGiftCard,
+  // deleteGiftCard,
+  // listGiftCard,
+  createGiftCardLine,
+  deleteGiftCardLines,
+  updateGiftCardLines
 } from '@/api/ADempiere/form/VPOS'
 
 // Utils and Helper Methods
@@ -61,6 +70,13 @@ const options = {
   shipment: {
     list: [],
     current: {}
+  },
+  giftCard: {
+    list: [],
+    current: {
+      lines: []
+    },
+    show: false
   },
   rma: {
     list: [],
@@ -91,6 +107,18 @@ export default {
     },
     setShipment(state, shipment) {
       state.shipment.current = shipment
+    },
+    setGiftCardList(state, list) {
+      state.giftCard.list = list
+    },
+    setGiftCard(state, giftCard) {
+      state.giftCard.current = giftCard
+    },
+    setGiftCardLines(state, giftCard) {
+      state.giftCard.current.lines = giftCard
+    },
+    addNewGiftCardLine(state, giftCard) {
+      state.giftCard.current.lines.push(giftCard)
     },
     setAttributeRMA(state, {
       attribute,
@@ -410,7 +438,6 @@ export default {
           })
       })
     },
-
     newShipment({
       getters,
       commit,
@@ -1266,6 +1293,250 @@ export default {
             })
           })
       })
+    },
+    /**
+     * Header Gift Card
+     */
+    newGiftCard({
+      commit,
+      getters,
+      dispatch
+    }, {
+      amount,
+      orderId,
+      isPrepayment,
+      isCreateLinesFromOrder = true
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(orderId)) {
+          orderId = getters.getCurrentOrder.id
+        }
+        if (
+          isEmptyValue(currentPos.id) ||
+          isEmptyValue(orderId)
+        ) {
+          return resolve({})
+        }
+
+        createGiftCard({
+          posId: currentPos.id,
+          amount,
+          orderId,
+          isPrepayment,
+          isCreateLinesFromOrder
+        })
+          .then(response => {
+            const giftCard = response
+            giftCard.gift_card_lines = giftCard.gift_card_lines.map(list => {
+              return {
+                ...list,
+                isEditQty: false,
+                isLoading: false
+              }
+            })
+            commit('setGiftCard', giftCard)
+            resolve(giftCard)
+          })
+          .catch(error => {
+            commit('setGiftCard', {})
+            commit('setGiftCardList', [])
+            console.warn(`Create Gift Card: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            commit('setShowedModalDialogVPOS', {
+              isShowed: false
+            })
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    /**
+     * Lines Gift Card
+     */
+    newGiftCardLine({
+      commit,
+      getters,
+      dispatch
+    }, {
+      posId,
+      amount,
+      orderId,
+      giftCardId,
+      orderLineId,
+      quantityEntered = 1
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        if (isEmptyValue(posId)) posId = currentPos.id
+        if (isEmptyValue(orderId)) orderId = currentOrder.id
+        createGiftCardLine({
+          amount,
+          posId,
+          orderId,
+          giftCardId,
+          orderLineId,
+          quantityEntered
+        })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Create Shipment Line: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+          .finally(() => {
+            dispatch('listGiftCardLines', {
+              giftCardId
+            })
+          })
+      })
+    },
+    listGiftCardLines({
+      commit,
+      getters
+    }, {
+      giftCardId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        const currentGiftCard = getters.getCurrentGiftCard
+        if (isEmptyValue(giftCardId)) giftCardId = currentGiftCard.id
+        getGiftCard({
+          posId: currentPos.id,
+          orderId: currentOrder.id,
+          id: giftCardId
+        })
+          .then(response => {
+            const giftCard = response
+            giftCard.gift_card_lines = giftCard.gift_card_lines.map(list => {
+              return {
+                ...list,
+                isEditQty: false,
+                isLoading: false
+              }
+            })
+            commit('setGiftCard', giftCard)
+            resolve(giftCard)
+          })
+          .catch(error => {
+            console.warn(`List Gift Card Line: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    removeGiftCardLine({
+      getters,
+      dispatch
+    }, {
+      lineId,
+      giftCardId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        const currentGiftCard = getters.getCurrentGiftCard
+        if (isEmptyValue(giftCardId)) giftCardId = currentGiftCard.id
+        deleteGiftCardLines({
+          orderId: currentOrder.id,
+          posId: currentPos.id,
+          id: lineId,
+          giftCardId
+        })
+          .then(response => {
+            dispatch('listGiftCardLines', {
+              giftCardId
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`List Gift Card Line: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    updateGiftCardLine({
+      getters,
+      dispatch
+    }, {
+      lineId,
+      giftCardId,
+      quantityEntered
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        const currentGiftCard = getters.getCurrentGiftCard
+        if (isEmptyValue(giftCardId)) giftCardId = currentGiftCard.id
+        updateGiftCardLines({
+          orderId: currentOrder.id,
+          posId: currentPos.id,
+          quantityEntered,
+          id: lineId,
+          giftCardId
+        })
+          .then(response => {
+            dispatch('listGiftCardLines', {
+              giftCardId
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`List Gift Card Line: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
     }
   },
   getters: {
@@ -1291,6 +1562,9 @@ export default {
     },
     getCashClosings: (state) => {
       return state.cashClosings
+    },
+    getCurrentGiftCard: (state) => {
+      return state.giftCard.current
     }
   }
 }

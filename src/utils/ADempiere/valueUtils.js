@@ -70,7 +70,9 @@ export const isEmptyValue = function(value) {
       break
     case 'BOOLEAN':
     case 'DATE':
-    case 'FUNCTION': // Or class
+    case 'FUNCTION':
+      isEmpty = Boolean(value.toString() === 'function () {}' || value.toString() === 'function () { }')
+      break // Or class
     case 'PROMISE':
     case 'REGEXP':
       isEmpty = false

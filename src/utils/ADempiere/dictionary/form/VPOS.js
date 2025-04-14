@@ -390,7 +390,7 @@ export function isDisplayFieldPayment(
       isShow = ['K', 'T', 'A', 'P', 'C'].includes(payment_method.tender_type)
       break
     case 'ReferenceNo':
-      isShow = ['M', 'Z', 'D', 'K', 'T', 'A', 'P'].includes(payment_method.tender_type)
+      isShow = ['M', 'Z', 'K', 'T', 'A', 'P'].includes(payment_method.tender_type)
       break
     case 'AccountNo':
       isShow = ['A'].includes(payment_method.tender_type)

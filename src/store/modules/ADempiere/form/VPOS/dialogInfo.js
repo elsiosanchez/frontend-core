@@ -46,32 +46,34 @@ const modalDialogManagerVPOS = {
 
   actions: {
     setModalDialogVPOS({ commit }, {
-      actionsName,
-      componentPath,
-      containerManager = {},
+      isDisabledDone = function() { return false },
+      isLoadingDone = function() { return false },
+      cancelMethod = function() {},
+      closeMethod = function() {},
       beforeOpen = function() {},
       doneMethod = function() {},
-      isDisabledDone = function() { return false },
-      cancelMethod = function() {},
       loadData = function() {},
-      closeMethod = function() {},
+      containerManager = {},
+      isShowed = false,
+      componentPath,
+      actionsName,
       title,
-      type,
-      isShowed = false
+      type
     }) {
       commit('setModalDialogVPOS', {
-        actionsName,
-        componentPath,
         containerManager,
+        isDisabledDone,
+        componentPath,
+        isLoadingDone,
+        cancelMethod,
+        actionsName,
+        closeMethod,
         beforeOpen,
         doneMethod,
-        isDisabledDone,
         loadData,
-        cancelMethod,
-        closeMethod,
+        isShowed,
         title,
-        type,
-        isShowed
+        type
       })
     }
   },

@@ -19,9 +19,10 @@
 <template>
   <span>
     <el-form
+      inline
       label-position="top"
       class="form-min-label"
-      inline
+      style="padding-top: 10px;"
       @submit.native.prevent="notSubmitForm"
     >
       <el-form-item

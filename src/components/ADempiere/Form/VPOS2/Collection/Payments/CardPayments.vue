@@ -17,8 +17,8 @@
 -->
 
 <template>
-  <el-card shadow="never" :body-style="{ padding: '5px' }">
-    <el-row v-if="!isEmptyValue(payment)">
+  <el-card shadow="never" :body-style="{ padding: '5px', borderRadius:' 10px' }">
+    <el-row v-if="!isEmptyValue(payment)" :class="statusPayment(payment)">
       <el-col :span="7">
         <el-image
           :src="imageCard(payment)"
@@ -182,6 +182,16 @@ export default defineComponent({
       return ''
     }
 
+    function statusPayment(payments) {
+      const {
+        is_processed,
+        is_processing,
+        tender_type_code
+      } = payments
+      if (is_processing || is_processed || tender_type_code === 'D') return 'card-payment-process'
+      return 'card-payment-success'
+    }
+
     return {
       isLoading,
       currentOrder,
@@ -189,6 +199,7 @@ export default defineComponent({
       imageCard,
       formatDate,
       formatPrice,
+      statusPayment,
       displayCurrency,
       labelPaymentMethods
     }
@@ -196,4 +207,19 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.card-payment-success {
+  border-left: 5px solid #13ce66;
+  // border-top: 5px solid #13ce66;
+  // border-bottom: 5px solid #13ce66;
+  // border-right: 5px solid #13ce66;
+  border-radius: 10px;
+}
+.card-payment-process {
+  border-left: 5px solid #b9c3d6;
+  // border-top: 5px solid #b9c3d6;
+  // border-right: 5px solid #b9c3d6;
+  // border-bottom: 5px solid #b9c3d6;
+  border-radius: 10px;
+}
+</style>

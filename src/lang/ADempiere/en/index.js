@@ -326,6 +326,7 @@ export default {
           newOrderFromRMA: 'Create New Order From RMA',
           createNewReturnOrder: 'Create a new return order',
           confirmDelivery: 'Confirm Delivery',
+          giftCard: 'Gift Card',
           deliverAllProducts: 'Deliver all products',
           emptyProductDelivery: 'Product not in Order'
         },
@@ -483,6 +484,13 @@ export default {
             name: 'Holder Name',
             accountType: 'Account Type',
             bank: 'Bank'
+          }
+        },
+        onlinePayment: {
+          title: 'Online Payment Verification',
+          cancelPayment: {
+            title: 'Cancel Payment',
+            description: 'There is currently an online payment being verified. Do you want to cancel it?'
           }
         }
       },

@@ -53,6 +53,7 @@
         type="primary"
         icon="el-icon-check"
         class="button-base-icon"
+        :loading="isLoadingDone"
         :disabled="isDisabledDone"
         @click="doneButton"
       />
@@ -132,8 +133,25 @@ export default defineComponent({
       return false
     })
 
+    const isLoadingDone = computed(() => {
+      if (
+        !isEmptyValue(storedModalDialog.value) &&
+        storedModalDialog.value.isLoadingDone
+      ) {
+        return Boolean(
+          storedModalDialog.value.isLoadingDone()
+        )
+      }
+      return false
+    })
+
     const closeDialog = () => {
-      // close modal dialog
+      if (
+        !isEmptyValue(storedModalDialog.value) &&
+        !isEmptyValue(storedModalDialog.value.closeMethod)
+      ) {
+        return storedModalDialog.value.closeMethod()
+      }
       store.commit('setShowedModalDialogVPOS', {
         isShowed: false
       })
@@ -149,9 +167,10 @@ export default defineComponent({
       storedModalDialog,
       componentRender,
       isDisabledDone,
+      isLoadingDone,
       isShowed,
-      title,
       typeInfo,
+      title,
       // methods
       closeDialog,
       doneButton

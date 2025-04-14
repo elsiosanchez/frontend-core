@@ -1414,3 +1414,335 @@ export function allocateSeller({
     }
   })
 }
+
+/** ______________________________________________
+ * |                                             |
+ * |  Header-(Gift Card) Point of Sale Services  |
+ * |_____________________________________________|
+ */
+
+/**
+ * New Gift Card
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @param {boolean} isPrepayment
+ * @param {string} amount
+ * @param {string} isCreateLinesFromOrder
+ * @returns {object} GiftCard
+ */
+export function createGiftCard({
+  posId,
+  amount,
+  orderId,
+  isPrepayment,
+  isCreateLinesFromOrder
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards`,
+    method: 'post',
+    data: {
+      amount,
+      pos_id: posId,
+      order_id: orderId,
+      is_prepayment: isPrepayment,
+      is_create_lines_from_order: isCreateLinesFromOrder
+    }
+  })
+}
+
+/**
+ * Update Gift Card
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @param {google.protobuf.Timestamp} dateDoc
+ * @param {google.protobuf.Timestamp} validTo
+ * @param {string} amount
+ * @param {boolean} isPrepayment
+ * @param {int32} orderId
+ * @param {string} documentNo
+ * @param {string} description
+ * @param {string} isCreateLinesFromOrder
+ * @returns {object} GiftCard
+ */
+export function updateGiftCard({
+  id,
+  posId,
+  amount,
+  orderId,
+  dateDoc,
+  validTo,
+  currency,
+  documentNo,
+  description,
+  isPrepayment,
+  conversionTypeId,
+  businessPartnerId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+    method: 'put',
+    data: {
+      id,
+      amount,
+      currency,
+      description,
+      pos_id: posId,
+      order_id: orderId,
+      date_doc: dateDoc,
+      valid_to: validTo,
+      document_no: documentNo,
+      is_prepayment: isPrepayment,
+      conversion_type_id: conversionTypeId,
+      business_partner_id: businessPartnerId
+    }
+  })
+}
+
+/**
+ * Get Gift Card
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function getGiftCard({
+  id,
+  posId,
+  orderId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+    method: 'get'
+  })
+}
+
+/**
+ * Delete Gift Card
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function deleteGiftCard({
+  id,
+  posId,
+  orderId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * List Gift Card
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function listGiftCard({
+  posId,
+  orderId,
+  pageToken,
+  searchValue,
+  pageSize = 20,
+  businessPartnerId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards`,
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      search_value: searchValue,
+      business_partner_id: businessPartnerId
+    }
+  })
+}
+
+/** ______________________________________________
+ * |                                             |
+ * |  Lines -(Gift Card) Point of Sale Services  |
+ * |_____________________________________________|
+ */
+export function createGiftCardLine({
+  posId,
+  amount,
+  orderId,
+  giftCardId,
+  orderLineId,
+  quantityEntered,
+  quantityOrdered
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${giftCardId}/lines`,
+    // /point-of-sales/{pos_id}/orders/{order_id}/gift-cards/{gift_card_id}/lines/{id}
+    method: 'post',
+    data: {
+      amount,
+      pos_id: posId,
+      order_id: orderId,
+      gift_card_id: giftCardId,
+      order_line_id: orderLineId,
+      quantity_entered: quantityEntered.toString(),
+      quantity_ordered: quantityOrdered
+    }
+  })
+}
+
+// /**
+//  * Update Gift Card
+//  * @param {int32} id
+//  * @param {int32} posId
+//  * @param {int32} orderId
+//  * @param {google.protobuf.Timestamp} dateDoc
+//  * @param {google.protobuf.Timestamp} validTo
+//  * @param {string} amount
+//  * @param {boolean} isPrepayment
+//  * @param {int32} orderId
+//  * @param {string} documentNo
+//  * @param {string} description
+//  * @param {string} isCreateLinesFromOrder
+//  * @returns {object} GiftCard
+//  */
+// export function updateGiftCard({
+//   id,
+//   posId,
+//   amount,
+//   orderId,
+//   dateDoc,
+//   validTo,
+//   currency,
+//   documentNo,
+//   description,
+//   isPrepayment,
+//   conversionTypeId,
+//   businessPartnerId
+// }) {
+//   return request({
+//     url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+//     method: 'put',
+//     data: {
+//       id,
+//       amount,
+//       currency,
+//       description,
+//       pos_id: posId,
+//       order_id: orderId,
+//       date_doc: dateDoc,
+//       valid_to: validTo,
+//       document_no: documentNo,
+//       is_prepayment: isPrepayment,
+//       conversion_type_id: conversionTypeId,
+//       business_partner_id: businessPartnerId
+//     }
+//   })
+// }
+
+// /**
+//  * Get Gift Card
+//  * @param {int32} id
+//  * @param {int32} posId
+//  * @param {int32} orderId
+//  * @returns {object} GiftCard
+//  */
+// export function getGiftCard({
+//   id,
+//   posId,
+//   orderId
+// }) {
+//   return request({
+//     url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+//     method: 'get'
+//   })
+// }
+
+// /**
+//  * Delete Gift Card
+//  * @param {int32} id
+//  * @param {int32} posId
+//  * @param {int32} orderId
+//  * @returns {object} GiftCard
+//  */
+// export function deleteGiftCard({
+//   id,
+//   posId,
+//   orderId
+// }) {
+//   return request({
+//     url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${id}`,
+//     method: 'delete'
+//   })
+// }
+
+/**
+ * List Line Gift Card
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function listGiftCardLines({
+  posId,
+  orderId,
+  pageToken,
+  giftCardId,
+  searchValue,
+  pageSize = 20,
+  businessPartnerId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${giftCardId}/lines`,
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      search_value: searchValue,
+      business_partner_id: businessPartnerId
+    }
+  })
+}
+
+/**
+ * Delete Gift Card Lines
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function deleteGiftCardLines({
+  id,
+  posId,
+  orderId,
+  giftCardId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${giftCardId}/lines/${id}`,
+    method: 'delete'
+  })
+}
+
+/**
+ * Delete Gift Card Lines
+ * @param {int32} id
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @returns {object} GiftCard
+ */
+export function updateGiftCardLines({
+  id,
+  posId,
+  orderId,
+  giftCardId,
+  quantityEntered
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/orders/${orderId}/gift-cards/${giftCardId}/lines/${id}`,
+    method: 'put',
+    data: {
+      quantity_entered: quantityEntered.toString()
+    }
+  })
+}

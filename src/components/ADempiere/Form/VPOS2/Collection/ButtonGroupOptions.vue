@@ -91,6 +91,33 @@ export default defineComponent({
       if (
         !isEmptyValue(payment_method) &&
         isEmptyValue(currentAccount.value) &&
+        payment_method.tender_type === 'D'
+      ) {
+        store.dispatch('setModalDialogVPOS', {
+          title: lang.t('form.pos.collect.onlinePayment.title'),
+          doneMethod: () => {
+            store.commit('setShowedModalDialogVPOS', {
+              isShowed: false
+            })
+          },
+          isLoadingDone: () => {
+            return store.getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+          },
+          isDisabledDone: () => {
+            return store.getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+          },
+          closeMethod: () => {
+            store.commit('setAttributePaymentVerification', {
+              attribute: 'isShowCancele',
+              value: true
+            })
+          },
+          componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'),
+          isShowed: true
+        })
+      } else if (
+        !isEmptyValue(payment_method) &&
+        isEmptyValue(currentAccount.value) &&
         payment_method.tender_type === 'P'
       ) {
         store.dispatch('newCustomerBankAccount')

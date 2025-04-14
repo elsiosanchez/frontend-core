@@ -585,6 +585,33 @@
         </el-card>
       </div>
     </el-col>
+    <!-- is_allows_gift_card -->
+    <el-col v-if="isAllowsGiftCard" :span="8">
+      <div @click="createGiftCard">
+        <el-card
+          shadow="never"
+          class="custom-card-options"
+          :body-style="{ padding: '10px' }"
+        >
+          <p
+            v-if="!isLoadingCancelOrder"
+            :class="isDisableClass"
+          >
+            <!-- <svg-icon icon-class="shopping" /> -->
+            <i class="el-icon-present" />
+            <br>
+            {{ $t('form.pos.optionsPoinSales.salesOrder.giftCard') }}
+          </p>
+          <p
+            v-else
+            class="card-options-buttons"
+          >
+            <i class="el-icon-loading" />
+            <br>
+          </p>
+        </el-card>
+      </div>
+    </el-col>
   </el-row>
 </template>
 
@@ -698,6 +725,15 @@ export default defineComponent({
         }
       }
       // return false
+    })
+
+    // Gift Card
+    const isAllowsGiftCard = computed(() => {
+      const { is_allows_gift_card } = currentPointOfSales.value
+      if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'CO') {
+        return is_allows_gift_card
+      }
+      return true
     })
 
     const isAllowsReturnOrder = computed(() => {
@@ -1037,6 +1073,46 @@ export default defineComponent({
       })
     }
 
+    function createGiftCard() {
+      if (isEmptyValue(currentOrder.value.id)) {
+        return
+      }
+      store.dispatch('newGiftCard', {
+        orderId: currentOrder.value.id,
+        isCreateLinesFromOrder: false
+      })
+      store.dispatch('setModalDialogVPOS', {
+        title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
+        doneMethod: () => {
+          store.commit('setShowedModalDialogVPOS', {
+            isShowed: false
+          })
+          setTimeout(() => {
+            store.dispatch('setModalDialogVPOS', {
+              title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
+              doneMethod: () => {
+                // store.dispatch('setModalDialogVPOS', {
+                //   title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
+                //   type: 'success',
+                //   doneMethod: () => {},
+                //   // TODO: Change to string and import dynamic in component
+                //   componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard/info.vue'),
+                //   isShowed: true
+                // })
+              },
+              // isDisabledDone: () => {
+              //   return isEmptyValue(store.getters.getCurrentShipment) || isEmptyValue(store.getters.getShipmentList)
+              // },
+              componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard/info.vue'),
+              isShowed: true
+            })
+          })
+        },
+        componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard'),
+        isShowed: true
+      })
+    }
+
     return {
       // Ref
       IsCopyOrder,
@@ -1063,6 +1139,7 @@ export default defineComponent({
       isDisableClass,
       isShowShipment,
       validateProcess,
+      isAllowsGiftCard,
       isNewOrderFromRMA,
       isConfirmShipment,
       isAllowsReturnOrder,
@@ -1082,6 +1159,7 @@ export default defineComponent({
       printTicket,
       printPreview,
       applyDiscount,
+      createGiftCard,
       confirmShipment,
       applyDiscountAll,
       closeReverseSales,

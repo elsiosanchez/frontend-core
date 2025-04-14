@@ -327,6 +327,7 @@ export default {
           newOrderFromRMA: 'Crear Nueva Orden desde RMA',
           createNewReturnOrder: 'Crear una nueva orden de devolución',
           confirmDelivery: 'Confirmar Entrega',
+          giftCard: 'Tarjeta de Regalo',
           deliverAllProducts: 'Entregar Todo',
           emptyProductDelivery: 'Producto no se Encuentra en la Orden'
         },
@@ -484,6 +485,13 @@ export default {
             name: 'Nombre del Titular',
             accountType: 'Tipo de Cuenta',
             bank: 'Banco'
+          }
+        },
+        onlinePayment: {
+          title: 'Verificación del Pago en Línea',
+          cancelPayment: {
+            title: 'Cancelar Pago',
+            description: 'Actualmente hay un pago Online en Verificacion desea cancelarlo'
           }
         }
       },

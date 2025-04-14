@@ -41,6 +41,10 @@ const collection = {
   payments: [],
   listRate: [],
   currentRate: {},
+  paymentVerification: {
+    isProcessing: true,
+    isShowCancele: false
+  },
   isLoadingPayment: false
 }
 
@@ -61,6 +65,13 @@ export default {
     },
     setPaymentLoading(state, loading) {
       state.isLoadingPayment = loading
+    },
+    setAttributePaymentVerification(state, {
+      attribute,
+      value
+    }) {
+      if (isEmptyValue(attribute)) return
+      state.paymentVerification[attribute] = value
     }
   },
   /**
@@ -381,6 +392,11 @@ export default {
     },
     getRate: (state) => ({ date }) => {
       return state.currentRate[date] || {}
+    },
+    getAttributePaymentVerification: (state) => ({
+      attribute
+    }) => {
+      return state.paymentVerification[attribute] || undefined
     }
   }
 }
