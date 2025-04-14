@@ -260,7 +260,7 @@ export default {
    * @param {string} parentUuid tab or process associated
    * @param {string} containerUuid
    */
-  setBrowserActionsMenu({ commit, dispatch, getters }, {
+  setBrowserActionsMenu({ commit, getters }, {
     parentUuid,
     containerUuid
   }) {
@@ -286,6 +286,13 @@ export default {
         name: name + lang.t('smartBrowser.processAllRecords.all')
       }
       actionsList.push(actionProcessAll)
+    } else {
+      // To run by default on actions menu
+      const actionProcess = {
+        ...runProcessOfBrowser,
+        description: lang.t('smartBrowser.withoutProcess')
+      }
+      actionsList.push(actionProcess)
     }
 
     actionsList.push(runDeleteable)

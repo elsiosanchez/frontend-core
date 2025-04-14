@@ -38,7 +38,8 @@ const smartBrowser = {
     title: 'Procesar Todos Los Registros',
     description: 'Procesar todos los registros que coincidan con el criterio de búsqueda.',
     withoutResults: 'No existe ningún registro con el criterio de búsqueda actual.'
-  }
+  },
+  withoutProcess: 'Sin proceso asociado para la ejecución.'
 }
 
 export default smartBrowser

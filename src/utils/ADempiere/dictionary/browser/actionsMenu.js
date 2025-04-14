@@ -163,8 +163,13 @@ export const exportAllRecords = {
 
 export const runProcessOfBrowser = {
   name: language.t('actionMenu.runProcess'),
-  enabled: ({ containerUuid, containerManager }) => {
-    const selection = containerManager.getSelection({
+  enabled: ({ containerUuid }) => {
+    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
+    if (isEmptyValue(browserProcess)) {
+      return false
+    }
+
+    const selection = store.getters.getBrowserSelectionsList({
       containerUuid
     })
 
@@ -174,12 +179,21 @@ export const runProcessOfBrowser = {
   icon: 'el-icon-setting',
   actionName: 'runProcessOfBrowser',
   uuid: null,
-  runProcessOfBrowser: ({ containerUuid, containerManager }) => {
+  runProcessOfBrowser: ({ containerUuid }) => {
+    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
+    if (isEmptyValue(browserProcess)) {
+      showNotification({
+        title: language.t('smartBrowser.withoutProcess'),
+        type: 'warning'
+      })
+      return false
+    }
+
     store.commit('setBrowserProcessAll', {
       uuid: containerUuid,
       isAll: false
     })
-    const selection = containerManager.getSelection({
+    const selection = store.getters.getBrowserSelectionsList({
       containerUuid
     })
     if (isEmptyValue(selection)) {
@@ -190,7 +204,6 @@ export const runProcessOfBrowser = {
       return
     }
 
-    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
     const storedProcess = store.getters.getStoredProcess(browserProcess.uuid)
     if (!isEmptyValue(storedProcess)) {
       const { fieldsList, show_help } = storedProcess
@@ -214,7 +227,13 @@ export const runProcessOfBrowser = {
               containerUuid: browserProcess.uuid
             })
           })
+
+        store.commit('setShowedModalDialog', {
+          containerUuid: browserProcess.uuid,
+          isShowed
+        })
       }
+      return
     }
 
     let isShowed = true
@@ -261,6 +280,10 @@ export const runProcessOfBrowserAllRecords = {
   name: language.t('smartBrowser.processAllRecords.title'),
   description: language.t('smartBrowser.processAllRecords.description'),
   enabled: ({ containerUuid, containerManager }) => {
+    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
+    if (isEmptyValue(browserProcess)) {
+      return false
+    }
     const emptyMandatory = store.getters.getBrowserFieldsEmptyMandatory({
       containerUuid
     })
@@ -279,7 +302,16 @@ export const runProcessOfBrowserAllRecords = {
   icon: 'el-icon-setting',
   actionName: 'runProcessOfBrowser',
   uuid: null,
-  runProcessOfBrowser: ({ containerUuid, containerManager }) => {
+  runProcessOfBrowser: ({ containerUuid }) => {
+    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
+    if (isEmptyValue(browserProcess)) {
+      showNotification({
+        title: language.t('smartBrowser.withoutProcess'),
+        type: 'warning'
+      })
+      return
+    }
+
     const recordCount = store.getters.getBrowserRecordCount({
       containerUuid
     })
@@ -291,12 +323,11 @@ export const runProcessOfBrowserAllRecords = {
       return
     }
 
-    const process = store.getters.getProcessOfBrowser(containerUuid)
     /*
-    const storedProcess = store.getters.getStoredProcess(process.uuid)
+    const storedProcess = store.getters.getStoredProcess(browserProcess.uuid)
     if (isEmptyValue(storedProcess)) {
       store.dispatch('getProcessDefinitionFromServer', {
-        uuid: process.uuid
+        uuid: browserProcess.uuid
       })
     }
     */
@@ -307,7 +338,7 @@ export const runProcessOfBrowserAllRecords = {
     })
 
     store.commit('setShowedModalDialog', {
-      containerUuid: process.uuid,
+      containerUuid: browserProcess.uuid,
       isShowed: true
     })
   }

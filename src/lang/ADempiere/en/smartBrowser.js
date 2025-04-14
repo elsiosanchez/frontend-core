@@ -38,7 +38,8 @@ const smartBrowser = {
     title: 'Process All Records',
     description: 'Process all records matching the query criteria.',
     withoutResults: 'There is no record with the current search criteria.'
-  }
+  },
+  withoutProcess: 'Without associated process for execution.'
 }
 
 export default smartBrowser

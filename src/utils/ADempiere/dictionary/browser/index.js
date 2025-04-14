@@ -38,6 +38,7 @@ import { exportFileFromJson, exportRecords } from '@/utils/ADempiere/exportUtil.
 import { clientDateTime } from '@/utils/ADempiere/formatValue/dateFormat'
 import { formatField } from '@/utils/ADempiere/valueFormat'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
+import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
 
 /**
  * Is displayed field in panel query criteria
@@ -508,90 +509,9 @@ export const containerManager = {
   runProcess({
     containerUuid
   }) {
-    store.commit('setBrowserProcessAll', {
-      uuid: containerUuid,
-      isAll: false
-    })
-    const selection = store.getters.getBrowserSelectionsList({
+    runProcessOfBrowser.runProcessOfBrowser({
       containerUuid
     })
-    if (isEmptyValue(selection)) {
-      showNotification({
-        title: language.t('data.selectionRequired'),
-        type: 'warning'
-      })
-      return
-    }
-
-    const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
-    const storedProcess = store.getters.getStoredProcess(browserProcess.uuid)
-    if (!isEmptyValue(storedProcess)) {
-      const { fieldsList, show_help } = storedProcess
-      if (isEmptyValue(fieldsList) && show_help === 'N') {
-        isShowed = false
-        const isAllSelection = store.getters.getStoredBrowserProcessAll(containerUuid)
-        store.commit('setIsloadingProcessOfBrowser', {
-          isLoading: true,
-          parentUuid: containerUuid,
-          containerUuid: browserProcess.uuid
-        })
-        store.dispatch('startProcessOfBrowser', {
-          parentUuid: containerUuid,
-          containerUuid: browserProcess.uuid,
-          isAllSelection
-        })
-          .finally(() => {
-            store.commit('setIsloadingProcessOfBrowser', {
-              isLoading: false,
-              parentUuid: containerUuid,
-              containerUuid: browserProcess.uuid
-            })
-          })
-
-        store.commit('setShowedModalDialog', {
-          containerUuid: browserProcess.uuid,
-          isShowed
-        })
-      }
-      return
-    }
-
-    let isShowed = true
-    store.dispatch('getProcessDefinitionFromServer', {
-      id: browserProcess.uuid,
-      containerUuidAssociated: containerUuid
-    }).then(processResponse => {
-      if (!isEmptyValue(processResponse)) {
-        const { fieldsList, show_help } = processResponse
-        if (isEmptyValue(fieldsList) && show_help === 'N') {
-          isShowed = false
-          const isAllSelection = store.getters.getStoredBrowserProcessAll(containerUuid)
-          store.commit('setIsloadingProcessOfBrowser', {
-            isLoading: true,
-            parentUuid: containerUuid,
-            containerUuid: browserProcess.uuid
-          })
-          store.dispatch('startProcessOfBrowser', {
-            parentUuid: containerUuid,
-            containerUuid: browserProcess.uuid,
-            isAllSelection
-          })
-            .finally(() => {
-              store.commit('setIsloadingProcessOfBrowser', {
-                isLoading: false,
-                parentUuid: containerUuid,
-                containerUuid: browserProcess.uuid
-              })
-            })
-        }
-      }
-    })
-      .finally(() => {
-        store.commit('setShowedModalDialog', {
-          containerUuid: browserProcess.uuid,
-          isShowed
-        })
-      })
   },
 
   enableExport({

@@ -172,6 +172,8 @@
           type="primary"
           class="button-base-icon"
           icon="el-icon-check"
+          :disabled="!isEnableProcess"
+          :title="processDescription"
           @click="runProcess()"
         />
       </div>
@@ -189,6 +191,7 @@ import {
   defineComponent, computed, onMounted, onUpdated, ref, watch
 } from '@vue/composition-api'
 
+import lang from '@/lang'
 import router from '@/router'
 import store from '@/store'
 
@@ -206,9 +209,10 @@ import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 
 // Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
 
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
@@ -431,6 +435,23 @@ export default defineComponent({
       return classCss
     })
 
+    const processDescription = computed(() => {
+      if (isEmptyValue(props.panelMetadata.process_id) || props.panelMetadata.process_id <= 0) {
+        return lang.t('smartBrowser.withoutProcess')
+      }
+      const browserProcess = store.getters.getProcessOfBrowser(props.panelMetadata.uuid)
+      if (isEmptyValue(browserProcess)) {
+        return ''
+      }
+      return browserProcess.description
+    })
+
+    const isEnableProcess = computed(() => {
+      return runProcessOfBrowser.enabled({
+        containerUuid: props.panelMetadata.uuid
+      })
+    })
+
     /**
      * Select record row
      * @param {object} row
@@ -592,7 +613,7 @@ export default defineComponent({
       })
     }
     function runProcess() {
-      props.containerManager.runProcess({
+      runProcessOfBrowser.runProcessOfBrowser({
         containerUuid: props.panelMetadata.uuid
       })
     }
@@ -737,6 +758,8 @@ export default defineComponent({
       isMobile,
       currentRowSelect,
       disableExport,
+      isEnableProcess,
+      processDescription,
       // Methods
       isSelectDefault,
       editCell,
