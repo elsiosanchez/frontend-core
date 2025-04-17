@@ -999,6 +999,29 @@ export function printPreview({
 }
 
 /**
+ * Print Preview Gift Card
+ * @param {int32} posId
+ * @param {int32} orderId
+ * @param {string} reportType
+ * @returns
+ */
+export function printPreviewGiftCard({
+  posId,
+  orderId,
+  giftCardId,
+  reportType
+}) {
+  return request({
+    url: `point-of-sales/${posId}/orders/${orderId}/gift-cards/${giftCardId}/print-preview`,
+    method: 'post',
+    data: {
+      order_id: orderId,
+      report_type: reportType
+    }
+  })
+}
+
+/**
  * Copy Order
  * @param {int32} posId
  * @param {int32} orderId

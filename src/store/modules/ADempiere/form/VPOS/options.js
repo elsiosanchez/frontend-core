@@ -54,6 +54,7 @@ import {
   getGiftCard,
   // deleteGiftCard,
   // listGiftCard,
+  printPreviewGiftCard,
   createGiftCardLine,
   deleteGiftCardLines,
   updateGiftCardLines
@@ -303,6 +304,72 @@ export default {
           })
       })
     },
+    printPreviewGiftCard({
+      dispatch,
+      getters
+    }, {
+      orderId,
+      giftCardId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        if (isEmptyValue(orderId)) orderId = currentOrder.id
+        printPreviewGiftCard({
+          posId: currentPos.id,
+          giftCardId,
+          orderId
+        })
+          .then(response => {
+            const {
+              // output_stream,
+              process_log,
+              // result_type,
+              // instance_id,
+              // file_name,
+              is_error,
+              summary
+            } = response
+            const type = is_error ? 'error' : 'success'
+            const message = isEmptyValue(summary) ? (is_error ? 'Error' : 'OK') : summary
+            showMessage({
+              type,
+              message,
+              showClose: true
+            })
+            if (
+              !isEmptyValue(process_log.output.output_stream) &&
+              !isEmptyValue(process_log.output.mime_type) &&
+              !isEmptyValue(process_log.output.file_name)
+            ) {
+              dispatch('generateReportVPOS', {
+                orderId: process_log.id,
+                tableName: process_log.output.table_name,
+                file_name: process_log.output.file_name,
+                mime_type: process_log.output.mime_type,
+                result_type: process_log.output.result_type,
+                output_stream: process_log.output.output_stream,
+                instanceUuid: process_log.instance_id
+              })
+            }
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Prin Previwer: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
     generateReportVPOS({
       commit
     }, {
@@ -312,7 +379,8 @@ export default {
       result_type,
       output_stream,
       instanceUuid,
-      isPos = false
+      isPos = true,
+      tableName = 'C_Order'
     }) {
       const link = buildLinkHref({
         fileName: file_name,
@@ -334,7 +402,7 @@ export default {
         reportType: result_type,
         reportUuid: orderId.toString(),
         reportViewUuid: orderId.toString(),
-        tableName: 'C_Order',
+        tableName,
         url: link.href,
         uuid: orderId.toString(),
         instanceUuid: Number(instanceUuid)
@@ -342,7 +410,7 @@ export default {
       router.push({
         name: REPORT_VIEWER_NAME,
         params: {
-          reportId: orderId,
+          reportId: instanceUuid,
           processId: orderId,
           reportUuid: orderId.toString(),
           tableName: 'C_Order',
@@ -738,7 +806,7 @@ export default {
               !isEmptyValue(file_name)
             ) {
               dispatch('generateReportVPOS', {
-                orderId: shipment.id,
+                orderId: shipment.uuid,
                 file_name,
                 mime_type,
                 result_type,

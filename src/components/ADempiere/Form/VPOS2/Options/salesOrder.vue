@@ -623,6 +623,7 @@ import store from '@/store'
 
 // Components and Mixins
 import OrderHistory from '@/components/ADempiere/Form/VPOS2/Options/OrderHistory.vue'
+import { TABLE_NAME_GIFT_CARD } from '@/utils/ADempiere/constants/form/giftCard'
 // import Shipments from './Shipments.vue'
 // import OptionsList from './OptionsList.vue'
 // import InfoOrder from './InfoOrder.vue'
@@ -1091,18 +1092,13 @@ export default defineComponent({
             store.dispatch('setModalDialogVPOS', {
               title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
               doneMethod: () => {
-                // store.dispatch('setModalDialogVPOS', {
-                //   title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
-                //   type: 'success',
-                //   doneMethod: () => {},
-                //   // TODO: Change to string and import dynamic in component
-                //   componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard/info.vue'),
-                //   isShowed: true
-                // })
+                const currentGiftCard = store.getters.getCurrentGiftCard
+                store.dispatch('printPreviewGiftCard', {
+                  orderId: currentOrder.value.id,
+                  giftCardId: currentGiftCard.id,
+                  tableName: TABLE_NAME_GIFT_CARD
+                })
               },
-              // isDisabledDone: () => {
-              //   return isEmptyValue(store.getters.getCurrentShipment) || isEmptyValue(store.getters.getShipmentList)
-              // },
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard/info.vue'),
               isShowed: true
             })
