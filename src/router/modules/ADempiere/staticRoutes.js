@@ -95,7 +95,7 @@ const staticRoutes = [
           if (!role) {
             return false
           }
-          return Boolean(role.is_allow_info_business_partner)
+          return Boolean(role.allow_info_business_partner)
         },
         children: [
           {
@@ -181,7 +181,7 @@ const staticRoutes = [
           if (!role) {
             return false
           }
-          return Boolean(role.is_allow_info_product)
+          return Boolean(role.allow_info_product)
         },
         children: [
           {
@@ -205,7 +205,7 @@ const staticRoutes = [
           if (!role) {
             return false
           }
-          return Boolean(role.is_allow_info_product)
+          return Boolean(role.allow_info_product)
         },
         children: [
           {
@@ -229,7 +229,7 @@ const staticRoutes = [
           if (!role) {
             return false
           }
-          return Boolean(role.is_allow_info_account)
+          return Boolean(role.allow_info_account)
         },
         meta: {
           title: language.t('route.accountingViewer'),

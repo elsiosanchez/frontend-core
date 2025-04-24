@@ -240,65 +240,64 @@ const actions = {
           const {
             id,
             name,
-            userInfo,
-            processed,
-            defaultContext
+            user_info,
+            default_context
           } = sessionInfo
           dispatch('system')
           dispatch('systemDictionary')
           dispatch('systemS3')
           dispatch('systemReportEngine')
           dispatch('currencyPrecision', {
-            id: defaultContext[ACCOUNTING_CONTEXT_PREFIX + COLUMNNAME_C_Currency_ID]
+            id: default_context[ACCOUNTING_CONTEXT_PREFIX + COLUMNNAME_C_Currency_ID]
           })
           dispatch('unitOfMeasurePrecision', {
-            id: defaultContext[GLOBAL_CONTEXT_PREFIX + COLUMNNAME_C_UOM_ID]
+            id: default_context[GLOBAL_CONTEXT_PREFIX + COLUMNNAME_C_UOM_ID]
           })
           commit('setIsSession', true)
           commit('setSessionInfo', {
             id,
-            name,
-            processed
+            name
           })
 
           commit('SET_NAME', name)
-          commit('SET_USER', userInfo)
-          commit('SET_USER_ID', userInfo.id)
+          commit('SET_USER', user_info)
+          commit('SET_USER_ID', user_info.id)
 
-          const avatar = userInfo.image
+          const avatar = user_info.image
           if (!isEmptyValue(avatar)) {
             // 108=window User
             // 11/client/window/108/ad_user/101/logo_id/2024-04-0811-55.png
-            const clientId = defaultContext[`#${COLUMNNAME_AD_Client_ID}`]
-            const newLogoPath = `${clientId}/client/window/108/ad_user/${userInfo.id}/logo_id/${userInfo.image}`
+            const clientId = default_context[`#${COLUMNNAME_AD_Client_ID}`]
+            const newLogoPath = `${clientId}/client/window/108/ad_user/${user_info.id}/logo_id/${user_info.image}`
             commit('SET_AVATAR', newLogoPath)
           }
 
           // TODO: Check decimals Number as String '0.123'
           // set multiple context
           dispatch('setMultiplePreference', {
-            values: defaultContext
+            values: default_context
           }, {
             root: true
           })
 
           const sessionResponse = {
             name: sessionInfo.name,
-            defaultContext: defaultContext
+            defaultContext: default_context
           }
 
-          const { role } = sessionInfo
+          const { role_info: role } = sessionInfo
+          role.client = role.client_info
           commit('SET_ROLE', role)
           setCurrentRole(role.id)
           setCurrentClient(role.client.id)
-          // const currentOrganizationSession = defaultContext.find(context => {
-          //   return context.key === defaultContext[`#${COLUMNNAME_AD_Org_ID}`]
+          // const currentOrganizationSession = default_context.find(context => {
+          //   return context.key === default_context[`#${COLUMNNAME_AD_Org_ID}`]
           // })
-          const sessionOrganizationId = defaultContext[`#${COLUMNNAME_AD_Org_ID}`]
+          const sessionOrganizationId = default_context[`#${COLUMNNAME_AD_Org_ID}`]
           commit('SET_CURRENT_ORGANIZATION_ID', sessionOrganizationId)
           setCurrentOrganization(sessionOrganizationId)
 
-          const sessionWarehouseId = defaultContext[`#${COLUMNNAME_M_Warehouse_ID}`]
+          const sessionWarehouseId = default_context[`#${COLUMNNAME_M_Warehouse_ID}`]
           // commit('SET_WAREHOUSE', sessionWarehouseId)
           setCurrentWarehouse(sessionWarehouseId)
 
@@ -316,7 +315,7 @@ const actions = {
 
           // get country definition of context session
           dispatch('getCountryDefinition', {
-            id: sessionInfo.countryId
+            id: sessionInfo.country.id
           }, {
             root: true
           })
@@ -325,7 +324,7 @@ const actions = {
             .finally(() => {
               dispatch('searchImageLogoOnServer')
               dispatch('searchImageUserOnServer', {
-                userInfo
+                userInfo: user_info
               })
             })
         })

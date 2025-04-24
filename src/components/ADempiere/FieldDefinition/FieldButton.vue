@@ -166,8 +166,8 @@ export default {
             })
           },
           isEnabled: () => {
-            const { is_allow_info_account } = store.getters['user/getRole']
-            if (!is_allow_info_account) {
+            const { allow_info_account } = store.getters['user/getRole']
+            if (!allow_info_account) {
               return false
             }
             const accoutingSchemaId = store.getters.getSessionContext({

@@ -97,9 +97,6 @@ export function requestSessionInfo() {
     url: '/security/session-info',
     method: 'get'
   })
-    .then(response => {
-      return camelizeObjectKeys(response)
-    })
 }
 
 /**

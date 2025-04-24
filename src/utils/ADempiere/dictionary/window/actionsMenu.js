@@ -151,7 +151,7 @@ export const lockRecord = {
   type: 'lockRecord',
   enabled: ({ parentUuid, containerUuid }) => {
     const currentRole = store.getters['user/getRole']
-    if (!currentRole.is_personal_lock) {
+    if (!currentRole.personal_lock) {
       return false
     }
     return !isEmptyValue(
@@ -170,7 +170,7 @@ export const unlockRecord = {
   type: 'unlockRecord',
   enabled: ({ parentUuid, containerUuid }) => {
     const currentRole = store.getters['user/getRole']
-    if (!currentRole.is_personal_lock) {
+    if (!currentRole.personal_lock) {
       return false
     }
     return !isEmptyValue(
@@ -196,7 +196,7 @@ export const recordAccess = {
   enabled: ({ parentUuid, containerUuid }) => {
     const currentRole = store.getters['user/getRole']
     // if (!currentRole.is_personal_access) {
-    if (!currentRole.is_personal_lock) {
+    if (!currentRole.personal_lock) {
       return false
     }
     return !isEmptyValue(
