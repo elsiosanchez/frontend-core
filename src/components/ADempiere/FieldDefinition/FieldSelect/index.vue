@@ -41,6 +41,7 @@
       :value="option.value"
       :label="option.displayedValue"
       :disabled="!isEmptyValue(option.isActive) && option.isActive === false"
+      :class="cssOptionClass(option.value)"
     />
   </el-select>
 </template>
@@ -56,8 +57,13 @@ import { LIST } from '@/utils/ADempiere/references'
 import {
   IDENTIFIER_COLUMN_SUFFIX
 } from '@/utils/ADempiere/dictionaryUtils'
+import {
+  COLUMNNAME_IsActive
+} from '@/utils/ADempiere/constants/systemColumns'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 /**
  * This component is a lookup type field, use as a replacement for fields:
@@ -258,6 +264,17 @@ export default {
   methods: {
     forceRerender() {
       this.componentKey += 1
+    },
+    cssOptionClass(optionValue) {
+      const {
+        column_name, element_name
+      } = this.metadata
+      if ([column_name, element_name].includes(COLUMNNAME_IsActive)) {
+        if (convertStringToBoolean(optionValue) === false) {
+          return ' number-negative '
+        }
+      }
+      return ''
     },
     preHandleChange(value) {
       const { displayedValue } = this.findOption(value)

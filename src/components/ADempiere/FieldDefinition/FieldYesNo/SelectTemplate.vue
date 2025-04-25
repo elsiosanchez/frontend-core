@@ -32,6 +32,7 @@
       :key="key"
       :value="option.booleanValue"
       :label="option.displayValue"
+      :class="cssOptionClass(option.booleanValue)"
     />
   </el-select>
 </template>
@@ -42,6 +43,9 @@ import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.
 
 // Constants
 import { YES_NO_OPTIONS_LIST } from '@/utils/ADempiere/dictionary/field/yesNo'
+import {
+  COLUMNNAME_IsActive
+} from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat.js'
@@ -75,6 +79,17 @@ export default {
   methods: {
     parseValue(value) {
       return convertStringToBoolean(value)
+    },
+    cssOptionClass(optionValue) {
+      const {
+        column_name, element_name
+      } = this.metadata
+      if ([column_name, element_name].includes(COLUMNNAME_IsActive)) {
+        if (convertStringToBoolean(optionValue) === false) {
+          return ' number-negative '
+        }
+      }
+      return ''
     }
   }
 

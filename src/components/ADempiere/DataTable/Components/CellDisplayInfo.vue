@@ -134,17 +134,20 @@ import DocumentStatusTag from '@/components/ADempiere/ContainerOptions/DocumentS
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import ProgressPercentage from '@/components/ADempiere/ContainerOptions/ProgressPercentage.vue'
 
-// Utils and helpers Methods
+// Constants
+import { IMAGE, TEXT_LONG } from '@/utils/ADempiere/references'
+import {
+  COLUMNNAME_C_Currency_ID, COLUMNNAME_IsActive
+} from '@/utils/ADempiere/constants/systemColumns'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
+
+// Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isNumberField } from '@/utils/ADempiere/references'
 import { standardPrecisionContext } from '@/utils/ADempiere/formatValue/numberFormat.js'
-
-// Constants
-import { IMAGE, TEXT_LONG } from '@/utils/ADempiere/references'
-import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColumns'
-import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 import { pathImageWindows } from '@/utils/ADempiere/resource'
 
 export default defineComponent({
@@ -229,15 +232,23 @@ export default defineComponent({
     })
 
     const cellCssClass = computed(() => {
+      const {
+        column_name, element_name, componentPath, display_type, isColumnDocumentStatus
+      } = props.fieldAttributes
       let classCss = ''
-      if (isNumberField(props.fieldAttributes.display_type) || props.fieldAttributes.componentPath === 'FieldNumber') {
+      if (isNumberField(display_type) || componentPath === 'FieldNumber') {
         classCss = ' cell-align-right '
         if (cellValue.value < 0) {
           classCss += ' number-negative '
         }
       }
-      if (props.fieldAttributes.isColumnDocumentStatus || props.fieldAttributes.display_type === IMAGE.id) {
+      if (isColumnDocumentStatus || display_type === IMAGE.id) {
         classCss = ' cell-align-center '
+      }
+      if ([column_name, element_name].includes(COLUMNNAME_IsActive)) {
+        if (convertStringToBoolean(cellValue.value) === false) {
+          classCss += ' number-negative '
+        }
       }
       return classCss
     })
