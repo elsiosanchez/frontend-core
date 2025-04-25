@@ -340,6 +340,7 @@ const persistence = {
 
                 // add new row on table
                 commit('setTabRowWithRecord', {
+                  parentUuid,
                   containerUuid,
                   recordUuid: response.values[UUID],
                   row: {

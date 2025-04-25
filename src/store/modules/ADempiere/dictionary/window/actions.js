@@ -1049,6 +1049,7 @@ export default {
         isSelectedRow: true
       }
       commit('setTabRow', {
+        parentUuid,
         containerUuid,
         row: rowDefaultValues
       }, {

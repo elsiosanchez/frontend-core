@@ -147,10 +147,18 @@ const windowManager = {
       })
     },
 
-    setTabRow(state, { containerUuid, row, rowIndex }) {
+    setTabRow(state, { parentUuid, containerUuid, row, rowIndex }) {
       let recordsList = []
-      if (state.tabData[containerUuid] && state.tabData[containerUuid].recordsList) {
-        recordsList = state.tabData[containerUuid].recordsList
+      if (state.tabData[containerUuid]) {
+        if (state.tabData[containerUuid].recordsList) {
+          recordsList = state.tabData[containerUuid].recordsList
+        }
+      } else {
+        Vue.set(state.tabData, containerUuid, {
+          ...state.emtpyTabData,
+          parentUuid,
+          containerUuid
+        })
       }
 
       if (isEmptyValue(rowIndex)) {
@@ -210,12 +218,24 @@ const windowManager = {
       Vue.set(state.tabData[containerUuid].recordsList[rowIndex], columnName, value)
     },
 
-    setTabRowWithRecord(state, { containerUuid, row, recordUuid }) {
-      if (isEmptyValue(recordUuid)) {
+    setTabRowWithRecord(state, { parentUuid, containerUuid, row, recordUuid }) {
+      if (isEmptyValue(recordUuid) && isEmptyValue(row)) {
         return
       }
-      let recordsList
-      recordsList = state.tabData[containerUuid].recordsList
+
+      let recordsList = []
+      if (state.tabData[containerUuid]) {
+        if (!isEmptyValue(state.tabData[containerUuid].recordsList)) {
+          recordsList = state.tabData[containerUuid].recordsList
+        }
+      } else {
+        Vue.set(state.tabData, containerUuid, {
+          ...state.emtpyTabData,
+          parentUuid,
+          containerUuid
+        })
+      }
+
       if (!isEmptyValue(row)) {
         recordsList = state.tabData[containerUuid].recordsList.map(currentRowTable => {
           if (currentRowTable.UUID === row.UUID) {
@@ -894,6 +914,7 @@ const windowManager = {
             })
             // add new row on table
             commit('setTabRowWithRecord', {
+              parentUuid,
               containerUuid,
               recordUuid: response.attributes[UUID],
               row: {

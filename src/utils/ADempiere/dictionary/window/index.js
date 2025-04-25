@@ -1021,6 +1021,7 @@ export const refreshRecord = {
 
         // add new row on table
         store.commit('setTabRowWithRecord', {
+          parentUuid,
           containerUuid,
           recordUuid,
           row: newRow

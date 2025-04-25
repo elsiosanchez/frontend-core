@@ -183,6 +183,7 @@ const calloutManager = {
               recordUuid
             })
             commit('setTabRow', {
+              parentUuid,
               containerUuid,
               recordUuid,
               rowIndex,
