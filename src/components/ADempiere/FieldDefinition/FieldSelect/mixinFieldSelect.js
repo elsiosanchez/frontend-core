@@ -134,7 +134,6 @@ export default {
         // sets the value to blank when the lookupList or lookupItem have no
         // values, or if only lookupItem does have a value
         if (isEmptyValue(allOptions) || (!isEmptyValue(allOptions) && (!this.blankValues.includes(allOptions.at().value)))) allOptions.unshift(this.blankOption)
-
         return allOptions
       }
       return this.getDefaulValuesTable

@@ -115,7 +115,6 @@ export default {
         //   columnName: displayColumnName
         // })
         return store.getters.getValueOfField({
-          // parentUuid: this.metadata.parentUuid,
           containerUuid,
           columnName: displayColumnName
         })

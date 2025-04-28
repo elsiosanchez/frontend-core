@@ -240,6 +240,13 @@ export default {
       immediate: true
     },
     value(newValue) {
+      // Value Exists Inside the List
+      const isExistValue = this.findOption(newValue)
+
+      if (!isEmptyValue(isExistValue) && isEmptyValue(isExistValue.value)) {
+        this.getValueOfLookup()
+        return
+      }
       if (isEmptyValue(newValue)) {
         this.displayedValue = undefined
         this.uuidValue = undefined
@@ -285,7 +292,6 @@ export default {
       })
     },
     findOption(value) {
-      // const option = this.optionsList.find(item => item.value === value)
       const option = this.optionsList.find(item => item.value === value)
       if (option && option.displayedValue) {
         return option
