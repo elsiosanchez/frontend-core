@@ -1002,6 +1002,7 @@ export const refreshRecord = {
       isLoaded: false,
       containerUuid
     })
+    if (recordId < 0) return {}
     nprogress.start()
     return requestGetTabEntity({
       tabId: tabDefinition.id,

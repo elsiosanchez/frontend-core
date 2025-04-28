@@ -399,28 +399,13 @@ const windowManager = {
           keyName: 'key',
           format: 'object'
         })
-        // const isWithoutValues = context_column_names.find(columnName =>
-        //   isEmptyValue(columnName) ||
-        //   isEmptyValue(contextAttributesList[columnName])
-        // )
-        // if (isWithoutValues) {
-        //   console.warn(`Get entites without response, fill the **${isWithoutValues.key}** field in **${name}** tab.`)
-        //   resolve([])
-        //   return
-        // }
+
         if (isEmptyValue(referenceUuid)) {
           referenceUuid = getters.getTabData({
             containerUuid
           }).referenceUuid
         }
         if (!isEmptyValue(filtersRecord) && isEmptyValue(filters) && isEmptyValue(referenceUuid)) {
-          // filters.map(list => {
-          //   const { columnName } = list
-          //   if (filtersRecord.columnName === columnName) {
-          //     return filtersRecord
-          //   }
-          //   return list
-          // })
           filters.push({
             columnName: filtersRecord.columnName,
             value: filtersRecord.value
@@ -493,7 +478,10 @@ const windowManager = {
         if (!isEmptyValue(searchValue)) {
           pageToken = ''
         }
-
+        if (contextAttributesList[link_column_name] < 0) {
+          resolve()
+          return
+        }
         if (!isEmptyValue(contextAttributesList) && isEmptyValue(contextAttributes)) {
           contextAttributes = JSON.stringify(contextAttributesList)
         }
