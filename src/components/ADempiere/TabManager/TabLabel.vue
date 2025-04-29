@@ -18,12 +18,6 @@
 
 <template>
   <span>
-    <b
-      v-if="isActiveCurrentTab"
-      style="width: 100% !important;color: #1890ff;font-size: 16px;height: 100% !important;margin: 0px;padding: 0px;height: 100% !important;"
-    >
-      |
-    </b>
     <lock-record
       slot="label"
       :is-active-tab="isActiveTab"

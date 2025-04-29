@@ -467,8 +467,13 @@ export default defineComponent({
 
     // Current Tab
     const currentTab = computed(() => {
-      if (containerInfo.value.currentTab) {
-        return containerInfo.value.currentTab
+      const { currentTab } = containerInfo.value
+      if (currentTab) {
+        const { isParentTab, parentUuid, firstTabUuid, uuid } = currentTab
+        if (isParentTab) {
+          return store.getters.getStoredTab(parentUuid, uuid)
+        }
+        return store.getters.getStoredTab(parentUuid, firstTabUuid)
       }
       return {}
     })
