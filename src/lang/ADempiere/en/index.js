@@ -488,8 +488,14 @@ export default {
         },
         onlinePayment: {
           title: 'Online Payment Verification',
+          remove: 'Payment in Verification',
+          info: 'Payment Information',
           cancelPayment: {
             title: 'Cancel Payment',
+            voidTransaction: 'Void Transaction',
+            undo: 'Return',
+            detailEmpty: 'No Payment Information',
+            sendAgain: 'Send Again',
             description: 'There is currently an online payment being verified. Do you want to cancel it?'
           }
         }

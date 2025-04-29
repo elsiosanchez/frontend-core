@@ -25,7 +25,11 @@ import {
   // updatePayment,
   deletePayment,
   listPayments,
-  processOrder
+  processOrder,
+  // Online Payment
+  infoOnlinePayment,
+  cancelOnlinePayment,
+  processOnlinePayment
 } from '@/api/ADempiere/form/VPOS'
 import {
   getConversionRateRequest
@@ -98,7 +102,8 @@ export default {
       collecting_agent_id,
       reference_bank_account_id,
       customer_bank_account_id,
-      invoice_reference_id
+      invoice_reference_id,
+      allocate_payment_id
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
@@ -125,9 +130,16 @@ export default {
           collecting_agent_id,
           reference_bank_account_id,
           customer_bank_account_id,
-          invoice_reference_id
+          invoice_reference_id,
+          allocate_payment_id
         })
           .then(response => {
+            dispatch('verifyPaymentOnline', {
+              payment: {
+                ...response,
+                allocate_payment_id
+              }
+            })
             dispatch('getListPayments')
             dispatch('overloadOrder', { order: currentOrder })
               .then(() => {
@@ -372,6 +384,146 @@ export default {
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/infoOrder.vue'),
               isShowed: true
             })
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    verifyPaymentOnline({
+      commit,
+      getters,
+      dispatch
+    }, {
+      payment
+    }) {
+      return new Promise(resolve => {
+        if (!isEmptyValue(payment) && payment.is_online) {
+          dispatch('processOnline', {
+            payment
+          })
+          dispatch('setModalDialogVPOS', {
+            title: lang.t('form.pos.collect.onlinePayment.info'),
+            doneMethod: () => {
+              commit('setShowedModalDialogVPOS', {
+                isShowed: false
+              })
+            },
+            isLoadingDone: () => {
+              return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+            },
+            isDisabledDone: () => {
+              return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+            },
+            closeMethod: () => {
+              commit('setAttributePaymentVerification', {
+                attribute: 'isShowCancele',
+                value: true
+              })
+            },
+            componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'),
+            isShowed: true
+          })
+        }
+        resolve()
+      })
+    },
+    infoOnlinePayment({
+      commit,
+      getters,
+      dispatch
+    }, {
+      posId,
+      paymentId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
+        infoOnlinePayment({
+          posId: currentPos.id,
+          paymentId
+        })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Info Online Payment: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    processOnline({
+      commit,
+      getters,
+      dispatch
+    }, {
+      posId,
+      payment
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
+        processOnlinePayment({
+          posId: currentPos.id,
+          paymentId: payment.id
+        })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Process Online Payment: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    cancelOnline({
+      commit,
+      getters,
+      dispatch
+    }, {
+      posId,
+      payment
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
+        cancelOnlinePayment({
+          posId: currentPos.id,
+          paymentId: payment.id
+        })
+          .then(response => {
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Process Online Payment: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
 
             showMessage({
               type: 'error',

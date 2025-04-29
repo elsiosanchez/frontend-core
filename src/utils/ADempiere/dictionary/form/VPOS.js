@@ -304,7 +304,7 @@ export function getPaymentValues({
   customer_bank_account_id,
   invoice_reference_id
 }) {
-  const { payment_method } = store.getters.getPaymentMethods
+  const currentPayment = store.getters.getPaymentMethods
   let amount = store.getters.getPayAmount
   if (isEmptyValue(amount)) amount = store.getters.getCurrentOrder.open_amount
   // Set Currency
@@ -326,22 +326,23 @@ export function getPaymentValues({
   }
 
   return {
-    invoice_id,
-    bank_id,
+    tender_type_code: currentPayment.payment_method.tender_type,
+    payment_method_id: currentPayment.payment_method.id,
+    allocate_payment_id: currentPayment.id,
     reference_no: referenceNo,
-    description,
-    amount,
-    payment_date,
-    tender_type_code: payment_method.tender_type,
-    currency_id: currency.id,
-    payment_method_id: payment_method.id,
-    payment_account_date,
-    is_refund,
-    charge_id,
-    collecting_agent_id,
     reference_bank_account_id,
     customer_bank_account_id,
-    invoice_reference_id
+    currency_id: currency.id,
+    invoice_reference_id,
+    payment_account_date,
+    collecting_agent_id,
+    payment_date,
+    description,
+    invoice_id,
+    is_refund,
+    charge_id,
+    bank_id,
+    amount
   }
 }
 

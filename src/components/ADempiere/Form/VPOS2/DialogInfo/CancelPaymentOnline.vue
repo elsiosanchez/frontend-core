@@ -16,7 +16,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-row>
-    <el-result :title="$t('form.pos.collect.onlinePayment.title')" class="result-cancelet-info">
+    <el-result :title="$t('Cancelar Pago')" class="result-cancelet-info">
       <template slot="icon">
         <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
       </template>
@@ -25,82 +25,41 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           v-if="!isEmptyValue(currentPaymentVerifications)"
           :payment="currentPaymentVerifications"
           :readonly="true"
-          :show-details="false"
         />
       </template>
     </el-result>
-    <el-col
-      :span="24"
-      style="margin-top: 0px;"
-      class="border-info"
-    >
-      <p class="line-info">
-        <b
-          style="float: left"
-        >
-          {{ $t('form.pos.collect.orderTotal') }} {{ '(' + currentOrder.document_no + ')' }}:
-        </b>
-        <b style="float: right">
-          {{ displayAmount(currentOrder.grand_total) }}
-        </b>
-      </p>
-      <p class="line-info">
-        <b
-          style="float: left"
-        >
-          {{ $t('form.pos.collect.convertedAmount') }}:
-        </b>
-        <b style="float: right">
-          {{ formatPrice({ value: currentOrder.grand_total_converted, currency: displayCurrency.iso_code}) }}
-        </b>
-      </p>
-    </el-col>
-    <el-dialog
-      :visible.sync="isShowCancele"
-      width="60%"
-      :modal="false"
-    >
-      <p
-        slot="title"
-        class="dialog-label-info-cancele"
+    <el-result
+      icon="error"
+      :title="$t('form.pos.collect.onlinePayment.cancelPayment.description')"
+      class="result-cancelet-payment"
+    />
+    <span slot="footer" class="dialog-footer">
+      <el-button
+        type="info"
+        class="button-base-icon"
+        @click="isShowCancele = false"
       >
-        <b>
+        <svg-icon
+          icon-class="exit"
+          style="transform: scaleX(-1) !important;"
+        />
+        <b style="font-size: 18px !important">
+          {{ $t('form.pos.collect.onlinePayment.cancelPayment.undo') }}
+        </b>
+      </el-button>
+      <el-button
+        type="warning"
+        class="button-base-icon"
+        @click="cancelPayment"
+      >
+        <svg-icon
+          icon-class="warning"
+        />
+        <b style="font-size: 18px !important">
           {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
         </b>
-      </p>
-      <el-result
-        icon="error"
-        :title="$t('form.pos.collect.onlinePayment.cancelPayment.description')"
-        class="result-cancelet-payment"
-      />
-      <span slot="footer" class="dialog-footer">
-        <el-button
-          type="info"
-          class="button-base-icon"
-          @click="isShowCancele = false"
-        >
-          <svg-icon
-            icon-class="exit"
-            style="transform: scaleX(-1) !important;"
-          />
-          <b style="font-size: 18px !important">
-            {{ $t('form.pos.collect.onlinePayment.cancelPayment.undo') }}
-          </b>
-        </el-button>
-        <el-button
-          type="warning"
-          class="button-base-icon"
-          @click="cancelPayment"
-        >
-          <svg-icon
-            icon-class="warning"
-          />
-          <b style="font-size: 18px !important">
-            {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
-          </b>
-        </el-button>
-      </span>
-    </el-dialog>
+      </el-button>
+    </span>
   </el-row>
 </template>
 

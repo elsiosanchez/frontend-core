@@ -146,12 +146,12 @@ export default defineComponent({
     })
 
     const closeDialog = () => {
-      // if (
-      //   !isEmptyValue(storedModalDialog.value) &&
-      //   !isEmptyValue(storedModalDialog.value.closeMethod)
-      // ) {
-      //   return storedModalDialog.value.closeMethod()
-      // }
+      if (
+        !isEmptyValue(storedModalDialog.value) &&
+        !isEmptyValue(storedModalDialog.value.closeMethod)
+      ) {
+        return storedModalDialog.value.closeMethod()
+      }
       store.commit('setShowedModalDialogVPOS', {
         isShowed: false
       })

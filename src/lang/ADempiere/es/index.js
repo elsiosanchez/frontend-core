@@ -488,10 +488,16 @@ export default {
           }
         },
         onlinePayment: {
-          title: 'Verificación del Pago en Línea',
+          title: ' El Pago en Línea se Encuentra en Verificación',
+          remove: 'Pago en Verificación',
+          info: 'Información del Pago',
           cancelPayment: {
-            title: 'Cancelar Pago',
-            description: 'Actualmente hay un pago Online en Verificacion desea cancelarlo'
+            title: 'Cancelar Verificacion',
+            voidTransaction: 'Anular Transaccion',
+            undo: 'Regresar',
+            sendAgain: 'Enviar Nuevamente',
+            detailEmpty: 'Sin Información del Pago',
+            description: 'Actualmente hay un pago Online en Verificación desea cancelarlo'
           }
         }
       },

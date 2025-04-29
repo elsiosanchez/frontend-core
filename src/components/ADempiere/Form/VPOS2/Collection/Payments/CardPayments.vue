@@ -32,7 +32,7 @@
       >
         <p style="margin: 5px 0px;">
           <el-button
-            v-if="!readonly"
+            v-if="isDelete(payment, !readonly)"
             type="text"
             icon="el-icon-close"
             style="float: right;color: red;padding: 0px;font-size: 18px;"
@@ -40,12 +40,18 @@
             :loading="isLoading"
             @click="remove(payment)"
           />
+          <el-button
+            v-if="payment.is_online && showDetails"
+            type="text"
+            icon="el-icon-tickets"
+            style="float: right;color: #909399;padding: 0px;font-size: 18px;"
+            @click="seeDetail(payment)"
+          />
         </p>
         <p style="margin: 1px 0px;">
           <b>
             <span style="float: left;">
               {{ labelPaymentMethods(payment) }}
-              <!-- {{ payment.payment_method.name }} -->
             </span>
             <span style="font-size: 14px;float: right;padding-right: 5px;">
               {{ payment.document_no }}
@@ -66,6 +72,116 @@
         </p>
       </el-col>
     </el-row>
+    <!-- Cancel Payment Online -->
+    <el-dialog
+      :visible.sync="isShowCancele"
+      width="60%"
+      :modal="false"
+    >
+      <p
+        slot="title"
+        class="dialog-label-info-cancele"
+      >
+        <b>
+          {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+        </b>
+      </p>
+      <el-result
+        icon="error"
+        :title="$t('form.pos.collect.onlinePayment.cancelPayment.description')"
+        class="result-cancelet-payment"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="info"
+          class="button-base-icon"
+          @click="isShowCancele = false"
+        >
+          <svg-icon
+            icon-class="exit"
+            style="transform: scaleX(-1) !important;"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.undo') }}
+          </b>
+        </el-button>
+        <el-button
+          type="warning"
+          class="button-base-icon"
+          @click="cancelPayment(payment)"
+        >
+          <svg-icon
+            icon-class="warning"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+          </b>
+        </el-button>
+      </span>
+    </el-dialog>
+    <!-- Info Payment Online -->
+    <el-dialog
+      :visible.sync="infoPayment.show"
+      width="60%"
+      :modal="false"
+    >
+      <p
+        slot="title"
+        class="dialog-label-info-cancele"
+      >
+        <b>
+          {{ $t('form.pos.collect.onlinePayment.info') }}
+        </b>
+      </p>
+      <el-result
+        :icon="infoPayment.icon"
+        :title="infoPayment.message"
+        class="result-cancelet-payment"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="info"
+          class="button-base-icon"
+          @click="infoPayment.show = false"
+        >
+          <svg-icon
+            icon-class="exit"
+            style="transform: scaleX(-1) !important;"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.undo') }}
+          </b>
+        </el-button>
+        <el-button
+          type="warning"
+          class="button-base-icon"
+          @click="cancelPayment(payment)"
+        >
+          <svg-icon
+            icon-class="warning"
+          />
+          <b v-if="infoPayment.status === 'O'" style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction') }}
+          </b>
+          <b v-else style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+          </b>
+        </el-button>
+        <el-button
+          v-if="infoPayment.status === '' || infoPayment.status === 'E'"
+          type="primary"
+          class="button-base-icon"
+          @click="returnSend(payment)"
+        >
+          <svg-icon
+            icon-class="return-send"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.sendAgain') }}
+          </b>
+        </el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -77,6 +193,7 @@ import {
 } from '@vue/composition-api'
 
 import store from '@/store'
+import lang from '@/lang'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -101,11 +218,22 @@ export default defineComponent({
     isDeletePaymentMethods: {
       type: Boolean,
       default: false
+    },
+    showDetails: {
+      type: Boolean,
+      default: true
     }
   },
 
   setup(props) {
     const isLoading = ref(false)
+    const infoPayment = ref({
+      icon: 'info',
+      show: false,
+      message: '',
+      status: ''
+    })
+    const isShowCancele = ref(false)
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
     })
@@ -124,6 +252,10 @@ export default defineComponent({
     }
 
     function remove(payment) {
+      if (payment.is_online) {
+        isShowCancele.value = true
+        return
+      }
       if (props.isDeletePaymentMethods) {
         isLoading.value = true
         props.deletePayment(payment)
@@ -184,21 +316,94 @@ export default defineComponent({
 
     function statusPayment(payments) {
       const {
-        is_processed,
+        response_status,
         is_processing,
-        tender_type_code
+        is_processed,
+        is_online
       } = payments
-      if (is_processing || is_processed || tender_type_code === 'D') return 'card-payment-process'
+      if (is_online) {
+        if (isEmptyValue(response_status) || response_status === 'E') return 'card-payment-error'
+        if (response_status === 'W') return 'card-payment-warning'
+      }
+      if (is_processing || is_processed) return 'card-payment-process'
       return 'card-payment-success'
+    }
+
+    function isDelete(payment, isReadOnly) {
+      if (payment.is_online) {
+        if (payment.response_status === 'O') return false
+      }
+      return isReadOnly
+    }
+
+    function cancelPayment(payment) {
+      store.dispatch('cancelOnline', {
+        payment
+      })
+        .then(() => {
+          if (props.isDeletePaymentMethods) {
+            isLoading.value = true
+            props.deletePayment(payment)
+            setTimeout(() => {
+              isLoading.value = false
+            }, 1000)
+            return payment
+          }
+          const { id } = payment
+          isLoading.value = true
+          store.dispatch('removePayment', {
+            payment_id: id
+          })
+            .finally(() => {
+              isLoading.value = false
+            })
+          return payment
+        })
+    }
+
+    function seeDetail(payment) {
+      store.dispatch('infoOnlinePayment', {
+        paymentId: payment.id
+      })
+        .then(response => {
+          const { message, status } = response
+          let details = message
+          let icon = 'info'
+          if (isEmptyValue(details)) details = lang.t('form.pos.collect.onlinePayment.cancelPayment.detailEmpty')
+          if (isEmptyValue(status)) icon = 'error'
+          if (!isEmptyValue(status) && status === 'E') icon = 'error'
+          if (!isEmptyValue(status) && status === 'O') icon = 'success'
+          infoPayment.value = {
+            message: details,
+            show: true,
+            status,
+            icon
+          }
+        })
+    }
+
+    function returnSend(payment) {
+      store.dispatch('processOnline', {
+        payment
+      })
+        .then(() => {
+          infoPayment.value.show = false
+        })
     }
 
     return {
       isLoading,
+      infoPayment,
       currentOrder,
+      isShowCancele,
       remove,
+      isDelete,
+      seeDetail,
       imageCard,
+      returnSend,
       formatDate,
       formatPrice,
+      cancelPayment,
       statusPayment,
       displayCurrency,
       labelPaymentMethods
@@ -210,16 +415,24 @@ export default defineComponent({
 <style lang="scss" scoped>
 .card-payment-success {
   border-left: 5px solid #13ce66;
-  // border-top: 5px solid #13ce66;
-  // border-bottom: 5px solid #13ce66;
-  // border-right: 5px solid #13ce66;
   border-radius: 10px;
 }
 .card-payment-process {
   border-left: 5px solid #b9c3d6;
-  // border-top: 5px solid #b9c3d6;
-  // border-right: 5px solid #b9c3d6;
-  // border-bottom: 5px solid #b9c3d6;
   border-radius: 10px;
+}
+.card-payment-error {
+  border-left: 5px solid #ff4949;
+  border-radius: 10px;
+}
+
+.card-payment-warning {
+  border-left: 5px solid #FFB900;
+  border-radius: 10px;
+}
+.dialog-label-info-cancele {
+  text-align: center;
+  font-size: x-large;
+  margin: 0px;
 }
 </style>

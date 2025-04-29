@@ -728,7 +728,8 @@ export function createPayment({
   collecting_agent_id,
   reference_bank_account_id,
   customer_bank_account_id,
-  invoice_reference_id
+  invoice_reference_id,
+  allocate_payment_id
 }) {
   return request({
     url: `point-of-sales/${posId}/payments`,
@@ -750,7 +751,8 @@ export function createPayment({
       collecting_agent_id,
       reference_bank_account_id,
       customer_bank_account_id,
-      invoice_reference_id
+      invoice_reference_id,
+      allocate_payment_id
     }
   })
 }
@@ -1767,5 +1769,56 @@ export function updateGiftCardLines({
     data: {
       quantity_entered: quantityEntered.toString()
     }
+  })
+}
+
+/** ________________________________________
+* |                                         |
+* | Point of Sale Online Payment Services   |
+* |_________________________________________|
+*/
+
+/**
+ * Info Online Payment
+ * @param {int32} posId
+ * @param {int32} idPayments
+ */
+export function infoOnlinePayment({
+  posId,
+  paymentId
+}) {
+  return request({
+    url: `point-of-sales/${posId}/payments/${paymentId}/online`,
+    method: 'get'
+  })
+}
+
+/**
+ * Process Online Payment
+ * @param {int32} posId
+ * @param {int32} idPayments
+ */
+export function processOnlinePayment({
+  posId,
+  paymentId
+}) {
+  return request({
+    url: `point-of-sales/${posId}/payments/${paymentId}/online`,
+    method: 'post'
+  })
+}
+
+/**
+ * Cancel Online Payment
+ * @param {int32} posId
+ * @param {int32} idPayments
+ */
+export function cancelOnlinePayment({
+  posId,
+  paymentId
+}) {
+  return request({
+    url: `point-of-sales/${posId}/payments/${paymentId}/online`,
+    method: 'put'
   })
 }
