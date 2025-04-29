@@ -731,10 +731,12 @@ export default defineComponent({
     // Gift Card
     const isAllowsGiftCard = computed(() => {
       const { is_allows_gift_card } = currentPointOfSales.value
-      if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'CO') {
-        return is_allows_gift_card
+      if (is_allows_gift_card) {
+        if (!isEmptyValue(currentOrder.value) && currentOrder.value.document_status.value === 'CO') {
+          return true
+        }
       }
-      return true
+      return false
     })
 
     const isAllowsReturnOrder = computed(() => {
