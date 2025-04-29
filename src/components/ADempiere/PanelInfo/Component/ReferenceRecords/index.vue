@@ -20,7 +20,7 @@
   <span
     v-if="!isLoading"
   >
-    <el-card v-if="!isEmptyValue(getterReferences)" style="padding: 10px;">
+    <el-card v-if="!isEmptyValue(getterReferences.referencesList)" style="padding: 10px;">
       <el-descriptions
         :column="1"
         :border="true"
@@ -44,7 +44,7 @@
     </el-card>
 
     <div v-else>
-      <el-empty />
+      <el-empty :image-size="200" />
     </div>
   </span>
   <loading-view

@@ -165,7 +165,7 @@ export default defineComponent({
     },
     defaultOpenedTab: {
       type: String,
-      default: 'getRecordLogs'
+      default: 'recordAttachmentTab'
     },
     recordId: {
       type: [String, Number],
@@ -179,7 +179,7 @@ export default defineComponent({
     const typeAction = ref(0)
     const currentTabLogs = ref('0')
     const tableName = ref('')
-    const nameTab = ref('getRecordLogs')
+    const nameTab = ref('recordAttachmentTab')
     const recordsListStoreProduct = ref([])
     const isLoadingListReference = ref(false)
     if (!isEmptyValue(props.defaultOpenedTab)) {
@@ -193,14 +193,14 @@ export default defineComponent({
     const listInfoPanel = computed(() => {
       return [
         {
-          name: 'getRecordLogs',
-          title: language.t('window.containerInfo.log.changeHistory'),
+          name: 'recordAttachmentTab',
+          title: language.t('component.attachment.label'),
           show: true,
-          svg: true,
+          svg: false,
           isMenu: false,
-          iconClass: 'tree-table',
-          isLoading: isLoadingRecordLogsList.value,
-          component: RecordLogs
+          isLoading: isLoadingListAttachment.value,
+          iconClass: 'el-icon-paperclip',
+          component: AttachmentManager
         },
         {
           name: 'listReference',
@@ -213,54 +213,14 @@ export default defineComponent({
           component: ReferenceRecords
         },
         {
-          name: 'recordAttachmentTab',
-          title: language.t('component.attachment.label'),
-          show: true,
-          svg: false,
-          isMenu: false,
-          isLoading: isLoadingListAttachment.value,
-          iconClass: 'el-icon-paperclip',
-          component: AttachmentManager
-        },
-        {
-          name: 'recordNotesTab',
-          title: language.t('window.containerInfo.notes'),
-          show: true,
-          svg: true,
-          iconClass: 'message',
-          isMenu: false,
-          isLoading: isLoadingNotesRecord.value,
-          component: RecordNotes
-        },
-        {
-          name: 'getListIssues',
-          title: language.t('window.containerInfo.issues'),
-          show: true,
-          svg: true,
-          iconClass: 'guide',
-          isMenu: false,
-          isLoading: isLoadingIssuessRecord.value,
-          component: recordIssues
-        },
-        {
-          name: 'searchWorkflowHistory',
-          show: isWorkflowLog.value,
-          title: language.t('window.containerInfo.workflowLog'),
-          svg: true,
-          iconClass: 'tree-table',
-          isLoading: false,
-          isMenu: false,
-          component: WorkflowLogs
-        },
-        {
-          name: 'accountingInformation',
-          show: isAccountingInfo.value,
-          title: language.t('window.containerInfo.accountingInformation.title'),
+          name: 'listDashboard',
+          show: !isEmptyValue(showPanelDashboard.value),
+          title: language.t('navbar.dashboard'),
           svg: true,
           isLoading: false,
           isMenu: false,
-          iconClass: 'balance',
-          component: AcctViewer // () => import('@/components/ADempiere/Form/AcctViewer')
+          iconClass: 'dashboard',
+          component: RecordDashboard
         },
         {
           name: 'listProductStorage',
@@ -273,14 +233,14 @@ export default defineComponent({
           component: StoreProduct
         },
         {
-          name: 'listDashboard',
-          show: !isEmptyValue(showPanelDashboard.value),
-          title: language.t('navbar.dashboard'),
+          name: 'accountingInformation',
+          show: isAccountingInfo.value,
+          title: language.t('window.containerInfo.accountingInformation.title'),
           svg: true,
           isLoading: false,
           isMenu: false,
-          iconClass: 'dashboard',
-          component: RecordDashboard
+          iconClass: 'balance',
+          component: AcctViewer // () => import('@/components/ADempiere/Form/AcctViewer')
         },
         {
           name: 'Calendar',
@@ -351,6 +311,36 @@ export default defineComponent({
           iconClass: 'mosaic',
           isMenu: true,
           component: PanelDisplayDefinitions
+        },
+        {
+          name: 'getRecordLogs',
+          title: language.t('window.containerInfo.log.changeHistory'),
+          show: true,
+          svg: true,
+          isMenu: false,
+          iconClass: 'tree-table',
+          isLoading: isLoadingRecordLogsList.value,
+          component: RecordLogs
+        },
+        {
+          name: 'recordNotesTab',
+          title: language.t('window.containerInfo.notes'),
+          show: true,
+          svg: true,
+          iconClass: 'message',
+          isMenu: false,
+          isLoading: isLoadingNotesRecord.value,
+          component: RecordNotes
+        },
+        {
+          name: 'getListIssues',
+          title: language.t('window.containerInfo.issues'),
+          show: true,
+          svg: true,
+          iconClass: 'guide',
+          isMenu: false,
+          isLoading: isLoadingIssuessRecord.value,
+          component: recordIssues
         }
       ]
     })

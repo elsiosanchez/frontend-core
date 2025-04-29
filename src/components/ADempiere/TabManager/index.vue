@@ -102,22 +102,12 @@
     </el-tabs>
     <div :style="sizeBadgeRight">
       <el-button
-        v-if="isMobile"
         size="medium"
         type="primary"
         circle
-        @click="openRecordLogs('getRecordLogs')"
+        @click="openRecordLogs('recordAttachmentTab')"
       >
         <i class="el-icon-arrow-left" />
-      </el-button>
-      <el-button
-        v-else
-        type="primary"
-        size="mini"
-        circle
-        @click="openRecordLogs('getRecordLogs')"
-      >
-        <svg-icon icon-class="tree-table" />
       </el-button>
       <el-badge v-show="showAttachmentAvailable && !isMobile" :value="countAttachment" class="item" type="primary">
         <el-button
