@@ -41,7 +41,7 @@ import { EXPORT_SUPPORTED_TYPES } from '@/utils/ADempiere/exportUtil.js'
 import { requestGetTabEntity } from '@/api/ADempiere/user-interface/entities.ts'
 import { requestSaveWindowCustomization } from '@/api/ADempiere/user-customization/windows.js'
 
-// Utils and Helpers Methods
+// Utils and Helper Methods
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
 import {
   isSalesTransaction, isContextSQL
@@ -57,6 +57,7 @@ import { exportRecords } from '@/utils/ADempiere/exportUtil.js'
 import { isRunableDocumentAction } from '@/utils/ADempiere/dictionary/workflow'
 import { convertRelationTabs } from '@/utils/ADempiere/dictionary/window/templatesWindow.js'
 import { isReadOnlyTab } from '@/utils/ADempiere/dictionary/window/tab'
+import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 
 export function isEditableRecord({ parentUuid, containerUuid }) {
   const preferenceClientId = store.getters.getSessionContextClientId
@@ -1017,7 +1018,9 @@ export const refreshRecord = {
         const newRow = {
           ...ROW_ATTRIBUTES,
           ...currentRow,
-          ...response.values
+          ...response.values,
+          isSelectedRow: true,
+          rowUid: getUuidv4()
         }
 
         // add new row on table
@@ -1026,6 +1029,14 @@ export const refreshRecord = {
           containerUuid,
           recordUuid,
           row: newRow
+        })
+
+        store.commit('setTabSelectionsList', {
+          parentUuid,
+          containerUuid,
+          selectionsList: [
+            newRow
+          ]
         })
 
         // update fields values

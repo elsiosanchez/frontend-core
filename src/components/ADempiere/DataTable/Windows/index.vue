@@ -25,6 +25,7 @@
     :onLoad="adjustSize()"
     :onresize="adjustSize()"
   >
+    <!-- {{ selectionsList.map(i => i[keyColumn]) }} -->
     <el-table
       id="multipleTable"
       ref="multipleTable"
@@ -230,6 +231,12 @@ export default defineComponent({
 
     const headerList = computed(() => {
       return props.header.filter(fieldItem => {
+        // if (fieldItem.is_key) {
+        //   return true
+        // }
+        // if (fieldItem.columnName === 'UUID') {
+        //   return true
+        // }
         if (!props.containerManager.isDisplayedColumn(fieldItem)) {
           return false
         }
@@ -322,7 +329,8 @@ export default defineComponent({
       }
       return props.dataTable
     })
-    const currentTabChildren = computed(() => {
+
+    const currentRowChildren = computed(() => {
       const currentTab = store.getters.getStoredTab(
         props.parentUuid,
         props.containerUuid
@@ -620,15 +628,18 @@ export default defineComponent({
             currentRow = recordsWithFilter.value.at(0)
           }
 
-          if (isEmptyValue(getTabRecords.value.parentUuid)) return handleLoadRefresh()
+          if (isEmptyValue(getTabRecords.value.parentUuid)) {
+            return handleLoadRefresh()
+          }
 
           // enable edit mode
           currentRow.isEditRow = true
           currentRow.isSelectedRow = true
 
           currentRowSelect.value = currentRow
-          handleSelectionAll([currentRow])
-          toggleSelection([currentRow])
+          const newSelection = [currentRow]
+          handleSelectionAll(newSelection)
+          toggleSelection(newSelection)
         } else {
           // clear selection
           toggleSelection()
@@ -687,13 +698,13 @@ export default defineComponent({
       }
       return 25
     }
+
     /**
      * Watch - watch works directly on a ref
      * @param newValue - New Assessed Property value
      * @param oldValue - Old Assessed Property value
      */
-
-    watch(currentTabChildren, (newValue, oldValue) => {
+    watch(currentRowChildren, (newValue, oldValue) => {
       if (!isEmptyValue(newValue) && newValue !== oldValue) {
         loadSelection()
       }
@@ -705,6 +716,11 @@ export default defineComponent({
           toggleSelection([row])
         }
       }
+      // clearTimeout(timeOut.value)
+      // timeOut.value = setTimeout(() => {
+      //   toggleSelection(newValue)
+      //   // loadSelection()
+      // }, 100)
     })
 
     watch(isLoadingDataTale, (newValue, oldValue) => {
@@ -763,7 +779,7 @@ export default defineComponent({
       heightSize,
       // Computeds
       isLoadRefreshDataTale,
-      currentTabChildren,
+      currentRowChildren,
       isLoadingDataTale,
       recordsWithFilter,
       currentRowSelect,

@@ -32,6 +32,9 @@ import {
 
 // Constants
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  IDENTIFIER_COLUMN_SUFFIX
+} from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helper Methods
 import { getToken } from '@/utils/auth'
@@ -355,8 +358,9 @@ const processManager = {
       parametersList = []
     }) {
       return new Promise(resolve => {
-        const windowsUuid = router.app._route.meta.uuid
-        const storedTab = getters.getStoredTab(windowsUuid, parentUuid)
+        const windowUuid = router.app._route.meta.uuid
+        const storedTab = getters.getStoredTab(windowUuid, parentUuid)
+        const { table_name, isShowedTableRecords } = storedTab
         const processModal = getters.getModalDialogManager({
           containerUuid: containerUuid
         })
@@ -373,25 +377,22 @@ const processManager = {
         }
 
         let selectionsList = []
-        if (storedProcessDefinition.is_multi_selection) {
-          let recordsSelection = []
-          if (storedTab.isShowedTableRecords) {
-            recordsSelection = getters.getTabSelectionsList({
-              containerUuid
-            })
-          } else {
-            const currentRow = getters.getTabCurrentRow({
-              containerUuid: storedTab.uuid
-            })
-            recordsSelection = [
-              currentRow
-            ]
-          }
+        if (storedProcessDefinition.is_multi_selection && isShowedTableRecords) {
+          const recordsSelection = rootGetters.getTabSelectionsList({
+            containerUuid: storedTab.uuid
+          })
           selectionsList = rootGetters.getTabSelectionToServer({
-            parentUuid: windowsUuid,
+            parentUuid: windowUuid,
             containerUuid: storedTab.uuid,
             selectionsList: recordsSelection
           })
+          if (!isEmptyValue(recordsSelection) && recordsSelection.length === 1) {
+            const currentRow = recordsSelection.at(0)
+            recordId = currentRow[table_name + IDENTIFIER_COLUMN_SUFFIX]
+            recordUuid = currentRow.UUID
+            // clear selection
+            selectionsList = []
+          }
         }
 
         const isSession = !isEmptyValue(getToken())

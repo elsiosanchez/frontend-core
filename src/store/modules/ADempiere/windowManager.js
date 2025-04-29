@@ -30,9 +30,11 @@ import {
 
 // Constants
 import { UUID } from '@/utils/ADempiere/constants/systemColumns'
-import { ROW_ATTRIBUTES, ROW_KEY_ATTRIBUTES, ROWS_OF_RECORDS_BY_PAGE_HIGH } from '@/utils/ADempiere/tableUtils'
 import {
-  DISPLAY_COLUMN_PREFIX, IDENTIFIER_COLUMN_SUFFIX, IS_ADVANCED_QUERY
+  ROW_ATTRIBUTES, ROWS_OF_RECORDS_BY_PAGE_HIGH
+} from '@/utils/ADempiere/tableUtils'
+import {
+  IDENTIFIER_COLUMN_SUFFIX, IS_ADVANCED_QUERY
 } from '@/utils/ADempiere/dictionaryUtils'
 
 import {
@@ -45,11 +47,10 @@ import { FIELDS_DATE } from '@/utils/ADempiere/references'
 import { containerManager } from '@/utils/ADempiere/dictionary/window'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { getContextAttributes, generateContextKey } from '@/utils/ADempiere/contextUtils/contextAttributes'
-import { getTypeOfValue, isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
+import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/valueFormat'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { generatePageToken } from '@/utils/ADempiere/dataUtils'
-import { isDateField, isDecimalField } from '@/utils/ADempiere/references'
 
 const initState = {
   collapseWindow: '',
@@ -257,11 +258,11 @@ const windowManager = {
 
     setTabSelectionsList(state, {
       containerUuid,
-      selectionsList
+      selectionsList = []
     }) {
-      // if (isEmptyValue(state.tabData[containerUuid])) {
-      //   Vue.set(state.tabData, containerUuid, state.emtpyTabData)
-      // }
+      if (isEmptyValue(state.tabData[containerUuid])) {
+        Vue.set(state.tabData, containerUuid, state.emtpyTabData)
+      }
       Vue.set(state.tabData[containerUuid], 'selectionsList', selectionsList)
     },
 
@@ -1078,61 +1079,19 @@ const windowManager = {
         return selectionToServer
       }
 
-      const { fieldsList, table_name, table } = rootGetters.getStoredTab(
+      const { table_name, table } = rootGetters.getStoredTab(
         parentUuid,
         containerUuid
       )
       let keyColumn = table_name + IDENTIFIER_COLUMN_SUFFIX
-      if (!isEmptyValue(table.key_columns) && table.key_columns.length === 1) {
+      if (!isEmptyValue(table.key_columns) && table.key_columns.length > 1) {
         keyColumn = table.key_columns.at(0)
+        console.warn('Multiple Keys Column: ', table.key_columns, ' Selected: ', keyColumn)
       }
 
-      // reduce list
-      const fieldsListSelection = fieldsList
-        .filter(itemField => {
-          return itemField.is_key || itemField.is_identifier
-        })
-        .map(itemField => {
-          return {
-            columnName: itemField.column_name,
-            display_type: itemField.display_type
-          }
-        })
-
       selectionsList.forEach(itemRow => {
-        const attributesList = {}
-
-        Object.keys(itemRow).forEach(columnName => {
-          if (!columnName.startsWith(DISPLAY_COLUMN_PREFIX) && !ROW_KEY_ATTRIBUTES.includes(columnName)) {
-            const currentField = fieldsListSelection.find(itemField => {
-              return itemField.columnName === columnName
-            })
-            // evaluate metadata attributes before to convert
-            if (!isEmptyValue(currentField)) {
-              const value = itemRow[columnName]
-              let serverValue = value
-              // types `decimal` and `date` is a object struct
-              if (getTypeOfValue(value) !== 'OBJECT' || isEmptyValue(value.type)) {
-                if (isDateField(currentField.display_type)) {
-                  serverValue = {
-                    type: 'date',
-                    value: value
-                  }
-                } else if (isDecimalField(currentField.display_type)) {
-                  serverValue = {
-                    type: 'decimal',
-                    value: value
-                  }
-                }
-              }
-              attributesList[columnName] = serverValue
-            }
-          }
-        })
-
         selectionToServer.push({
-          selectionId: itemRow[keyColumn],
-          values: attributesList
+          selectionId: itemRow[keyColumn]
         })
       })
 

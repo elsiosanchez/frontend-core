@@ -221,7 +221,7 @@ export default defineComponent({
         return '••••••••••••••••••'
       }
       const currentValue = props.dataRow[columnName.value]
-      return formatField({
+      const currentDisplayValue = formatField({
         value: currentValue,
         currency: props.dataRow[DISPLAY_COLUMN_PREFIX + COLUMNNAME_C_Currency_ID],
         displayedValue: props.dataRow[displayColumnName.value],
@@ -229,6 +229,10 @@ export default defineComponent({
         columnName: columnName.value,
         precision: defaulPrecisions.value
       })
+      // if (props.fieldAttributes.is_key) {
+      //   return `<${currentValue}> - ${currentDisplayValue}`
+      // }
+      return currentDisplayValue
     })
 
     const cellCssClass = computed(() => {

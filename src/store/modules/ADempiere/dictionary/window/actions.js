@@ -28,7 +28,9 @@ import {
   COLUMNNAME_AD_Client_ID, COLUMNNAME_DocAction, COLUMNNAME_DocStatus,
   COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
-import { DISPLAY_COLUMN_PREFIX, IS_ADVANCED_QUERY } from '@/utils/ADempiere/dictionaryUtils'
+import {
+  DISPLAY_COLUMN_PREFIX, IDENTIFIER_COLUMN_SUFFIX, IS_ADVANCED_QUERY
+} from '@/utils/ADempiere/dictionaryUtils'
 import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
 import { ACTION_None } from '@/utils/ADempiere/dictionary/workflow'
 import { FINANCIAL_REPORT_CODE } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
@@ -493,13 +495,42 @@ export default {
                 // if (processResponse.is_error) {
                 //   return
                 // }
-                await refreshRecord.refreshRecord({
-                  parentUuid: windowUuid,
-                  containerUuid: tabAssociatedUuid,
-                  tabId: storedTab.internal_id,
-                  recordId,
-                  recordUuid
+                const storedTab = rootGetters.getStoredTab(windowUuid, tabAssociatedUuid)
+                const { table_name, isShowedTableRecords } = storedTab
+                const recordsSelection = getters.getTabSelectionsList({
+                  containerUuid: storedTab.uuid
                 })
+                const selectionsList = rootGetters.getTabSelectionToServer({
+                  parentUuid: storedTab.parentUuid,
+                  containerUuid: storedTab.uuid,
+                  selectionsList: recordsSelection
+                })
+                if (process.is_multi_selection && isShowedTableRecords) {
+                  if (!isEmptyValue(selectionsList) && selectionsList.length === 1) {
+                    const currentRow = recordsSelection.at(0)
+                    // Reload a single record
+                    await refreshRecord.refreshRecord({
+                      parentUuid: windowUuid,
+                      containerUuid: tabAssociatedUuid,
+                      recordId: currentRow[table_name + IDENTIFIER_COLUMN_SUFFIX],
+                      recordUuid: currentRow.UUID
+                    })
+                  } else {
+                    // Rolad all records
+                    await refreshRecords.refreshRecords({
+                      parentUuid: windowUuid,
+                      containerUuid: tabAssociatedUuid
+                    })
+                  }
+                } else {
+                  // Reload a single record
+                  await refreshRecord.refreshRecord({
+                    parentUuid: windowUuid,
+                    containerUuid: tabAssociatedUuid,
+                    recordId,
+                    recordUuid
+                  })
+                }
                 // update records and logics on child tabs
                 tabDefinition.childTabs.filter(tabItem => {
                   const { hasBeenRendered } = rootGetters.getStoredTab(windowUuid, tabItem.uuid)
