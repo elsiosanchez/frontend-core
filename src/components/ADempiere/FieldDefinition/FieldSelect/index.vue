@@ -31,7 +31,6 @@
     remote
     :remote-method="remoteSearch"
     :size="sizeField"
-    @change="preHandleChange"
     @visible-change="getDataLookupList"
     @clear="clearLookup"
   >
@@ -146,6 +145,8 @@ export default {
       },
       set(value) {
         const { column_name, containerUuid, inTable } = this.metadata
+        // Before handling the change
+        this.preHandleChange(value)
         // table records values
         if (inTable) {
           this.containerManager.setCell({
