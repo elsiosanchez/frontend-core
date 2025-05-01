@@ -127,12 +127,18 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           </el-form-item>
         </el-col>
       </el-row>
+      <p v-show="discountPercentage !== '0'" style="text-align: end;">
+        <b>
+          {{ $t('form.pos.pinMessage.discountApplied') }}
+          {{ discountPercentage + '%' }}
+        </b>
+      </p>
     </el-form>
   </el-card>
 </template>
 
 <script>
-import { defineComponent, computed } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 
 // import lang from '@/lang'
 import store from '@/store'
@@ -164,6 +170,7 @@ export default defineComponent({
     issuingBank
   },
   setup() {
+    const discountPercentage = ref('0')
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
     })
@@ -286,8 +293,22 @@ export default defineComponent({
       })
       const { open_amount } = store.getters.getCurrentOrder
       updateAmount(open_amount)
+      discountPaymentMethods(currentPaymentMethod)
       store.commit('setAvailableCurrencies', currency)
       clearFieldsCollections()
+    }
+
+    function discountPaymentMethods(paymentMethod) {
+      const { is_allows_apply_discount, maximum_discount_allowed } = paymentMethod
+      discountPercentage.value = is_allows_apply_discount ? maximum_discount_allowed : '0'
+      store.commit('setLoadingAddPayment', true)
+      store.dispatch('updateCurrentOrder', {
+        discount_rate: discountPercentage.value,
+        isListLine: true
+      })
+        .finally(() => {
+          store.commit('setLoadingAddPayment', false)
+        })
     }
 
     const amount = computed(() => {
@@ -325,6 +346,7 @@ export default defineComponent({
       referenceNo,
       currentAccount,
       customerCredits,
+      discountPercentage,
       formatPrice,
       updateAmount,
       changePaymentMethods,

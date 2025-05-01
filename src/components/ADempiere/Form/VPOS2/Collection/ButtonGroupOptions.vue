@@ -58,7 +58,16 @@ import { getPaymentValues } from '@/utils/ADempiere/dictionary/form/VPOS'
 export default defineComponent({
   name: 'ButtonGroupOptions',
   setup() {
-    const isLoading = ref(false)
+    // const isLoading = ref(false)
+    const isLoading = computed({
+      get() {
+        return store.getters.getLoadingAddPayment
+      },
+      // setter
+      set(isLoad) {
+        store.commit('setLoadingAddPayment', isLoad)
+      }
+    })
     const isLoadingProcess = ref(false)
 
     const currentAccount = computed(() => {

@@ -518,7 +518,8 @@ export default {
         delete: 'delete product',
         addProduct: 'add product',
         invoiceOpen: 'generate invoice with an open balance',
-        newOrder: 'create new order'
+        newOrder: 'create new order',
+        discountApplied: 'Discount Applied'
       },
       orderRMA: {
         addProduct: 'Product Added',

@@ -519,7 +519,8 @@ export default {
         delete: 'eliminar producto',
         addProduct: 'agregar producto',
         invoiceOpen: 'generar factura con un saldo abierto',
-        newOrder: 'crear nueva orden'
+        newOrder: 'crear nueva orden',
+        discountApplied: 'Descuento Aplicado'
       },
       orderRMA: {
         addProduct: 'Producto Agregado',

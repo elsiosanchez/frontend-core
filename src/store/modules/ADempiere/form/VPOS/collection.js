@@ -42,6 +42,7 @@ import { defaultValueCollections } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 const collection = {
   showCollection: false,
+  isLoadingAddPayment: false,
   payments: [],
   listRate: [],
   currentRate: {},
@@ -69,6 +70,9 @@ export default {
     },
     setPaymentLoading(state, loading) {
       state.isLoadingPayment = loading
+    },
+    setLoadingAddPayment(state, loading) {
+      state.isLoadingAddPayment = loading
     },
     setAttributePaymentVerification(state, {
       attribute,
@@ -432,6 +436,51 @@ export default {
         resolve()
       })
     },
+    verifyPaymentDiscount({
+      getters,
+      dispatch
+    }, {
+      payment
+    }) {
+      return new Promise(resolve => {
+        const listPaymentMethods = getters.getListPaymentMethods
+        const currentMethods = listPaymentMethods.find(list => list.id === payment.allocate_payment_id)
+        if (currentMethods.is_allows_apply_discount) {
+          dispatch('updateCurrentOrder', {
+            discount_rate: currentMethods.maximum_discount_allowed,
+            isListLine: true
+          })
+        }
+        // if (!isEmptyValue(payment) && payment.is_online) {
+        //   dispatch('processOnline', {
+        //     payment
+        //   })
+        //   dispatch('setModalDialogVPOS', {
+        //     title: lang.t('form.pos.collect.onlinePayment.info'),
+        //     doneMethod: () => {
+        //       commit('setShowedModalDialogVPOS', {
+        //         isShowed: false
+        //       })
+        //     },
+        //     isLoadingDone: () => {
+        //       return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+        //     },
+        //     isDisabledDone: () => {
+        //       return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+        //     },
+        //     closeMethod: () => {
+        //       commit('setAttributePaymentVerification', {
+        //         attribute: 'isShowCancele',
+        //         value: true
+        //       })
+        //     },
+        //     componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'),
+        //     isShowed: true
+        //   })
+        // }
+        resolve()
+      })
+    },
     infoOnlinePayment({
       commit,
       getters,
@@ -541,6 +590,9 @@ export default {
     },
     getListPayments: (state) => {
       return state.payments
+    },
+    getLoadingAddPayment: (state) => {
+      return state.isLoadingAddPayment
     },
     getRate: (state) => ({ date }) => {
       return state.currentRate[date] || {}
