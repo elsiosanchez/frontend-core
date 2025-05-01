@@ -39,6 +39,8 @@
           :container-manager="containerManager"
         />
       </el-col>
+
+      <!-- {{ selectionsList.map(i => i[panelMetadata.keyColumn]) }} -->
     </el-row>
 
     <el-table
@@ -760,6 +762,7 @@ export default defineComponent({
       disableExport,
       isEnableProcess,
       processDescription,
+      selectionsList,
       // Methods
       isSelectDefault,
       editCell,

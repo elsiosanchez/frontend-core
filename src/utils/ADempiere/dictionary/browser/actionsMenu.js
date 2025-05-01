@@ -204,6 +204,7 @@ export const runProcessOfBrowser = {
       return
     }
 
+    let isShowed = true
     const storedProcess = store.getters.getStoredProcess(browserProcess.uuid)
     if (!isEmptyValue(storedProcess)) {
       const { fieldsList, show_help } = storedProcess
@@ -227,16 +228,15 @@ export const runProcessOfBrowser = {
               containerUuid: browserProcess.uuid
             })
           })
-
-        store.commit('setShowedModalDialog', {
-          containerUuid: browserProcess.uuid,
-          isShowed
-        })
       }
+
+      store.commit('setShowedModalDialog', {
+        containerUuid: browserProcess.uuid,
+        isShowed
+      })
       return
     }
 
-    let isShowed = true
     store.dispatch('getProcessDefinitionFromServer', {
       id: browserProcess.uuid,
       containerUuidAssociated: containerUuid
