@@ -74,6 +74,13 @@
         :container-manager="containerManager"
       />
       <slot name="additional-options" />
+      <documents-reference
+        v-if="!tabAttributes.isParentTab"
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :tab-attributes="tabAttributes"
+        :container-manager="containerManager"
+      />
     </div>
   </span>
   <div v-else>
@@ -102,7 +109,7 @@ import OptionsSecuence from '@/components/ADempiere/TabManager/convenienceButton
 import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/DeleteRecordButton.vue'
 import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
 import PrintFormats from '@/components/ADempiere/TabManager/convenienceButtons/PrintFormats.vue'
-
+import DocumentsReference from '@/components/ADempiere/TabManager/convenienceButtons/DocumentsReference.vue'
 export default defineComponent({
   name: 'ConvenienceButtons',
 
@@ -115,6 +122,7 @@ export default defineComponent({
     SaveRecordButton,
     UndoChangeButton,
     DeleteRecordButton,
+    DocumentsReference,
     RefreshRecordButton,
     PrintFormats
   },

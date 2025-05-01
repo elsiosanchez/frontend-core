@@ -262,11 +262,15 @@ export default defineComponent({
       }
     })
 
-    const isShowedTableRecords = computed(() => {
+    const tab = computed(() => {
       return store.getters.getStoredTab(
         props.parentUuid,
         props.containerUuid
-      ).isShowedTableRecords
+      )
+    })
+
+    const isShowedTableRecords = computed(() => {
+      return tab.value.isShowedTableRecords
     })
 
     const styleIconSvg = computed(() => {
@@ -277,6 +281,13 @@ export default defineComponent({
         return 'position: absolute;right: 66px;display: inline-block;padding-right: 5px;float: right;width: 293px;'
       }
       return 'position: absolute;right: 70px;display: inline-block;padding-right: 0px;float: right;width: 289px;margin-top: -1px;'
+    })
+
+    const styleInput = computed(() => {
+      if (!tab.value.isParentTab) {
+        return 'padding-right: 36px;'
+      }
+      return 'padding-right: 6px;'
     })
 
     const containerManagerAdvancedQuery = computed(() => {
@@ -502,9 +513,11 @@ export default defineComponent({
       // Computeds
       containerManagerAdvancedQuery,
       valueToSearch,
+      tab,
       isMobile,
-      panelAdvancedQuery,
+      styleInput,
       styleIconSvg,
+      panelAdvancedQuery,
       // Methods
       openDrawer,
       clearValues,

@@ -20,7 +20,7 @@
   <span
     v-if="!isLoading"
   >
-    <el-card v-if="!isEmptyValue(getterReferences.referencesList)" style="padding: 10px;">
+    <el-card v-if="!isEmptyValue(getterReferences) && !isEmptyValue(getterReferences.referencesList)" style="padding: 10px;">
       <el-descriptions
         :column="1"
         :border="true"
@@ -63,6 +63,7 @@ import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 
 // Utils and Helper Methods
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'ReferenceRecords',
@@ -91,12 +92,19 @@ export default defineComponent({
     isLoading: {
       type: Boolean,
       default: false
+    },
+    referencesList: {
+      type: Object,
+      default: () => {}
     }
   },
 
   setup(props) {
     // Computeds
     const getterReferences = computed(() => {
+      if (!isEmptyValue(props.referencesList)) {
+        return props.referencesList
+      }
       return store.getters.getStoredReferences({
         windowUuid: props.parentUuid,
         tableName: props.tableName,
