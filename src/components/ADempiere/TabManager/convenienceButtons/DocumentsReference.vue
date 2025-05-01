@@ -18,44 +18,37 @@
 
 <template>
   <span>
-    <el-button
-      v-if="!isEmptyValue(tabAttributes) && currentRecordId > 0"
-      plain
-      type="info"
+    <el-dropdown
+      v-if="isShowReference"
       size="small"
-      style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
-      @click="openPanel"
+      trigger="click"
+      class="print-button"
+      style="margin-left: 8px; padding-right: 9px;"
+      @command="handleCommandActions"
     >
-      <svg-icon
-        style="font-size: 21px;"
-        icon-class="document-relations"
-      />
-    </el-button>
-
-    <el-dialog
-      :visible.sync="documentRelationsShow"
-      :before-close="openPanel"
-    >
-      <span
-        slot="title"
+      <el-button
+        plain
+        type="info"
+        size="small"
+        style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
       >
-        <p style="text-align: center;">
-          <b>
-            {{ isLoading + $t('window.containerInfo.referenceRecords') + '( ' + tabAttributes.name + ' )' }}
-          </b>
-        </p>
-      </span>
-      <reference-records
-        :container-uuid="tabAttributes.containerUuid"
-        :table-name="tabAttributes.table_name"
-        :container-manager="containerManager"
-        :record-uuid="currentRecordUuid"
-        :record-id="currentRecordId"
-        :is-loading="isLoading"
-        :references-list="referencesList"
-        style="height: 100%;"
-      />
-    </el-dialog>
+        <svg-icon
+          style="font-size: 21px;"
+          icon-class="document-relations"
+        />
+      </el-button>
+
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item
+          v-for="(reference, index) in recordReferences.referencesList"
+          :key="index"
+          :command="reference"
+          icon="el-icon-zoom-in"
+        >
+          {{ reference.display_name }}
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
   </span>
 </template>
 
@@ -63,6 +56,7 @@
 import {
   defineComponent,
   computed,
+  watch,
   ref
 } from '@vue/composition-api'
 
@@ -70,7 +64,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-
+import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 // Components and Mixins
 import ReferenceRecords from '@/components/ADempiere/PanelInfo/Component/ReferenceRecords/index.vue'
 
@@ -117,6 +111,10 @@ export default defineComponent({
       return ''
     })
 
+    const isShowReference = computed(() => {
+      return !isEmptyValue(props.tabAttributes) && currentRecordId.value > 0 && !isEmptyValue(recordReferences.value) && !isEmptyValue(recordReferences.value.referencesList)
+    })
+
     // Current Record ID
     const currentRecordId = computed(() => {
       if (!isEmptyValue(props.tabAttributes)) {
@@ -128,24 +126,58 @@ export default defineComponent({
       return -1
     })
 
+    const recordReferences = computed(() => {
+      return store.getters.getStoredReferences({
+        windowUuid: props.tabAttributes.parentUuid,
+        tableName: props.tabAttributes.table_name,
+        recordUuid: currentRecordUuid.value
+      })
+    })
+
     /**
      * Methods
      */
 
-    function openPanel() {
-      documentRelationsShow.value = !documentRelationsShow.value
-      isLoading.value = true
+    function loadRefrence() {
+      if (!isEmptyValue(recordReferences.value) && !isEmptyValue(recordReferences.value.referencesList)) return
       store.dispatch('getReferencesFromServer', {
+        tableName: props.tabAttributes.table_name,
+        containerUuid: props.tabAttributes.containerUuid,
         tabId: props.tabAttributes.internal_id,
-        recordId: currentRecordId.value
+        parentUuid: props.tabAttributes.parentUuid,
+        recordId: currentRecordId.value,
+        recordUuid: currentRecordUuid.value
       })
-        .then(referenceResponse => {
-          referencesList.value = referenceResponse
-        })
-        .finally(() => {
-          isLoading.value = false
-        })
     }
+
+    function handleCommandActions(reference) {
+      if (reference.window_id <= 0) {
+        return
+      }
+
+      const tabParent = 0
+
+      const containerIdentifier = 'window_' + reference.window_id
+      zoomIn({
+        attributeValue: containerIdentifier,
+        attributeName: 'containerKey',
+        query: {
+          tabParent,
+          referenceUuid: reference.uuid
+        }
+      })
+    }
+
+    /**
+     * Watch - watch works directly on a ref
+     * @param newValue - New Assessed Property value
+     * @param oldValue - Old Assessed Property value
+     */
+    watch(currentRecordId, (newValue, oldValue) => {
+      if (!isEmptyValue(newValue) && newValue !== oldValue) {
+        loadRefrence()
+      }
+    })
 
     return {
       // Ref
@@ -153,10 +185,13 @@ export default defineComponent({
       isLoading,
       // Computed
       currentRecordUuid,
+      recordReferences,
       currentRecordId,
+      isShowReference,
       referencesList,
       // Methods
-      openPanel
+      handleCommandActions,
+      loadRefrence
     }
   }
 })

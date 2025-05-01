@@ -81,6 +81,13 @@
         :tab-attributes="tabAttributes"
         :container-manager="containerManager"
       />
+      <record-logs-options
+        v-if="!tabAttributes.isParentTab"
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :tab-attributes="tabAttributes"
+        :container-manager="containerManager"
+      />
     </div>
   </span>
   <div v-else>
@@ -110,6 +117,7 @@ import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceBut
 import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
 import PrintFormats from '@/components/ADempiere/TabManager/convenienceButtons/PrintFormats.vue'
 import DocumentsReference from '@/components/ADempiere/TabManager/convenienceButtons/DocumentsReference.vue'
+import RecordLogsOptions from '@/components/ADempiere/TabManager/convenienceButtons/RecordLogsOptions.vue'
 export default defineComponent({
   name: 'ConvenienceButtons',
 
@@ -123,6 +131,7 @@ export default defineComponent({
     UndoChangeButton,
     DeleteRecordButton,
     DocumentsReference,
+    RecordLogsOptions,
     RefreshRecordButton,
     PrintFormats
   },
