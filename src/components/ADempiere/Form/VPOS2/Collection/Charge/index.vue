@@ -279,7 +279,7 @@ export default defineComponent({
       return store.getters.getAvailableCurrencies.currencie
     })
 
-    if (!isEmptyValue(currentOrder.value.open_amount)) store.commit('setPayAmount', currentOrder.value.open_amount.value)
+    // if (!isEmptyValue(currentOrder.value.open_amount)) store.commit('setPayAmount', currentOrder.value.open_amount.value)
 
     /**
      * Hangle Change Payment Methods
@@ -291,23 +291,36 @@ export default defineComponent({
       const currency = getCurrencyPayment({
         paymentMethods: currentPaymentMethod
       })
-      const { open_amount } = store.getters.getCurrentOrder
-      updateAmount(open_amount)
-      discountPaymentMethods(currentPaymentMethod)
-      store.commit('setAvailableCurrencies', currency)
+      // const { open_amount } = store.getters.getCurrentOrder
+      // updateAmount(open_amount)
+      discountPaymentMethods(currentPaymentMethod, currency)
       clearFieldsCollections()
     }
 
-    function discountPaymentMethods(paymentMethod) {
+    function discountPaymentMethods(paymentMethod, currency) {
       const { is_allows_apply_discount, maximum_discount_allowed } = paymentMethod
       discountPercentage.value = is_allows_apply_discount ? maximum_discount_allowed : '0'
+      let isListLine = true
+      if (
+        currentOrder.value.discount_amount === '0.00' &&
+        !is_allows_apply_discount
+      ) {
+        isListLine = false
+      }
       store.commit('setLoadingAddPayment', true)
       store.dispatch('updateCurrentOrder', {
         discount_rate: discountPercentage.value,
-        isListLine: true
+        isListLine
       })
         .finally(() => {
+          // if (
+          //   currentOrder.value.discount_amount === '0.00' &&
+          //   !is_allows_apply_discount
+          // ) {
+          // }
+          updateAmount(currentOrder.value.open_amount)
           store.commit('setLoadingAddPayment', false)
+          store.commit('setAvailableCurrencies', currency)
         })
     }
 
@@ -332,6 +345,7 @@ export default defineComponent({
 
     function updateAmount(amount) {
       if (isEmptyValue(amount)) return
+      console.log({ amount })
       store.commit('setPayAmount', amount)
     }
 

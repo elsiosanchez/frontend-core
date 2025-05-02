@@ -104,8 +104,7 @@ export default defineComponent({
       const { price_list, open_amount } = currentOrder.value
       let amountConvert = Number(open_amount)
       if (
-        isEmptyValue(currency) ||
-        !isEmptyValue(price_list) &&
+        (isEmptyValue(currency) || !isEmptyValue(price_list)) &&
         currency.id === price_list.currency.id
       ) {
         store.commit('setPayAmount', amountConvert)

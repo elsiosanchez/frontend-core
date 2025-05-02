@@ -25,7 +25,6 @@
       controls-position="right"
       :precision="precision"
       autofocus
-      size="mini"
       :disabled="disabled"
       style="text-align-last: end !important;width: 100%;"
       @change="handleChange"
@@ -36,7 +35,6 @@
       v-model="displayValue"
       readonly
       autofocus
-      size="mini"
       :disabled="disabled"
       style="text-align-last: end !important;width: 100%;"
       @focus="customFocusGained"
@@ -99,7 +97,7 @@ export default defineComponent({
       },
       // setter
       set(value) {
-        store.commit('setPayAmount', value)
+        // store.commit('setPayAmount', value)
       }
     })
     // Methods
