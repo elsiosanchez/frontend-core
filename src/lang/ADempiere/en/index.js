@@ -293,6 +293,7 @@ export default {
       emptyPos: 'No Associated Point of Sale',
       releaseOrder: 'Release It',
       applyDiscountOnOrder: 'Apply Discount Based on Amount',
+      applyDiscountInPercent: 'Apply Percentage Based Discount',
       fieldDiscountAmount: 'Discount Amount',
       salesDiscountOff: 'Apply Discount on Sale',
       applyDiscountToAllLines: 'Apply Discount to All Lines',
