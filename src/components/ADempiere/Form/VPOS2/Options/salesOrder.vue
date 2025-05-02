@@ -431,7 +431,7 @@
         ref="showApplyDiscountToAllLines"
         placement="bottom"
         width="350"
-        :title="$t('form.pos.applyDiscountOnOrder')"
+        :title="$t('form.pos.applyDiscountInPercent')"
         trigger="click"
       >
         <el-row v-if="!isLoadingApplyDiscountOnOrder" :gutter="24" class="container-reverse">
