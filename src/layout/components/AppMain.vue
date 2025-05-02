@@ -1,5 +1,6 @@
 <template>
   <div :class="styleForm">
+    <PanelNotifications />
     <span v-if="isMobile">
       <navbar />
       <tags-view />
@@ -18,13 +19,15 @@
 <script>
 import Navbar from '@/layout/components/Navbar'
 import TagsView from '@/layout/components/TagsView'
+import PanelNotifications from '@/components/ADempiere/PanelDefinition/PanelNotifications.vue'
 
 export default {
   name: 'AppMain',
 
   components: {
     Navbar,
-    TagsView
+    TagsView,
+    PanelNotifications
   },
   computed: {
     cachedViews() {

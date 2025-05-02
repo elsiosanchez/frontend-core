@@ -17,37 +17,28 @@
 -->
 
 <template>
-  <span>
-    <PanelNotifications />
-    <component
-      :is="componentRender"
-      :parent-uuid="parentUuid"
-      :container-uuid="containerUuid"
-      :container-manager="containerManagerPanel"
-      :panel-metadata="panelMetadata"
-      :is-show-filter="isShowFilter"
-      :is-filter-records="isFilterRecords"
-      :is-advanced-query="isAdvancedQuery"
-      :is-tab-panel="isTabPanel"
-    />
-  </span>
+  <component
+    :is="componentRender"
+    :parent-uuid="parentUuid"
+    :container-uuid="containerUuid"
+    :container-manager="containerManagerPanel"
+    :panel-metadata="panelMetadata"
+    :is-show-filter="isShowFilter"
+    :is-filter-records="isFilterRecords"
+    :is-advanced-query="isAdvancedQuery"
+    :is-tab-panel="isTabPanel"
+  />
 </template>
 
 <script>
 import store from '@/store'
 import router from '@/router'
 import { defineComponent, computed } from '@vue/composition-api'
-// Components
-import PanelNotifications from '@/components/ADempiere/PanelDefinition/PanelNotifications.vue'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'PanelDefinition',
-
-  components: {
-    PanelNotifications
-  },
 
   props: {
     parentUuid: {
