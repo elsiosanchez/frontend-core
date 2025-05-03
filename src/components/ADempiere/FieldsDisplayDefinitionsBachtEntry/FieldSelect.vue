@@ -60,6 +60,7 @@ import { requestLookupList } from '@/api/ADempiere/fields/lookups.ts'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 export default defineComponent({
   name: 'FieldSelect',
@@ -132,6 +133,7 @@ export default defineComponent({
     const timeOut = ref(null)
 
     const { containerUuid, parentUuid, reference } = props.fieldMetadata
+    const { currentTab } = store.getters.getContainerInfo
 
     const defaultValue = computed(() => {
       return store.getters.getValueOfFieldOnContainer({
@@ -211,14 +213,11 @@ export default defineComponent({
 
     function showList(isShow) {
       if (!isEmptyValue(reference.context_column_names)) {
-        const attributesBachtEntry = {}
-        reference.context_column_names.forEach(list => {
-          const fieldValue = props.fieldList.find(field => field.columnName === list)
-          // attributesBachtEntry[list] = fieldValue.value
-          attributesBachtEntry[list] = setValueContextColumnName({
-            context_column_names: list,
-            currentField: fieldValue
-          })
+        const attributesBachtEntry = getContextAttributes({
+          containerUuid: currentTab.parentUuid,
+          contextColumnNames: reference.context_column_names,
+          isBooleanToString: true,
+          format: 'object'
         })
         contexAttribute.value = JSON.stringify(attributesBachtEntry)
       }
