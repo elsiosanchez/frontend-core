@@ -95,7 +95,7 @@
             @click="editCell(scope.row, fieldAttributes)"
           >
             <field-definition
-              v-if="isEditing && editingRow === scope.row && editingColumn === fieldAttributes"
+              v-if="isEditing && editingRow === scope.row && !isEmptyValue(editingColumn) && editingColumn.uuid === fieldAttributes.uuid"
               key="field-definition"
               :container-uuid="containerUuid"
               :container-manager="containerManager"
@@ -111,8 +111,13 @@
               size="mini"
               size-field-input="mini"
             />
-            <span v-else>
-              {{ displayValueColum({ row: scope.row, fieldAttributes }) }}
+            <span v-else key="cell-info">
+              <cell-display-info
+                key="info-value"
+                class="cell-info-edit"
+                :field-attributes="fieldAttributes"
+                :data-row="scope.row"
+              />
             </span>
           </p>
         </template>
@@ -198,13 +203,12 @@ import router from '@/router'
 import store from '@/store'
 
 // Constants
-import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColumns'
 import { BINARY_DATA, BUTTON, IMAGE } from '@/utils/ADempiere/references'
-import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Components and Mixins
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
+import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
@@ -212,7 +216,6 @@ import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { formatField } from '@/utils/ADempiere/valueFormat.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
 import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
 
@@ -225,6 +228,7 @@ export default defineComponent({
   components: {
     CustomPagination,
     FieldDefinition,
+    CellDisplayInfo,
     CellEditInfo,
     FilterFields,
     LoadingView
@@ -669,32 +673,17 @@ export default defineComponent({
       return ''
     }
 
-    function displayColumnName(fieldAttributes) {
-      if (isEmptyValue(fieldAttributes.displayColumnName)) {
-        return DISPLAY_COLUMN_PREFIX + fieldAttributes.column_name
-      }
-      return fieldAttributes.displayColumnName
-    }
-
-    function displayValueColum({
-      row,
-      fieldAttributes
-    }) {
-      if (fieldAttributes.is_encrypted) {
-        return '••••••••••••••••••'
-      }
-      const currentValue = row[fieldAttributes.column_name]
-      return formatField({
-        value: currentValue,
-        currency: row[DISPLAY_COLUMN_PREFIX + COLUMNNAME_C_Currency_ID],
-        displayedValue: row[displayColumnName(fieldAttributes)],
-        displayType: fieldAttributes.display_type,
-        columnName: fieldAttributes.column_name
-      })
-    }
-
     function editCell(row, column) {
       if (!row.isSelectedRow) {
+        isEditing.value = false
+        return
+      }
+      const isReadOnlyColumn = props.containerManager.isReadOnlyColumn({
+        field: column,
+        row
+      })
+      if (isReadOnlyColumn) {
+        isEditing.value = false
         return
       }
       isEditing.value = true
@@ -768,7 +757,6 @@ export default defineComponent({
       editCell,
       noEditCell,
       getColumnStyle,
-      displayValueColum,
       //
       setTableHeight,
       adjustSize,
