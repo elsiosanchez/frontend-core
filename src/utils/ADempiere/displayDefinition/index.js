@@ -1065,7 +1065,7 @@ export const containerManagerFieldDefinition = {
       }
 
       const contextAttributesList = store.getters.getValuesView({
-        parentUuid: parentUuid,
+        parentUuid: currentTab.firstTabUuid,
         isOnlyColumns: true,
         format: 'object'
       })
