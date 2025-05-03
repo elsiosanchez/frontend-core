@@ -84,6 +84,7 @@
             {{ fieldAttributes.name }}
           </span>
         </template>
+
         <template slot-scope="scope">
           <cell-display-info
             key="info-value"
@@ -124,6 +125,7 @@ import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScr
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import useFullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer/useFullScreenContainer'
 import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { isLookup, isDateField, isNumberField, isBooleanField } from '@/utils/ADempiere/references'

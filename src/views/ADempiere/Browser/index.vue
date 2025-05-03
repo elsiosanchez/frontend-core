@@ -249,10 +249,11 @@ export default defineComponent({
         return []
       }
       const { fieldsList } = storedBrowser.value
-      const header = fieldsList.sort((itemA, itemB) => {
+      const header = fieldsList.toSorted((itemA, itemB) => {
         return itemA.sequence - itemB.sequence
       })
       return header
+      // return fieldsList
     })
 
     function generateBrowser(browser) {

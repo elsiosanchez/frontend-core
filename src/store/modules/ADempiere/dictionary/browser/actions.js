@@ -81,10 +81,11 @@ export default {
             fieldOverwrite: {
               isShowedFromUser: false
             },
-            sortField: 'seq_no_grid',
+            sortField: 'grid_sequence',
             evaluateDefaultFieldShowed,
             evaluateDefaultColumnShowed
           })
+
           browserDefinition.elementsList = {}
           browserDefinition.columnsList = {}
           browserDefinition.fieldsList.forEach(fieldItem => {

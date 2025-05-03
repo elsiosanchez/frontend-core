@@ -28,7 +28,7 @@ import {
   COLUMNNAME_C_Currency_ID, COLUMNNAME_DocAction, COLUMNNAME_DocStatus
 } from '@/utils/ADempiere/constants/systemColumns'
 
-// Utils and Helpers Methods
+// Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getTableNameFromReference, isSupportLookup } from '@/utils/ADempiere/references'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
@@ -336,7 +336,7 @@ export function generateField({
 
       // increment order sequence
       field.sequence = field.sequence > 0 ? field.sequence + 1 : 0
-      field.seq_no_grid = field.seq_no_grid > 0 ? field.seq_no_grid + 1 : 0
+      field.grid_sequence = field.grid_sequence > 0 ? field.grid_sequence + 1 : 0
       field.sort_no = field.sort_no > 0 ? field.sort_no + 1 : 0
 
       // if field with value displayed in main panel

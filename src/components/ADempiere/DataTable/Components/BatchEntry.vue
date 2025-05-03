@@ -214,7 +214,7 @@ export default defineComponent({
       })
     })
 
-    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry).sort((a, b) => a.sequence - b.sequence)
+    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry).toSorted((a, b) => a.sequence - b.sequence)
 
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({
