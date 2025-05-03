@@ -345,7 +345,6 @@ export default defineComponent({
 
     function updateAmount(amount) {
       if (isEmptyValue(amount)) return
-      console.log({ amount })
       store.commit('setPayAmount', amount)
     }
 

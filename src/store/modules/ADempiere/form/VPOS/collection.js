@@ -41,16 +41,22 @@ import { showMessage } from '@/utils/ADempiere/notification'
 import { defaultValueCollections } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 const collection = {
-  showCollection: false,
-  isLoadingAddPayment: false,
   payments: [],
   listRate: [],
   currentRate: {},
+  online: {
+    time: 3,
+    status: 'W',
+    error: false,
+    message: lang.t('form.pos.collect.onlinePayment.title')
+  },
+  showCollection: false,
   paymentVerification: {
     isProcessing: true,
     isShowCancele: false
   },
-  isLoadingPayment: false
+  isLoadingPayment: false,
+  isLoadingAddPayment: false
 }
 
 export default {
@@ -80,6 +86,9 @@ export default {
     }) {
       if (isEmptyValue(attribute)) return
       state.paymentVerification[attribute] = value
+    },
+    setOnline(state, online) {
+      state.online = online
     }
   },
   /**
@@ -418,10 +427,10 @@ export default {
               })
             },
             isLoadingDone: () => {
-              return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+              return getters.getOnline.status === 'W'
             },
             isDisabledDone: () => {
-              return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
+              return getters.getOnline.status === 'W'
             },
             closeMethod: () => {
               commit('setAttributePaymentVerification', {
@@ -451,40 +460,12 @@ export default {
             isListLine: true
           })
         }
-        // if (!isEmptyValue(payment) && payment.is_online) {
-        //   dispatch('processOnline', {
-        //     payment
-        //   })
-        //   dispatch('setModalDialogVPOS', {
-        //     title: lang.t('form.pos.collect.onlinePayment.info'),
-        //     doneMethod: () => {
-        //       commit('setShowedModalDialogVPOS', {
-        //         isShowed: false
-        //       })
-        //     },
-        //     isLoadingDone: () => {
-        //       return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
-        //     },
-        //     isDisabledDone: () => {
-        //       return getters.getAttributePaymentVerification({ attribute: 'isProcessing' })
-        //     },
-        //     closeMethod: () => {
-        //       commit('setAttributePaymentVerification', {
-        //         attribute: 'isShowCancele',
-        //         value: true
-        //       })
-        //     },
-        //     componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'),
-        //     isShowed: true
-        //   })
-        // }
         resolve()
       })
     },
     infoOnlinePayment({
       commit,
-      getters,
-      dispatch
+      getters
     }, {
       posId,
       paymentId
@@ -497,6 +478,13 @@ export default {
           paymentId
         })
           .then(response => {
+            const { is_error, message, next_request_time, status } = response
+            commit('setOnline', {
+              status,
+              message,
+              error: is_error,
+              time: next_request_time
+            })
             resolve(response)
           })
           .catch(error => {
@@ -517,8 +505,7 @@ export default {
     },
     processOnline({
       commit,
-      getters,
-      dispatch
+      getters
     }, {
       posId,
       payment
@@ -531,6 +518,13 @@ export default {
           paymentId: payment.id
         })
           .then(response => {
+            const { is_error, message, next_request_time, status } = response
+            commit('setOnline', {
+              status,
+              message,
+              error: is_error,
+              time: next_request_time
+            })
             resolve(response)
           })
           .catch(error => {
@@ -601,6 +595,9 @@ export default {
       attribute
     }) => {
       return state.paymentVerification[attribute] || undefined
+    },
+    getOnline: (state) => {
+      return state.online
     }
   }
 }

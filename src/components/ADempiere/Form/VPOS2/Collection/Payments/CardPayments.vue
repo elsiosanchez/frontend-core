@@ -125,19 +125,7 @@
       width="60%"
       :modal="false"
     >
-      <p
-        slot="title"
-        class="dialog-label-info-cancele"
-      >
-        <b>
-          {{ $t('form.pos.collect.onlinePayment.info') }}
-        </b>
-      </p>
-      <el-result
-        :icon="infoPayment.icon"
-        :title="infoPayment.message"
-        class="result-cancelet-payment"
-      />
+      <verify-payment-online />
       <span slot="footer" class="dialog-footer">
         <el-button
           type="info"
@@ -153,24 +141,24 @@
           </b>
         </el-button>
         <el-button
+          v-if="getInfoOnline.status === 'W'"
           type="warning"
           class="button-base-icon"
+          :loading="infoPayment.loading"
           @click="cancelPayment(payment)"
         >
           <svg-icon
             icon-class="warning"
           />
-          <b v-if="infoPayment.status === 'O'" style="font-size: 18px !important">
-            {{ $t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction') }}
-          </b>
-          <b v-else style="font-size: 18px !important">
+          <b style="font-size: 18px !important">
             {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
           </b>
         </el-button>
         <el-button
-          v-if="infoPayment.status === '' || infoPayment.status === 'E'"
+          v-if="getInfoOnline.status === 'R' || getInfoOnline.status === 'E'"
           type="primary"
           class="button-base-icon"
+          :loading="infoPayment.loading"
           @click="returnSend(payment)"
         >
           <svg-icon
@@ -193,7 +181,7 @@ import {
 } from '@vue/composition-api'
 
 import store from '@/store'
-import lang from '@/lang'
+import verifyPaymentOnline from '@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -202,6 +190,9 @@ import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'CardPayments',
+  components: {
+    verifyPaymentOnline
+  },
   props: {
     payment: {
       type: Object,
@@ -230,12 +221,17 @@ export default defineComponent({
     const infoPayment = ref({
       icon: 'info',
       show: false,
+      loading: false,
       message: '',
       status: ''
     })
     const isShowCancele = ref(false)
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
+    })
+
+    const getInfoOnline = computed(() => {
+      return store.getters.getOnline
     })
 
     function displayCurrency({
@@ -362,23 +358,20 @@ export default defineComponent({
     }
 
     function seeDetail(payment) {
-      store.dispatch('infoOnlinePayment', {
-        paymentId: payment.id
+      const { id, response_status, response_message } = payment
+      infoPayment.value.show = true
+      infoPayment.value.loading = true
+      store.commit('setOnline', {
+        status: response_status,
+        message: response_message,
+        error: false,
+        time: 3
       })
-        .then(response => {
-          const { message, status } = response
-          let details = message
-          let icon = 'info'
-          if (isEmptyValue(details)) details = lang.t('form.pos.collect.onlinePayment.cancelPayment.detailEmpty')
-          if (isEmptyValue(status)) icon = 'error'
-          if (!isEmptyValue(status) && status === 'E') icon = 'error'
-          if (!isEmptyValue(status) && status === 'O') icon = 'success'
-          infoPayment.value = {
-            message: details,
-            show: true,
-            status,
-            icon
-          }
+      store.dispatch('infoOnlinePayment', {
+        paymentId: id
+      })
+        .finally(() => {
+          infoPayment.value.loading = false
         })
     }
 
@@ -396,6 +389,7 @@ export default defineComponent({
       infoPayment,
       currentOrder,
       isShowCancele,
+      getInfoOnline,
       remove,
       isDelete,
       seeDetail,

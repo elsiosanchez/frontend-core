@@ -16,17 +16,43 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-row>
-    <el-result :title="$t('form.pos.collect.onlinePayment.title')" class="result-cancelet-info">
-      <template slot="icon">
-        <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
-      </template>
+
+    <card-payments
+      :payment="currentPaymentVerifications"
+      :readonly="true"
+      :show-details="false"
+    />
+    <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info">
       <template slot="extra">
-        <card-payments
+        <!-- <card-payments
           v-if="!isEmptyValue(currentPaymentVerifications)"
           :payment="currentPaymentVerifications"
           :readonly="true"
           :show-details="false"
-        />
+        /> -->
+      </template>
+    </el-result>
+    <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info">
+      <template slot="extra">
+        <!-- <card-payments
+          v-if="!isEmptyValue(currentPaymentVerifications)"
+          :payment="currentPaymentVerifications"
+          :readonly="true"
+          :show-details="false"
+        /> -->
+      </template>
+    </el-result>
+    <el-result v-else :title="message" class="result-cancelet-info">
+      <template slot="icon">
+        <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
+      </template>
+      <template slot="extra">
+        <!-- <card-payments
+          v-if="!isEmptyValue(currentPaymentVerifications)"
+          :payment="currentPaymentVerifications"
+          :readonly="true"
+          :show-details="false"
+        /> -->
       </template>
     </el-result>
     <el-col
@@ -101,16 +127,38 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      :visible.sync="isPanelError"
+      :modal="false"
+      width="30%"
+    >
+      <p
+        slot="title"
+        class="dialog-label-info-cancele"
+      >
+        <b>
+          {{ 'Error' }}
+        </b>
+      </p>
+      <el-result icon="error" :title="message">
+        <template slot="extra">
+          <el-button type="primary" size="medium" @click="returnToSend()">Volver a Enviar</el-button>
+        </template>
+      </el-result>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
 import {
   defineComponent,
-  computed
+  computed,
+  watch,
+  ref
 } from '@vue/composition-api'
 
 import store from '@/store'
+import lang from '@/lang'
 // Utils and Helper Methods
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -122,6 +170,10 @@ export default defineComponent({
     CardPayments
   },
   setup() {
+    // Ref
+    const isPanelError = ref(false)
+    const isPanelSuccess = ref(false)
+    // Computed
     const currentOrder = computed(() => {
       return store.getters.getCurrentOrder
     })
@@ -161,18 +213,34 @@ export default defineComponent({
       }
     })
 
-    const dayRate = computed(() => {
-      const rate = store.getters.getRate({ date: currentOrder.value.date_ordered })
-      if (isEmptyValue(rate.multiply_rate)) return displayAmount(0.00)
-      const {
-        multiply_rate,
-        divide_rate,
-        currency_to
-      } = rate
-      if (multiply_rate.value > divide_rate.value) return formatPrice({ value: multiply_rate, currency: currency_to.iso_code })
-      return formatPrice({ value: divide_rate, currency: currency_to.iso_code })
+    const getInfoOnline = computed(() => {
+      return store.getters.getOnline
     })
 
+    const message = computed(() => {
+      if (!isEmptyValue(getInfoOnline.value.message)) return getInfoOnline.value.message
+      return lang.t('form.pos.collect.onlinePayment.title')
+    })
+
+    const isError = computed(() => {
+      return getInfoOnline.value.error
+    })
+
+    const statusPayment = computed(() => {
+      return getInfoOnline.value.status
+    })
+
+    const nextRequestTime = computed(() => {
+      if (
+        !isEmptyValue(getInfoOnline.value.time) &&
+        getInfoOnline.value.time <= 0
+      ) {
+        return getInfoOnline.value.time * 1000
+      }
+      return 3000
+    })
+
+    // Methods
     function displayAmount(amount) {
       const { price_list } = currentOrder.value
       if (isEmptyValue(price_list)) return amount
@@ -203,28 +271,69 @@ export default defineComponent({
     }
 
     function InfoOnlinePayment() {
-      if (!isEmptyValue(currentPaymentVerifications.value)) {
-        store.dispatch('infoOnlinePayment', {
-          paymentId: currentPaymentVerifications.value.id
+      store.dispatch('infoOnlinePayment', {
+        paymentId: currentPaymentVerifications.value.id
+      })
+        .finally(() => {
+          if (getInfoOnline.value.error) return
+          loadInfoOnline()
         })
-      }
     }
 
-    setTimeout(() => {
-      InfoOnlinePayment()
-    }, 500)
+    function loadInfoOnline() {
+      setTimeout(() => {
+        if (statusPayment.value === 'W') {
+          InfoOnlinePayment()
+        }
+      }, nextRequestTime.value)
+    }
+
+    function returnToSend() {
+      isPanelError.value = false
+      store.dispatch('processOnline', {
+        payment: currentPaymentVerifications.value
+      })
+        .finally(() => {
+          setTimeout(() => {
+            InfoOnlinePayment()
+          }, 4000)
+        })
+    }
+
+    loadInfoOnline()
+
+    /**
+     * Watch - watch works directly on a ref
+     * @param newValue - New Assessed Property value
+     * @param oldValue - Old Assessed Property value
+     */
+    watch(isError, (newValue, oldValue) => {
+      if (newValue) {
+        isPanelError.value = newValue
+      }
+    })
 
     return {
-      dayRate,
+      // Ref
+      isPanelError,
+      isPanelSuccess,
+      // Computed
+      message,
+      isError,
       listPayments,
       currentOrder,
       isShowCancele,
+      getInfoOnline,
+      nextRequestTime,
       displayCurrency,
       listPaymentMethods,
+      statusPayment,
       currentPaymentVerifications,
+      // Methods
       formatPrice,
       cancelPayment,
-      displayAmount
+      displayAmount,
+      returnToSend
     }
   }
 })
