@@ -616,37 +616,41 @@ export default defineComponent({
       }
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
-        if (!isEmptyValue(selectionsList.value)) {
-          // set current selection
-          toggleSelection(selectionsList.value)
-        } else if (!isEmptyValue(recordsWithFilter.value)) {
-          let currentRow = {}
-          // set current record
-          const recordUuid = store.getters.getUuidOfContainer(props.containerUuid)
-          if (!isEmptyValue(recordUuid)) {
-            currentRow = recordsWithFilter.value.find(row => row.UUID === recordUuid)
-          } else {
-            // set first record
-            currentRow = recordsWithFilter.value.at(0)
-          }
+        const selections = selectionsList.value
+        const records = recordsWithFilter.value
 
-          if (isEmptyValue(getTabRecords.value.parentUuid)) {
-            return handleLoadRefresh()
-          }
-
-          // enable edit mode
-          currentRow.isEditRow = true
-          currentRow.isSelectedRow = true
-
-          currentRowSelect.value = currentRow
-          const newSelection = [currentRow]
-          handleSelectionAll(newSelection)
-          toggleSelection(newSelection)
+        if (!isEmptyValue(selections)) {
+          toggleSelection(selections)
         } else {
-          // clear selection
-          toggleSelection()
+          const currentRow = getCurrentRow(records)
+          if (currentRow) {
+            enableEditMode(currentRow)
+            const newSelection = [currentRow]
+            handleSelectionAll(newSelection)
+            toggleSelection(newSelection)
+          } else {
+            handleLoadRefresh()
+          }
         }
       }, 100)
+    }
+
+    function getCurrentRow(records) {
+      const recordUuid = store.getters.getUuidOfContainer(props.containerUuid)
+
+      if (!isEmptyValue(recordUuid)) {
+        const foundRow = records.find(row => row.UUID === recordUuid)
+        if (foundRow) {
+          return foundRow
+        }
+      }
+      // Return the first record if no UUID found or if not found
+      return records.at(0) || null
+    }
+
+    function enableEditMode(row) {
+      row.isEditRow = true
+      row.isSelectedRow = true
     }
 
     /**
