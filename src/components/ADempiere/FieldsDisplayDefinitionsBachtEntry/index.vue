@@ -32,6 +32,7 @@
     :is-panel-general="isPanelGeneral"
     :is-read-only="isReadOnly"
     :field-list="fieldList"
+    :is-context-attribute-bacht-entry="isContextAttributeBachtEntry"
     :container-manager="containerManager"
   >
     <template v-slot:button-exit>
@@ -111,6 +112,10 @@ export default defineComponent({
     },
     fieldList: {
       type: Array,
+      required: false
+    },
+    isContextAttributeBachtEntry: {
+      type: [Boolean, Number, String, Object, Array],
       required: false
     }
   },

@@ -106,6 +106,10 @@ export default defineComponent({
       type: [Boolean, Number, String, Object],
       required: false
     },
+    isContextAttributeBachtEntry: {
+      type: [Boolean, Number, String, Object, Array],
+      required: false
+    },
     isPanelGeneral: {
       type: Boolean,
       default: false
@@ -134,6 +138,25 @@ export default defineComponent({
 
     const { containerUuid, parentUuid, reference } = props.fieldMetadata
     const { currentTab } = store.getters.getContainerInfo
+
+    const contexAttributeList = computed(() => {
+      const context_column_names = reference.context_column_names[0]
+      if (!isEmptyValue(context_column_names)) {
+        if (!isEmptyValue(props.isContextAttributeBachtEntry[context_column_names])) {
+          return {
+            [context_column_names]: props.isContextAttributeBachtEntry[context_column_names]
+          }
+        } else {
+          return getContextAttributes({
+            containerUuid: currentTab.parentUuid,
+            contextColumnNames: reference.context_column_names,
+            isBooleanToString: true,
+            format: 'object'
+          })
+        }
+      }
+      return {}
+    })
 
     const defaultValue = computed(() => {
       return store.getters.getValueOfFieldOnContainer({
@@ -212,15 +235,8 @@ export default defineComponent({
     }
 
     function showList(isShow) {
-      if (!isEmptyValue(reference.context_column_names)) {
-        const attributesBachtEntry = getContextAttributes({
-          containerUuid: currentTab.parentUuid,
-          contextColumnNames: reference.context_column_names,
-          isBooleanToString: true,
-          format: 'object'
-        })
-        contexAttribute.value = JSON.stringify(attributesBachtEntry)
-      }
+      if (!isShow) return
+      contexAttribute.value = JSON.stringify(contexAttributeList.value)
       requestLookupList({
         pageSize: 10,
         ...lookupsAttribute.value
@@ -396,6 +412,7 @@ export default defineComponent({
       lookupsAttribute,
       defaultDisplayValue,
       contextDisplayValue,
+      contexAttributeList,
       // Methods
       showList,
       remoteMethod,

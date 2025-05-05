@@ -55,7 +55,8 @@
                   :is-panel-general="true"
                   :is-read-only="!isReadOnlyBatchEntry"
                   :container-manager="containerManager"
-                  :is-value-bacht-entry="attributesBachtEntry[field.column_name]"
+                  :is-context-attribute-bacht-entry="attributes"
+                  :is-value-bacht-entry="attributes[field.column_name]"
                 />
               </el-form-item>
             </el-col>
