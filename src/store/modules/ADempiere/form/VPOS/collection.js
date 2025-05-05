@@ -50,6 +50,7 @@ const collection = {
     error: false,
     message: lang.t('form.pos.collect.onlinePayment.title')
   },
+  currentPaymentOnline: {},
   showCollection: false,
   paymentVerification: {
     isProcessing: true,
@@ -89,6 +90,9 @@ export default {
     },
     setOnline(state, online) {
       state.online = online
+    },
+    setPaymentOnline(state, paymentOnline) {
+      state.currentPaymentOnline = paymentOnline
     }
   },
   /**
@@ -416,6 +420,7 @@ export default {
     }) {
       return new Promise(resolve => {
         if (!isEmptyValue(payment) && payment.is_online) {
+          commit('setPaymentOnline', payment)
           dispatch('processOnline', {
             payment
           })
@@ -431,6 +436,18 @@ export default {
             },
             isDisabledDone: () => {
               return getters.getOnline.status === 'W'
+            },
+            cancelMethod: () => {
+              commit('setAttributePaymentVerification', {
+                attribute: 'isShowCancele',
+                value: true
+              })
+            },
+            labelCancelMethod: () => {
+              return lang.t('form.pos.collect.onlinePayment.cancelPayment.title')
+            },
+            isOptionsCancel: () => {
+              return true
             },
             closeMethod: () => {
               commit('setAttributePaymentVerification', {
@@ -598,6 +615,9 @@ export default {
     },
     getOnline: (state) => {
       return state.online
+    },
+    getPaymentOnline: (state) => {
+      return state.currentPaymentOnline
     }
   }
 }

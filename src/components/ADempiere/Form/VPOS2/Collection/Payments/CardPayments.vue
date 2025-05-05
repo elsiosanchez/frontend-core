@@ -43,10 +43,13 @@
           <el-button
             v-if="payment.is_online && showDetails"
             type="text"
-            icon="el-icon-tickets"
-            style="float: right;color: #909399;padding: 0px;font-size: 18px;"
+            style="float: right;padding: 0px;font-size: 18px;"
             @click="seeDetail(payment)"
-          />
+          >
+            <svg-icon
+              icon-class="status-payment"
+            />
+          </el-button>
         </p>
         <p style="margin: 1px 0px;">
           <b>
@@ -250,6 +253,7 @@ export default defineComponent({
     function remove(payment) {
       if (payment.is_online) {
         isShowCancele.value = true
+        store.commit('setPaymentOnline', payment)
         return
       }
       if (props.isDeletePaymentMethods) {
@@ -358,6 +362,7 @@ export default defineComponent({
     }
 
     function seeDetail(payment) {
+      store.commit('setPaymentOnline', payment)
       const { id, response_status, response_message } = payment
       infoPayment.value.show = true
       infoPayment.value.loading = true

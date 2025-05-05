@@ -16,30 +16,24 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-row>
-
-    <card-payments
-      :payment="currentPaymentVerifications"
-      :readonly="true"
-      :show-details="false"
-    />
     <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info">
       <template slot="extra">
-        <!-- <card-payments
+        <card-payments
           v-if="!isEmptyValue(currentPaymentVerifications)"
           :payment="currentPaymentVerifications"
           :readonly="true"
           :show-details="false"
-        /> -->
+        />
       </template>
     </el-result>
     <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info">
       <template slot="extra">
-        <!-- <card-payments
+        <card-payments
           v-if="!isEmptyValue(currentPaymentVerifications)"
           :payment="currentPaymentVerifications"
           :readonly="true"
           :show-details="false"
-        /> -->
+        />
       </template>
     </el-result>
     <el-result v-else :title="message" class="result-cancelet-info">
@@ -47,12 +41,12 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
       </template>
       <template slot="extra">
-        <!-- <card-payments
+        <card-payments
           v-if="!isEmptyValue(currentPaymentVerifications)"
           :payment="currentPaymentVerifications"
           :readonly="true"
           :show-details="false"
-        /> -->
+        />
       </template>
     </el-result>
     <el-col
@@ -202,7 +196,9 @@ export default defineComponent({
     })
 
     const currentPaymentVerifications = computed(() => {
-      return currentPaymenOnline()
+      const payment = currentPaymenOnline()
+      if (!isEmptyValue(payment)) return payment
+      return store.getters.getPaymentOnline
     })
 
     const displayCurrency = computed(() => {
@@ -235,7 +231,7 @@ export default defineComponent({
         !isEmptyValue(getInfoOnline.value.time) &&
         getInfoOnline.value.time <= 0
       ) {
-        return getInfoOnline.value.time * 1000
+        return getInfoOnline.value.time
       }
       return 3000
     })
@@ -252,6 +248,9 @@ export default defineComponent({
         payment: currentPaymentVerifications.value
       })
         .then(() => {
+          store.dispatch('removePayment', {
+            payment_id: currentPaymentVerifications.value.id
+          })
           store.commit('setShowedModalDialogVPOS', {
             isShowed: false
           })

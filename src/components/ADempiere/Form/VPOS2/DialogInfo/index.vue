@@ -20,7 +20,7 @@
     :visible="isShowed"
     width="80%"
     top="10vh"
-    @close="closeDialog"
+    @close="cancelActionMethod"
   >
     <span
       v-if="isEmptyValue(typeInfo)"
@@ -50,6 +50,20 @@
         class="button-base-icon"
         @click="closeDialog"
       />
+      <el-button
+        v-if="isOptionsCancel"
+        type="warning"
+        icon="el-icon-close"
+        class="button-base-icon"
+        @click="cancelActionMethod"
+      >
+        <svg-icon
+          icon-class="warning"
+        />
+        <b style="font-size: 18px !important">
+          {{ labelCancelMethod }}
+        </b>
+      </el-button>
       <el-button
         type="primary"
         icon="el-icon-check"
@@ -146,6 +160,30 @@ export default defineComponent({
       return false
     })
 
+    const isOptionsCancel = computed(() => {
+      if (
+        !isEmptyValue(storedModalDialog.value) &&
+        storedModalDialog.value.isOptionsCancel
+      ) {
+        return Boolean(
+          storedModalDialog.value.isOptionsCancel()
+        )
+      }
+      return false
+    })
+
+    const labelCancelMethod = computed(() => {
+      return storedModalDialog.value.labelCancelMethod()
+    })
+
+    function cancelActionMethod() {
+      if (!isOptionsCancel.value) {
+        closeDialog()
+        return
+      }
+      storedModalDialog.value.cancelMethod()
+    }
+
     const closeDialog = () => {
       store.commit('setShowedModalDialogVPOS', {
         isShowed: false
@@ -159,7 +197,9 @@ export default defineComponent({
 
     return {
       // computeds
+      labelCancelMethod,
       storedModalDialog,
+      isOptionsCancel,
       componentRender,
       isDisabledDone,
       isLoadingDone,
@@ -167,6 +207,7 @@ export default defineComponent({
       typeInfo,
       title,
       // methods
+      cancelActionMethod,
       closeDialog,
       doneButton
     }

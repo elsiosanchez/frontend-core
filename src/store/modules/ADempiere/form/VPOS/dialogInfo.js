@@ -46,7 +46,9 @@ const modalDialogManagerVPOS = {
 
   actions: {
     setModalDialogVPOS({ commit }, {
+      isOptionsCancel = function() { return false },
       isDisabledDone = function() { return false },
+      labelCancelMethod = function() { return '' },
       isLoadingDone = function() { return false },
       cancelMethod = function() {},
       closeMethod = function() {},
@@ -61,7 +63,9 @@ const modalDialogManagerVPOS = {
       type
     }) {
       commit('setModalDialogVPOS', {
+        labelCancelMethod,
         containerManager,
+        isOptionsCancel,
         isDisabledDone,
         componentPath,
         isLoadingDone,
