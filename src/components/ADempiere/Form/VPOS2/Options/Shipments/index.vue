@@ -59,7 +59,7 @@
       </el-form-item>
     </el-form>
 
-    <span class="tablePos">
+    <span class="table-pos-dialogo">
       <el-table
         :data="shipmentLines"
         :empty-text="$t('quickAccess.searchWithEnter')"

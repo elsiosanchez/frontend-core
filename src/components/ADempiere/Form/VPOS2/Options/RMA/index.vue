@@ -59,7 +59,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-autocomplete>
       </el-form-item>
     </el-form>
-    <span class="tablePos">
+    <span class="table-pos-dialogo">
       <el-table
         :data="listLineRMA"
         :empty-text="$t('quickAccess.searchWithEnter')"

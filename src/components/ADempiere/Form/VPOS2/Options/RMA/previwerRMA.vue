@@ -20,7 +20,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <el-main
     class="product-list-content"
   >
-    <span class="tablePos">
+    <span class="table-pos-dialogo">
       <el-table
         :data="listLineRMA"
         :empty-text="$t('quickAccess.searchWithEnter')"

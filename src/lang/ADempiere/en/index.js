@@ -328,6 +328,7 @@ export default {
           createNewReturnOrder: 'Create a new return order',
           confirmDelivery: 'Confirm Delivery',
           giftCard: 'Gift Card',
+          giftCardGenerada: 'Gift Card Generated  ',
           deliverAllProducts: 'Deliver all products',
           emptyProductDelivery: 'Product not in Order'
         },

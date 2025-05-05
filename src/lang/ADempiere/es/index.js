@@ -329,6 +329,7 @@ export default {
           createNewReturnOrder: 'Crear una nueva orden de devolución',
           confirmDelivery: 'Confirmar Entrega',
           giftCard: 'Tarjeta de Regalo',
+          giftCardGenerada: 'Tarjeta Regalo Generada ',
           deliverAllProducts: 'Entregar Todo',
           emptyProductDelivery: 'Producto no se Encuentra en la Orden'
         },

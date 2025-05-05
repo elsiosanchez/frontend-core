@@ -15,7 +15,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <span class="tablePos">
+  <span class="table-pos-dialogo">
     <el-table
       v-loading="isLoading"
       :data="listCashSummary"

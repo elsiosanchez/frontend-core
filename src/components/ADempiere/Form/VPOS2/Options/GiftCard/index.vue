@@ -59,7 +59,7 @@
       </el-form-item>
     </el-form>
 
-    <span class="tablePos">
+    <span class="table-pos-dialogo">
       <el-table
         :data="giftCardLines"
         :empty-text="$t('quickAccess.searchWithEnter')"
@@ -298,5 +298,39 @@ export default defineComponent({
 }
 .el-autocomplete-suggestion li {
   line-height: 20px;
+}
+.table-pos-dialogo {
+  height: 100%;
+  overflow: auto;
+  .el-table {
+    height: calc(80vh - 330px) !important;
+    overflow: hidden !important;
+  }
+  .el-table .el-table__cell {
+    padding: 0px !important;
+    line-height: 1.5 !important;
+  }
+  .el-table .success-row {
+    background: #e8f4ff;
+  }
+  .el-table .cell {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 1.5 !important;
+  }
+  .el-table .cell:hover {
+    border: 1px solid blue;
+    overflow: hidden;
+  }
+  .el-table th.el-table__cell > .cell{
+    padding-left: 5px !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
 }
 </style>

@@ -1090,20 +1090,16 @@ export default defineComponent({
           store.commit('setShowedModalDialogVPOS', {
             isShowed: false
           })
-          setTimeout(() => {
-            store.dispatch('setModalDialogVPOS', {
-              title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
-              doneMethod: () => {
-                const currentGiftCard = store.getters.getCurrentGiftCard
-                store.dispatch('printPreviewGiftCard', {
-                  orderId: currentOrder.value.id,
-                  giftCardId: currentGiftCard.id,
-                  tableName: TABLE_NAME_GIFT_CARD
-                })
-              },
-              componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard/info.vue'),
-              isShowed: true
-            })
+          const currentGiftCard = store.getters.getCurrentGiftCard
+          this.$message({
+            message: lang.t('form.pos.optionsPoinSales.salesOrder.giftCardGenerada') + currentGiftCard.document_no,
+            type: 'success',
+            showClose: true
+          })
+          store.dispatch('printPreviewGiftCard', {
+            orderId: currentOrder.value.id,
+            giftCardId: currentGiftCard.id,
+            tableName: TABLE_NAME_GIFT_CARD
           })
         },
         componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/GiftCard'),

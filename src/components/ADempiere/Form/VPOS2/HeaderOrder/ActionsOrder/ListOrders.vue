@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <span class="tablePos">
+  <span class="table-pos-dialogo">
     <el-table
       v-loading="isLoading"
       :data="dataList"

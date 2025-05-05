@@ -19,6 +19,7 @@
     class="modal-dialog"
     :visible="isShowed"
     width="80%"
+    top="10vh"
     @close="closeDialog"
   >
     <span

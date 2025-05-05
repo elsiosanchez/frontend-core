@@ -34,7 +34,7 @@
         />
       </el-form-item>
     </el-form>
-    <span class="tablePos">
+    <span class="table-pos-dialogo">
       <el-table
         v-loading="isLoading"
         :data="listProducto"
