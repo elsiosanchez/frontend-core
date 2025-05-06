@@ -111,13 +111,7 @@ export default defineComponent({
     }
 
     function undoChanges() {
-      // store.dispatch('fieldListInfo', {
-      //   fieldsList: props.tabAttributes.fieldsList,
-      //   option: language.t('actionMenu.undo')
-      // })
-      if (tabAttributes.value.isShowedTableRecords) {
-        editMode()
-      }
+      editMode()
       const info = {
         fieldsList: tabAttributes.value.fieldsList,
         option: language.t('actionMenu.undo')

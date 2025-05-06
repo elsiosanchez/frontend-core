@@ -552,12 +552,6 @@ export const undoChange = {
       root: true
     })
 
-    // remove row on table
-    store.commit('removeTabRow', {
-      containerUuid,
-      index: 0
-    })
-
     const tab = store.getters.getStoredTab(parentUuid, containerUuid)
     tab.fieldsList.forEach(field => {
       store.dispatch('changeDependentFieldsList', {
