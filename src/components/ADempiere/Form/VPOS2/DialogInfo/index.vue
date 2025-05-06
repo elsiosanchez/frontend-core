@@ -48,12 +48,11 @@
         type="danger"
         icon="el-icon-close"
         class="button-base-icon"
-        @click="closeDialog"
+        @click="cancelActionMethod"
       />
       <el-button
         v-if="isOptionsCancel"
         type="warning"
-        icon="el-icon-close"
         class="button-base-icon"
         @click="cancelActionMethod"
       >

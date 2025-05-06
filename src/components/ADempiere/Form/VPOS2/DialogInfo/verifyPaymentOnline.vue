@@ -16,37 +16,11 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-row>
-    <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info">
-      <template slot="extra">
-        <card-payments
-          v-if="!isEmptyValue(currentPaymentVerifications)"
-          :payment="currentPaymentVerifications"
-          :readonly="true"
-          :show-details="false"
-        />
-      </template>
-    </el-result>
-    <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info">
-      <template slot="extra">
-        <card-payments
-          v-if="!isEmptyValue(currentPaymentVerifications)"
-          :payment="currentPaymentVerifications"
-          :readonly="true"
-          :show-details="false"
-        />
-      </template>
-    </el-result>
+    <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info" />
+    <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info" />
     <el-result v-else :title="message" class="result-cancelet-info">
       <template slot="icon">
         <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
-      </template>
-      <template slot="extra">
-        <card-payments
-          v-if="!isEmptyValue(currentPaymentVerifications)"
-          :payment="currentPaymentVerifications"
-          :readonly="true"
-          :show-details="false"
-        />
       </template>
     </el-result>
     <el-col
@@ -75,6 +49,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </b>
       </p>
     </el-col>
+    {{ isShowCancele }}
     <el-dialog
       :visible.sync="isShowCancele"
       width="60%"
@@ -97,7 +72,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         <el-button
           type="info"
           class="button-base-icon"
-          @click="isShowCancele = false"
+          @click="closeDialog()"
         >
           <svg-icon
             icon-class="exit"
@@ -196,8 +171,6 @@ export default defineComponent({
     })
 
     const currentPaymentVerifications = computed(() => {
-      const payment = currentPaymenOnline()
-      if (!isEmptyValue(payment)) return payment
       return store.getters.getPaymentOnline
     })
 
@@ -210,7 +183,8 @@ export default defineComponent({
     })
 
     const getInfoOnline = computed(() => {
-      return store.getters.getOnline
+      // return store.getters.getOnline
+      return store.getters.getCurrentPayment({ paymentId: currentPaymentVerifications.value.id })
     })
 
     const message = computed(() => {
@@ -254,29 +228,23 @@ export default defineComponent({
           store.commit('setShowedModalDialogVPOS', {
             isShowed: false
           })
+          store.commit('setAttributePaymentVerification', {
+            attribute: 'isShowCancele',
+            value: true
+          })
         })
-    }
-
-    function currentPaymenOnline() {
-      const onlineTenderTypes = new Set(
-        listPaymentMethods.value
-          .filter(method => method.is_online)
-          .map(method => method.payment_method.tender_type)
-      )
-
-      return listPayments.value
-        .filter(payment => onlineTenderTypes.has(payment.payment_method.tender_type))
-        .pop()
     }
 
     function InfoOnlinePayment() {
-      store.dispatch('infoOnlinePayment', {
-        paymentId: currentPaymentVerifications.value.id
-      })
-        .finally(() => {
-          if (getInfoOnline.value.error) return
-          loadInfoOnline()
+      if (statusPayment.value === 'W') {
+        store.dispatch('infoOnlinePayment', {
+          paymentId: currentPaymentVerifications.value.id
         })
+          .finally(() => {
+            if (getInfoOnline.value.error) return
+            loadInfoOnline()
+          })
+      }
     }
 
     function loadInfoOnline() {
@@ -297,6 +265,10 @@ export default defineComponent({
             InfoOnlinePayment()
           }, 4000)
         })
+    }
+
+    function closeDialog() {
+      isShowCancele.value = false
     }
 
     loadInfoOnline()
@@ -329,6 +301,7 @@ export default defineComponent({
       statusPayment,
       currentPaymentVerifications,
       // Methods
+      closeDialog,
       formatPrice,
       cancelPayment,
       displayAmount,

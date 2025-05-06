@@ -233,8 +233,12 @@ export default defineComponent({
       return store.getters.getCurrentOrder
     })
 
+    const currentPaymentVerifications = computed(() => {
+      return store.getters.getPaymentOnline
+    })
+
     const getInfoOnline = computed(() => {
-      return store.getters.getOnline
+      return store.getters.getCurrentPayment({ paymentId: currentPaymentVerifications.value.id })
     })
 
     function displayCurrency({
@@ -252,8 +256,8 @@ export default defineComponent({
 
     function remove(payment) {
       if (payment.is_online) {
-        isShowCancele.value = true
         store.commit('setPaymentOnline', payment)
+        isShowCancele.value = true
         return
       }
       if (props.isDeletePaymentMethods) {
@@ -366,11 +370,20 @@ export default defineComponent({
       const { id, response_status, response_message } = payment
       infoPayment.value.show = true
       infoPayment.value.loading = true
-      store.commit('setOnline', {
-        status: response_status,
-        message: response_message,
-        error: false,
-        time: 3
+      // store.commit('setOnline', {
+      //   status: response_status,
+      //   message: response_message,
+      //   error: false,
+      //   time: 3
+      // })
+      store.commit('setCurrentPayment', {
+        paymentId: id,
+        infoPayment: {
+          status: response_status,
+          message: response_message,
+          error: false,
+          time: 3
+        }
       })
       store.dispatch('infoOnlinePayment', {
         paymentId: id

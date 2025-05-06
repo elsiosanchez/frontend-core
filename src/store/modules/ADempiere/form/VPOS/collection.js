@@ -44,12 +44,13 @@ const collection = {
   payments: [],
   listRate: [],
   currentRate: {},
-  online: {
+  onlineEmpty: {
     time: 3,
     status: 'W',
     error: false,
     message: lang.t('form.pos.collect.onlinePayment.title')
   },
+  online: {},
   currentPaymentOnline: {},
   showCollection: false,
   paymentVerification: {
@@ -90,6 +91,12 @@ export default {
     },
     setOnline(state, online) {
       state.online = online
+    },
+    setCurrentPayment(state, {
+      paymentId,
+      infoPayment = state.onlineEmpty
+    }) {
+      Vue.set(state.online, paymentId, infoPayment)
     },
     setPaymentOnline(state, paymentOnline) {
       state.currentPaymentOnline = paymentOnline
@@ -424,6 +431,10 @@ export default {
           dispatch('processOnline', {
             payment
           })
+          commit('setAttributePaymentVerification', {
+            attribute: 'isShowCancele',
+            value: false
+          })
           dispatch('setModalDialogVPOS', {
             title: lang.t('form.pos.collect.onlinePayment.info'),
             doneMethod: () => {
@@ -432,10 +443,12 @@ export default {
               })
             },
             isLoadingDone: () => {
-              return getters.getOnline.status === 'W'
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              return paymentOnline.status === 'W'
             },
             isDisabledDone: () => {
-              return getters.getOnline.status === 'W'
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              return paymentOnline.status === 'W'
             },
             cancelMethod: () => {
               commit('setAttributePaymentVerification', {
@@ -448,12 +461,6 @@ export default {
             },
             isOptionsCancel: () => {
               return true
-            },
-            closeMethod: () => {
-              commit('setAttributePaymentVerification', {
-                attribute: 'isShowCancele',
-                value: true
-              })
             },
             componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/verifyPaymentOnline.vue'),
             isShowed: true
@@ -490,18 +497,35 @@ export default {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
+        const existPaymetOnline = getters.getListPayments.find(payment => payment.id === paymentId)
+        if (isEmptyValue(existPaymetOnline)) {
+          resolve()
+          return
+        }
         infoOnlinePayment({
           posId: currentPos.id,
           paymentId
         })
           .then(response => {
             const { is_error, message, next_request_time, status } = response
-            commit('setOnline', {
-              status,
-              message,
-              error: is_error,
-              time: next_request_time
+            commit('setCurrentPayment', {
+              paymentId,
+              infoPayment: {
+                status,
+                message,
+                error: is_error,
+                time: next_request_time
+              }
             })
+            if (status === 'A') {
+              commit('setShowedModalDialogVPOS', {
+                isShowed: false
+              })
+              commit('setAttributePaymentVerification', {
+                attribute: 'isShowCancele',
+                value: true
+              })
+            }
             resolve(response)
           })
           .catch(error => {
@@ -536,11 +560,20 @@ export default {
         })
           .then(response => {
             const { is_error, message, next_request_time, status } = response
-            commit('setOnline', {
-              status,
-              message,
-              error: is_error,
-              time: next_request_time
+            // commit('setOnline', {
+            //   status,
+            //   message,
+            //   error: is_error,
+            //   time: next_request_time
+            // })
+            commit('setCurrentPayment', {
+              paymentId: payment.id,
+              infoPayment: {
+                status,
+                message,
+                error: is_error,
+                time: next_request_time
+              }
             })
             resolve(response)
           })
@@ -615,6 +648,9 @@ export default {
     },
     getOnline: (state) => {
       return state.online
+    },
+    getCurrentPayment: (state) => ({ paymentId }) => {
+      return state.online[paymentId] || state.onlineEmpty
     },
     getPaymentOnline: (state) => {
       return state.currentPaymentOnline
