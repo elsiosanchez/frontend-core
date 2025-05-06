@@ -17,28 +17,29 @@
 -->
 
 <template>
-  <span>
-    <el-dropdown
-      v-if="isShowReference"
+  <el-dropdown
+    size="small"
+    trigger="click"
+    class="print-button"
+    :disabled="!isShowReference"
+    style="margin-left: 8px; padding-right: 9px;"
+    @visible-change="searchReference"
+    @command="handleCommandActions"
+  >
+    <el-button
+      plain
+      type="info"
       size="small"
-      trigger="click"
-      class="print-button"
-      style="margin-left: 8px; padding-right: 9px;"
-      @command="handleCommandActions"
+      style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
     >
-      <el-button
-        plain
-        type="info"
-        size="small"
-        style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
-      >
-        <svg-icon
-          style="font-size: 21px;"
-          icon-class="document-relations"
-        />
-      </el-button>
+      <svg-icon
+        style="font-size: 21px;"
+        icon-class="document-relations"
+      />
+    </el-button>
 
-      <el-dropdown-menu slot="dropdown">
+    <el-dropdown-menu slot="dropdown">
+      <span v-if="!isLoading">
         <el-dropdown-item
           v-for="(reference, index) in recordReferences.referencesList"
           :key="index"
@@ -47,16 +48,16 @@
         >
           {{ reference.display_name }}
         </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-  </span>
+      </span>
+      <el-dropdown-item v-else icon="el-icon-loading" />
+    </el-dropdown-menu>
+  </el-dropdown>
 </template>
 
 <script>
 import {
   defineComponent,
   computed,
-  watch,
   ref
 } from '@vue/composition-api'
 
@@ -112,7 +113,7 @@ export default defineComponent({
     })
 
     const isShowReference = computed(() => {
-      return !isEmptyValue(props.tabAttributes) && currentRecordId.value > 0 && !isEmptyValue(recordReferences.value) && !isEmptyValue(recordReferences.value.referencesList)
+      return !isEmptyValue(props.tabAttributes) && currentRecordId.value > 0
     })
 
     // Current Record ID
@@ -127,11 +128,15 @@ export default defineComponent({
     })
 
     const recordReferences = computed(() => {
-      return store.getters.getStoredReferences({
+      const reference = store.getters.getStoredReferences({
         windowUuid: props.tabAttributes.parentUuid,
         tableName: props.tabAttributes.table_name,
         recordUuid: currentRecordUuid.value
       })
+      if (!isEmptyValue(reference) && !isEmptyValue(reference.referencesList)) return reference
+      return {
+        referencesList: []
+      }
     })
 
     /**
@@ -140,6 +145,7 @@ export default defineComponent({
 
     function loadRefrence() {
       if (!isEmptyValue(recordReferences.value) && !isEmptyValue(recordReferences.value.referencesList)) return
+      isLoading.value = true
       store.dispatch('getReferencesFromServer', {
         tableName: props.tabAttributes.table_name,
         containerUuid: props.tabAttributes.containerUuid,
@@ -148,6 +154,9 @@ export default defineComponent({
         recordId: currentRecordId.value,
         recordUuid: currentRecordUuid.value
       })
+        .finally(() => {
+          isLoading.value = false
+        })
     }
 
     function handleCommandActions(reference) {
@@ -168,16 +177,20 @@ export default defineComponent({
       })
     }
 
-    /**
-     * Watch - watch works directly on a ref
-     * @param newValue - New Assessed Property value
-     * @param oldValue - Old Assessed Property value
-     */
-    watch(currentRecordId, (newValue, oldValue) => {
-      if (!isEmptyValue(newValue) && newValue !== oldValue) {
-        loadRefrence()
-      }
-    })
+    function searchReference() {
+      loadRefrence()
+    }
+
+    // /**
+    //  * Watch - watch works directly on a ref
+    //  * @param newValue - New Assessed Property value
+    //  * @param oldValue - Old Assessed Property value
+    //  */
+    // watch(currentRecordId, (newValue, oldValue) => {
+    //   if (!isEmptyValue(newValue) && newValue !== oldValue) {
+    //     loadRefrence()
+    //   }
+    // })
 
     return {
       // Ref
@@ -191,6 +204,7 @@ export default defineComponent({
       referencesList,
       // Methods
       handleCommandActions,
+      searchReference,
       loadRefrence
     }
   }

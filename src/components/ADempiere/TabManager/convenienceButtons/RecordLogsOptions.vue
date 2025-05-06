@@ -147,6 +147,9 @@ export default defineComponent({
         recordUuid: currentRecordUuid.value,
         recordId: currentRecordId.value
       })
+        .finally(() => {
+          isLoading.value = false
+        })
     }
 
     function loadRecordLogs(params) {

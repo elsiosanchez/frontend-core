@@ -86,7 +86,7 @@
         </el-descriptions-item>
       </template>
     </el-descriptions>
-
+    <br>
     <el-timeline v-if="!isEmptyValue(listLogs.entity_logs)">
       <el-timeline-item
         v-for="(entityLogs, keys) in listLogs.entity_logs"
