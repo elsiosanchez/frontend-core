@@ -172,7 +172,7 @@ export class evaluator {
     st = logic.split(expr)
 
     // First Part (or column name)
-    let first = st[0].trim()
+    let first = st.at(0).trim()
     let firstEval = first
     let isCountable = false
     let isGlobal = false
@@ -219,9 +219,9 @@ export class evaluator {
     // }
 
     // Operator
-    const operand = st[1]
+    const operand = st.at(1)
     // Second Part
-    let second = st[2].trim()
+    let second = st.at(2).trim()
     let secondEval = second.trim()
     if (expr.test(second)) {
       second = second.replace(/@/g, ' ').trim() // strip tag

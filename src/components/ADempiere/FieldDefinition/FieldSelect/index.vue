@@ -177,6 +177,10 @@ export default {
             })
           }
         }
+        this.handleFieldChange({
+          value,
+          displayedValue: this.displayedValue
+        })
       }
     },
     currentTab() {
@@ -287,10 +291,10 @@ export default {
     preHandleChange(value) {
       const { displayedValue } = this.findOption(value)
       this.displayedValue = displayedValue
-      this.handleFieldChange({
-        value,
-        displayedValue
-      })
+      // this.handleFieldChange({
+      //   value,
+      //   displayedValue
+      // })
     },
     findOption(value) {
       const option = this.optionsList.find(item => item.value === value)
