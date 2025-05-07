@@ -45,7 +45,7 @@ const collection = {
   listRate: [],
   currentRate: {},
   onlineEmpty: {
-    time: 3,
+    time: 3000,
     status: 'W',
     error: false,
     message: lang.t('form.pos.collect.onlinePayment.title')
@@ -441,6 +441,10 @@ export default {
               commit('setShowedModalDialogVPOS', {
                 isShowed: false
               })
+              commit('setAttributePaymentVerification', {
+                attribute: 'isShowCancele',
+                value: false
+              })
             },
             isLoadingDone: () => {
               const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
@@ -521,15 +525,24 @@ export default {
               commit('setShowedModalDialogVPOS', {
                 isShowed: false
               })
-              commit('setAttributePaymentVerification', {
-                attribute: 'isShowCancele',
-                value: true
-              })
+              // commit('setAttributePaymentVerification', {
+              //   attribute: 'isShowCancele',
+              //   value: true
+              // })
             }
             resolve(response)
           })
           .catch(error => {
             console.warn(`Info Online Payment: ${error.message}. Code: ${error.code}.`)
+            commit('setCurrentPayment', {
+              paymentId,
+              infoPayment: {
+                time: 3000,
+                status: 'W',
+                error: false,
+                message: lang.t('form.pos.collect.onlinePayment.title')
+              }
+            })
             let message = error.message
             if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
               message = error.response.data.message

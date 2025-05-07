@@ -205,7 +205,7 @@ export default defineComponent({
     position: relative;
     overflow: auto;
     display: block;
-    height: 90%;
+    height: 100%;
 
     .github-corner {
       position: absolute;

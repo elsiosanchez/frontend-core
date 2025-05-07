@@ -49,7 +49,6 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </b>
       </p>
     </el-col>
-    {{ isShowCancele }}
     <el-dialog
       :visible.sync="isShowCancele"
       width="60%"

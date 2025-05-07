@@ -370,6 +370,10 @@ export default defineComponent({
       const { id, response_status, response_message } = payment
       infoPayment.value.show = true
       infoPayment.value.loading = true
+      store.commit('setAttributePaymentVerification', {
+        attribute: 'isShowCancele',
+        value: false
+      })
       // store.commit('setOnline', {
       //   status: response_status,
       //   message: response_message,
@@ -394,7 +398,7 @@ export default defineComponent({
     }
 
     function returnSend(payment) {
-      store.dispatch('processOnline', {
+      store.dispatch('verifyPaymentOnline', {
         payment
       })
         .then(() => {
