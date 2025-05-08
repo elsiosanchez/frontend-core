@@ -147,13 +147,15 @@ export function listAvailableDiscounts({
 
 export function listAvailableSellers({
   posId,
-  searchValue
+  searchValue,
+  isOnlyAllocated
 }) {
   return request({
     url: `/point-of-sales/${posId}/sellers`,
     method: 'get',
     params: {
-      search_value: searchValue
+      search_value: searchValue,
+      is_only_allocated: isOnlyAllocated
     }
   })
 }

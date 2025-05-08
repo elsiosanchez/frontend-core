@@ -52,12 +52,13 @@
       />
       <el-button
         v-if="isOptionsCancel"
-        type="warning"
+        :type="isTypeButton"
         class="button-base-icon"
         @click="cancelActionMethod"
       >
         <svg-icon
-          icon-class="warning"
+          v-if="!isEmptyValue(isSvgButton)"
+          :icon-class="isSvgButton"
         />
         <b style="font-size: 18px !important">
           {{ labelCancelMethod }}
@@ -147,6 +148,17 @@ export default defineComponent({
       return false
     })
 
+    const isTypeButton = computed(() => {
+      return storedModalDialog.value.isTypeButton()
+    })
+
+    const isSvgButton = computed(() => {
+      if (isEmptyValue(storedModalDialog.value)) {
+        return ''
+      }
+      return storedModalDialog.value.isSvgButton()
+    })
+
     const isLoadingDone = computed(() => {
       if (
         !isEmptyValue(storedModalDialog.value) &&
@@ -202,6 +214,8 @@ export default defineComponent({
       componentRender,
       isDisabledDone,
       isLoadingDone,
+      isTypeButton,
+      isSvgButton,
       isShowed,
       typeInfo,
       title,

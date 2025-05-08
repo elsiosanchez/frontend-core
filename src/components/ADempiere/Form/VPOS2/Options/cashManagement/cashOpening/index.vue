@@ -69,9 +69,7 @@ export default defineComponent({
             })
         },
         isDisabledDone: () => {
-          return isEmptyValue(store.getters.getAttributeCashOpenFields({
-            attribute: 'collectionAgent'
-          }))
+          return isEmptyValue(store.getters.getCashOpeningPayments)
         },
         componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/cashManagement/cashOpening/panel.vue'),
         isShowed: true

@@ -86,7 +86,8 @@ export default defineComponent({
       if (!isFindOrder) return
       const currentPos = store.getters.getVPOS
       listAvailableSellers({
-        posId: currentPos.id
+        posId: currentPos.id,
+        isOnlyAllocated: true
       })
         .then(response => {
           const { sellers } = response
@@ -104,7 +105,8 @@ export default defineComponent({
       const currentPos = store.getters.getVPOS
       listAvailableSellers({
         posId: currentPos.id,
-        searchValue: query
+        searchValue: query,
+        isOnlyAllocated: true
       })
         .then(response => {
           const { sellers } = response

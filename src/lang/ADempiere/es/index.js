@@ -302,6 +302,9 @@ export default {
       returnProduct: 'Devolver Producto',
       createNewOrderRMA: 'Crear Nueva Orden desde el RMA',
       discountRate: '% Discounto',
+      dialog: {
+        viewOrderInformation: 'Ver Informacion de Pedido'
+      },
       optionsPoinSales: {
         title: 'Opciones Rápidas del Punto de Ventas',
         queryParameters: 'Parámetros de Búsqueda',

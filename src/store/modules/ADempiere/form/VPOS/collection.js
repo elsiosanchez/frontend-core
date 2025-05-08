@@ -385,7 +385,20 @@ export default {
                 commit('setListOrderLines', [])
                 dispatch('newOrder')
               },
-              // TODO: Change to string and import dynamic in component
+              labelCancelMethod: () => {
+                return lang.t('form.pos.dialog.viewOrderInformation')
+              },
+              isTypeButton: () => {
+                return 'success'
+              },
+              isOptionsCancel: () => {
+                return true
+              },
+              cancelMethod: () => {
+                commit('setShowedModalDialogVPOS', {
+                  isShowed: false
+                })
+              },
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/infoOrder.vue'),
               isShowed: true
             })
@@ -462,6 +475,9 @@ export default {
             },
             labelCancelMethod: () => {
               return lang.t('form.pos.collect.onlinePayment.cancelPayment.title')
+            },
+            isSvgButton: () => {
+              return 'warning'
             },
             isOptionsCancel: () => {
               return true
