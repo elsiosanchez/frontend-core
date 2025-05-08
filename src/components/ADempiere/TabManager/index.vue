@@ -105,7 +105,7 @@
         size="medium"
         type="primary"
         circle
-        @click="openRecordLogs('recordAttachmentTab')"
+        @click="openRecordLogs('listReference')"
       >
         <i class="el-icon-arrow-left" />
       </el-button>
