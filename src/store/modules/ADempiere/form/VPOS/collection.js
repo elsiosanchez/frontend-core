@@ -467,17 +467,81 @@ export default {
               const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
               return paymentOnline.status === 'W'
             },
-            cancelMethod: () => {
-              commit('setAttributePaymentVerification', {
-                attribute: 'isShowCancele',
-                value: true
-              })
+            cancelMethod: (isCanceleAction) => {
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              if (paymentOnline.status === 'W') {
+                commit('setAttributePaymentVerification', {
+                  attribute: 'isShowCancele',
+                  value: true
+                })
+              } else if (isCanceleAction) {
+                return commit('setAttributePaymentVerification', {
+                  attribute: 'isShowCancele',
+                  value: true
+                })
+              } else {
+                commit('setShowedModalDialogVPOS', {
+                  isShowed: false
+                })
+              }
             },
             labelCancelMethod: () => {
-              return lang.t('form.pos.collect.onlinePayment.cancelPayment.title')
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              let labelMessage
+              switch (paymentOnline.status) {
+                case 'A':
+                  labelMessage = lang.t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction')
+                  break
+                case 'w':
+                  labelMessage = lang.t('form.pos.collect.onlinePayment.cancelPayment.title')
+                  break
+                case 'E':
+                case 'R':
+                  labelMessage = lang.t('form.pos.collect.onlinePayment.cancelPayment.deletePayment')
+                  break
+                default:
+                  labelMessage = lang.t('form.pos.collect.onlinePayment.cancelPayment.title')
+                  break
+              }
+              return labelMessage
+            },
+            isTypeButton: () => {
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              let typeButton
+              switch (paymentOnline.status) {
+                case 'w':
+                  typeButton = 'warning'
+                  break
+                case 'A':
+                case 'E':
+                case 'R':
+                  typeButton = 'danger'
+                  break
+                default:
+                  typeButton = 'warning'
+                  break
+              }
+              return typeButton
             },
             isSvgButton: () => {
-              return 'warning'
+              const paymentOnline = getters.getCurrentPayment({ paymentId: payment.id })
+              let svg
+              switch (paymentOnline.status) {
+                case 'w':
+                  svg = 'warning'
+                  break
+                case 'A':
+                  svg = 'return-send'
+                  break
+                case 'E':
+                case 'R':
+                  svg = 'delete'
+                  break
+                default:
+                  svg = 'warning'
+                  break
+              }
+              return svg
             },
             isOptionsCancel: () => {
               return true
@@ -541,10 +605,6 @@ export default {
               commit('setShowedModalDialogVPOS', {
                 isShowed: false
               })
-              // commit('setAttributePaymentVerification', {
-              //   attribute: 'isShowCancele',
-              //   value: true
-              // })
             }
             resolve(response)
           })

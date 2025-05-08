@@ -492,12 +492,14 @@ export default {
           }
         },
         onlinePayment: {
-          title: 'Online Payment Verification',
+          title: 'Processing Payment',
           remove: 'Payment in Verification',
           info: 'Payment Information',
           cancelPayment: {
-            title: 'Cancel Payment',
-            voidTransaction: 'Void Transaction',
+            title: 'Cancel Verification',
+            voidTransaction: 'Reverse Transaction',
+            reverseTransaction: 'The Bank Transaction will be Reversed',
+            deletePayment: 'Delete Payment',
             undo: 'Return',
             detailEmpty: 'No Payment Information',
             sendAgain: 'Send Again',

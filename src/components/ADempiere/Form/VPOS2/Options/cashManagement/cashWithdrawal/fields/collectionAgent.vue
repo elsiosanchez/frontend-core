@@ -23,8 +23,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     <el-select
       v-model="collectionAgent"
       style="width: 100%;"
-      filterable
       clearable
+      filterable
       remote
       :remote-method="remoteMethod"
       @visible-change="findSeller"
@@ -86,7 +86,8 @@ export default defineComponent({
       if (!isFindOrder) return
       const currentPos = store.getters.getVPOS
       listAvailableSellers({
-        posId: currentPos.id
+        posId: currentPos.id,
+        isOnlyAllocated: true
       })
         .then(response => {
           const { sellers } = response
@@ -103,6 +104,7 @@ export default defineComponent({
     function remoteMethod(query) {
       const currentPos = store.getters.getVPOS
       listAvailableSellers({
+        isOnlyAllocated: true,
         posId: currentPos.id,
         searchValue: query
       })

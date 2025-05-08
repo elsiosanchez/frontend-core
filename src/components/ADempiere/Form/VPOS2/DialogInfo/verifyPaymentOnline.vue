@@ -18,7 +18,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
   <el-row>
     <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info" />
     <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info" />
-    <el-result v-else :title="message" class="result-cancelet-info">
+    <el-result v-else :title="mainInfoMessage" class="result-cancelet-info">
       <template slot="icon">
         <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
       </template>
@@ -54,17 +54,9 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       width="60%"
       :modal="false"
     >
-      <p
-        slot="title"
-        class="dialog-label-info-cancele"
-      >
-        <b>
-          {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
-        </b>
-      </p>
       <el-result
         icon="error"
-        :title="$t('form.pos.collect.onlinePayment.cancelPayment.description')"
+        :title="(statusPayment === 'A') ? 'La Transacción Bancaria será Revertida' : message"
         class="result-cancelet-payment"
       />
       <span slot="footer" class="dialog-footer">
@@ -82,6 +74,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           </b>
         </el-button>
         <el-button
+          v-if="statusPayment === 'W'"
           type="warning"
           class="button-base-icon"
           @click="cancelPayment"
@@ -93,8 +86,22 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
           </b>
         </el-button>
+        <el-button
+          v-else-if="statusPayment === 'R' || 'E'"
+          type="danger"
+          class="button-base-icon"
+          @click="cancelPayment"
+        >
+          <svg-icon
+            icon-class="delete"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.deletePayment') }}
+          </b>
+        </el-button>
       </span>
     </el-dialog>
+    <!-- return To Send -->
     <el-dialog
       :visible.sync="isPanelError"
       :modal="false"
@@ -188,7 +195,46 @@ export default defineComponent({
 
     const message = computed(() => {
       if (!isEmptyValue(getInfoOnline.value.message)) return getInfoOnline.value.message
-      return lang.t('form.pos.collect.onlinePayment.title')
+      let message
+      switch (statusPayment.value) {
+        case 'A':
+          message = lang.t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction')
+          break
+        case 'E':
+        case 'R':
+          message = lang.t('form.pos.collect.onlinePayment.cancelPayment.deletePayment')
+          break
+        case 'W':
+          message = lang.t('form.pos.collect.onlinePayment.cancelPayment.description')
+          break
+        default:
+          message = lang.t('form.pos.collect.onlinePayment.title')
+          break
+      }
+      // form.pos.collect.onlinePayment.cancelPayment.description
+      return message
+    })
+
+    const mainInfoMessage = computed(() => {
+      if (!isEmptyValue(getInfoOnline.value.message)) return getInfoOnline.value.message
+      let message
+      switch (statusPayment.value) {
+        case 'A':
+          message = lang.t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction')
+          break
+        case 'E':
+        case 'R':
+          message = lang.t('form.pos.collect.onlinePayment.cancelPayment.deletePayment')
+          break
+        case 'W':
+          message = lang.t('form.pos.collect.onlinePayment.title')
+          break
+        default:
+          message = lang.t('form.pos.collect.onlinePayment.title')
+          break
+      }
+      // form.pos.collect.onlinePayment.cancelPayment.description
+      return message
     })
 
     const isError = computed(() => {
@@ -290,6 +336,7 @@ export default defineComponent({
       // Computed
       message,
       isError,
+      mainInfoMessage,
       listPayments,
       currentOrder,
       isShowCancele,

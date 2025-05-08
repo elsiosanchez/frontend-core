@@ -23,8 +23,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     <el-select
       v-model="collectionAgent"
       style="width: 100%;"
-      filterable
       clearable
+      filterable
       remote
       :remote-method="remoteMethod"
       @visible-change="findSeller"

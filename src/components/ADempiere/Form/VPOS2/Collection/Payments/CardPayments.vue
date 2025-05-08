@@ -86,15 +86,22 @@
         class="dialog-label-info-cancele"
       >
         <b>
-          {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+          {{ $t('form.pos.collect.onlinePayment.cancelPayment.deletePayment') }}
         </b>
       </p>
-      <el-result
-        icon="error"
-        :title="$t('form.pos.collect.onlinePayment.cancelPayment.description')"
-        class="result-cancelet-payment"
-      />
-      <span slot="footer" class="dialog-footer">
+      <span v-if="!isLoadingCancele">
+        <el-result
+          icon="error"
+          :title="getInfoOnline.message"
+          class="result-cancelet-payment"
+        />
+      </span>
+      <el-result v-else class="result-cancelet-info">
+        <template slot="icon">
+          <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
+        </template>
+      </el-result>
+      <span v-if="!isLoadingCancele" slot="footer" class="dialog-footer">
         <el-button
           type="info"
           class="button-base-icon"
@@ -109,6 +116,7 @@
           </b>
         </el-button>
         <el-button
+          v-if="getInfoOnline.status === 'W'"
           type="warning"
           class="button-base-icon"
           @click="cancelPayment(payment)"
@@ -118,6 +126,32 @@
           />
           <b style="font-size: 18px !important">
             {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+          </b>
+        </el-button>
+        <el-button
+          v-else-if="getInfoOnline.status === 'R' || 'E'"
+          type="danger"
+          class="button-base-icon"
+          @click="cancelPayment(payment)"
+        >
+          <svg-icon
+            icon-class="delete"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.deletePayment') }}
+          </b>
+        </el-button>
+        <el-button
+          v-else-if="getInfoOnline.status === 'A'"
+          type="danger"
+          class="button-base-icon"
+          @click="cancelPayment(payment)"
+        >
+          <svg-icon
+            icon-class="delete"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction') }}
           </b>
         </el-button>
       </span>
@@ -155,6 +189,19 @@
           />
           <b style="font-size: 18px !important">
             {{ $t('form.pos.collect.onlinePayment.cancelPayment.title') }}
+          </b>
+        </el-button>
+        <el-button
+          v-else-if="getInfoOnline.status === 'R' || 'E'"
+          type="danger"
+          class="button-base-icon"
+          @click="cancelPayment(payment)"
+        >
+          <svg-icon
+            icon-class="delete"
+          />
+          <b style="font-size: 18px !important">
+            {{ $t('form.pos.collect.onlinePayment.cancelPayment.deletePayment') }}
           </b>
         </el-button>
         <el-button
@@ -221,6 +268,7 @@ export default defineComponent({
 
   setup(props) {
     const isLoading = ref(false)
+    const isLoadingCancele = ref(false)
     const infoPayment = ref({
       icon: 'info',
       show: false,
@@ -256,6 +304,13 @@ export default defineComponent({
 
     function remove(payment) {
       if (payment.is_online) {
+        isLoadingCancele.value = true
+        store.dispatch('infoOnlinePayment', {
+          paymentId: payment.id
+        })
+          .finally(() => {
+            isLoadingCancele.value = false
+          })
         store.commit('setPaymentOnline', payment)
         isShowCancele.value = true
         return
@@ -374,12 +429,6 @@ export default defineComponent({
         attribute: 'isShowCancele',
         value: false
       })
-      // store.commit('setOnline', {
-      //   status: response_status,
-      //   message: response_message,
-      //   error: false,
-      //   time: 3
-      // })
       store.commit('setCurrentPayment', {
         paymentId: id,
         infoPayment: {
@@ -412,6 +461,7 @@ export default defineComponent({
       currentOrder,
       isShowCancele,
       getInfoOnline,
+      isLoadingCancele,
       remove,
       isDelete,
       seeDetail,

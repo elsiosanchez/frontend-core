@@ -20,7 +20,7 @@
     :visible="isShowed"
     width="80%"
     top="10vh"
-    @close="cancelActionMethod"
+    @close="cancelActionMethod(false)"
   >
     <span
       v-if="isEmptyValue(typeInfo)"
@@ -48,13 +48,13 @@
         type="danger"
         icon="el-icon-close"
         class="button-base-icon"
-        @click="cancelActionMethod"
+        @click="cancelActionMethod(false)"
       />
       <el-button
         v-if="isOptionsCancel"
         :type="isTypeButton"
         class="button-base-icon"
-        @click="cancelActionMethod"
+        @click="cancelActionMethod(true)"
       >
         <svg-icon
           v-if="!isEmptyValue(isSvgButton)"
@@ -187,12 +187,12 @@ export default defineComponent({
       return storedModalDialog.value.labelCancelMethod()
     })
 
-    function cancelActionMethod() {
+    function cancelActionMethod(isCancele) {
       if (!isOptionsCancel.value) {
         closeDialog()
         return
       }
-      storedModalDialog.value.cancelMethod()
+      storedModalDialog.value.cancelMethod(isCancele)
     }
 
     const closeDialog = () => {
