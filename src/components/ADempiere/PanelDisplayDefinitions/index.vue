@@ -42,7 +42,7 @@
             @click="actionClose('')"
           />
           <span
-            v-if="!isQuickEntry && !isPanelWindow"
+            v-if="!isPanelWindow"
             style="float: right;margin: 0px"
           >
             <b>

@@ -53,9 +53,11 @@
                 style="margin-right: 5px; color: white"
               />
               <p
-                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; height: 20px; line-height: 15px; font-size: 10px;"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; height: 20px; line-height: 15px; font-size: 18px;"
               >
-                {{ arg.event.title }}
+                <b style="font-weight: bold;">
+                  {{ arg.event.title }}
+                </b>
               </p>
             </div>
           </template>
