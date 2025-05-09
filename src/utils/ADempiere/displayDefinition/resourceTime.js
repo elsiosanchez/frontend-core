@@ -47,8 +47,8 @@ export function addGroupEvents(resourcesList, eventsList) {
     // Filter events belonging to children
     const childEvents = eventsList.filter(eventItem => childsIds.includes(eventItem.resourceId))
     if (childEvents.length > 0) {
-      const startDate = childEvents.map(eventItem => new Date(eventItem.start))
-      const endDate = childEvents.map(eventItem => new Date(eventItem.end))
+      const startDate = isEmptyValue(childEvents.map(eventItem => new Date(eventItem.start))) ? '' : childEvents.map(eventItem => new Date(eventItem.start))
+      const endDate = isEmptyValue(childEvents.map(eventItem => new Date(eventItem.end))) ? '' : childEvents.map(eventItem => new Date(eventItem.end))
       const minDate = new Date(Math.min(...startDate))
       const maxDate = new Date(Math.max(...endDate))
       // Create a new event for the group

@@ -424,8 +424,8 @@ export function transformEvents({
   records
 }) {
   return records.map(({ id, title, name, valid_from, valid_to, description }) => {
-    const start = isEmptyValue(valid_from) ? valid_to : valid_from
-    const end = isEmptyValue(valid_to) ? valid_from : valid_to
+    const start = formatDate(valid_from)
+    const end = formatDate(valid_to)
 
     return {
       id,
@@ -439,6 +439,15 @@ export function transformEvents({
       description
     }
   })
+}
+
+function formatDate(date) {
+  if (isEmptyValue(date)) return ''
+  const fecha = new Date(date)
+  fecha.setHours(fecha.getHours() + 4)
+  const opciones = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }
+  const fechaFormateada = fecha.toLocaleString('sv-SE', opciones).replace(' ', 'T')
+  return fechaFormateada
 }
 
 /**

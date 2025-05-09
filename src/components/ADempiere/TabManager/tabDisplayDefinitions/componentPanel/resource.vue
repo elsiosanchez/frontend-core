@@ -53,11 +53,11 @@
                 style="margin-right: 5px; color: white"
               />
               <p
-                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; height: 20px; line-height: 15px; font-size: 18px;"
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; padding: 0; height: 20px; line-height: 15px; font-size: 15px;"
               >
-                <b style="font-weight: bold;">
-                  {{ arg.event.title }}
-                </b>
+                <!-- <b style="font-weight: bold;"> -->
+                {{ arg.event.title }}
+                <!-- </b> -->
               </p>
             </div>
           </template>
@@ -221,8 +221,8 @@ export default defineComponent({
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         nowIndicator: true,
-        // dayMaxEvents: true, // allow "more" link when too many
-        // timeZone: 'UTC',
+        dayMaxEvents: true, // allow "more" link when too many
+        timeZone: 'UTC',
         plugins: [resourceTimelinePlugin],
         headerToolbar: {
           left: 'today prev,next,myCustomButton',
@@ -231,11 +231,12 @@ export default defineComponent({
         },
         resourceAreaWidth: '30%',
         initialView: 'resourceTimelineMonth',
-        eventMinWidth: 90,
         locale: currentLenguage.value,
         scrollTime: '01:00',
-        // aspectRatio: 1,
-        // editable: true,
+        // eventMinWidth: 10,
+        aspectRatio: 8,
+        editable: true,
+        slotMinWidth: 80,
         resourceAreaHeaderContent: lang.t('window.containerInfo.log.resource'),
         // resourceGroupField: 'group_name',
         resources: groupedResourcesList.value,
