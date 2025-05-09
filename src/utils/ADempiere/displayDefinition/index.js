@@ -40,15 +40,9 @@ export function getCurrentRecord() {
   const { firstTabUuid } = currentTab
   let firstTab = currentTab
   if (!currentTab.isParentTab) {
-    firstTab = store.getters.getStoredTab(
-      currentTab.parentUuid,
-      firstTabUuid
-    )
+    firstTab = store.getters.getStoredTab(currentTab.parentUuid, firstTabUuid)
   }
-  return store.getters.getIdOfContainer({
-    containerUuid: firstTab.containerUuid,
-    tableName: firstTab.table_name
-  })
+  return store.getters.getIdOfContainer({ containerUuid: firstTab.containerUuid, tableName: firstTab.table_name })
 }
 
 function deleteRecordToListKanban({
