@@ -35,15 +35,20 @@ import { containerManager as containerManagerReport } from '@/utils/ADempiere/di
 import {
   COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
-export function getCurrentRecord(recordId) {
+export function getCurrentRecord() {
   const { currentTab } = store.getters.getContainerInfo
-  if (isEmptyValue(recordId)) {
-    return store.getters.getIdOfContainer({
-      containerUuid: currentTab.containerUuid,
-      tableName: currentTab.table_name
-    })
+  const { firstTabUuid } = currentTab
+  let firstTab = currentTab
+  if (!currentTab.isParentTab) {
+    firstTab = store.getters.getStoredTab(
+      currentTab.parentUuid,
+      firstTabUuid
+    )
   }
-  return recordId
+  return store.getters.getIdOfContainer({
+    containerUuid: firstTab.containerUuid,
+    tableName: firstTab.table_name
+  })
 }
 
 function deleteRecordToListKanban({
