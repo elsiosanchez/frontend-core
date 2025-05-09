@@ -19,6 +19,7 @@
 <template>
   <component
     :is="componentRender"
+    class="batch-entry-field"
     :field-metadata="field"
     :current-record="currentRecord"
     :display-value="displayValue"
@@ -152,3 +153,8 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss">
+// .batch-entry-field {
+// }
+</style>

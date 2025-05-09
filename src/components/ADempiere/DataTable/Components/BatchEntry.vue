@@ -62,6 +62,7 @@
             </el-col>
           </el-form>
         </el-col>
+
         <el-col :span="24">
           <p style="text-align: end;margin: 5px 0px;">
             <i style="color: #9198a1;margin-right: 5px;">
@@ -215,7 +216,13 @@ export default defineComponent({
       })
     })
 
-    fieldsListBatchEntry.value = fieldsList.value.filter(fieldAttributes => fieldAttributes.is_quick_entry).toSorted((a, b) => a.sequence - b.sequence)
+    fieldsListBatchEntry.value = fieldsList.value
+      .filter(fieldAttributes => {
+        return fieldAttributes.is_quick_entry
+      })
+      .toSorted((a, b) => {
+        return a.sequence - b.sequence
+      })
 
     const defaultValues = computed(() => {
       const isSalesTransactionContext = isSalesTransaction({
@@ -455,6 +462,7 @@ export default defineComponent({
   }
 })
 </script>
+
 <style lang="scss">
 .field-component-bacht-entry {
   .el-form--label-top .el-form-item__label {
@@ -490,6 +498,10 @@ export default defineComponent({
   }
   .el-form-item {
     margin-bottom: 0px;
+
+    .el-form-item__content {
+      min-height: 33px !important;
+    }
   }
 }
 .label-field-title{
