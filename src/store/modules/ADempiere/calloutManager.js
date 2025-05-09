@@ -122,6 +122,21 @@ const calloutManager = {
           }
         }
 
+        const oldValues = {}
+        fieldsList.forEach(fieldItem => {
+          const { column_name } = fieldItem
+          const oldStoredValue = rootGetters.getValueOfFieldOnContainer({
+            parentUuid,
+            containerUuid,
+            columnName: column_name
+          })
+          oldValues[column_name] = oldStoredValue
+          if (column_name === columnName) {
+            // overwrite value
+            oldValues[column_name] = oldValue
+          }
+        })
+
         runCallOutRequest({
           // windowNo: window.windowIndex,
           tabId: id,
@@ -145,11 +160,14 @@ const calloutManager = {
             attributesList.forEach(attribute => {
               const { value: attributeValue, columnName: attributeColumnName } = attribute
 
+              /*
               const attributeOldValue = rootGetters.getValueOfFieldOnContainer({
                 parentUuid,
                 containerUuid,
                 columnName: attributeColumnName
               })
+              */
+              const attributeOldValue = oldValues[attributeColumnName]
 
               // add changes to send
               if (!isSameValues(attributeValue, attributeOldValue)) {

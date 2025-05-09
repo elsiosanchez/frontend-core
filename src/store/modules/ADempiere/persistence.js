@@ -68,18 +68,22 @@ const persistence = {
       // valueType,
       value
     }) {
+      // clear record uuid
+      if (recordUuid === 'create-new') {
+        recordUuid = undefined
+      }
       const key = containerUuid + '_' + recordUuid
+
+      const currentValues = state.persistence[key]
+      if (isEmptyValue(currentValues)) {
+        Vue.set(state.persistence, key, {})
+      }
+
       const values = {
         columnName,
         // valueType,
         oldValue,
         value
-      }
-
-      const currentValues = state.persistence[key]
-
-      if (isEmptyValue(currentValues)) {
-        Vue.set(state.persistence, key, {})
       }
       Vue.set(state.persistence[key], columnName, values)
 
@@ -562,6 +566,10 @@ const persistence = {
 
   getters: {
     getPersistenceAttributes: (state) => ({ containerUuid, recordUuid }) => {
+      // clear record uuid
+      if (recordUuid === 'create-new') {
+        recordUuid = undefined
+      }
       const key = containerUuid + '_' + recordUuid
       const changes = state.persistence[key]
 
@@ -595,6 +603,10 @@ const persistence = {
       containerUuid,
       recordUuid
     }) => {
+      // clear record uuid
+      if (recordUuid === 'create-new') {
+        recordUuid = undefined
+      }
       const key = containerUuid + '_' + recordUuid
       const changes = state.persistence[key]
       if (!isEmptyValue(changes)) {

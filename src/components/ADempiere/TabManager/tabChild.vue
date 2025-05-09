@@ -70,20 +70,21 @@
 <script>
 import { defineComponent, computed, watch, ref, onUnmounted } from '@vue/composition-api'
 
+import language from '@/lang'
 import router from '@/router'
 import store from '@/store'
-import language from '@/lang'
 
-// components and mixins
+// Components and Mixins
 import DefaultTable from '@/components/ADempiere/DataTable/index.vue'
 import TabLabel from '@/components/ADempiere/TabManager/TabLabel.vue'
 import TabPanel from '@/components/ADempiere/TabManager/TabPanel/index.vue'
 import TabOptions from './TabOptions.vue'
 
-// constants
+// Constants
 import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
 import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
-// utils and helper methods
+
+// Utils and Helper Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
 import { isDisplayedTab } from '@/utils/ADempiere/dictionary/window/tab'
 import { showMessage } from '@/utils/ADempiere/notification'

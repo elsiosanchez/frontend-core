@@ -118,6 +118,7 @@ import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceBu
 import PrintFormats from '@/components/ADempiere/TabManager/convenienceButtons/PrintFormats.vue'
 import DocumentsReference from '@/components/ADempiere/TabManager/convenienceButtons/DocumentsReference.vue'
 import RecordLogsOptions from '@/components/ADempiere/TabManager/convenienceButtons/RecordLogsOptions.vue'
+
 export default defineComponent({
   name: 'ConvenienceButtons',
 

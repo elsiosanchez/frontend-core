@@ -465,12 +465,12 @@ export default defineComponent({
 }
 </style>
 
-<style>
+<style lang="scss">
 .tab-panel-body {
   height: calc(100vh - 366px) !important
 }
 .el-tabs--border-card > .el-tabs__content {
-  /* padding: 15px; */
+  // padding: 15px;
   overflow: auto;
   height: 92%;
   padding-top: 5px;

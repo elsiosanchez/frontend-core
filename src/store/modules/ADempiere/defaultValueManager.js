@@ -29,6 +29,7 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isSameSize } from '@/utils/ADempiere/formatValue/iterableFormat'
+import { isContextSQL } from '@/utils/ADempiere/contextUtils'
 import { generateContextKey, getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 const initState = {
@@ -114,7 +115,7 @@ const defaultValueManager = {
         })
 
         // fill context value to continue
-        if (!isSameSize(contextColumnNames, Object.values(contextAttributesList))) {
+        if (isContextSQL(value) && !isSameSize(contextColumnNames, Object.values(contextAttributesList))) {
           resolve({
             parentUuid,
             containerUuid,
