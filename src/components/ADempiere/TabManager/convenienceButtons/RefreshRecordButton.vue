@@ -18,7 +18,6 @@
 
 <template>
   <el-button
-    v-show="isRefreshRecord"
     plain
     size="small"
     type="primary"
