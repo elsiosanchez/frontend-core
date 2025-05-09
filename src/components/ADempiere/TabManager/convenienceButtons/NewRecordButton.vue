@@ -159,11 +159,12 @@ export default defineComponent({
         containerUuid: props.containerUuid,
         isCopyValues: isCopy
       })
-
-      store.dispatch('panelInfo', {
-        currentTab: tabAttributes.value,
-        currentRecord: recordParentTab.value
-      })
+      if (tabAttributes.value.isParentTab) {
+        store.dispatch('panelInfo', {
+          currentTab: tabAttributes.value,
+          currentRecord: recordParentTab.value
+        })
+      }
       const info = {
         fieldsList: tabAttributes.value.fieldsList,
         option: language.t('actionMenu.new')

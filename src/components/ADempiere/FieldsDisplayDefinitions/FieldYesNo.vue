@@ -112,12 +112,11 @@ export default defineComponent({
     const isLoading = ref(false)
 
     const { currentTab } = store.getters.getContainerInfo
-    const { containerUuid, parentUuid } = currentTab
+    const { containerUuid } = currentTab
     const { column_name } = props.fieldMetadata
 
     const contextValue = computed(() => {
       return getContext({
-        parentUuid,
         containerUuid,
         columnName: column_name
       })
@@ -127,7 +126,7 @@ export default defineComponent({
     function saveFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
-        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
+        if (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
     }
@@ -155,8 +154,7 @@ export default defineComponent({
 
     if (
       props.isNewRecord &&
-      props.fieldMetadata.is_allow_copy &&
-      props.fieldMetadata.is_quick_entry &&
+      (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) &&
       !isEmptyValue(props.isValueBachtEntry)
     ) {
       fieldValue.value = props.isValueBachtEntry

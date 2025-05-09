@@ -259,18 +259,11 @@ export default defineComponent({
           })
 
           const recordsListTab = currentTabData.recordsList
-          let currentRecord = {}
           if (isEmptyValue(recordsListTab)) {
             if (!currentTabData.isLoaded && !currentTabData.isLoading) {
               // load records
               getData()
             }
-          } else {
-            currentRecord = recordsListTab.find(row => row.UUID === store.getters.getUuidOfContainer(currentTabDefinition.containerUuid))
-            store.dispatch('panelInfo', {
-              currentTab: currentTabDefinition,
-              currentRecord
-            })
           }
           store.dispatch('changeTabAttribute', {
             parentUuid: currentTabDefinition.parentUuid,
@@ -505,9 +498,9 @@ export default defineComponent({
     })
 
     function selectTab(params) {
-      store.dispatch('panelInfo', {
-        currentTab: params
-      })
+      // store.dispatch('panelInfo', {
+      //   currentTab: params
+      // })
     }
 
     function setRecordRoute({
@@ -575,10 +568,10 @@ export default defineComponent({
         isCopyValues: false
       })
 
-      store.dispatch('panelInfo', {
-        currentTab: currentTabMetadata.value,
-        currentRecord: currentRecordUuid.value
-      })
+      // store.dispatch('panelInfo', {
+      //   currentTab: currentTabMetadata.value,
+      //   currentRecord: currentRecordUuid.value
+      // })
       const info = {
         fieldsList: fieldsList,
         option: language.t('actionMenu.new')

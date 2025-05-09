@@ -536,10 +536,12 @@ export default defineComponent({
             }
           } else {
             currentRecord = recordsListTab.find(row => row.UUID === store.getters.getUuidOfContainer(currentTabDefinition.containerUuid))
-            store.dispatch('panelInfo', {
-              currentTab: currentTabDefinition,
-              currentRecord
-            })
+            if (currentTabDefinition.isParentTab) {
+              store.dispatch('panelInfo', {
+                currentTab: currentTabDefinition,
+                currentRecord
+              })
+            }
           }
           store.dispatch('changeTabAttribute', {
             parentUuid: currentTabDefinition.parentUuid,
@@ -1043,9 +1045,11 @@ export default defineComponent({
     }
 
     function selectTab(params) {
-      store.dispatch('panelInfo', {
-        currentTab: params
-      })
+      if (params.isParentTab) {
+        store.dispatch('panelInfo', {
+          currentTab: params
+        })
+      }
     }
 
     function newRecordTab(currentTab) {
@@ -1054,11 +1058,12 @@ export default defineComponent({
         containerUuid: currentTab.containerUuid,
         isCopyValues: false
       })
-
-      store.dispatch('panelInfo', {
-        currentTab: currentTab,
-        currentRecord: currentRecordUuid.value
-      })
+      if (currentTab.isParentTab) {
+        store.dispatch('panelInfo', {
+          currentTab: currentTab,
+          currentRecord: currentRecordUuid.value
+        })
+      }
       const info = {
         fieldsList: currentTab.fieldsList,
         option: language.t('actionMenu.new')

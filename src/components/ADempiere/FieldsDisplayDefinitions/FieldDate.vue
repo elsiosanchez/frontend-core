@@ -195,7 +195,7 @@ export default defineComponent({
     function updateFieldValue(value, field) {
       if (props.isNewRecord) {
         props.updateField(dateToSend(value), props.fieldMetadata)
-        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
+        if (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
       isLoading.value = true
@@ -278,13 +278,14 @@ export default defineComponent({
     function dataBachtEntry(value) {
       props.persistenceData(value, props.fieldMetadata)
     }
-
+    console.log(props.isValueBachtEntry, { fieldMetadata: props.fieldMetadata })
     if (
       props.isNewRecord &&
-      props.fieldMetadata.is_allow_copy &&
-      props.fieldMetadata.is_quick_entry &&
-      !isEmptyValue(props.isValueBachtEntry)
+      (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) &&
+      !isEmptyValue(props.isValueBachtEntry) &&
+      !isEmptyValue(props.isValueBachtEntry.value)
     ) {
+      console.log(props.isValueBachtEntry.value, { fieldMetadata: props.fieldMetadata })
       value.value = props.isValueBachtEntry.value
     }
     onMounted(() => {

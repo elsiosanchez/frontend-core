@@ -475,10 +475,12 @@ export default {
 
     setContainerInformation() {
       if (this.metadata.panelType === 'window' && !isEmptyValue(this.currentTab)) {
-        store.dispatch('panelInfo', {
-          currentTab: this.currentTab,
-          currentRecord: this.currentRecord
-        })
+        if (this.currentTab.isParentTab) {
+          store.dispatch('panelInfo', {
+            currentTab: this.currentTab,
+            currentRecord: this.currentRecord
+          })
+        }
       }
     }
   }

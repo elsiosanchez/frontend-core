@@ -139,7 +139,7 @@ export default defineComponent({
     const timeOut = ref(null)
     const inputSelect = ref(undefined)
     const { currentTab } = store.getters.getContainerInfo
-    const { containerUuid, parentUuid } = currentTab
+    const { containerUuid } = currentTab
     const { internal_id, column_name, reference } = props.fieldMetadata
 
     const contextAttributesList = computed(() => {
@@ -180,7 +180,7 @@ export default defineComponent({
 
     const contextValue = computed(() => {
       return getContext({
-        parentUuid,
+        // parentUuid,
         containerUuid,
         columnName: column_name
       })
@@ -188,8 +188,8 @@ export default defineComponent({
     const contextDisplayValue = computed(() => {
       return getContext({
         columnName: DISPLAY_COLUMN_PREFIX + column_name,
-        containerUuid,
-        parentUuid
+        containerUuid
+        // parentUuid
       })
     })
 
@@ -209,7 +209,7 @@ export default defineComponent({
       if (isEmptyValue(value)) options.value = []
       if (props.isNewRecord) {
         props.updateField(value, props.fieldMetadata)
-        if (props.fieldMetadata.is_allow_copy && props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
+        if (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) dataBachtEntry(value)
         return
       }
     }
@@ -339,8 +339,7 @@ export default defineComponent({
 
     if (
       props.isNewRecord &&
-      props.fieldMetadata.is_allow_copy &&
-      props.fieldMetadata.is_quick_entry &&
+      (props.fieldMetadata.is_allow_copy || props.fieldMetadata.is_quick_entry) &&
       !isEmptyValue(props.isValueBachtEntry)
     ) {
       fieldValue.value = props.isValueBachtEntry.value

@@ -1056,6 +1056,9 @@ export const containerManagerFieldDefinition = {
     isBachtEntry = false
   }) {
     return new Promise((resolve) => {
+      if (!currentTab.isParentTab) {
+        currentTab = store.getters.getStoredTab(currentTab.parentUuid, currentTab.firstTabUuid)
+      }
       const persistenceAttributes = getDefaultAttributes({
         currentTab
       })
