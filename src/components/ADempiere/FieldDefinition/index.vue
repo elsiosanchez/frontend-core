@@ -101,7 +101,7 @@ import FieldOptions from '@/components/ADempiere/FieldDefinition/FieldOptions/in
 import ComparisonOperator from '@/components/ADempiere/FieldDefinition/FieldOptions/ComparisonOperator.vue'
 
 // Constants
-import { UUID } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns'
 import { BUTTON, TEXT, DEFAULT_SIZE } from '@/utils/ADempiere/references'
 import {
   MULTIPLE_VALUES_OPERATORS_LIST, IGNORE_VALUE_OPERATORS_LIST
@@ -368,7 +368,7 @@ export default {
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: this.parentUuid,
         containerUuid: this.containerUuid,
-        columnName: UUID
+        columnName: COLUMNNAME_UUID
       })
     },
 

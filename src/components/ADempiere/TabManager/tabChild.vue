@@ -81,8 +81,10 @@ import TabPanel from '@/components/ADempiere/TabManager/TabPanel/index.vue'
 import TabOptions from './TabOptions.vue'
 
 // Constants
-import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
-import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_UUID,
+  LOG_COLUMNS_NAME_LIST
+} from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils.js'
@@ -311,7 +313,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: currentTabMetadata.value.firstTabUuid,
-        columnName: UUID
+        columnName: COLUMNNAME_UUID
       })
     })
 

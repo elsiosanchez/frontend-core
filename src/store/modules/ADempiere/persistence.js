@@ -24,7 +24,7 @@ import language from '@/lang'
 import {
   COLUMNNAME_DocAction, COLUMNNAME_Record_ID,
   LOG_COLUMNS_NAME_LIST,
-  UUID
+  COLUMNNAME_UUID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
 import {
@@ -346,7 +346,7 @@ const persistence = {
                 commit('setTabRowWithRecord', {
                   parentUuid,
                   containerUuid,
-                  recordUuid: response.values[UUID],
+                  recordUuid: response.values[COLUMNNAME_UUID],
                   row: {
                     ...response.values,
                     ...ROW_ATTRIBUTES
@@ -367,7 +367,7 @@ const persistence = {
                 // clear old values
                 dispatch('clearPersistenceQueue', {
                   containerUuid,
-                  recordUuid: response.values[UUID]
+                  recordUuid: response.values[COLUMNNAME_UUID]
                 })
               })
               .catch(error => {

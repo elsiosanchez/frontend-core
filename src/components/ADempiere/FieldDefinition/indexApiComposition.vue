@@ -73,7 +73,7 @@ import store from '@/store'
 import FieldOptions from '@/components/ADempiere/FieldDefinition/FieldOptions/index.vue'
 
 // Constants
-import { UUID } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns'
 import { TEXT, DEFAULT_SIZE } from '@/utils/ADempiere/references'
 import { MULTIPLE_VALUES_OPERATORS_LIST } from '@/utils/ADempiere/dataUtils'
 import { LAYOUT_MAX_COLUMNS_PER_ROW, DEFAULT_COLUMNS_PER_ROW } from '@/utils/ADempiere/componentUtils'
@@ -255,7 +255,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
-        columnName: UUID
+        columnName: COLUMNNAME_UUID
       })
     })
 

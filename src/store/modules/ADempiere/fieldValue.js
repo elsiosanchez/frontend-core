@@ -20,7 +20,8 @@ import Vue from 'vue'
 
 // Constants
 import {
-  COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed, UUID, ID
+  COLUMNNAME_IsActive, COLUMNNAME_Processing, COLUMNNAME_Processed,
+  COLUMNNAME_UUID, COLUMNNAME_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import {
   DISPLAY_COLUMN_PREFIX, UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
@@ -367,11 +368,11 @@ const value = {
     },
 
     getUuidOfContainer: (state) => (containerUuid) => {
-      return state.field[`${containerUuid}_${UUID}`]
+      return state.field[`${containerUuid}_${COLUMNNAME_UUID}`]
     },
 
     getIdOfContainer: (state) => ({ containerUuid, tableName }) => {
-      return state.field[`${containerUuid}_${tableName}_${ID}`]
+      return state.field[`${containerUuid}_${tableName}_${COLUMNNAME_ID}`]
     },
 
     // Using to read only in data tables in Window

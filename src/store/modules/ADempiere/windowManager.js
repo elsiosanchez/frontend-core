@@ -29,7 +29,7 @@ import {
 } from '@/api/ADempiere/userInterface/entities.ts'
 
 // Constants
-import { UUID } from '@/utils/ADempiere/constants/systemColumns'
+import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns'
 import {
   ROW_ATTRIBUTES, ROWS_OF_RECORDS_BY_PAGE_HIGH
 } from '@/utils/ADempiere/tableUtils'
@@ -164,13 +164,13 @@ const windowManager = {
 
       if (isEmptyValue(rowIndex)) {
         if (!isEmptyValue(recordsList)) {
-          const recordUuid = row[UUID]
+          const recordUuid = row[COLUMNNAME_UUID]
           const firstRow = recordsList.at()
-          if (recordUuid === firstRow[UUID]) {
+          if (recordUuid === firstRow[COLUMNNAME_UUID]) {
             rowIndex = 0
           } else {
             rowIndex = recordsList.findIndex(rowItem => {
-              return rowItem[UUID] === recordUuid
+              return rowItem[COLUMNNAME_UUID] === recordUuid
             })
           }
         }
@@ -549,14 +549,14 @@ const windowManager = {
               }
               const recordUuid = rootGetters.getUuidOfContainer(containerUuid)
               if (!isEmptyValue(recordUuid) && storedPage === pageNumber) {
-                const recordFromUuid = dataToStored.find(record => record[UUID] === recordUuid)
+                const recordFromUuid = dataToStored.find(record => record[COLUMNNAME_UUID] === recordUuid)
                 if (!isEmptyValue(recordFromUuid)) {
                   currentRow = {
                     ...recordFromUuid
                   }
                 }
               }
-              currentRecordUuid = currentRow[UUID]
+              currentRecordUuid = currentRow[COLUMNNAME_UUID]
               currentRecordId = currentRow[table_name + '_ID']
 
               if (isParentTab) {
@@ -712,7 +712,7 @@ const windowManager = {
         const currentRecordUuid = currentData.currentRecordUuid
         if (!isEmptyValue(currentRecordUuid)) {
           const recordFromUuid = currentData.recordsList.find(row => {
-            return row[UUID] === currentRecordUuid
+            return row[COLUMNNAME_UUID] === currentRecordUuid
           })
 
           if (!isEmptyValue(recordFromUuid)) {
@@ -905,7 +905,7 @@ const windowManager = {
             commit('setTabRowWithRecord', {
               parentUuid,
               containerUuid,
-              recordUuid: response.attributes[UUID],
+              recordUuid: response.attributes[COLUMNNAME_UUID],
               row: {
                 ...response.attributes,
                 ...ROW_ATTRIBUTES
@@ -925,7 +925,7 @@ const windowManager = {
             // clear old values
             dispatch('clearPersistenceQueue', {
               containerUuid,
-              recordUuid: response.attributes[UUID]
+              recordUuid: response.attributes[COLUMNNAME_UUID]
             })
             // refresh records
             dispatch('getEntities', {

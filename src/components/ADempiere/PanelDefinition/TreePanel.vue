@@ -81,7 +81,7 @@ import store from '@/store'
 import { requestGetTabEntity } from '@/api/ADempiere/user-interface/entities.ts'
 
 // // Constants
-// import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
+// import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns.js'
 
 // Components and Mixins
 import DraggablePanel from '@/components/ADempiere/PanelDefinition/DraggablePanel.vue'
@@ -292,7 +292,7 @@ export default defineComponent({
       // clear old values
       store.dispatch('clearPersistenceQueue', {
         containerUuid,
-        recordUuid: row[panelMetadata.value.keyColumn] // row[UUID]
+        recordUuid: row[panelMetadata.value.keyColumn] // row[COLUMNNAME_UUID]
       }, {
         root: true
       })

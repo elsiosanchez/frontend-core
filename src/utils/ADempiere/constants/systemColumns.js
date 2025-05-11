@@ -26,10 +26,8 @@ export const COLUMNNAME_Processing = 'Processing'
 
 export const COLUMNNAME_Processed = 'Processed'
 
-export const UUID = 'UUID'
 export const COLUMNNAME_UUID = 'UUID'
 
-export const ID = 'ID'
 export const COLUMNNAME_ID = 'ID'
 
 export const COLUMNNAME_AD_Table_ID = 'AD_Table_ID'
@@ -86,7 +84,7 @@ export const STANDARD_COLUMNS_NAME_LIST = [
   COLUMNNAME_AD_Client_ID,
   COLUMNNAME_AD_Org_ID,
   COLUMNNAME_IsActive,
-  UUID
+  COLUMNNAME_UUID
 ]
 
 /**
