@@ -134,7 +134,7 @@ import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
+import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 
 export default defineComponent({

@@ -139,15 +139,16 @@
 import Vue from 'vue'
 import { computed, defineComponent, ref } from '@vue/composition-api'
 
-import store from '@/store'
 import language from '@/lang'
+import store from '@/store'
 
 // Components and Mixins
 import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 
 // Utils and Melper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { deleteRecord, containerManager } from '@/utils/ADempiere/dictionary/window'
+import { containerManager } from '@/utils/ADempiere/dictionary/window'
+import { deleteRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'DeleteRecordButton',

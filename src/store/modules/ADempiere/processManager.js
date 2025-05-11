@@ -16,9 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue'
 import lang from '@/lang'
 import router from '@/router'
-import Vue from 'vue'
 
 // API Request Methods
 import {
@@ -26,9 +26,6 @@ import {
   requestRunBusinessProcessAsBrowser,
   requestRunBusinessProcessAsWindow
 } from '@/api/ADempiere/business-data/runBusinessProcess.ts'
-import {
-  refreshRecord
-} from '@/utils/ADempiere/dictionary/window'
 
 // Constants
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
@@ -44,6 +41,9 @@ import { showMessage, showNotification } from '@/utils/ADempiere/notification'
 import {
   containerManager
 } from '@/utils/ADempiere/dictionary/process.js'
+import {
+  refreshRecord
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 const processManager = {
   state: {

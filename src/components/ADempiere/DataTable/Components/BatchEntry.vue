@@ -125,7 +125,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iterableFormat.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
-import { isEditableRecord } from '@/utils/ADempiere/dictionary/window'
+import { isEditableRecord } from '@/utils/ADempiere/recordUtil'
 import { isReadOnlyTab } from '@/utils/ADempiere/dictionary/window/tab'
 // import { containerManagerFieldDefinition } from '@/utils/ADempiere/displayDefinition'
 

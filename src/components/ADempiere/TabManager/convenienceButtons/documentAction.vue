@@ -137,7 +137,7 @@ import DocumentStatusTag from '@/components/ADempiere/ContainerOptions/DocumentS
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import {
   refreshRecord
-} from '@/utils/ADempiere/dictionary/window'
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { isRunableDocumentAction } from '@/utils/ADempiere/dictionary/workflow'
 import { showMessage } from '@/utils/ADempiere/notification'
 

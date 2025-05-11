@@ -58,7 +58,7 @@ import language from '@/lang'
 
 // Utils and Melper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { createNewRecord } from '@/utils/ADempiere/dictionary/window'
+import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'NewRecordButton',

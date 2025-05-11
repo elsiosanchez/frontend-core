@@ -47,7 +47,7 @@ import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns
 // Utils and Melper Methods
 import { isEmptyValue, setRecordPath } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'SaveRecordButton',

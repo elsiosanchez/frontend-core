@@ -96,7 +96,7 @@ import {
   createNewRecord,
   refreshRecord,
   undoChange
-} from '@/utils/ADempiere/dictionary/window'
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'TabManagerChild',

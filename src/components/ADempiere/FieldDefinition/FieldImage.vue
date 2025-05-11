@@ -192,7 +192,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getToken } from '@/utils/auth'
 import { pathImageWindows } from '@/utils/ADempiere/resource'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default {
   name: 'FieldImage',

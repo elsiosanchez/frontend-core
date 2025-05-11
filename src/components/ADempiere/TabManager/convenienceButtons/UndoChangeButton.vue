@@ -40,7 +40,7 @@ import language from '@/lang'
 
 // Utils and Melper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { undoChange } from '@/utils/ADempiere/dictionary/window'
+import { undoChange } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'UndoChangeButton',

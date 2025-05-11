@@ -18,6 +18,17 @@
 
 import store from '@/store'
 
+// Constants
+import {
+  COLUMNNAME_AD_Client_ID,
+  COLUMNNAME_IsActive,
+  COLUMNNAME_Processing,
+  COLUMNNAME_Processed
+} from '@/utils/ADempiere/constants/systemColumns'
+
+// Utils and Helper Methods
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
+
 export const UUID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/
 
 /**
@@ -54,4 +65,49 @@ export function getTableKeyValues({
     })
   }
   return keyColumnValues
+}
+
+export function isEditableRecord({ parentUuid, containerUuid }) {
+  const preferenceClientId = store.getters.getSessionContextClientId
+  // client id value of record
+  const clientIdRecord = store.getters.getValueOfField({
+    parentUuid,
+    containerUuid,
+    columnName: COLUMNNAME_AD_Client_ID
+  })
+  if (preferenceClientId !== clientIdRecord) {
+    return false
+  }
+
+  // is active value of record
+  const isActiveRecord = store.getters.getValueOfField({
+    parentUuid,
+    containerUuid,
+    columnName: COLUMNNAME_IsActive
+  })
+  if (convertStringToBoolean(isActiveRecord)) {
+    // return false
+  }
+
+  // is processed value of record
+  const isProcessedRecord = store.getters.getValueOfField({
+    parentUuid,
+    containerUuid,
+    columnName: COLUMNNAME_Processed
+  })
+  if (convertStringToBoolean(isProcessedRecord)) {
+    return false
+  }
+
+  // is processing value of record
+  const isProcessingRecord = store.getters.getValueOfField({
+    parentUuid,
+    containerUuid,
+    columnName: COLUMNNAME_Processing
+  })
+  if (convertStringToBoolean(isProcessingRecord)) {
+    return false
+  }
+
+  return true
 }

@@ -54,9 +54,11 @@
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
+
 import store from '@/store'
 import router from '@/router'
 import language from '@/lang'
+
 // Components and Mixins
 import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
@@ -70,7 +72,7 @@ import {
   isEmptyValue
   // setRecordPath
 } from '@/utils/ADempiere/valueUtils'
-import { refreshRecord } from '@/utils/ADempiere/dictionary/window'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { showMessage } from '@/utils/ADempiere/notification'
 
 export default defineComponent({

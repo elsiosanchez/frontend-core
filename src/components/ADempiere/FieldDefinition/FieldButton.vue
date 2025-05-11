@@ -76,10 +76,8 @@ import {
   runProcessOfWindow,
   generateReportOfWindow,
   openDocumentAction,
+  openBrowserAssociated,
   openFormAssociated
-} from '@/utils/ADempiere/dictionary/window'
-import {
-  openBrowserAssociated
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'

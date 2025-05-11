@@ -35,7 +35,7 @@ import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
 import {
   refreshRecord
-} from '@/utils/ADempiere/dictionary/window'
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 const initState = {
   documentStatusesList: {},

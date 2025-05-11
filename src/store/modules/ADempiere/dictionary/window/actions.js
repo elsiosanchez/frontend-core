@@ -41,21 +41,24 @@ import { convertArrayKeyValueToObject } from '@/utils/ADempiere/formatValue/iter
 import {
   containerManager,
   isDisplayedField,
-  generateWindow,
-  createNewRecord,
-  deleteRecord,
-  exportCurrentRecord,
-  runProcessOfWindow,
-  generateReportOfWindow,
-  openDocumentAction,
-  openFormAssociated,
-  refreshRecord,
-  refreshRecords,
-  undoChange
+  generateWindow
 } from '@/utils/ADempiere/dictionary/window'
 import {
+  // record
+  createNewRecord,
+  refreshRecord,
+  refreshRecords,
+  deleteRecord,
+  undoChange,
+  exportCurrentRecord,
+  // dictionary
+  openDocumentAction,
+  generateReportOfWindow,
+  runProcessOfWindow,
   openBrowserAssociated,
+  openFormAssociated,
   openSequenceTab,
+  // additional
   recordAccess
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { panelAdvanceQuery } from '@/utils/ADempiere/dictionary/panel.js'

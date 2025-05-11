@@ -219,8 +219,11 @@ import TabDisplayDefinitions from '@/components/ADempiere/TabManager/tabDisplayD
 import TitleRecords from '@/components/ADempiere/FilterFields/titleRecord.vue'
 
 // Constants
-import { UUID } from '@/utils/ADempiere/constants/systemColumns.js'
-import { LOG_COLUMNS_NAME_LIST } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  COLUMNNAME_UUID,
+  LOG_COLUMNS_NAME_LIST
+} from '@/utils/ADempiere/constants/systemColumns'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // API Request Methods
 import { requestExistsReferences } from '@/api/ADempiere/recordManagement/referencesRecord.ts'
@@ -237,8 +240,7 @@ import {
   createNewRecord,
   refreshRecord,
   undoChange
-} from '@/utils/ADempiere/dictionary/window'
-import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'TabManager',
@@ -601,7 +603,7 @@ export default defineComponent({
       return store.getters.getValueOfFieldOnContainer({
         parentUuid: props.parentUuid,
         containerUuid: currentTabMetadata.value.firstTabUuid,
-        columnName: UUID
+        columnName: COLUMNNAME_UUID
       })
     })
 
@@ -621,7 +623,7 @@ export default defineComponent({
       }
       if (!isEmptyValue(query.action)) {
         filtersRecord = {
-          columnName: UUID,
+          columnName: COLUMNNAME_UUID,
           value: query.action
         }
       }

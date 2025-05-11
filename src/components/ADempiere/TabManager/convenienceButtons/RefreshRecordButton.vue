@@ -39,7 +39,10 @@ import language from '@/lang'
 
 // Utils and Melper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { refreshRecord, refreshRecords } from '@/utils/ADempiere/dictionary/window'
+import {
+  refreshRecord,
+  refreshRecords
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 export default defineComponent({
   name: 'RefreshRecordButton',

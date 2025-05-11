@@ -104,7 +104,7 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import {
   generateReportOfWindow
-} from '@/utils/ADempiere/dictionary/window'
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 // Components and Mixins
 import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
