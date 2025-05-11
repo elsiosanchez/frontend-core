@@ -17,58 +17,6 @@
 -->
 
 <template>
-  <!-- <el-popover
-    v-if="isDeleteRecord"
-    v-model="isVisibleConfirmDelete"
-    placement="top"
-    class="delete-record-container"
-  >
-    <el-descriptions :title="$t('window.confirmDeleteRecord')" direction="vertical" :column="tabAttributes.identifierColumns.length" border>
-      <el-descriptions-item
-        v-for="(item, index) in tabAttributes.identifierColumns"
-        :key="index"
-        :label="item.name"
-      >
-        <cell-display-info
-          v-for="(record, key) in listOfRecordsToDeleted"
-          :key="key"
-          :field-attributes="item"
-          :data-row="record"
-        />
-      </el-descriptions-item>
-    </el-descriptions>
-
-    <div
-      style="text-align: right; margin: 0;margin-top: 5px;"
-    >
-      <el-button
-        type="danger"
-        class="button-base-icon"
-        icon="el-icon-close"
-        @click="isVisibleConfirmDelete = false"
-      />
-      <el-button
-        type="primary"
-        class="button-base-icon"
-        icon="el-icon-check"
-        @click="deleteCurrentRecord()"
-      />
-    </div>
-
-    <el-button
-      slot="reference"
-      plain
-      size="small"
-      type="danger"
-      class="delete-record-button"
-      @click="focusConfirmDelete()"
-    >
-      <svg-icon icon-class="delete" />
-      <span v-if="!isMobile">
-        {{ $t('actionMenu.delete') }}
-      </span>
-    </el-button>
-  </el-popover> -->
   <div class="el-dropdown">
     <el-dropdown
       v-if="isDeleteRecord"
@@ -86,14 +34,15 @@
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="deleteRecord">
           <svg-icon icon-class="delete" />
-          {{ $t('actionMenu.deleteRecord') }}
+          {{ deleteTitle }}
         </el-dropdown-item>
         <el-dropdown-item divided command="disabledRecord">
           <svg-icon icon-class="disabled" />
-          {{ $t('actionMenu.disabledAllRecord') }}
+          {{ disableTitle }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
+
     <el-popover
       v-model="isVisibleConfirmDelete"
       tigger="click"
@@ -108,7 +57,7 @@
           :content-style="{'max-height': '200px', 'display': 'block', 'overflow': 'auto'}"
         >
           <cell-display-info
-            v-for="(record, key) in listOfRecordsToDeleted"
+            v-for="(record, key) in recordsListToDelete"
             :key="key"
             :field-attributes="item"
             :data-row="record"
@@ -136,8 +85,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { computed, defineComponent, ref } from '@vue/composition-api'
+import { computed, defineComponent, ref, nextTick, watch } from '@vue/composition-api'
 
 import language from '@/lang'
 import store from '@/store'
@@ -171,6 +119,7 @@ export default defineComponent({
   setup(props) {
     const isVisibleConfirmDelete = ref(false)
     const buttonConfirmDelete = ref(null)
+    const currentComnad = ref('')
     const title = ref('')
     const okMethod = ref(() => {})
 
@@ -186,6 +135,7 @@ export default defineComponent({
       return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
     })
 
+    // TODO: Evaluate if is required
     const isExistsChanges = computed(() => {
       const persistenceValues = store.getters.getPersistenceAttributesChanges({
         parentUuid: props.parentUuid,
@@ -200,8 +150,11 @@ export default defineComponent({
       if (!isEmptyValue(table) && table.is_view) {
         return false
       }
-      if (isExistsChanges.value) {
-        return false
+      if (!tabAttributes.value.isShowedTableRecords) {
+        // Only single record
+        if (isExistsChanges.value) {
+          return false
+        }
       }
       return deleteRecord.enabled({
         parentUuid: props.parentUuid,
@@ -216,7 +169,7 @@ export default defineComponent({
       })
     })
 
-    const listOfRecordsToDeleted = computed(() => {
+    const recordsListToDelete = computed(() => {
       if (!tabAttributes.value.isShowedTableRecords) {
         const record = store.getters.getTabCurrentRow({
           containerUuid: props.containerUuid
@@ -224,9 +177,51 @@ export default defineComponent({
         if (isEmptyValue(record)) {
           return []
         }
-        return [record]
+        return [
+          record
+        ]
       }
       return selectionsRecords.value
+    })
+
+    const disableTitle = computed(() => {
+      let title = language.t('actionMenu.disabledRecord')
+      if (tabAttributes.value.isShowedTableRecords) {
+        if (!isEmptyValue(recordsListToDelete.value) && recordsListToDelete.value.length > 1) {
+          title = language.t('actionMenu.disabledSelectedRecords')
+        }
+      }
+      return title
+    })
+
+    const confirmDisableTitle = computed(() => {
+      let title = language.t('window.disabledSelectedRecord')
+      if (tabAttributes.value.isShowedTableRecords) {
+        if (!isEmptyValue(recordsListToDelete.value) && recordsListToDelete.value.length > 1) {
+          title = language.t('window.disabledSelectedRecords')
+        }
+      }
+      return title
+    })
+
+    const deleteTitle = computed(() => {
+      let title = language.t('actionMenu.deleteRecord')
+      if (tabAttributes.value.isShowedTableRecords) {
+        if (!isEmptyValue(recordsListToDelete.value) && recordsListToDelete.value.length > 1) {
+          title = language.t('actionMenu.deleteSelectedRecords')
+        }
+      }
+      return title
+    })
+
+    const confirmDeleteTitle = computed(() => {
+      let title = language.t('window.confirmDeleteRecord')
+      if (tabAttributes.value.isShowedTableRecords) {
+        if (!isEmptyValue(recordsListToDelete.value) && recordsListToDelete.value.length > 1) {
+          title = language.t('window.confirmDeleteRecords')
+        }
+      }
+      return title
     })
 
     function deleteCurrentRecord() {
@@ -261,7 +256,7 @@ export default defineComponent({
 
     function focusConfirmDelete() {
       if (buttonConfirmDelete.value) {
-        Vue.nextTick(() => {
+        nextTick(() => {
           // TODO: Doesn't work, focus confirm button with displayed popover.
           // buttonConfirmDelete.value.$el.focus()
         })
@@ -286,14 +281,42 @@ export default defineComponent({
 
     function handleCommandActions(command) {
       if (command === 'deleteRecord') {
-        title.value = 'window.confirmDeleteRecord'
+        title.value = confirmDeleteTitle.value
         okMethod.value = deleteCurrentRecord
       } else if (command === 'disabledRecord') {
-        title.value = 'window.confirmDisabledRecord'
+        title.value = confirmDisableTitle.value
         okMethod.value = disableCurrentRecord
       }
+      currentComnad.valiue = command
       isVisibleConfirmDelete.value = true
     }
+
+    watch(recordsListToDelete, (newValue, oldValue) => {
+      if (currentComnad.valiue === 'deleteRecord') {
+        title.value = confirmDeleteTitle.value
+      } else if (currentComnad.valiue === 'disabledRecord') {
+        title.value = confirmDisableTitle.value
+      }
+    })
+
+    watch(recordsListToDelete, (newValue, oldValue) => {
+      if (currentComnad.valiue === 'deleteRecord') {
+        title.value = confirmDeleteTitle.value
+      } else if (currentComnad.valiue === 'disabledRecord') {
+        title.value = confirmDisableTitle.value
+      }
+    })
+
+    watch(
+      () => tabAttributes.value.isShowedTableRecords,
+      (newIsShowedTableRecords, oldIsShowedTableRecords) => {
+        if (currentComnad.valiue === 'deleteRecord') {
+          title.value = confirmDeleteTitle.value
+        } else if (currentComnad.valiue === 'disabledRecord') {
+          title.value = confirmDisableTitle.value
+        }
+      }
+    )
 
     return {
       isVisibleConfirmDelete,
@@ -304,7 +327,12 @@ export default defineComponent({
       isDeleteRecord,
       tabAttributes,
       isMobile,
-      listOfRecordsToDeleted,
+      recordsListToDelete,
+      selectionsRecords,
+      deleteTitle,
+      confirmDeleteTitle,
+      disableTitle,
+      confirmDisableTitle,
       // Methods
       deleteCurrentRecord,
       focusConfirmDelete,

@@ -340,7 +340,7 @@ export default defineComponent({
       })
       store.commit('setTabSelectionsList', {
         containerUuid: props.containerUuid,
-        recordsSelected: [row]
+        selectionsList: [row]
       })
       // props.containerManager.setSelection({
       //   containerUuid: props.containerUuid,

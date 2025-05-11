@@ -20,7 +20,12 @@ const actionMenu = {
   // actions
   refresh: 'Refrescar',
   refreshRecords: 'Refrescar Registros',
+  delete: 'Eliminar',
   deleteRecord: 'Eliminar Registro',
+  deleteSelectedRecords: 'Eliminar Registros Seleccionados',
+  disabled: 'Deshabilitar',
+  disabledRecord: 'Deshabilitar Registro',
+  disabledSelectedRecords: 'Deshabilitar Registros Seleccionados',
   new: 'Nuevo',
   createNewRecord: 'Nuevo Registro',
   shareLink: 'Compartir Enlace',
@@ -49,8 +54,6 @@ const actionMenu = {
   openSmartBrowser: 'Abrir Consulta Inteligente',
   exportSelectedRecords: 'Exportar Registros Seleccionados',
   exportRecord: 'Exportar Registro',
-  delete: 'Eliminar',
-  disabledAllRecord: 'Deshabilitar Seleccionados',
   // relations
   relations: 'Relaciones',
   withoutRelations: 'Sin Relaciones',

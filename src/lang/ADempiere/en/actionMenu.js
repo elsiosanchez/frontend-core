@@ -20,7 +20,12 @@ const actionMenu = {
   // actions
   refresh: 'Refresh',
   refreshRecords: 'Refresh Records',
+  delete: 'Delete',
   deleteRecord: 'Delete Record',
+  deleteSelectedRecords: 'Delete Selected Records',
+  disabled: 'Disable',
+  disabledRecord: 'Disable Record',
+  disabledSelectedRecords: 'Disable Selected Records',
   new: 'New',
   createNewRecord: 'New Record',
   shareLink: 'Share Link',
@@ -53,9 +58,6 @@ const actionMenu = {
   relations: 'Relations',
   withoutRelations: 'Without Relations',
   // references
-  delete: 'Delete',
-  deleteAllRecord: 'Delete Selected',
-  disabledAllRecord: 'Disable Selected',
   references: 'References',
   withoutReferences: 'Without references for record',
   menu: 'Menú the',
