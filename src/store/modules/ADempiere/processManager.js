@@ -29,21 +29,15 @@ import {
 
 // Constants
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
-import {
-  IDENTIFIER_COLUMN_SUFFIX
-} from '@/utils/ADempiere/dictionaryUtils'
+import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helper Methods
 import { getToken } from '@/utils/auth'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import { showMessage, showNotification } from '@/utils/ADempiere/notification'
-import {
-  containerManager
-} from '@/utils/ADempiere/dictionary/process.js'
-import {
-  refreshRecord
-} from '@/utils/ADempiere/dictionary/window/actionsMenu'
+import { containerManager } from '@/utils/ADempiere/dictionary/process.js'
+import { refreshRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 const processManager = {
   state: {
@@ -350,42 +344,76 @@ const processManager = {
     },
 
     startProcessOfWindows({ commit, dispatch, getters, rootGetters }, {
-      parentUuid,
+      parametersList = [],
+      defaultProcess,
+      currentTab,
       containerUuid,
-      tableName,
       recordUuid,
-      recordId,
-      parametersList = []
+      parentUuid,
+      tableName,
+      recordId
     }) {
       return new Promise(resolve => {
         const windowUuid = router.app._route.meta.uuid
-        const storedTab = getters.getStoredTab(windowUuid, parentUuid)
-        const { table_name, isShowedTableRecords } = storedTab
-        const processModal = getters.getModalDialogManager({
-          containerUuid: containerUuid
-        })
-        const storedProcessDefinition = storedTab.processes.find(process => {
-          // return process.name === processModal.title
-          return process.uuid === processModal.containerUuid
-        })
+        const isSession = !isEmptyValue(getToken())
+        // const currentTab = getters.getTabAttributes
+        const storedTab = rootGetters.getStoredTab(windowUuid, parentUuid)
+        // if (isEmptyValue(storedTab)) {
+        //   storedTab = rootGetters.getStoredTab(windowUuid, parentUuid)
+        // }
+        const currentPanel = getters.getTabAttributes
+
+        let storedProcessDefinition
+
+        const {
+          table_name
+        } = storedTab
+        const processModal = getters.getModalDialogManager({ containerUuid: containerUuid })
+
+        storedProcessDefinition = storedTab.processes.find(process => { process.uuid === processModal.containerUuid })
+        // Get Parameters Process
         if (isEmptyValue(parametersList)) {
           const fieldsList = getters.getStoredFieldsFromProcess(containerUuid)
-          parametersList = rootGetters.getProcessParameters({
-            containerUuid,
-            fieldsList
+          parametersList = rootGetters.getProcessParameters({ containerUuid, fieldsList })
+        }
+
+        if (isEmptyValue(recordId)) {
+          recordId = rootGetters.getIdOfContainer({
+            containerUuid: currentPanel.containerUuid,
+            tableName: currentPanel.table_name
           })
         }
 
+        if (isEmptyValue(storedProcessDefinition)) {
+          storedProcessDefinition = defaultProcess
+        }
+        // const recordsSelection = rootGetters.getTabSelectionsList({ containerUuid: storedTab.uuid })
+
+        // if (!isEmptyValue(recordsSelection) && recordsSelection.length === 1) {
+        //   const currentRow = recordsSelection[0]
+        //   recordId = currentRow[table_name + IDENTIFIER_COLUMN_SUFFIX]
+        //   recordUuid = currentRow.UUID
+        // }
+
+        // const selectionsList = getSelectionsList({
+        //   processDefinition: storedProcessDefinition,
+        //   currentTab: storedTab,
+        //   isShowedTableRecords,
+        //   recordsSelection,
+        //   containerUuid,
+        //   windowUuid
+        // })
         let selectionsList = []
-        if (storedProcessDefinition.is_multi_selection && isShowedTableRecords) {
+        if (storedProcessDefinition.is_multi_selection && currentPanel.isShowedTableRecords) {
           const recordsSelection = rootGetters.getTabSelectionsList({
-            containerUuid: storedTab.uuid
+            containerUuid: currentPanel.uuid
           })
           selectionsList = rootGetters.getTabSelectionToServer({
             parentUuid: windowUuid,
-            containerUuid: storedTab.uuid,
+            containerUuid: currentPanel.uuid,
             selectionsList: recordsSelection
           })
+
           if (!isEmptyValue(recordsSelection) && recordsSelection.length === 1) {
             const currentRow = recordsSelection.at(0)
             recordId = currentRow[table_name + IDENTIFIER_COLUMN_SUFFIX]
@@ -395,10 +423,8 @@ const processManager = {
           }
         }
 
-        const isSession = !isEmptyValue(getToken())
-        let procesingNotification = {
-          close: () => false
-        }
+        let procesingNotification = { close: () => false }
+
         if (isSession) {
           procesingNotification = showNotification({
             title: lang.t('notifications.processing'),
@@ -411,24 +437,16 @@ const processManager = {
         let isProcessedError = false
         let summary = ''
 
-        if (isEmptyValue(recordId)) {
-          recordId = rootGetters.getIdOfContainer({
-            containerUuid: storedTab.uuid,
-            tableName
-          })
-        }
-
         requestRunBusinessProcessAsWindow({
           id: storedProcessDefinition.internal_id,
+          recordId: recordId,
           parametersList,
           selectionsList,
-          tableName,
-          recordId: recordId
+          tableName: currentPanel.table_name
         })
           .then(runProcessRepsonse => {
             isProcessedError = runProcessRepsonse.is_error
             summary = runProcessRepsonse.summary
-
             // TODO: Update record on window
             resolve(runProcessRepsonse)
           })
@@ -437,13 +455,7 @@ const processManager = {
             console.warn(`Error executing process: ${error.message}. Code: ${error.code}.`)
           })
           .finally(() => {
-            // commit('resetStateWindowManager', {
-            //   containerUuid: parentUuid
-            // })
-            // dispatch('setTabDefaultValues', {
-            //   containerUuid: parentUuid
-            // })
-
+            commit('setTabAttributes', {})
             dispatch('finishProcess', {
               summary,
               name: storedProcessDefinition.name,

@@ -187,6 +187,10 @@ export default defineComponent({
       type: Object,
       default: () => {},
       required: true
+    },
+    tabAttributes: {
+      type: Object,
+      default: () => ({})
     }
   },
 
@@ -311,6 +315,7 @@ export default defineComponent({
      * @param {object} action
      */
     function runAction(action) {
+      store.commit('setTabAttributes', props.tabAttributes)
       const { actionName } = action
       if (actionName === 'Moreoptions') {
         return store.commit('setShowMenuMobile', true)

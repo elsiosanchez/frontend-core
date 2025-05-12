@@ -38,6 +38,7 @@ const containerInfo = {
     showMenuMobile: false,
     containerPanelInfo: {},
     fieldLogs: [],
+    tabAttributes: {},
     currentFieldList: {
       fieldsList: [],
       option: '',
@@ -79,6 +80,9 @@ const containerInfo = {
     },
     setDefaultOpenedTab(state, nameTab) {
       state.defaultOpenedTab = nameTab
+    },
+    setTabAttributes(state, attribute) {
+      state.tabAttributes = attribute
     }
   },
 
@@ -198,6 +202,9 @@ const containerInfo = {
     },
     getDefaultOpenedTab: (state) => {
       return state.defaultOpenedTab
+    },
+    getTabAttributes: (state) => {
+      return state.tabAttributes
     }
   }
 }

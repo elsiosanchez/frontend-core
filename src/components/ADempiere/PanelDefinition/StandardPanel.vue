@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <div id="tab-panel-content-from" class="wrapper" style="margin-right: 10px">
+  <div id="tab-panel-content-from" class="wrapper" style="margin-right: 10px" @click="selectPanel">
     <el-form
       label-position="top"
       label-width="200px"
@@ -270,6 +270,12 @@ export default defineComponent({
       }
     })
 
+    function selectPanel() {
+      if (!isEmptyValue(props.panelMetadata.window_id)) {
+        store.commit('setTabAttributes', props.panelMetadata)
+      }
+    }
+
     return {
       fieldsList,
       shadowGroup,
@@ -281,6 +287,7 @@ export default defineComponent({
       isMobile,
       isActiveCurrentTab,
       // methodos
+      selectPanel,
       setFocus
     }
   }

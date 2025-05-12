@@ -83,7 +83,8 @@ export default {
       windowResponse.tabsList.forEach(tab => {
         dispatch('setTabActionsMenu', {
           parentUuid: windowResponse.uuid,
-          containerUuid: tab.uuid
+          containerUuid: tab.uuid,
+          tabDefinition: tab
         })
 
         commit('setTableNameByTab', {
@@ -141,11 +142,12 @@ export default {
 
   setTabActionsMenu({ commit, dispatch, getters, rootGetters }, {
     parentUuid: windowUuid,
-    containerUuid: tabUuid
+    containerUuid: tabUuid,
+    tabDefinition
   }) {
-    const tabDefinition = getters.getStoredTab(windowUuid, tabUuid)
-    const currentRoute = router.app._route
-    const { query, params } = currentRoute
+    if (isEmptyValue(tabDefinition)) {
+      tabDefinition = getters.getStoredTab(windowUuid, tabUuid)
+    }
     const actionsList = []
 
     actionsList.push(createNewRecord)
@@ -473,31 +475,21 @@ export default {
             doneMethod: ({ parentUuid: tabAssociatedUuid, containerUuid, uuid }) => {
               // TODO: Get container uuid with multiple tabs and same process
               const recordUuid = rootGetters.getUuidOfContainer(tabAssociatedUuid)
-
-              const storedTab = rootGetters.getStoredTab(windowUuid, tabAssociatedUuid)
-              const { table_name } = storedTab
-              let recordId = rootGetters.getIdOfContainer({
+              // Get Tab Attributes the Store
+              const storedTab = rootGetters.getStoredTab(windowUuid, uuid)
+              // Get Record ID the Container
+              const recordId = rootGetters.getIdOfContainer({
                 containerUuid: storedTab.containerUuid,
-                tableName: table_name
+                tableName: storedTab.table_name
               })
-              if (isEmptyValue(recordId)) {
-                if (!isEmptyValue(query.recordId)) {
-                  recordId = query.recordId
-                }
-                if (isEmptyValue(recordId) && !isEmptyValue(params.recordId)) {
-                  recordId = params.recordId
-                }
-              }
               dispatch('startProcessOfWindows', {
+                tableName: storedTab.table_name_name,
                 parentUuid: tabAssociatedUuid,
                 containerUuid: process.uuid,
-                tableName: table_name,
-                recordId,
-                recordUuid
+                defaultProcess: process,
+                recordUuid,
+                recordId
               }).then(async processResponse => {
-                // if (processResponse.is_error) {
-                //   return
-                // }
                 const storedTab = rootGetters.getStoredTab(windowUuid, tabAssociatedUuid)
                 const { table_name, isShowedTableRecords } = storedTab
                 const recordsSelection = getters.getTabSelectionsList({

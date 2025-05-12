@@ -110,6 +110,7 @@
       :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
       :container-manager="containerManager"
       :actions-manager="listAction"
+      :tab-attributes="tabAttributes"
       style="float: right;"
     />
     <el-drawer
@@ -128,6 +129,7 @@
         :container-uuid="tabAttributes.containerUuid"
         :container-manager="containerManager"
         :actions-manager="listAction"
+        :tab-attributes="tabAttributes"
       />
     </el-drawer>
   </div>
@@ -318,6 +320,7 @@ export default defineComponent({
         parentUuid: props.parentUuid,
         containerUuid: props.tabAttributes.uuid
       })
+      store.commit('setTabAttributes', props.tabAttributes)
       // props.containerManager.setSelection({
       //   containerUuid: props.containerUuid,
       //   recordsSelected: [tabData.value.currentRowSelect]

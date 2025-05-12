@@ -383,3 +383,31 @@ export const containerManager = {
     })
   }
 }
+
+/**
+ * Get Selections List
+ * This function gets the list of record selections for a specific process
+ * considering whether the process allows multiple selections and whether the records in the table are being displayed.
+ * @param {Object} - Process definition containing information on whether it allows multiple selections.
+ * @param {boolean} - Indicates whether table records are being displayed.
+ * @param {Object} - The current tab containing information about the container.
+ * @param {string} - UUID of the current window, used to identify the session.
+ * @param {string} - Name of the table being used to obtain the record ID and UUID.
+ * @returns {Array} - Returns a list of selections if multiple selections are allowed and there are records displayed.
+ * If only one record is selected, an empty array is returned to clear the selection.
+ * If multiple selections are not allowed or there are no records displayed, an empty array is returned.
+ */
+
+export function getSelectionsList({
+  processDefinition,
+  isShowedTableRecords,
+  recordsSelection,
+  currentTab,
+  windowUuid
+}) {
+  if (processDefinition.is_multi_selection && isShowedTableRecords) {
+    const selectionsList = store.getters.getTabSelectionToServer({ parentUuid: windowUuid, containerUuid: currentTab.uuid, selectionsList: recordsSelection })
+    return selectionsList
+  }
+  return []
+}

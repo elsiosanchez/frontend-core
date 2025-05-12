@@ -373,6 +373,15 @@ export default {
         }
       }
       return -1
+    },
+    currentPanel() {
+      if (this.isEmptyValue(this.parentUuid) || !this.containerManager.getPanel) {
+        return {}
+      }
+      return this.containerManager.getPanel({
+        parentUuid: this.parentUuid,
+        containerUuid: this.containerUuid
+      })
     }
   },
 
@@ -407,6 +416,9 @@ export default {
 
   methods: {
     startProcess() {
+      if (!this.isEmptyValue(this.currentPanel.window_id)) {
+        store.commit('setTabAttributes', this.currentPanel)
+      }
       this.actionAssociated.start()
     },
     getZoomWindowsList() {
