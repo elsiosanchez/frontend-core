@@ -59,7 +59,10 @@
 </template>
 <script>
 import store from '@/store'
+
 import { defineComponent, computed, ref } from '@vue/composition-api'
+
+// Utils and Helper Methods
 import { showNotification } from '@/utils/ADempiere/notification.js'
 
 export default defineComponent({
@@ -78,29 +81,35 @@ export default defineComponent({
       required: false
     },
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: false
     }
   },
+
   setup(props, { root }) {
+    const check = ref('see')
+    const ids = ref([])
+
+    //
     const isLoading = computed(() => {
       return store.getters.getIsLoadingDialog
     })
-    const check = ref('see')
-    const ids = ref([])
-    //
+
     const showDialog = computed(() => {
       return store.getters.getViewDialog
     })
+
     const selectionsList = computed(() => {
       return store.getters.getTabSelectionsList({
         containerUuid: props.containerUuid
       })
     })
+
     //
     function viewShowDialog() {
       store.commit('setViewDialog', false)
     }
+
     function printProcess() {
       selectionsList.value.forEach(e => {
         const id = e[`${props.tableName}_ID`]
@@ -132,6 +141,7 @@ export default defineComponent({
           store.commit('setIsLoadingDialog', false)
         })
     }
+
     return {
       showDialog,
       isLoading,

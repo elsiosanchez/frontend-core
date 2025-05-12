@@ -92,10 +92,7 @@ import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReportViewer.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
-import reportPanel from '@/views/ADempiere/ReportViewerEngine/reportPanel.vue'
-
-// Constants
-import { DEFAULT_REPORT_TYPE } from '@/utils/ADempiere/dictionary/report'
+import ReportPanel from '@/views/ADempiere/ReportViewerEngine/reportPanel.vue'
 
 // Utils and Helper Methods
 import { convertObjectToKeyValue } from '@/utils/ADempiere/valueFormat.js'
@@ -113,7 +110,7 @@ export default defineComponent({
     ModalDialog,
     TitleAndHelp,
     OptionsReport,
-    reportPanel
+    ReportPanel
   },
 
   setup(props, { root }) {
@@ -125,22 +122,31 @@ export default defineComponent({
       reportId,
       reportUuid
     })
+
     const isLoading = ref(false)
-    const reportType = ref(DEFAULT_REPORT_TYPE)
-    const reportContent = ref('')
-    const storedReportOutput = computed(() => {
-      return store.getters.getReportOutput(reportId)
+
+    const containerUuid = computed(() => {
+      return reportUuid.toString()
     })
+
+    const storedReportOutput = computed(() => {
+      return store.getters.getReportOutput(reportUuid)
+    })
+
     const name = computed(() => {
-      if (!isEmptyValue(storedReportOutput.value) && !isEmptyValue(storedReportOutput.value.name)) return storedReportOutput.value.name
-      if (!isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportDefinition.value.name)) return storedReportDefinition.value.name
+      if (!isEmptyValue(storedReportOutput.value) && !isEmptyValue(storedReportOutput.value.name)) {
+        return storedReportOutput.value.name
+      }
+      if (!isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportDefinition.value.name)) {
+        return storedReportDefinition.value.name
+      }
       return ''
     })
-    const containerUuid = computed(() => {
-      return reportId.toString()
-    })
+
     const help = computed(() => {
-      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) return storedReportOutput.value.name
+      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) {
+        return storedReportOutput.value.name
+      }
       return storedReportDefinition.value.help
     })
 
@@ -162,11 +168,6 @@ export default defineComponent({
         return
       }
       if (!reportOutput.isError) {
-        const { output, report_type: format } = reportOutput
-
-        reportType.value = isEmptyValue(format) ? 'pdf' : format
-        reportContent.value = output
-
         isLoading.value = true
       }
 
@@ -188,8 +189,9 @@ export default defineComponent({
         getCachedReport()
         return
       }
-      // console.log({ reportId })
-      if (isEmptyValue(reportId)) return
+      if (isEmptyValue(reportId)) {
+        return
+      }
       store.dispatch('getReportDefinitionFromServer', {
         id: reportId
       }).then(() => {
@@ -271,26 +273,18 @@ export default defineComponent({
       })
     }
 
-    const relationsManager = ref({
-      menuParentUuid: root.$route.meta.parentUuid
-    })
-
     const drawer = ref(false)
 
     store.dispatch('findListMailTemplates')
 
     onMounted(() => {
       getReport()
-      root.$route.meta.reportType = reportType.value
     })
 
     return {
       reportUuid,
       isLoading,
-      reportType,
-      reportContent,
       actionsManager,
-      relationsManager,
       drawer,
       isShowPanelConfig,
       // Computeds

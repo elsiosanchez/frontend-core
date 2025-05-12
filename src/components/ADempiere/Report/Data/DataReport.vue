@@ -74,7 +74,7 @@
         >
           <el-row :gutter="24">
             <el-col :span="5" style="margin-top: 25px">
-              <printFormat
+              <print-format-field
                 :container-uuid="reportOutput.containerUuid"
                 :report-output="reportOutput"
                 :container-manager="containerManagerReportViwer"
@@ -82,7 +82,7 @@
               />
             </el-col>
             <el-col :span="5" style="margin-top: 25px">
-              <reportView
+              <report-views-field
                 :container-uuid="reportOutput.containerUuid"
                 :report-output="reportOutput"
                 :container-manager="containerManagerReportViwer"
@@ -155,8 +155,8 @@ import store from '@/store'
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 import DataCells from '@/components/ADempiere/Report/Data/DataCells.vue'
-import PrintFormat from '@/components/ADempiere/ReportManager/Setup/options/printFormat.vue'
-import ReportView from '@/components/ADempiere/ReportManager/Setup/options/reportViews.vue'
+import PrintFormatField from '@/components/ADempiere/ReportManager/Setup/options/printFormatField.vue'
+import ReportViewsField from '@/components/ADempiere/ReportManager/Setup/options/reportViewsField.vue'
 import RefreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton'
 import reportSummary from '@/components/ADempiere/ReportManager/Setup/options/reportSumary.vue'
 import downloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
@@ -175,8 +175,8 @@ export default defineComponent({
     CustomPagination,
     InfoReport,
     DataCells,
-    PrintFormat,
-    ReportView,
+    PrintFormatField,
+    ReportViewsField,
     RefreshButton,
     reportSummary,
     downloadButtom
@@ -185,14 +185,14 @@ export default defineComponent({
   props: {
     containerManager: {
       type: Object,
-      default: () => []
+      default: () => {}
     },
     instanceUuid: {
-      type: Number,
+      type: [String, Number],
       default: 0
     },
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     reportOutput: {

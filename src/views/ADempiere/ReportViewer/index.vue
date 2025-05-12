@@ -297,10 +297,6 @@ export default defineComponent({
       })
     }
 
-    const relationsManager = ref({
-      menuParentUuid: root.$route.meta.parentUuid
-    })
-
     const drawer = ref(false)
 
     onMounted(() => {
@@ -313,7 +309,6 @@ export default defineComponent({
       reportType,
       reportContent,
       actionsManager,
-      relationsManager,
       drawer,
       isShowPanelConfig,
       // Computeds

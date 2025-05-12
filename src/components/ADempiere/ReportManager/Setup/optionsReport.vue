@@ -164,21 +164,22 @@ import store from '@/store'
 
 // Components and Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import downloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom'
+
 export default defineComponent({
   name: 'OptionsReport',
 
   components: {
     CollapseCriteria,
-    downloadButtom
+    DownloadButtom
   },
 
   props: {
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     containerManager: {

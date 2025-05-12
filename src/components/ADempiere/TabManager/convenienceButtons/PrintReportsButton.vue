@@ -20,19 +20,19 @@
 <template>
   <span>
     <el-dropdown
-      v-if="!isEmptyValue(printFormatsList) || currentTableName === FINANCIAL_REPORT_TABLE_NAME"
-      split-button
+      v-if="!isEmptyValue(reportsLists) || currentTableName === FINANCIAL_REPORT_TABLE_NAME"
       size="small"
       trigger="click"
       class="print-button"
-      style="margin-left: 8px; padding-right: 9px;"
-      @click="printWithFormat"
-      @command="handleStartPrintFormat"
+      split-button
+      style="margin-left: 8px;"
+      @click="printProcess"
+      @command="handleStartReport"
     >
-      <i
+      <svg-icon
         v-if="!isLoading"
         style="font-size: 21px;"
-        class="el-icon-data-analysis"
+        icon-class="print"
       />
       <i
         v-else
@@ -42,30 +42,30 @@
 
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
-          v-for="(printFormat, index) in printFormatsList"
+          v-for="(reportItem, index) in reportsLists"
           :key="index"
-          :command="printFormat"
-          :icon="printFormat.isLegacy ? 'el-icon-document' : 'el-icon-document-add' "
+          :command="reportItem"
+          :icon="reportItem.isLegacy ? 'el-icon-document' : 'el-icon-document-add' "
         >
-          {{ printFormat.name }}
+          {{ reportItem.name }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
     <el-button
-      v-if="isEmptyValue(printFormatsList)"
+      v-if="isEmptyValue(reportsLists)"
       plain
       type="info"
       size="small"
       style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
-      :disabled="isLoading || isEmptyValue(printFormatsList)"
+      :disabled="isLoading || isEmptyValue(process) || !process.is_report || isEmptyValue(reportsLists)"
       :loading="isLoading"
-      @click="printWithFormat()"
+      @click="printProcess()"
     >
-      <i
+      <svg-icon
         v-if="!isLoading"
         style="font-size: 21px;"
-        class="el-icon-data-analysis"
+        icon-class="print"
       />
       <i
         v-else
@@ -73,6 +73,7 @@
         class="el-icon-loading"
       />
     </el-button>
+
     <dialog-legacy
       :table-name="currentTableName"
       :process="process"
@@ -83,11 +84,11 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
+import { defineComponent, computed, ref } from '@vue/composition-api'
 
 import language from '@/lang'
-import router from '@/router'
 import store from '@/store'
+import router from '@/router'
 
 // Constants
 import {
@@ -96,20 +97,21 @@ import {
 import {
   FINANCIAL_REPORT_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
-import {
-  REPORT_VIEWER_ENGINE_NAME
-} from '@/utils/ADempiere/dictionary/report'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
+import { mergeArrays } from '@/utils/ADempiere/formatValue/iterableFormat'
+import { showMessage } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
+import {
+  generateReportOfWindow
+} from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 // Components and Mixins
 import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
 
 export default defineComponent({
-  name: 'PrintFormats',
+  name: 'PrintReportsButton',
 
   components: {
     DialogLegacy
@@ -130,7 +132,7 @@ export default defineComponent({
     }
   },
 
-  setup(props) {
+  setup(props, { root }) {
     /**
      * Ref
      */
@@ -140,10 +142,28 @@ export default defineComponent({
      * Const
      */
     const containerUuid = props.tabAttributes.uuid
-
+    const { process } = props.tabAttributes
+    const currentRoute = router.app._route
+    let instanceUuid
+    if (currentRoute.params && currentRoute.params.instanceUuid) {
+      instanceUuid = currentRoute.params.instanceUuid
+    }
     /**
      * Computed
      */
+    const recordUuid = computed(() => {
+      return store.getters.getUuidOfContainer(props.containerUuid)
+    })
+
+    const selectionsList = computed(() => {
+      if (props.containerManager.getSelection) {
+        return props.containerManager.getSelection({
+          containerUuid: containerUuid
+        })
+      }
+      return []
+    })
+
     const relatedColumsNames = computed(() => {
       let relatedColumns = []
       const parentColumns = props.tabAttributes.fieldsList
@@ -160,7 +180,6 @@ export default defineComponent({
       relatedColumns = relatedColumns.concat(parentColumns).sort()
       return relatedColumns
     })
-
     const currentTableName = computed(() => {
       if (isEmptyValue(props.tabAttributes.table) || isEmptyValue(props.tabAttributes.table.table_name)) {
         return props.tabAttributes.table_name
@@ -174,31 +193,69 @@ export default defineComponent({
       })
     })
 
-    // const getReportDefinition = computed(() => {
-    //   if (isEmptyValue(process) || isEmptyValue(process.uuid)) {
-    //     return []
-    //   }
-    //   return store.getters.getStoredReport(process.uuid)
-    // })
+    const storedReportsListByTable = computed(() => {
+      const list = store.getters.getProcessesListsByTable({
+        tableName: currentTableName.value
+      })
+      if (isEmptyValue(list)) {
+        return []
+      }
+      const listReport = list.filter(reportItem => {
+        return reportItem.is_report
+      })
+      if (isEmptyValue(listReport)) {
+        return []
+      }
+      return listReport
+    })
 
-    const printFormatsList = computed(() => {
-      return store.getters.getPrintFormatsListTableName(currentTableName.value)
+    const reportsListsByFields = computed(() => {
+      const fieldsList = props.tabAttributes.fieldsList
+      if (isEmptyValue(fieldsList)) {
+        return []
+      }
+      const listReport = fieldsList
+        .filter(fieldItem => {
+          return fieldItem.process_id > 0 &&
+            fieldItem.process.is_report
+        })
+        .map(fieldItem => {
+          return fieldItem.process
+        })
+      if (isEmptyValue(listReport)) {
+        return []
+      }
+      return listReport
+    })
+
+    const reportsLists = computed(() => {
+      const tabProcess = []
+      if (!isEmptyValue(process) && process.is_report) {
+        tabProcess.push(process)
+      }
+
+      const allReports = mergeArrays(
+        'uuid',
+        tabProcess,
+        storedReportsListByTable.value,
+        reportsListsByFields.value
+      )
+      return allReports
     })
 
     /**
      * Methods
      */
-    const selectionsList = computed(() => {
-      if (props.containerManager.getSelection) {
-        return props.containerManager.getSelection({
-          containerUuid: containerUuid
-        })
-      }
-      return []
-    })
 
-    function printWithFormat() {
+    function printProcess() {
       store.commit('setIsLoadingDialog', false)
+      if (isEmptyValue(process)) {
+        showMessage({
+          message: language.t('process.whithoutAssociatedReport'),
+          type: 'info'
+        })
+        return
+      }
 
       // set context values
       const parentValues = getContextAttributes({
@@ -219,7 +276,7 @@ export default defineComponent({
         attributes: parentValues
       })
 
-      if (!isEmptyValue(selectionsList) && !isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
+      if (!isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
         store.commit('setViewDialog', true)
       } else {
         if (isEmptyValue(process)) {
@@ -243,83 +300,15 @@ export default defineComponent({
       }
     }
 
-    function handleStartPrintFormat(command) {
-      showNotification({
-        title: language.t('notifications.processing'),
-        message: process.name,
-        summary: process.description,
-        type: 'info'
-      })
-      // if (command.isLegacy) {
-      //   store.dispatch('runReport', {
-      //     containerUuid: process.uuid,
-      //     reportUuid: process.uuid,
-      //     recordId: recordId.value,
-      //     reportId: process.internal_id,
-      //     printFormatId: command.id,
-      //     tableName: command.table_name,
-      //     filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
-      //     isView: false
-      //   })
-      // } else {
-      store.dispatch('buildReport', {
-        // containerUuid: process.uuid,
-        tableName: currentTableName.value,
-        recordId: recordId.value,
-        isSummary: true,
-        printFormatId: command.id,
-        isChangePanel: true
-      })
-        .then(reportResponse => {
-          const {
-            // id,
-            name,
-            instance_id
-          } = reportResponse
-          router.push({
-            path: `/report-viewer-engine/${command.id}/${command.uuid}`,
-            name: REPORT_VIEWER_ENGINE_NAME,
-            params: {
-              reportId: command.id,
-              instanceUuid: instance_id,
-              fileName: name,
-              reportUuid: command.uuid,
-              // menuParentUuid,
-              name: name,
-              tableName: currentTableName.value
-            },
-            query: {
-              reportId: command.id,
-              instanceUuid: instance_id,
-              fileName: name,
-              reportUuid: command.uuid,
-              name: name,
-              tableName: currentTableName.value
-            }
-          }, () => {})
-        })
-      // }
-    }
-
-    function loadPrintFormats() {
-      // if (isEmptyValue(process)) {
-      //   return
-      // }
-      // if (!isEmptyValue(getReportDefinition.value)) {
-      //   return
-      // }
-      // const { id } = process
-      store.dispatch('listPrintFormatWindow', {
-        // id,
-        tableName: currentTableName.value
+    function handleStartReport(action) {
+      generateReportOfWindow.generateReportOfWindow({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        // containerManager: props.containerManager,
+        // recordUuid: recordUuid.value,
+        uuid: action.uuid
       })
     }
-
-    onMounted(() => {
-      if (isEmptyValue(printFormatsList.value)) {
-        loadPrintFormats()
-      }
-    })
 
     return {
       // Ref
@@ -331,12 +320,15 @@ export default defineComponent({
       containerUuid,
       // Computed
       recordId,
-      printFormatsList,
+      recordUuid,
+      instanceUuid,
+      reportsLists,
+      storedReportsListByTable,
+      reportsListsByFields,
       currentTableName,
-      // getReportDefinition,
       // Methods
-      printWithFormat,
-      handleStartPrintFormat
+      printProcess,
+      handleStartReport
     }
   }
 })

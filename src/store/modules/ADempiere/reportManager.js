@@ -60,6 +60,7 @@ import {
 import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
 import {
   containerManager,
+  isLegacyPrintFormat,
   generateRecordsList
 } from '@/utils/ADempiere/dictionary/report'
 import {
@@ -67,6 +68,7 @@ import {
 } from '@/api/ADempiere/file-management/resource-reference.ts'
 
 const initState = {
+  printFormat: {},
   printFormatsList: {},
   reportViewsList: {},
   drillTablesList: {},
@@ -119,6 +121,9 @@ const reportManager = {
     },
     setReportIsLoading(state, isLoading) {
       state.isLoading = isLoading
+    },
+    setPrintFormat(state, { id, printFormat }) {
+      Vue.set(state.printFormat, id, printFormat)
     },
     setPrintFormatsList(state, { reportId, printFormatsList }) {
       Vue.set(state.printFormatsList, reportId, printFormatsList)
@@ -349,11 +354,17 @@ const reportManager = {
         })
           .then(async printFormatResponse => {
             const printFormatsList = printFormatResponse.print_formats.map(printFormatItem => {
-              return {
+              const printFormatReturn = {
                 ...printFormatItem,
                 reportId: reportId,
-                isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0
+                isLegacy: isLegacyPrintFormat(printFormatItem)
               }
+
+              commit('setPrintFormat', {
+                id: printFormatItem.id,
+                printFormat: printFormatReturn
+              })
+              return printFormatReturn
             })
 
             commit('setPrintFormatsList', {
@@ -408,11 +419,17 @@ const reportManager = {
         listPrintFormatsTableRequest({ tableName })
           .then(async printFormatResponse => {
             const printFormatsList = printFormatResponse.print_formats.map(printFormatItem => {
-              return {
+              const printFormatReturn = {
                 ...printFormatItem,
                 reportId: reportId,
-                isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0
+                isLegacy: isLegacyPrintFormat(printFormatItem)
               }
+
+              commit('setPrintFormat', {
+                id: printFormatItem.id,
+                printFormat: printFormatReturn
+              })
+              return printFormatReturn
             })
             commit('setPrintFormatsListTableName', {
               tableName,
@@ -1225,10 +1242,13 @@ const reportManager = {
     getPrintFormatsListTableName: (state) => (tableName) => {
       return state.printFormatsList[tableName] || []
     },
-    getPrintFormat: (state, getters) => ({ reportId, printFormatId }) => {
+    getPrintFormatByReport: (state, getters) => ({ reportId, printFormatId }) => {
       return getters.getPrintFormatsList(reportId).find(printFormat => {
         return printFormat.id === printFormatId
       })
+    },
+    getPrintFormat: (state, getters) => (id) => {
+      return state.printFormat[id]
     },
     getDefaultPrintFormat: (state, getters) => (reportId) => {
       const printFormatsList = getters.getPrintFormatsList(reportId)
@@ -1239,6 +1259,7 @@ const reportManager = {
       const defaultPrintFormat = printFormatsList.find(printFormat => {
         return printFormat.is_default
       })
+      // mark as default or first
       return defaultPrintFormat || printFormatsList.at()
     },
 

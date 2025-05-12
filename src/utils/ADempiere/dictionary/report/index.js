@@ -188,6 +188,15 @@ export const mimeTypeOfReport = {
  */
 export const DEFAULT_REPORT_TYPE = 'pdf'
 
+/**
+ * Is Legacy Print Format
+ * @param {Object} printFormat
+ * @returns {boolean}
+ */
+export function isLegacyPrintFormat(printFormat) {
+  return printFormat.is_form || printFormat.is_standard_header_footer || printFormat.jasper_process_id > 0
+}
+
 export function changeFieldAttribure({
   containerUuid,
   columnName,

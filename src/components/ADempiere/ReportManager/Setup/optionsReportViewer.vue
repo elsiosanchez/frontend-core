@@ -48,7 +48,7 @@
                   />
                 </el-col>
                 <el-col :span="5">
-                  <reportView
+                  <report-views-field
                     :container-uuid="containerUuid"
                     :report-output="reportOutput"
                     :container-manager="containerManagerReportViwer"
@@ -187,8 +187,8 @@ import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
 import RefreshButton from './options/refreshButton'
 import ReportSummary from './options/reportSumary.vue'
 import DownloadButtom from './options/downloadButtom.vue'
-import PrintFormat from './options/printFormat.vue'
-import ReportView from './options/reportViews.vue'
+import PrintFormat from './options/printFormatField.vue'
+import ReportViewsField from './options/reportViewsField.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -203,12 +203,12 @@ export default defineComponent({
     ReportSummary,
     DownloadButtom,
     PrintFormat,
-    ReportView
+    ReportViewsField
   },
 
   props: {
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     containerManager: {

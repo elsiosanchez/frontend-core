@@ -15,19 +15,20 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <el-form-item
-    :label="$t('report.reportViews')"
+    :label="$t('report.printFormats')"
   >
     <el-select
-      v-model="reportAsViewValue"
+      v-model="reportAsPrintFormatValue"
       :disabled="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"
     >
       <el-option
-        v-for="(item, key) in reportAsView.childs"
+        v-for="(item, key) in reportAsPrintFormat.childs"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -48,11 +49,11 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
-  name: 'printFormat',
+  name: 'PrintFormatField',
 
   props: {
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     containerManager: {
@@ -74,10 +75,10 @@ export default defineComponent({
     const reportTypeFormatValue = ref('')
     const reportAsViewValue = ref(undefined)
 
-    const reportAsView = computed(() => {
+    const reportAsPrintFormat = computed(() => {
       const options = store.getters.getStoredActionsMenu({
         containerUuid: props.containerUuid
-      }).find(repoortOptions => repoortOptions.actionName === 'runReportAsView')
+      }).find(repoortOptions => repoortOptions.actionName === 'runReportAsPrintFormat')
       if (isEmptyValue(options)) {
         return {
           childs: []
@@ -91,15 +92,17 @@ export default defineComponent({
     })
 
     const findTagViwer = computed(() => {
-      return store.getters.visitedViews.find(tag => tag.instanceUuid === root.$route.params.instanceUuid)
+      return store.getters.visitedViews.find(tag => {
+        return tag.instanceUuid === root.$route.params.instanceUuid
+      })
     })
 
-    function updateReportView(value) {
+    function updatePrintFormat(value) {
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
-        printFormatId: reportAsPrintFormatValue.value,
+        printFormatId: value,
         reportType: reportTypeFormatValue.value,
-        reportViewId: value
+        reportViewId: reportAsViewValue.value
       })
     }
 
@@ -151,7 +154,6 @@ export default defineComponent({
     function defaultReport(report) {
       const { report_view_id, print_format_id, reportType } = report
       reportAsPrintFormatValue.value = print_format_id
-      reportAsViewValue.value = report_view_id
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
         reportViewId: report_view_id,
@@ -160,20 +162,21 @@ export default defineComponent({
       })
     }
 
-    watch(reportAsViewValue, (newValue) => {
-      updateReportView(newValue)
+    watch(reportAsPrintFormatValue, (newValue) => {
+      updatePrintFormat(newValue)
     })
-    updateReportView(reportAsViewValue.value)
+    updatePrintFormat(reportTypeFormatValue.value)
 
     defaultReport(defaultParams.value)
 
     return {
       reportAsPrintFormatValue,
-      reportAsView,
+      reportAsPrintFormat,
       defaultParams,
       reportTypeFormatValue,
       reportAsViewValue,
       runReport,
+      updatePrintFormat,
       defaultReport
     }
   }

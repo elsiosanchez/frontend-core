@@ -144,7 +144,7 @@ export default defineComponent({
       default: false
     },
     containerUuid: {
-      type: String,
+      type: [String, Number],
       required: true
     },
     tableName: {

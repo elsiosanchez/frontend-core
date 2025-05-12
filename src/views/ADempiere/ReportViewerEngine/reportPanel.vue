@@ -47,9 +47,7 @@ import {
 
 import store from '@/store'
 
-// Components
-import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
-import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
+// Components and Mixins
 import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
 import DataReport from '@/components/ADempiere/Report/Data/DataReport.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReportViewer.vue'
@@ -58,8 +56,6 @@ export default defineComponent({
   name: 'ReportPanel',
 
   components: {
-    CustomPagination,
-    InfoReport,
     DataReport,
     DialogShareReport,
     OptionsReport
@@ -68,10 +64,10 @@ export default defineComponent({
   props: {
     containerManager: {
       type: Object,
-      default: () => []
+      default: () => {}
     },
     instanceUuid: {
-      type: Number,
+      type: [String, Number],
       default: 0
     },
     containerUuid: {
