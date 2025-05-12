@@ -361,9 +361,13 @@ const reportManager = {
               printFormatsList
             })
 
-            const tableNamesList = [...new Set(printFormatsList.map(printFormatItem => printFormatItem.table_name))]
+            const tableNamesList = new Set(
+              printFormatsList.map(printFormatItem => {
+                return printFormatItem.table_name
+              })
+            )
             await Promise.all(
-              tableNamesList.map(async tableNameItem => {
+              Array.from(tableNamesList).map(async tableNameItem => {
                 await Promise.allSettled([
                   dispatch('getReportViewsFromServer', {
                     reportId,
@@ -414,25 +418,25 @@ const reportManager = {
               tableName,
               printFormatsList
             })
+
+            const tableNamesList = new Set(
+              printFormatsList.map(printFormatItem => {
+                return printFormatItem.table_name
+              })
+            )
             await Promise.all(
-              printFormatResponse.print_formats.map(async printFormatItem => {
+              Array.from(tableNamesList).map(async tableNameItem => {
                 await Promise.allSettled([
                   dispatch('getReportViewsFromServer', {
                     reportId,
                     // TODO: Verify if table name is required
-                    tableName: printFormatItem.table_name
+                    tableName: tableNameItem
                   }),
                   dispatch('getDrillTablesFromServer', {
                     reportId,
-                    tableName: printFormatItem.table_name
+                    tableName: tableNameItem
                   })
                 ])
-
-                return {
-                  ...printFormatItem,
-                  isLegacy: printFormatItem.is_form || printFormatItem.is_standard_header_footer || printFormatItem.jasper_process_id > 0,
-                  reportId: reportId
-                }
               })
             )
             resolve(printFormatsList)
@@ -644,6 +648,7 @@ const reportManager = {
       instanceUuid,
       uuid,
       tableName,
+      recordId,
       printFormatId,
       reportViewId,
       reportName,
@@ -730,6 +735,7 @@ const reportManager = {
           pageToken,
           isSummary,
           tableName,
+          recordId,
           pageSize,
           filters,
           sortBy,

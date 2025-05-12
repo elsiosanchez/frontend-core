@@ -27,7 +27,7 @@
       split-button
       style="margin-left: 8px; padding-right: 9px;"
       @click="printProcess"
-      @command="handleCommandActions"
+      @command="handleStartReport"
     >
       <svg-icon
         v-if="!isLoading"
@@ -100,6 +100,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { mergeArrays } from '@/utils/ADempiere/formatValue/iterableFormat'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 import {
@@ -108,7 +109,6 @@ import {
 
 // Components and Mixins
 import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
-import { mergeArrays } from '@/utils/ADempiere/formatValue/iterableFormat'
 
 export default defineComponent({
   name: 'PrintProcess',
@@ -193,8 +193,8 @@ export default defineComponent({
       })
     })
 
-    const reportsListsByTable = computed(() => {
-      const list = store.getters.getListProcess({
+    const storedReportsListByTable = computed(() => {
+      const list = store.getters.getProcessesListsByTable({
         tableName: currentTableName.value
       })
       if (isEmptyValue(list)) {
@@ -237,7 +237,7 @@ export default defineComponent({
       const allReports = mergeArrays(
         'uuid',
         tabProcess,
-        reportsListsByTable.value,
+        storedReportsListByTable.value,
         reportsListsByFields.value
       )
       return allReports
@@ -300,7 +300,7 @@ export default defineComponent({
       }
     }
 
-    function handleCommandActions(action) {
+    function handleStartReport(action) {
       generateReportOfWindow.generateReportOfWindow({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
@@ -323,13 +323,12 @@ export default defineComponent({
       recordUuid,
       instanceUuid,
       reportsLists,
-      reportsListsByTable,
+      storedReportsListByTable,
       reportsListsByFields,
       currentTableName,
       // Methods
       printProcess,
-      // loadProcessData,
-      handleCommandActions
+      handleStartReport
     }
   }
 })

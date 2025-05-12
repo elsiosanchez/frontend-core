@@ -235,6 +235,10 @@ export default {
     return fieldsList.find(itemField => {
       return itemField.column_name === columnName
     })
+  },
+
+  getProcessesListsByTable: (state) => ({ tableName }) => {
+    return state.processesListsByTable[tableName]
   }
 
 }

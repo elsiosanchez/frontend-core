@@ -44,7 +44,7 @@ export function requestProcessMetadata({
   })
 }
 
-export function requestListProcesses({
+export function requestProcessesListByTable({
   tableName
 }) {
   return request({

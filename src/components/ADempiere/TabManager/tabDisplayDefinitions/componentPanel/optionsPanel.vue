@@ -15,6 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <el-dropdown
     trigger="click"
@@ -34,9 +35,9 @@
           {{ $t('data.noDescription') }}
         </div>
       </el-dropdown-item>
-      <template v-if="!isEmptyValue(listProcess)">
+      <template v-if="!isEmptyValue(storedProcessesLists)">
         <el-dropdown-item
-          v-for="item in listProcess"
+          v-for="item in storedProcessesLists"
           :key="item.id"
           :command="item"
           :disabled="!item.is_active"
@@ -53,6 +54,7 @@
           </span>
         </el-dropdown-item>
       </template>
+
       <el-popover
         v-model="showPanel"
         trigger="click"
@@ -148,12 +150,15 @@ export default defineComponent({
       }
       return false
     })
+
     const { currentTab } = store.getters.getContainerInfo
-    const listProcess = computed(() => {
-      return store.getters.getListProcess({
+
+    const storedProcessesLists = computed(() => {
+      return store.getters.getProcessesListsByTable({
         tableName: props.displayDefinition.table_name
       })
     })
+
     function removerRecord() {
       showPanel.value = false
       containerManagerFieldDefinition.deleteRecord({
@@ -163,11 +168,12 @@ export default defineComponent({
         displyDefinitions: props.displayDefinition
       })
     }
+
     return {
       isDisableDelete,
       showPanel,
       title,
-      listProcess,
+      storedProcessesLists,
       removerRecord
     }
   }

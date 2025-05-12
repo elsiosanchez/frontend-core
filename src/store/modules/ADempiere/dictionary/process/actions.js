@@ -17,7 +17,10 @@
  */
 
 // API Request Methods
-import { requestProcessMetadata } from '@/api/ADempiere/dictionary/process'
+import {
+  requestProcessMetadata,
+  requestProcessesListByTable
+} from '@/api/ADempiere/dictionary/process'
 
 // Constants
 import {
@@ -214,6 +217,38 @@ export default {
       })
 
       resolve(defaultAttributes)
+    })
+  },
+
+  geProcessesListByTableFromServer({ commit }, {
+    tableName
+  }) {
+    return new Promise((resolve, reject) => {
+      requestProcessesListByTable({
+        tableName
+      })
+        .then(response => {
+          if (!isEmptyValue(response)) {
+            const list = response.processes.map(data => {
+              let icon = 'el-icon-setting'
+              if (data.is_report) {
+                icon = 'skill'
+              }
+              return {
+                ...data,
+                icon
+              }
+            })
+            commit('setProcessesListsByTable', {
+              list,
+              tableName
+            })
+          }
+          resolve(response)
+        })
+        .catch(error => {
+          reject(error)
+        })
     })
   }
 

@@ -27,7 +27,7 @@
       class="print-button"
       style="margin-left: 8px; padding-right: 9px;"
       @click="printWithFormat"
-      @command="handleCommandActions"
+      @command="handleStartPrintFormat"
     >
       <i
         v-if="!isLoading"
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 
 import language from '@/lang'
 import router from '@/router'
@@ -243,7 +243,7 @@ export default defineComponent({
       }
     }
 
-    function handleCommandActions(command) {
+    function handleStartPrintFormat(command) {
       showNotification({
         title: language.t('notifications.processing'),
         message: process.name,
@@ -301,7 +301,7 @@ export default defineComponent({
       // }
     }
 
-    function loadProcessData() {
+    function loadPrintFormats() {
       // if (isEmptyValue(process)) {
       //   return
       // }
@@ -315,7 +315,11 @@ export default defineComponent({
       })
     }
 
-    loadProcessData()
+    onMounted(() => {
+      if (isEmptyValue(printFormatsList.value)) {
+        loadPrintFormats()
+      }
+    })
 
     return {
       // Ref
@@ -332,7 +336,7 @@ export default defineComponent({
       // getReportDefinition,
       // Methods
       printWithFormat,
-      handleCommandActions
+      handleStartPrintFormat
     }
   }
 })

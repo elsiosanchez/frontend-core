@@ -51,5 +51,13 @@ export default {
     attributeValue
   }) {
     Vue.set(state.storedProcesses[uuid], attributeName, attributeValue)
+  },
+
+  setProcessesListsByTable(state, {
+    tableName,
+    list
+  }) {
+    Vue.set(state.processesListsByTable, tableName, list)
   }
+
 }
