@@ -175,7 +175,7 @@ import store from '@/store'
 
 // Components and Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
-import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/downloadButtom.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'

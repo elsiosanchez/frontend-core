@@ -155,13 +155,13 @@ import store from '@/store'
 
 // Components and Mixins
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
-import DataCells from '@/components/ADempiere/Report/Data/DataCells.vue'
-import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
-import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
-import PrintFormatField from '@/components/ADempiere/ReportManager/Setup/options/printFormatField.vue'
-import RefreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton.vue'
-import ReportSummary from '@/components/ADempiere/ReportManager/Setup/options/reportSumary.vue'
-import ReportViewsField from '@/components/ADempiere/ReportManager/Setup/options/reportViewsField.vue'
+import DataCells from '@/components/ADempiere/ReportManager/ReportData/DataCells.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/downloadButtom.vue'
+import InfoReport from '@/components/ADempiere/ReportManager/infoReport.vue'
+import PrintFormatField from '@/components/ADempiere/ReportManager/SetupReport/printFormatField.vue'
+import RefreshButton from '@/components/ADempiere/ReportManager/SetupReport/refreshButton.vue'
+import ReportSummary from '@/components/ADempiere/ReportManager/SetupReport/reportSumary.vue'
+import ReportViewsField from '@/components/ADempiere/ReportManager/SetupReport/reportViewsField.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'

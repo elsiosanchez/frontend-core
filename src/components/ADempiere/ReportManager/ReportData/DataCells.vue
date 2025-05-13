@@ -76,7 +76,7 @@
       style="position: fixed; z-index: 1000; background-color: #fff;"
     >
       <!-- InfoReport component with modal data -->
-      <InfoReport
+      <info-report
         :data="dataModal"
       />
     </el-popover>
@@ -95,7 +95,7 @@ import {
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Components and Mixins
-import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
+import InfoReport from '@/components/ADempiere/ReportManager/infoReport.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'

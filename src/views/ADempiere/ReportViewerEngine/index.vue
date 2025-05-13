@@ -46,10 +46,10 @@
       :visible.sync="isShowPanelConfig"
       :with-header="true"
       :before-close="handleClose"
-      :size="isMobile ? '100%' : '75%'"
       :show-close="true"
       class="drawer-custom"
       :title="$t('report.reportSettings')"
+      :size="isMobile ? '100%' : '75%'"
     >
       <options-report
         :container-uuid="storedReportOutput.containerUuid"
@@ -91,9 +91,9 @@ import FileRender from '@/components/ADempiere/FileRender/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
-import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReportViewer.vue'
+import OptionsReport from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
+import ReportPanel from '@/components/ADempiere/ReportManager/reportPanel.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
-import ReportPanel from '@/views/ADempiere/ReportViewerEngine/reportPanel.vue'
 
 // Utils and Helper Methods
 import { convertObjectToKeyValue } from '@/utils/ADempiere/valueFormat.js'

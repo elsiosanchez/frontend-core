@@ -108,7 +108,7 @@ import {
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 // Components and Mixins
-import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
+import DialogLegacy from '@/components/ADempiere/ReportManager/ReportData/Dialog.vue'
 
 export default defineComponent({
   name: 'PrintReportsButton',

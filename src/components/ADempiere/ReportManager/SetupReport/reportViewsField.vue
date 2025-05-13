@@ -18,21 +18,21 @@
 
 <template>
   <el-form-item
-    :label="$t('report.printFormats')"
+    :label="$t('report.reportViews')"
   >
     <el-select
-      v-model="printFormatValue"
+      v-model="reportViewValue"
       :disabled="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"
     >
       <empty-option-select
-        :current-value="printFormatValue"
+        :current-value="reportViewValue"
         :is-allows-zero="false"
       />
       <el-option
-        v-for="(item, key) in printFormatsList"
+        v-for="(item, key) in reportViewsList"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -42,21 +42,21 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch } from '@vue/composition-api'
+import { defineComponent, computed, watch } from '@vue/composition-api'
 
 import router from '@/router'
 import store from '@/store'
 import lang from '@/lang'
 
-// Components and Mixins
-import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 export default defineComponent({
-  name: 'PrintFormatField',
+  name: 'ReportViewsField',
 
   components: {
     EmptyOptionSelect
@@ -82,10 +82,24 @@ export default defineComponent({
   },
 
   setup(props, { root }) {
-    const printFormatValue = ref(undefined)
+    const storedReportGenerated = computed(() => {
+      return store.getters.getReportGenerated(props.containerUuid)
+    })
 
-    const printFormatsList = computed(() => {
-      const optionsList = store.getters.getPrintFormatsList(props.containerUuid)
+    const reportViewValue = computed({
+      set(newValue) {
+        updateReportView(newValue)
+      },
+      get() {
+        if (!isEmptyValue(storedReportGenerated.value)) {
+          return storedReportGenerated.value.reportViewId
+        }
+        return 0
+      }
+    })
+
+    const reportViewsList = computed(() => {
+      const optionsList = store.getters.getReportViewsList(props.containerUuid)
       if (!isEmptyValue(optionsList)) {
         return optionsList
       }
@@ -97,16 +111,14 @@ export default defineComponent({
     })
 
     const findTagViwer = computed(() => {
-      return store.getters.visitedViews.find(tag => {
-        return tag.instanceUuid === root.$route.params.instanceUuid
-      })
+      return store.getters.visitedViews.find(tag => tag.instanceUuid === root.$route.params.instanceUuid)
     })
 
-    function updatePrintFormat(value) {
+    function updateReportView(value) {
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
-        printFormatId: value,
-        reportViewId: defaultParams.value.report_view_id
+        printFormatId: defaultParams.value.print_format_id,
+        reportViewId: value
       })
     }
 
@@ -131,10 +143,10 @@ export default defineComponent({
         containerUuid: props.containerUuid || root.$route.params.processUuid,
         isSummary: true,
         parametersList: reportOutputParams,
-        printFormatId: printFormatValue.value,
+        printFormatId: defaultParams.value.print_format_id,
         reportId: reportDefinition.internal_id,
         instanceUuid: defaultParams.value.instance_id,
-        reportViewId: defaultParams.value.report_view_id,
+        reportViewId: reportViewValue.value,
         pageSize: props.reportOutput.pageSize,
         pageToken: props.reportOutput.pageToken,
         isChangePanel: true
@@ -157,7 +169,7 @@ export default defineComponent({
 
     function defaultReport(report) {
       const { report_view_id, print_format_id, reportType } = report
-      printFormatValue.value = print_format_id
+      reportViewValue.value = report_view_id
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
         reportViewId: report_view_id,
@@ -166,33 +178,29 @@ export default defineComponent({
       })
     }
 
-    watch(printFormatValue, (newValue) => {
-      updatePrintFormat(newValue)
+    watch(reportViewValue, (newValue) => {
+      updateReportView(newValue)
     })
-    updatePrintFormat(printFormatValue.value)
+    updateReportView(reportViewValue.value)
 
     defaultReport(defaultParams.value)
 
     return {
-      printFormatValue,
+      reportViewValue,
       // Computeds
-      printFormatsList,
+      reportViewsList,
       defaultParams,
+      storedReportGenerated,
       // Methods
       runReport,
-      updatePrintFormat,
       defaultReport
     }
   }
 })
 </script>
 
-<style lang="scss">
-.el-form-item {
-  margin-bottom: 5px;
-
-  .el-form-item__label {
-    padding: 0 !important;
-  }
+<style>
+.el-form--label-top .el-form-item__label {
+  padding: 0 !important;
 }
 </style>

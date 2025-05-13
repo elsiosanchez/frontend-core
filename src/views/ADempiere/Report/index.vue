@@ -62,7 +62,7 @@
       :show-close="true"
       class="drawer-custom"
       :title="$t('report.reportSettings')"
-      :size="isMobile ? '100%' : '50%'"
+      :size="isMobile ? '100%' : '75%'"
     >
       <options-report
         :container-uuid="reportUuid"
@@ -103,11 +103,11 @@ import store from '@/store'
 
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
-import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog/index.vue'
-import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
+import DialogShareReport from '@/components/ADempiere/ReportManager/DialogShareReport/index.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/downloadButtom.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
-import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReport.vue'
+import OptionsReport from '@/components/ADempiere/ReportManager/SetupReport/optionsReport.vue'
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import PanelFooter from '@/components/ADempiere/PanelFooter/index.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'

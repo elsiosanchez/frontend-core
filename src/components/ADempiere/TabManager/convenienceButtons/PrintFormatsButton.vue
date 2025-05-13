@@ -106,7 +106,7 @@ import { showMessage, showNotification } from '@/utils/ADempiere/notification.js
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 // Components and Mixins
-import DialogLegacy from '@/components/ADempiere/Report/Data/Dialog.vue'
+import DialogLegacy from '@/components/ADempiere/ReportManager/ReportData/Dialog.vue'
 
 export default defineComponent({
   name: 'PrintFormatsButton',

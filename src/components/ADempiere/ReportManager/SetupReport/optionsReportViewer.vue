@@ -192,11 +192,11 @@ import lang from '@/lang'
 
 // Components adn Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
-import DownloadButtom from './options/downloadButtom.vue'
-import PrintFormatField from './options/printFormatField.vue'
-import RefreshButton from './options/refreshButton.vue'
-import ReportSummary from './options/reportSumary.vue'
-import ReportViewsField from './options/reportViewsField.vue'
+import DownloadButtom from './downloadButtom.vue'
+import PrintFormatField from './printFormatField.vue'
+import RefreshButton from './refreshButton.vue'
+import ReportSummary from './reportSumary.vue'
+import ReportViewsField from './reportViewsField.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'

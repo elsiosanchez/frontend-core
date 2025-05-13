@@ -1,3 +1,21 @@
+<!--
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez elsiosanches@gmail.com https://github.com/ElsioSanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
 <template>
   <el-dialog
     :title="$t('report.dialogLegacy.displayOptions')"
@@ -20,6 +38,7 @@
                 <i class="el-icon-view" />
               </el-radio>
             </el-col>
+
             <el-col :span="12" style="width: 50%; text-align: center;">
               <el-radio
                 v-model="check"
@@ -36,6 +55,7 @@
           </el-row>
         </el-card>
       </el-col>
+
       <el-col style="margin-top: 1%">
         <el-button
           class="button-base-icon"
@@ -57,6 +77,7 @@
     </el-row>
   </el-dialog>
 </template>
+
 <script>
 import store from '@/store'
 
@@ -66,7 +87,8 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import { showNotification } from '@/utils/ADempiere/notification.js'
 
 export default defineComponent({
-  name: 'dialogLegacy',
+  name: 'DialogShareReportLegacy',
+
   props: {
     tableName: {
       type: String,

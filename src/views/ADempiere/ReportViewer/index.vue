@@ -48,10 +48,10 @@
       :visible.sync="isShowPanelConfig"
       :with-header="true"
       :before-close="handleClose"
-      :size="isMobile ? '100%' : '50%'"
       :show-close="true"
       class="drawer-custom"
       :title="$t('report.reportSettings')"
+      :size="isMobile ? '100%' : '75%'"
     >
       <options-report
         :container-uuid="reportUuid"
@@ -95,12 +95,12 @@ import store from '@/store'
 
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
-import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog/index.vue'
+import DialogShareReport from '@/components/ADempiere/ReportManager/DialogShareReport/index.vue'
 import FileRender from '@/components/ADempiere/FileRender/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
-import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReport.vue'
+import OptionsReport from '@/components/ADempiere/ReportManager/SetupReport/optionsReport.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 
 // Constants
@@ -126,15 +126,7 @@ export default defineComponent({
   },
 
   setup(props, { root }) {
-    let { reportId, reportUuid } = root.$route.params
-    if (!isEmptyValue(storedReportOutput.value)) {
-      if (isEmptyValue(reportId) || reportId <= 0) {
-        reportId = storedReportOutput.value.reportId
-      }
-      if (isEmptyValue(reportUuid)) {
-        reportUuid = storedReportOutput.value.reportUuid
-      }
-    }
+    const { reportId, reportUuid } = root.$route.params
 
     const {
       containerManager, actionsManager, storedReportDefinition
@@ -151,7 +143,7 @@ export default defineComponent({
     })
 
     const storedReportOutput = computed(() => {
-      return store.getters.getReportOutput(root.$route.params.reportId)
+      return store.getters.getReportOutput(reportId)
     })
 
     const name = computed(() => {
@@ -317,6 +309,7 @@ export default defineComponent({
       getReport()
       root.$route.meta.reportType = reportType.value
     })
+
     return {
       reportUuid,
       isLoading,
