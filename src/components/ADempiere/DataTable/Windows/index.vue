@@ -350,6 +350,7 @@ export default defineComponent({
      * Load Refresh
      */
     function handleLoadRefresh() {
+      if (!isLoadingDataTale.value) return
       store.dispatch('getEntities', {
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid
@@ -632,7 +633,7 @@ export default defineComponent({
             handleLoadRefresh()
           }
         }
-      }, 100)
+      }, 1000)
     }
 
     function getCurrentRow(records) {
