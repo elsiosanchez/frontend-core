@@ -287,22 +287,22 @@ export default defineComponent({
         title.value = confirmDisableTitle.value
         okMethod.value = disableCurrentRecord
       }
-      currentComnad.valiue = command
+      currentComnad.value = command
       isVisibleConfirmDelete.value = true
     }
 
     watch(recordsListToDelete, (newValue, oldValue) => {
-      if (currentComnad.valiue === 'deleteRecord') {
+      if (currentComnad.value === 'deleteRecord') {
         title.value = confirmDeleteTitle.value
-      } else if (currentComnad.valiue === 'disabledRecord') {
+      } else if (currentComnad.value === 'disabledRecord') {
         title.value = confirmDisableTitle.value
       }
     })
 
     watch(recordsListToDelete, (newValue, oldValue) => {
-      if (currentComnad.valiue === 'deleteRecord') {
+      if (currentComnad.value === 'deleteRecord') {
         title.value = confirmDeleteTitle.value
-      } else if (currentComnad.valiue === 'disabledRecord') {
+      } else if (currentComnad.value === 'disabledRecord') {
         title.value = confirmDisableTitle.value
       }
     })
@@ -310,9 +310,9 @@ export default defineComponent({
     watch(
       () => tabAttributes.value.isShowedTableRecords,
       (newIsShowedTableRecords, oldIsShowedTableRecords) => {
-        if (currentComnad.valiue === 'deleteRecord') {
+        if (currentComnad.value === 'deleteRecord') {
           title.value = confirmDeleteTitle.value
-        } else if (currentComnad.valiue === 'disabledRecord') {
+        } else if (currentComnad.value === 'disabledRecord') {
           title.value = confirmDisableTitle.value
         }
       }
