@@ -73,6 +73,7 @@
         class="el-icon-loading"
       />
     </el-button>
+
     <dialog-legacy
       :table-name="currentTableName"
       :process="process"
@@ -97,12 +98,12 @@ import {
   FINANCIAL_REPORT_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
 import {
-  REPORT_VIEWER_ENGINE_NAME
+  REPORT_VIEWER_PRINT_FORMAT_NAME
 } from '@/utils/ADempiere/dictionary/report'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { showMessage, showNotification } from '@/utils/ADempiere/notification.js'
+import { showNotification } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 // Components and Mixins
@@ -192,7 +193,7 @@ export default defineComponent({
     })
 
     function printWithFormat() {
-      store.commit('setIsLoadingDialog', false)
+      // store.commit('setIsLoadingDialog', false)
 
       // set context values
       const parentValues = getContextAttributes({
@@ -208,33 +209,16 @@ export default defineComponent({
         columnName: COLUMNNAME_Record_ID,
         value: recordId.value
       })
-      store.dispatch('updateValuesOfContainer', {
-        containerUuid: process.uuid,
-        attributes: parentValues
-      })
+      // store.dispatch('updateValuesOfContainer', {
+      //   containerUuid: process.uuid,
+      //   attributes: parentValues
+      // })
 
-      if (!isEmptyValue(selectionsList) && !isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
-        store.commit('setViewDialog', true)
-      } else {
-        if (isEmptyValue(process)) {
-          showMessage({
-            message: language.t('process.whithoutAssociatedReport'),
-            type: 'info'
-          })
-          return
-        }
-        isLoading.value = true
-        store.dispatch('runReport', {
-          containerUuid: process.uuid,
-          reportId: process.internal_id,
-          //
-          recordId: recordId.value,
-          tableName: currentTableName.value
-        })
-          .finally(() => {
-            isLoading.value = false
-          })
-      }
+      // if (!isEmptyValue(selectionsList) && !isEmptyValue(selectionsList.value) && selectionsList.value.length > 1) {
+      //   store.commit('setViewDialog', true)
+      // }
+      const firstPrintFormat = printFormatsList.value.at()
+      handleStartPrintFormat(firstPrintFormat)
     }
 
     function handleStartPrintFormat(command) {
@@ -244,25 +228,12 @@ export default defineComponent({
         summary: process.description,
         type: 'info'
       })
-      // if (command.isLegacy) {
-      //   store.dispatch('runReport', {
-      //     containerUuid: process.uuid,
-      //     reportUuid: process.uuid,
-      //     recordId: recordId.value,
-      //     reportId: process.internal_id,
-      //     printFormatId: command.id,
-      //     tableName: command.table_name,
-      //     filters: `[{\"name\":\"${command.table_name}_ID\",\"operator\":\"equal\",\"values\":${recordId.value}}]`,
-      //     isView: false
-      //   })
-      // } else {
-      store.dispatch('buildReport', {
-        // containerUuid: process.uuid,
+
+      store.dispatch('printViewByWindow', {
+        printFormatId: command.id,
         tableName: currentTableName.value,
         recordId: recordId.value,
-        isSummary: true,
-        printFormatId: command.id,
-        isChangePanel: true
+        isSummary: true
       })
         .then(reportResponse => {
           const {
@@ -271,22 +242,22 @@ export default defineComponent({
             instance_id
           } = reportResponse
           router.push({
-            path: `/report-viewer-engine/${command.id}/${command.uuid}`,
-            name: REPORT_VIEWER_ENGINE_NAME,
+            path: `/report-viewer-engine/print-format/${currentTableName.value}/${command.id}/${command.uuid}`,
+            name: REPORT_VIEWER_PRINT_FORMAT_NAME,
             params: {
-              reportId: command.id,
-              instanceUuid: instance_id,
+              printFormatId: command.id,
+              printFormatUuid: command.uuid,
+              // instanceUuid: instance_id,
               fileName: name,
-              reportUuid: command.uuid,
               // menuParentUuid,
               name: name,
               tableName: currentTableName.value
             },
             query: {
-              reportId: command.id,
+              printFormatId: command.id,
+              printFormatUuid: command.uuid,
               instanceUuid: instance_id,
               fileName: name,
-              reportUuid: command.uuid,
               name: name,
               tableName: currentTableName.value
             }

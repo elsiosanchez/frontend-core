@@ -840,6 +840,68 @@ const reportManager = {
           })
       })
     },
+
+    printViewByWindow({ commit, getters }, {
+      printFormatId,
+      reportViewId,
+      tableName,
+      recordId,
+      isSummary,
+      filters
+    }) {
+      return new Promise((resolve, reject) => {
+        getView({
+          printFormatId,
+          reportViewId,
+          isSummary,
+          tableName,
+          recordId,
+          filters
+          // instanceId,
+          // pageSize,
+          // pageToken,
+          // sortBy
+        })
+          .then(reportResponse => {
+            const { rows } = reportResponse
+            const recordsList = generateRecordsList(rows)
+
+            const printFormat = getters.getPrintFormat(printFormatId)
+
+            const reportOutput = {
+              ...reportResponse,
+              containerUuid: tableName,
+              rowCells: rows,
+              recordsList,
+              instanceId: printFormat.id,
+              instanceUuid: printFormat.uuid
+              // pageSize,
+              // pageToken
+            }
+
+            commit('setReportOutput', reportOutput)
+            showNotification({
+              title: language.t('notifications.succesful'),
+              message: name,
+              type: 'success'
+            })
+            resolve(reportOutput)
+          })
+          .catch(error => {
+            // console.log(error)
+            showNotification({
+              title: language.t('notifications.error'),
+              message: error.message,
+              type: 'error'
+            })
+            console.warn(`Error getting Get Report: ${error.message}. Code: ${error.code}.`)
+          })
+          .finally(() => {
+            commit('setReportIsLoading', false)
+          })
+      })
+    },
+
     /**
      * Get report output
      * @param {number} id report identifier
