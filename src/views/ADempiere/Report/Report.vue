@@ -57,6 +57,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       :with-header="true"
       :before-close="handleClose"
       :show-close="true"
+      class="drawer-custom"
       :title="$t('report.reportSettings')"
       :size="isMobile ? '100%' : '50%'"
     >

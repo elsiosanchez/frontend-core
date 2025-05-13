@@ -21,14 +21,18 @@
     :label="$t('report.printFormats')"
   >
     <el-select
-      v-model="reportAsPrintFormatValue"
+      v-model="printFormatValue"
       :disabled="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"
     >
+      <empty-option-select
+        :current-value="printFormatValue"
+        :is-allows-zero="false"
+      />
       <el-option
-        v-for="(item, key) in reportAsPrintFormat.childs"
+        v-for="(item, key) in printFormatsList"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -44,12 +48,19 @@ import router from '@/router'
 import store from '@/store'
 import lang from '@/lang'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
   name: 'PrintFormatField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   props: {
     containerUuid: {
@@ -71,20 +82,14 @@ export default defineComponent({
   },
 
   setup(props, { root }) {
-    const reportAsPrintFormatValue = ref(undefined)
-    const reportTypeFormatValue = ref('')
-    const reportAsViewValue = ref(undefined)
+    const printFormatValue = ref(undefined)
 
-    const reportAsPrintFormat = computed(() => {
-      const options = store.getters.getStoredActionsMenu({
-        containerUuid: props.containerUuid
-      }).find(repoortOptions => repoortOptions.actionName === 'runReportAsPrintFormat')
-      if (isEmptyValue(options)) {
-        return {
-          childs: []
-        }
+    const printFormatsList = computed(() => {
+      const optionsList = store.getters.getPrintFormatsList(props.containerUuid)
+      if (!isEmptyValue(optionsList)) {
+        return optionsList
       }
-      return options
+      return []
     })
 
     const defaultParams = computed(() => {
@@ -101,8 +106,7 @@ export default defineComponent({
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
         printFormatId: value,
-        reportType: reportTypeFormatValue.value,
-        reportViewId: reportAsViewValue.value
+        reportViewId: defaultParams.value.report_view_id
       })
     }
 
@@ -127,7 +131,7 @@ export default defineComponent({
         containerUuid: props.containerUuid || root.$route.params.processUuid,
         isSummary: true,
         parametersList: reportOutputParams,
-        printFormatId: reportAsPrintFormatValue.value,
+        printFormatId: printFormatValue.value,
         reportId: reportDefinition.internal_id,
         instanceUuid: defaultParams.value.instance_id,
         reportViewId: defaultParams.value.report_view_id,
@@ -153,7 +157,7 @@ export default defineComponent({
 
     function defaultReport(report) {
       const { report_view_id, print_format_id, reportType } = report
-      reportAsPrintFormatValue.value = print_format_id
+      printFormatValue.value = print_format_id
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
         reportViewId: report_view_id,
@@ -162,19 +166,19 @@ export default defineComponent({
       })
     }
 
-    watch(reportAsPrintFormatValue, (newValue) => {
+    watch(printFormatValue, (newValue) => {
       updatePrintFormat(newValue)
     })
-    updatePrintFormat(reportTypeFormatValue.value)
+    updatePrintFormat(printFormatValue.value)
 
     defaultReport(defaultParams.value)
 
     return {
-      reportAsPrintFormatValue,
-      reportAsPrintFormat,
+      printFormatValue,
+      // Computeds
+      printFormatsList,
       defaultParams,
-      reportTypeFormatValue,
-      reportAsViewValue,
+      // Methods
       runReport,
       updatePrintFormat,
       defaultReport
@@ -183,9 +187,12 @@ export default defineComponent({
 })
 </script>
 
-<style>
-.el-form--label-top .el-form-item__label {
-  padding: 0 !important;
-  line-height: 0 !important
+<style lang="scss">
+.el-form-item {
+  margin-bottom: 5px;
+
+  .el-form-item__label {
+    padding: 0 !important;
+  }
 }
 </style>

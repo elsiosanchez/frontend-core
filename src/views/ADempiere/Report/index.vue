@@ -35,12 +35,12 @@
       />
       <div id="report-view">
         <br><br>
-        <downloadButtom
+        <download-buttom
           :container-uuid="reportUuid"
           :is-loading-report="false"
           style="display: flex; justify-content: flex-end; padding-bottom: 10px"
         />
-        <dialogShareReport
+        <dialog-share-report
           :report-metadata="reportMetadata"
           :is-panel="false"
         />
@@ -60,6 +60,7 @@
       :with-header="true"
       :before-close="handleClose"
       :show-close="true"
+      class="drawer-custom"
       :title="$t('report.reportSettings')"
       :size="isMobile ? '100%' : '50%'"
     >
@@ -77,6 +78,7 @@
       style="top: 50%; right: 0%; position: absolute;"
       @click="handleOpen()"
     />
+
     <panel-footer
       :container-uuid="reportUuid"
       :is-button-run="true"
@@ -101,14 +103,14 @@ import store from '@/store'
 
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
+import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog/index.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
-import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReport.vue'
-import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
+import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import PanelFooter from '@/components/ADempiere/PanelFooter/index.vue'
-import downloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom'
-import dialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
+import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 
 // Utils and Helper Methods
 import { closeTagView } from '@/utils/ADempiere/componentUtils'
@@ -118,13 +120,13 @@ export default defineComponent({
 
   components: {
     ActionMenu,
+    DialogShareReport,
+    DownloadButtom,
     LoadingView,
-    PanelDefinition,
-    TitleAndHelp,
     OptionsReport,
+    PanelDefinition,
     PanelFooter,
-    downloadButtom,
-    dialogShareReport
+    TitleAndHelp
   },
 
   setup() {

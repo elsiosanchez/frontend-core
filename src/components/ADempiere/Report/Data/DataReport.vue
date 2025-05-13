@@ -71,6 +71,8 @@
       <div style="padding-bottom: -10px;">
         <el-form
           label-position="top"
+          size="mini"
+          @submit.native.prevent="notSubmitForm"
         >
           <el-row :gutter="24">
             <el-col :span="5" style="margin-top: 25px">
@@ -94,7 +96,7 @@
                 style="margin-top: 45px; margin-left: 15%"
               >
                 <refresh-button
-                  :container-uuid="reportOutput.containerUuid"
+                  :container-uuid="containerUuid"
                   :report-output="reportOutput"
                   :is-loading-report="isLoadingReport"
                 />
@@ -105,7 +107,7 @@
                 style="margin-top: 45px; margin-left: -60%"
               >
                 <report-summary
-                  :container-uuid="reportOutput.containerUuid"
+                  :container-uuid="containerUuid"
                   :report-output="reportOutput"
                   :is-loading-report="isLoadingReport"
                 />
@@ -115,8 +117,8 @@
               <el-form-item
                 style="margin-top: 45px; margin-left: -50%"
               >
-                <downloadButtom
-                  :container-uuid="reportOutput.containerUuid"
+                <download-buttom
+                  :container-uuid="containerUuid"
                   :report-output="reportOutput"
                   :is-loading-report="isLoadingReport"
                 />
@@ -153,17 +155,19 @@ import store from '@/store'
 
 // Components and Mixins
 import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
-import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 import DataCells from '@/components/ADempiere/Report/Data/DataCells.vue'
+import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
+import InfoReport from '@/views/ADempiere/ReportViewerEngine/infoReport.vue'
 import PrintFormatField from '@/components/ADempiere/ReportManager/Setup/options/printFormatField.vue'
+import RefreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton.vue'
+import ReportSummary from '@/components/ADempiere/ReportManager/Setup/options/reportSumary.vue'
 import ReportViewsField from '@/components/ADempiere/ReportManager/Setup/options/reportViewsField.vue'
-import RefreshButton from '@/components/ADempiere/ReportManager/Setup/options/refreshButton'
-import reportSummary from '@/components/ADempiere/ReportManager/Setup/options/reportSumary.vue'
-import downloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { isNumberField, isDateField, isBooleanField, isDecimalField } from '@/utils/ADempiere/references'
+import {
+  isNumberField, isDateField, isBooleanField, isDecimalField
+} from '@/utils/ADempiere/references'
 import {
   formatQuantity
 } from '@/utils/ADempiere/formatValue/numberFormat'
@@ -173,13 +177,13 @@ export default defineComponent({
 
   components: {
     CustomPagination,
-    InfoReport,
     DataCells,
+    DownloadButtom,
+    InfoReport,
     PrintFormatField,
-    ReportViewsField,
     RefreshButton,
-    reportSummary,
-    downloadButtom
+    ReportSummary,
+    ReportViewsField
   },
 
   props: {

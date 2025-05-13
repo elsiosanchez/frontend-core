@@ -48,6 +48,7 @@
       :before-close="handleClose"
       :size="isMobile ? '100%' : '75%'"
       :show-close="true"
+      class="drawer-custom"
       :title="$t('report.reportSettings')"
     >
       <options-report
@@ -130,7 +131,7 @@ export default defineComponent({
     })
 
     const storedReportOutput = computed(() => {
-      return store.getters.getReportOutput(reportUuid)
+      return store.getters.getReportOutput(reportId)
     })
 
     const name = computed(() => {

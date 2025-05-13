@@ -167,19 +167,13 @@ export default defineComponent({
       }
       return props.tabAttributes.table.table_name
     })
+
     const recordId = computed(() => {
       return store.getters.getIdOfContainer({
         containerUuid,
         tableName: currentTableName.value
       })
     })
-
-    // const getReportDefinition = computed(() => {
-    //   if (isEmptyValue(process) || isEmptyValue(process.uuid)) {
-    //     return []
-    //   }
-    //   return store.getters.getStoredReport(process.uuid)
-    // })
 
     const printFormatsList = computed(() => {
       return store.getters.getPrintFormatsListTableName(currentTableName.value)
@@ -302,15 +296,7 @@ export default defineComponent({
     }
 
     function loadPrintFormats() {
-      // if (isEmptyValue(process)) {
-      //   return
-      // }
-      // if (!isEmptyValue(getReportDefinition.value)) {
-      //   return
-      // }
-      // const { id } = process
       store.dispatch('listPrintFormatWindow', {
-        // id,
         tableName: currentTableName.value
       })
     }
@@ -333,7 +319,6 @@ export default defineComponent({
       recordId,
       printFormatsList,
       currentTableName,
-      // getReportDefinition,
       // Methods
       printWithFormat,
       handleStartPrintFormat

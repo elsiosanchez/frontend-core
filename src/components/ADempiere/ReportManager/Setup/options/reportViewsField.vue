@@ -21,14 +21,18 @@
     :label="$t('report.reportViews')"
   >
     <el-select
-      v-model="reportAsViewValue"
+      v-model="reportViewValue"
       :disabled="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"
     >
+      <empty-option-select
+        :current-value="reportViewValue"
+        :is-allows-zero="false"
+      />
       <el-option
-        v-for="(item, key) in reportAsView.childs"
+        v-for="(item, key) in reportViewsList"
         :key="key"
         :label="item.name"
         :value="item.id"
@@ -48,8 +52,15 @@ import lang from '@/lang'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 export default defineComponent({
   name: 'ReportViewsField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   props: {
     containerUuid: {
@@ -71,20 +82,14 @@ export default defineComponent({
   },
 
   setup(props, { root }) {
-    const reportAsPrintFormatValue = ref(undefined)
-    const reportTypeFormatValue = ref('')
-    const reportAsViewValue = ref(undefined)
+    const reportViewValue = ref(undefined)
 
-    const reportAsView = computed(() => {
-      const options = store.getters.getStoredActionsMenu({
-        containerUuid: props.containerUuid
-      }).find(repoortOptions => repoortOptions.actionName === 'runReportAsView')
-      if (isEmptyValue(options)) {
-        return {
-          childs: []
-        }
+    const reportViewsList = computed(() => {
+      const optionsList = store.getters.getReportViewsList(props.containerUuid)
+      if (!isEmptyValue(optionsList)) {
+        return optionsList
       }
-      return options
+      return []
     })
 
     const defaultParams = computed(() => {
@@ -98,8 +103,7 @@ export default defineComponent({
     function updateReportView(value) {
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
-        printFormatId: reportAsPrintFormatValue.value,
-        reportType: reportTypeFormatValue.value,
+        printFormatId: defaultParams.value.print_format_id,
         reportViewId: value
       })
     }
@@ -125,7 +129,7 @@ export default defineComponent({
         containerUuid: props.containerUuid || root.$route.params.processUuid,
         isSummary: true,
         parametersList: reportOutputParams,
-        printFormatId: reportAsPrintFormatValue.value,
+        printFormatId: defaultParams.value.print_format_id,
         reportId: reportDefinition.internal_id,
         instanceUuid: defaultParams.value.instance_id,
         reportViewId: defaultParams.value.report_view_id,
@@ -151,8 +155,7 @@ export default defineComponent({
 
     function defaultReport(report) {
       const { report_view_id, print_format_id, reportType } = report
-      reportAsPrintFormatValue.value = print_format_id
-      reportAsViewValue.value = report_view_id
+      reportViewValue.value = report_view_id
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid,
         reportViewId: report_view_id,
@@ -161,19 +164,19 @@ export default defineComponent({
       })
     }
 
-    watch(reportAsViewValue, (newValue) => {
+    watch(reportViewValue, (newValue) => {
       updateReportView(newValue)
     })
-    updateReportView(reportAsViewValue.value)
+    updateReportView(reportViewValue.value)
 
     defaultReport(defaultParams.value)
 
     return {
-      reportAsPrintFormatValue,
-      reportAsView,
+      reportViewValue,
+      // Computeds
+      reportViewsList,
       defaultParams,
-      reportTypeFormatValue,
-      reportAsViewValue,
+      // Methods
       runReport,
       defaultReport
     }
@@ -184,6 +187,5 @@ export default defineComponent({
 <style>
 .el-form--label-top .el-form-item__label {
   padding: 0 !important;
-  line-height: 0 !important
 }
 </style>

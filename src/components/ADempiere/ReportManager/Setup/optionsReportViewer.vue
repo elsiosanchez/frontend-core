@@ -25,28 +25,31 @@
     </div>
 
     <el-collapse v-model="activeCollapse">
-      <el-collapse-item name="1">
+      <el-collapse-item name="1" class="preference-fields">
         <template slot="title">
           <b style="font-size: 18px">
             {{ $t('report.preference') }}
             <i style="font-size: 18px;" class="el-icon-s-operation" />
           </b>
         </template>
-        <el-card class="box-card">
+
+        <el-card class="box-card preference-card">
           <div class="text item">
             <el-form
               label-position="top"
               label-width="10px"
+              size="mini"
               @submit.native.prevent="notSubmitForm"
             >
               <el-row class="report-view-setup-preferences-fields" :gutter="20">
                 <el-col :span="5">
-                  <printFormat
+                  <print-format-field
                     :container-uuid="containerUuid"
                     :report-output="reportOutput"
                     :container-manager="containerManagerReportViwer"
                   />
                 </el-col>
+
                 <el-col :span="5">
                   <report-views-field
                     :container-uuid="containerUuid"
@@ -54,6 +57,7 @@
                     :container-manager="containerManagerReportViwer"
                   />
                 </el-col>
+
                 <el-col :span="4">
                   <el-form-item
                     style="display: grid; margin-top: 35px; margin-left:30%"
@@ -65,6 +69,7 @@
                     />
                   </el-form-item>
                 </el-col>
+
                 <el-col :span="6">
                   <el-form-item
                     style="display: grid; margin-top: 35px;"
@@ -76,17 +81,19 @@
                     />
                   </el-form-item>
                 </el-col>
+
                 <el-col :span="4">
                   <el-form-item
                     style="display: grid; margin-top: 35px;"
                   >
-                    <downloadButtom
+                    <download-buttom
                       :container-uuid="containerUuid"
                       :report-output="reportOutput"
                       :is-loading-report="isLoadingReport"
                     />
                   </el-form-item>
                 </el-col>
+
                 <!-- <el-col v-if="isReportEnginer" :span="24">
                   <el-form-item
                     :label="$t('report.typeReport')"
@@ -106,6 +113,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col> -->
+
                 <!-- <el-col :span="12">
                   <el-form-item
                     :label="$t('report.summary')"
@@ -121,7 +129,7 @@
       </el-collapse-item>
 
       <!-- report parameters -->
-      <el-collapse-item v-if="isReportEnginer" name="2">
+      <el-collapse-item v-if="isReportEnginer" name="2" class="parameters-fields">
         <template slot="title">
           <b style="font-size: 18px">
             {{ $t('actionMenu.changeParameters') }}
@@ -184,10 +192,10 @@ import lang from '@/lang'
 
 // Components adn Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
-import RefreshButton from './options/refreshButton'
-import ReportSummary from './options/reportSumary.vue'
 import DownloadButtom from './options/downloadButtom.vue'
-import PrintFormat from './options/printFormatField.vue'
+import PrintFormatField from './options/printFormatField.vue'
+import RefreshButton from './options/refreshButton.vue'
+import ReportSummary from './options/reportSumary.vue'
 import ReportViewsField from './options/reportViewsField.vue'
 
 // Utils and Helper Methods
@@ -199,10 +207,10 @@ export default defineComponent({
 
   components: {
     CollapseCriteria,
+    DownloadButtom,
+    PrintFormatField,
     RefreshButton,
     ReportSummary,
-    DownloadButtom,
-    PrintFormat,
     ReportViewsField
   },
 
@@ -543,12 +551,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.report-view-setup-preferences-fields {
-  /**
-   * Reduce the spacing between the form element and its label
-   */
-   .el-form-item__label {
-    padding-bottom: 0px;
+.preference-fields {
+  .el-collapse-item__content {
+    padding-bottom: 10px !important;
+
+    .el-card.preference-card {
+      .el-card__body {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+      }
+    }
+  }
+
+  .report-view-setup-preferences-fields {
+    .el-form-item {
+      margin-bottom: 5px;
+
+      /**
+      * Reduce the spacing between the form element and its label
+      */
+      .el-form-item__label {
+        padding-bottom: 0px;
+      }
+    }
   }
 }
 </style>

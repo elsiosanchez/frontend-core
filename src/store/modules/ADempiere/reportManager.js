@@ -37,7 +37,8 @@ import { listPrintFormatsRequest, listPrintFormatsTableRequest } from '@/api/ADe
 import { listReportViewsRequest } from '@/api/ADempiere/reportManagement/reportView.ts'
 import { listDrillTablesRequest } from '@/api/ADempiere/reportManagement/drillTable.ts'
 import {
-  requestPresignedUrl
+  requestPresignedUrl,
+  requestShareResources
 } from '@/api/ADempiere/file-management/resource-reference.ts'
 
 // Constants
@@ -63,15 +64,15 @@ import {
   isLegacyPrintFormat,
   generateRecordsList
 } from '@/utils/ADempiere/dictionary/report'
-import {
-  requestShareResources
-} from '@/api/ADempiere/file-management/resource-reference.ts'
 
 const initState = {
   printFormat: {},
   printFormatsList: {},
+  reportView: {},
   reportViewsList: {},
+  drillTable: {},
   drillTablesList: {},
+  //
   reportsOutput: {},
   reportsGenerated: {},
   isShowPanelConfig: {},
@@ -125,18 +126,51 @@ const reportManager = {
     setPrintFormat(state, { id, printFormat }) {
       Vue.set(state.printFormat, id, printFormat)
     },
-    setPrintFormatsList(state, { reportId, printFormatsList }) {
-      Vue.set(state.printFormatsList, reportId, printFormatsList)
+    setPrintFormatsList(state, { reportId, reportUuid, tableName, printFormatsList }) {
+      if (!isEmptyValue(tableName)) {
+        Vue.set(state.printFormatsList, tableName, printFormatsList)
+      }
+      if (!isEmptyValue(reportUuid)) {
+        Vue.set(state.printFormatsList, reportUuid, printFormatsList)
+      }
+      if (!isEmptyValue(reportId)) {
+        Vue.set(state.printFormatsList, reportId, printFormatsList)
+      }
     },
     setPrintFormatsListTableName(state, { tableName, printFormatsList }) {
       Vue.set(state.printFormatsList, tableName, printFormatsList)
     },
-    setReportViewsList(state, { containerUuid, reportViewsList }) {
-      Vue.set(state.reportViewsList, containerUuid, reportViewsList)
+
+    setReportView(state, { id, reportView }) {
+      Vue.set(state.reportView, id, reportView)
     },
-    setDrillTablesList(state, { containerUuid, drillTablesList }) {
-      Vue.set(state.drillTablesList, containerUuid, drillTablesList)
+    setReportViewsList(state, { reportId, reportUuid, tableName, reportViewsList }) {
+      if (!isEmptyValue(tableName)) {
+        Vue.set(state.reportViewsList, tableName, reportViewsList)
+      }
+      if (!isEmptyValue(reportUuid)) {
+        Vue.set(state.reportViewsList, reportUuid, reportViewsList)
+      }
+      if (!isEmptyValue(reportId)) {
+        Vue.set(state.reportViewsList, reportId, reportViewsList)
+      }
     },
+
+    setDrillTable(state, { id, drillTable }) {
+      Vue.set(state.drillTable, id, drillTable)
+    },
+    setDrillTablesList(state, { reportId, reportUuid, tableName, drillTablesList }) {
+      if (!isEmptyValue(tableName)) {
+        Vue.set(state.drillTablesList, tableName, drillTablesList)
+      }
+      if (!isEmptyValue(reportUuid)) {
+        Vue.set(state.drillTablesList, reportUuid, drillTablesList)
+      }
+      if (!isEmptyValue(reportId)) {
+        Vue.set(state.drillTablesList, reportId, drillTablesList)
+      }
+    },
+
     setReportOutput(state, reportOutput) {
       Vue.set(state.reportsOutput, reportOutput.instanceUuid, reportOutput)
     },
@@ -341,7 +375,8 @@ const reportManager = {
      * @returns
      */
     listPrintFormatsFromServer({ commit, dispatch, getters }, {
-      reportId
+      reportId,
+      reportUuid
     }) {
       return new Promise(resolve => {
         const currentListPrintFormat = getters.getPrintFormatsList(reportId)
@@ -369,6 +404,7 @@ const reportManager = {
 
             commit('setPrintFormatsList', {
               reportId,
+              reportUuid,
               printFormatsList
             })
 
@@ -382,13 +418,15 @@ const reportManager = {
                 await Promise.allSettled([
                   dispatch('getReportViewsFromServer', {
                     reportId,
+                    reportUuid,
                     // TODO: Verify if table name is required
                     tableName: tableNameItem
-                  }),
-                  dispatch('getDrillTablesFromServer', {
-                    reportId,
-                    tableName: tableNameItem
                   })
+                  // dispatch('getDrillTablesFromServer', {
+                  //   reportId,
+                  //   reportUuid,
+                  //   tableName: tableNameItem
+                  // })
                 ])
               })
             )
@@ -403,15 +441,14 @@ const reportManager = {
 
     /**
      * Get list prints Windows formats
-     * @param {number} id report identifier
+     * @param {String} tableName table Name
      * @returns
      */
     listPrintFormatWindow({ commit, dispatch, getters }, {
-      tableName,
-      reportId
+      tableName
     }) {
       return new Promise(resolve => {
-        const currentListPrintFormat = getters.getPrintFormatsList(reportId)
+        const currentListPrintFormat = getters.getPrintFormatsList(tableName)
         if (!isEmptyValue(currentListPrintFormat)) {
           resolve(currentListPrintFormat)
           return
@@ -421,7 +458,6 @@ const reportManager = {
             const printFormatsList = printFormatResponse.print_formats.map(printFormatItem => {
               const printFormatReturn = {
                 ...printFormatItem,
-                reportId: reportId,
                 isLegacy: isLegacyPrintFormat(printFormatItem)
               }
 
@@ -445,14 +481,11 @@ const reportManager = {
               Array.from(tableNamesList).map(async tableNameItem => {
                 await Promise.allSettled([
                   dispatch('getReportViewsFromServer', {
-                    reportId,
-                    // TODO: Verify if table name is required
-                    tableName: tableNameItem
-                  }),
-                  dispatch('getDrillTablesFromServer', {
-                    reportId,
                     tableName: tableNameItem
                   })
+                  // dispatch('getDrillTablesFromServer', {
+                  //   tableName: tableNameItem
+                  // })
                 ])
               })
             )
@@ -472,6 +505,7 @@ const reportManager = {
      */
     getReportViewsFromServer({ commit }, {
       reportId,
+      reportUuid,
       tableName
     }) {
       return new Promise(resolve => {
@@ -481,15 +515,21 @@ const reportManager = {
         listReportViewsRequest({ reportId, tableName })
           .then(reportViewResponse => {
             const reportViewsList = reportViewResponse.report_views.map(reportViewItem => {
-              return {
-                ...reportViewItem,
-                // reportUuid: uuid,
-                reportId: reportId
+              const reportViewReturn = {
+                ...reportViewItem
               }
+
+              commit('setReportView', {
+                id: reportViewItem.id,
+                reportView: reportViewReturn
+              })
+              return reportViewReturn
             })
 
             commit('setReportViewsList', {
-              containerUuid: reportId,
+              reportId,
+              reportUuid,
+              tableName,
               reportViewsList
             })
 
@@ -509,24 +549,31 @@ const reportManager = {
      */
     getDrillTablesFromServer({ commit }, {
       reportId,
+      reportUuid,
       tableName
     }) {
       return new Promise(resolve => {
         listDrillTablesRequest({ tableName })
           .then(responseDrillTables => {
             const drillTablesList = responseDrillTables.drill_tables.map(drillTableItem => {
-              return {
+              const drillTableReturn = {
                 ...drillTableItem,
-                name: drillTableItem.print_name,
+                name: drillTableItem.print_name
                 // type: 'updateReport',
-                // option: 'drillTable',
-                // reportUuid: uuid,
-                reportId: reportId
+                // option: 'drillTable'
               }
+
+              commit('setDrillTable', {
+                id: drillTableItem.id,
+                drillTable: drillTableReturn
+              })
+              return drillTableReturn
             })
 
             commit('setDrillTablesList', {
-              containerUuid: reportId,
+              reportId,
+              reportUuid,
+              tableName,
               drillTablesList
             })
 
@@ -1211,6 +1258,7 @@ const reportManager = {
       })
     }
   },
+
   getters: {
     getContactSend: (state) => {
       return state.contactSend
@@ -1247,7 +1295,7 @@ const reportManager = {
         return printFormat.id === printFormatId
       })
     },
-    getPrintFormat: (state, getters) => (id) => {
+    getPrintFormat: (state) => (id) => {
       return state.printFormat[id]
     },
     getDefaultPrintFormat: (state, getters) => (reportId) => {
@@ -1263,21 +1311,26 @@ const reportManager = {
       return defaultPrintFormat || printFormatsList.at()
     },
 
-    getReportViewList: (state) => (reportId) => {
+    getReportViewsList: (state) => (reportId) => {
       return state.reportViewsList[reportId] || []
     },
-    getReportView: (state, getters) => ({ reportId, reportViewId }) => {
-      return getters.getReportViewList(reportId).find(reportView => {
+    getReportViewByReport: (state, getters) => ({ reportId, reportViewId }) => {
+      return getters.getReportViewsList(reportId).find(reportView => {
         return reportView.id === reportViewId
       })
     },
+    getReportView: (state) => (id) => {
+      return state.reportViewsList[id]
+    },
     getDefaultReportView: (state, getters) => (reportId) => {
-      const reportViewsList = getters.getReportViewList(reportId)
+      const reportViewsList = getters.getReportViewsList(reportId)
 
       if (isEmptyValue(reportViewsList)) {
         return undefined
       }
-      const defaultReportView = reportViewsList.find(reportView => reportView.is_default)
+      const defaultReportView = reportViewsList.find(reportView => {
+        return reportView.is_default
+      })
       return defaultReportView || reportViewsList.at()
     },
 

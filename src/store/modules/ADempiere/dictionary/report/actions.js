@@ -20,7 +20,9 @@ import router from '@/router'
 import store from '@/store'
 
 // API Request Methods
-import { requestProcessMetadata as requestReportMetadata } from '@/api/ADempiere/dictionary/process'
+import {
+  requestProcessMetadata as requestReportMetadata
+} from '@/api/ADempiere/dictionary/process'
 
 // Constants
 import {
@@ -93,11 +95,14 @@ export default {
           if (type === 'window') {
             await dispatch('listPrintFormatWindow', {
               tableName,
-              reportId: reportDefinition.internal_id
+              reportId: reportDefinition.internal_id,
+              reportUuid: reportDefinition.uuid
             })
           } else {
             await dispatch('listPrintFormatsFromServer', {
-              reportId: reportDefinition.internal_id
+              tableName,
+              reportId: reportDefinition.internal_id,
+              reportUuid: reportDefinition.uuid
             })
           }
 
@@ -237,7 +242,7 @@ export default {
       ...runReportAsView,
       containerId: reportId
     }
-    const reportsView = rootGetters.getReportViewList(reportId)
+    const reportsView = rootGetters.getReportViewsList(reportId)
     if (!isEmptyValue(reportsView)) {
       const printFormatChilds = []
       reportsView.forEach(reportView => {

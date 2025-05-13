@@ -89,7 +89,7 @@ export const runReportAsView = {
   name: language.t('actionMenu.reportViews'),
   description: language.t('actionMenu.generateWithReportView'),
   enabled: ({ containerId: reportId }) => {
-    const reportViewsList = store.getters.getReportViewList(reportId)
+    const reportViewsList = store.getters.getReportViewsList(reportId)
     return !isEmptyValue(reportViewsList)
   },
   isSvgIcon: false,

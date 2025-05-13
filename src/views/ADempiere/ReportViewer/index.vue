@@ -50,6 +50,7 @@
       :before-close="handleClose"
       :size="isMobile ? '100%' : '50%'"
       :show-close="true"
+      class="drawer-custom"
       :title="$t('report.reportSettings')"
     >
       <options-report
@@ -58,11 +59,13 @@
         :is-show-title="false"
       />
     </el-drawer>
+
     <dialogShareReport
       :report-output="storedReportDefinition"
       :is-panel="false"
       :is-legacy="true"
     />
+
     <el-button
       v-if="!isEmptyValue(storedReportDefinition)"
       type="primary"
@@ -92,13 +95,13 @@ import store from '@/store'
 
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
+import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog/index.vue'
 import FileRender from '@/components/ADempiere/FileRender/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReport.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
-import dialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
 
 // Constants
 import { DEFAULT_REPORT_TYPE } from '@/utils/ADempiere/dictionary/report'
@@ -113,19 +116,16 @@ export default defineComponent({
   name: 'ReportViewer',
 
   components: {
+    ActionMenu,
+    DialogShareReport,
     FileRender,
     LoadingView,
-    ActionMenu,
     ModalDialog,
-    TitleAndHelp,
     OptionsReport,
-    dialogShareReport
+    TitleAndHelp
   },
 
   setup(props, { root }) {
-    const storedReportOutput = computed(() => {
-      return store.getters.getReportOutput(root.$route.params.reportId)
-    })
     let { reportId, reportUuid } = root.$route.params
     if (!isEmptyValue(storedReportOutput.value)) {
       if (isEmptyValue(reportId) || reportId <= 0) {
@@ -142,21 +142,35 @@ export default defineComponent({
       reportId,
       reportUuid
     })
-    const isLoading = computed(() => {
-      return store.getters.getIsLoadingReportLegacy
-    })
+
     const reportType = ref(DEFAULT_REPORT_TYPE)
     const reportContent = ref('')
 
+    const isLoading = computed(() => {
+      return store.getters.getIsLoadingReportLegacy
+    })
+
+    const storedReportOutput = computed(() => {
+      return store.getters.getReportOutput(root.$route.params.reportId)
+    })
+
     const name = computed(() => {
-      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) return storedReportOutput.value.name
-      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) return storedReportDefinition.value.name
+      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) {
+        return storedReportOutput.value.name
+      }
+      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) {
+        return storedReportDefinition.value.name
+      }
       return ''
     })
 
     const help = computed(() => {
-      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) return storedReportOutput.value.name
-      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) return storedReportDefinition.value.help
+      if (isEmptyValue(storedReportDefinition.value) && !isEmptyValue(storedReportOutput.value)) {
+        return storedReportOutput.value.name
+      }
+      if (!isEmptyValue(storedReportDefinition.value) && isEmptyValue(storedReportOutput.value)) {
+        return storedReportDefinition.value.help
+      }
       return ''
     })
 

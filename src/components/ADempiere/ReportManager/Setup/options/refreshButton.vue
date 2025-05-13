@@ -15,6 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <div style="margin-left: -10px; display: flex; align-items: center;">
     <el-button
@@ -34,9 +35,12 @@
 
 <script>
 import store from '@/store'
+
 import { defineComponent, ref } from '@vue/composition-api'
+
 export default defineComponent({
-  name: 'refreshButton',
+  name: 'RefreshButton',
+
   props: {
     containerUuid: {
       type: String,
@@ -55,8 +59,10 @@ export default defineComponent({
       required: false
     }
   },
+
   setup(props, { root }) {
     const timeOutRecords = ref(null)
+
     function runReport() {
       const reportDefinition = store.getters.getStoredReport(props.containerUuid)
       const reportOutputParams = store.getters.getReportParameters({
@@ -81,6 +87,7 @@ export default defineComponent({
         isChangePanel: true
       })
     }
+
     return {
       runReport
     }

@@ -57,6 +57,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       :with-header="true"
       :before-close="handleClose"
       :show-close="true"
+      class="drawer-custom"
       :title="$t('report.reportSettings')"
       :size="isMobile ? '100%' : '50%'"
     >
@@ -100,10 +101,10 @@ import store from '@/store'
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
-import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReport.vue'
-import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
+import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import PanelFooter from '@/components/ADempiere/PanelFooter/index.vue'
+import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 
 // Utils and Helper Methods
 import { closeTagView } from '@/utils/ADempiere/componentUtils'
@@ -115,9 +116,9 @@ export default defineComponent({
     ActionMenu,
     LoadingView,
     PanelDefinition,
-    TitleAndHelp,
+    PanelFooter,
     OptionsReport,
-    PanelFooter
+    TitleAndHelp
   },
 
   setup() {

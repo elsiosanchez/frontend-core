@@ -48,7 +48,7 @@ import {
 import store from '@/store'
 
 // Components and Mixins
-import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog'
+import DialogShareReport from '@/views/ADempiere/ReportViewerEngine/dialog/index.vue'
 import DataReport from '@/components/ADempiere/Report/Data/DataReport.vue'
 import OptionsReport from '@/components/ADempiere/ReportManager/Setup/optionsReportViewer.vue'
 

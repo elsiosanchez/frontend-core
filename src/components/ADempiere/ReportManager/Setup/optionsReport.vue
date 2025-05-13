@@ -23,19 +23,22 @@
         {{ $t('report.reportSettings') }}
       </b>
     </div>
+
     <el-collapse v-model="activeCollapse">
-      <el-collapse-item name="1">
+      <el-collapse-item name="1" class="preference-fields">
         <template slot="title">
           <b style="font-size: 18px">
             {{ $t('report.preference') }}
             <i style="font-size: 18px;" class="el-icon-s-operation" />
           </b>
         </template>
-        <el-card class="box-card">
+
+        <el-card class="box-card preference-card">
           <div class="text item">
             <el-form
               label-position="top"
               label-width="10px"
+              size="mini"
               @submit.native.prevent="notSubmitForm"
             >
               <el-row class="report-setup-preferences-fields" :gutter="20">
@@ -47,6 +50,7 @@
                     <el-select
                       v-model="reportAsPrintFormatValue"
                       style="display: contents;"
+                      size="mini"
                       @change="runReport()"
                     >
                       <el-option
@@ -58,6 +62,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+
                 <el-col :span="8">
                   <el-form-item
                     :label="$t('report.reportViews')"
@@ -66,6 +71,7 @@
                     <el-select
                       v-model="reportAsViewValue"
                       style="display: contents;"
+                      size="mini"
                       @change="runReport()"
                     >
                       <el-option
@@ -77,6 +83,7 @@
                     </el-select>
                   </el-form-item>
                 </el-col>
+
                 <el-col :span="8">
                   <el-form-item
                     :label="$t('report.typeReport')"
@@ -85,6 +92,7 @@
                     <el-select
                       v-model="reportTypeFormatValue"
                       style="display: contents;"
+                      size="mini"
                       @change="runReport()"
                     >
                       <el-option
@@ -101,7 +109,9 @@
           </div>
         </el-card>
       </el-collapse-item>
-      <el-collapse-item name="2">
+
+      <!-- report parameters -->
+      <el-collapse-item name="2" class="parameters-fields">
         <template slot="title">
           <b style="font-size: 18px">
             {{ $t('actionMenu.changeParameters') }}
@@ -116,6 +126,7 @@
         />
       </el-collapse-item>
     </el-collapse>
+
     <el-row
       style="
         position: absolute;
@@ -125,7 +136,7 @@
     >
       <el-col :span="24">
         <samp style="display: flex;" class="report-setup-footer">
-          <downloadButtom
+          <download-buttom
             :container-uuid="containerUuid"
             :is-loading-report="false"
             style="margin-right: 10px"
@@ -164,7 +175,7 @@ import store from '@/store'
 
 // Components and Mixins
 import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
-import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom'
+import DownloadButtom from '@/components/ADempiere/ReportManager/Setup/options/downloadButtom.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -371,12 +382,29 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.report-setup-preferences-fields {
-  /**
-   * Reduce the spacing between the form element and its label
-   */
-   .el-form-item__label {
-    padding-bottom: 0px;
+.preference-fields {
+  .el-collapse-item__content {
+    padding-bottom: 10px !important;
+
+    .el-card.preference-card {
+      .el-card__body {
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+      }
+    }
+  }
+
+  .report-setup-preferences-fields {
+    .el-form-item {
+      margin-bottom: 5px;
+
+      /**
+      * Reduce the spacing between the form element and its label
+      */
+      .el-form-item__label {
+        padding-bottom: 0px;
+      }
+    }
   }
 }
 </style>

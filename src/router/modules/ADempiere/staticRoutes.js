@@ -25,6 +25,7 @@ import language from '@/lang'
 import {
   REPORT_VIEWER_NAME,
   REPORT_VIEWER_ENGINE_NAME
+  // REPORT_VIEWER_PRINT_FORMAT_NAME
 } from '@/utils/ADempiere/dictionary/report'
 import { REQUEST_ALL_WINDOW_ID } from '@/utils/ADempiere/dictionary/form/Issues'
 
@@ -314,6 +315,25 @@ const staticRoutes = [
       }
     ]
   },
+  // {
+  //   path: '/report-viewer-engine/print-format/:tableName/:printFormatId/:printFormatUuid?',
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: '', // Path vacío para que coincida con la ruta padre
+  //       component: () => import('@/views/ADempiere/ReportPrintFormatEngine'),
+  //       name: REPORT_VIEWER_PRINT_FORMAT_NAME,
+  //       meta: {
+  //         // title: language.t('route.printFormatViewer'),
+  //         title: language.t('route.reportViewer'),
+  //         type: 'print-format',
+  //         icon: 'el-icon-printer',
+  //         reportType: 'print-format'
+  //       }
+  //     }
+  //   ]
+  // },
 
   {
     path: '/browser',
