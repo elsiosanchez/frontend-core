@@ -79,7 +79,7 @@ export function requestRunBusinessProcessAsWindow({
   selectionsList
 }) {
   let url = `/business-data/process/${id}/window/${tableName}`
-  if (isEmptyValue(selectionsList) || (!isEmptyValue(selectionsList) && selectionsList.length === 1)) {
+  if (!isEmptyValue(recordId) && isEmptyValue(selectionsList) || (!isEmptyValue(selectionsList) && selectionsList.length === 1)) {
     url += `/${recordId}`
   }
   return request({

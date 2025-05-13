@@ -29,7 +29,7 @@ import {
 
 // Constants
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
-import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
+// import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 // Utils and Helper Methods
 import { getToken } from '@/utils/auth'
@@ -364,10 +364,6 @@ const processManager = {
         const currentPanel = getters.getTabAttributes
 
         let storedProcessDefinition
-
-        const {
-          table_name
-        } = storedTab
         const processModal = getters.getModalDialogManager({ containerUuid: containerUuid })
 
         storedProcessDefinition = storedTab.processes.find(process => { process.uuid === processModal.containerUuid })
@@ -404,23 +400,16 @@ const processManager = {
         //   windowUuid
         // })
         let selectionsList = []
+        const recordsSelection = rootGetters.getTabSelectionsList({
+          containerUuid: currentPanel.uuid
+        })
         if (storedProcessDefinition.is_multi_selection && currentPanel.isShowedTableRecords) {
-          const recordsSelection = rootGetters.getTabSelectionsList({
-            containerUuid: currentPanel.uuid
-          })
           selectionsList = rootGetters.getTabSelectionToServer({
             parentUuid: windowUuid,
             containerUuid: currentPanel.uuid,
             selectionsList: recordsSelection
           })
-
-          if (!isEmptyValue(recordsSelection) && recordsSelection.length === 1) {
-            const currentRow = recordsSelection.at(0)
-            recordId = currentRow[table_name + IDENTIFIER_COLUMN_SUFFIX]
-            recordUuid = currentRow.UUID
-            // clear selection
-            selectionsList = []
-          }
+          recordId = ''
         }
 
         let procesingNotification = { close: () => false }
@@ -439,7 +428,7 @@ const processManager = {
 
         requestRunBusinessProcessAsWindow({
           id: storedProcessDefinition.internal_id,
-          recordId: recordId,
+          recordId,
           parametersList,
           selectionsList,
           tableName: currentPanel.table_name
