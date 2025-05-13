@@ -50,7 +50,7 @@ import store from '@/store'
 // Components and Mixins
 import DialogShareReport from '@/components/ADempiere/ReportManager/DialogShareReport/index.vue'
 import DataReport from '@/components/ADempiere/ReportManager/ReportData/DataReport.vue'
-import OptionsReport from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
+import OptionsReportViewer from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
 
 export default defineComponent({
   name: 'ReportPanel',
@@ -58,7 +58,7 @@ export default defineComponent({
   components: {
     DataReport,
     DialogShareReport,
-    OptionsReport
+    OptionsReportViewer
   },
 
   props: {

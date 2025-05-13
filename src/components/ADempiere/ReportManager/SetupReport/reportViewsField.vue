@@ -23,6 +23,7 @@
     <el-select
       v-model="reportViewValue"
       :disabled="isLoadingReport"
+      :loading="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"

@@ -41,38 +41,28 @@
               size="mini"
               @submit.native.prevent="notSubmitForm"
             >
-              <el-row class="report-view-setup-preferences-fields" :gutter="20">
-                <el-col :span="5">
+              <el-row class="report-view-setup-preferences-fields" :gutter="12">
+                <el-col :span="6">
                   <print-format-field
                     :container-uuid="containerUuid"
                     :report-output="reportOutput"
                     :container-manager="containerManagerReportViwer"
+                    :is-loading-report="isLoadingReport"
                   />
                 </el-col>
 
-                <el-col :span="5">
+                <el-col :span="6">
                   <report-views-field
                     :container-uuid="containerUuid"
                     :report-output="reportOutput"
                     :container-manager="containerManagerReportViwer"
+                    :is-loading-report="isLoadingReport"
                   />
                 </el-col>
 
                 <el-col :span="4">
                   <el-form-item
-                    style="display: grid; margin-top: 35px; margin-left:30%"
-                  >
-                    <refresh-button
-                      :container-uuid="containerUuid"
-                      :report-output="reportOutput"
-                      :is-loading-report="isLoadingReport"
-                    />
-                  </el-form-item>
-                </el-col>
-
-                <el-col :span="6">
-                  <el-form-item
-                    style="display: grid; margin-top: 35px;"
+                    style="margin-top: 20px; margin-left: 10%;"
                   >
                     <report-summary
                       :container-uuid="containerUuid"
@@ -84,7 +74,19 @@
 
                 <el-col :span="4">
                   <el-form-item
-                    style="display: grid; margin-top: 35px;"
+                    style=" margin-top: 18px; margin-left: 10%;"
+                  >
+                    <refresh-button
+                      :container-uuid="containerUuid"
+                      :report-output="reportOutput"
+                      :is-loading-report="isLoadingReport"
+                    />
+                  </el-form-item>
+                </el-col>
+
+                <el-col :span="4">
+                  <el-form-item
+                    style="margin-top: 18px; margin-left: 3%;"
                   >
                     <download-buttom
                       :container-uuid="containerUuid"
@@ -94,7 +96,7 @@
                   </el-form-item>
                 </el-col>
 
-                <!-- <el-col v-if="isReportEnginer" :span="24">
+                <!-- <el-col v-if="!isReportEnginer" :span="24">
                   <el-form-item
                     :label="$t('report.typeReport')"
                     style="display: grid;"
@@ -114,14 +116,6 @@
                   </el-form-item>
                 </el-col> -->
 
-                <!-- <el-col :span="12">
-                  <el-form-item
-                    :label="$t('report.summary')"
-                    style="display: grid;"
-                  >
-                    <el-switch v-model="isSummaryReport" />
-                  </el-form-item>
-                </el-col> -->
               </el-row>
             </el-form>
           </div>
@@ -161,6 +155,8 @@
             type="info"
             class="button-base-icon"
             plain
+            :disabled="isLoadingReport"
+            :loading="isLoadingReport"
             @click="clearParameters();"
           >
             <svg-icon icon-class="layers-clear" />
@@ -169,12 +165,16 @@
             type="danger"
             class="button-base-icon"
             icon="el-icon-close"
+            :disabled="isLoadingReport"
+            :loading="isLoadingReport"
             @click="handleClose()"
           />
           <el-button
             type="primary"
             class="button-base-icon"
             icon="el-icon-check"
+            :disabled="isLoadingReport"
+            :loading="isLoadingReport"
             @click="runReport()"
           />
         </samp>
@@ -191,11 +191,10 @@ import store from '@/store'
 import lang from '@/lang'
 
 // Components adn Mixins
-import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
 import DownloadButtom from './downloadButtom.vue'
 import PrintFormatField from './printFormatField.vue'
 import RefreshButton from './refreshButton.vue'
-import ReportSummary from './reportSumary.vue'
+import ReportSummary from './reportSummary.vue'
 import ReportViewsField from './reportViewsField.vue'
 
 // Utils and Helper Methods
@@ -203,10 +202,9 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
-  name: 'optionsReportViewer',
+  name: 'OptionsReportViewer',
 
   components: {
-    CollapseCriteria,
     DownloadButtom,
     PrintFormatField,
     RefreshButton,

@@ -41,7 +41,7 @@
               size="mini"
               @submit.native.prevent="notSubmitForm"
             >
-              <el-row class="report-setup-preferences-fields" :gutter="20">
+              <el-row class="report-setup-preferences-fields" :gutter="12">
                 <el-col :span="8">
                   <el-form-item
                     :label="$t('report.printFormats')"
@@ -174,17 +174,18 @@ import { defineComponent, computed, ref, watch } from '@vue/composition-api'
 import store from '@/store'
 
 // Components and Mixins
-import CollapseCriteria from '@/components/ADempiere/CollapseCriteria/index.vue'
 import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/downloadButtom.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 
+/**
+ * TODO: Improve with standars components as ReportViewsField, PrintFormatsField, hide shared report is not viewer
+ */
 export default defineComponent({
   name: 'OptionsReport',
 
   components: {
-    CollapseCriteria,
     DownloadButtom
   },
 

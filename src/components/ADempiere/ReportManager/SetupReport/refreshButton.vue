@@ -17,13 +17,12 @@
 -->
 
 <template>
-  <div style="margin-left: -10px; display: flex; align-items: center;">
+  <div style="align-items: center;">
     <el-button
       :disabled="isLoadingReport"
       :loading="isLoadingReport"
       type="success"
       size="mini"
-      class="button-base-icon"
       icon="el-icon-refresh-right"
       style="font-size:16px"
       @click="runReport"
@@ -49,10 +48,6 @@ export default defineComponent({
     reportOutput: {
       type: Object,
       required: true
-    },
-    disabled: {
-      type: Boolean,
-      default: false
     },
     isLoadingReport: {
       type: Boolean,

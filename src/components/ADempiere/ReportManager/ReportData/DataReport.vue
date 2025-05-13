@@ -68,14 +68,14 @@
         </el-table-column>
       </el-table>
 
-      <div style="padding-bottom: -10px;">
+      <div>
         <el-form
           label-position="top"
           size="mini"
           @submit.native.prevent="notSubmitForm"
         >
-          <el-row :gutter="24">
-            <el-col :span="5" style="margin-top: 25px">
+          <el-row :gutter="12">
+            <el-col :span="4">
               <print-format-field
                 :container-uuid="reportOutput.containerUuid"
                 :report-output="reportOutput"
@@ -83,7 +83,7 @@
                 :is-loading-report="isLoadingReport"
               />
             </el-col>
-            <el-col :span="5" style="margin-top: 25px">
+            <el-col :span="4">
               <report-views-field
                 :container-uuid="reportOutput.containerUuid"
                 :report-output="reportOutput"
@@ -93,18 +93,7 @@
             </el-col>
             <el-col :span="3">
               <el-form-item
-                style="margin-top: 45px; margin-left: 15%"
-              >
-                <refresh-button
-                  :container-uuid="containerUuid"
-                  :report-output="reportOutput"
-                  :is-loading-report="isLoadingReport"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="3">
-              <el-form-item
-                style="margin-top: 45px; margin-left: -60%"
+                style="margin-top: 20px; margin-left: 10%;"
               >
                 <report-summary
                   :container-uuid="containerUuid"
@@ -115,7 +104,18 @@
             </el-col>
             <el-col :span="3">
               <el-form-item
-                style="margin-top: 45px; margin-left: -50%"
+                style=" margin-top: 18px; margin-left: 10%;"
+              >
+                <refresh-button
+                  :container-uuid="containerUuid"
+                  :report-output="reportOutput"
+                  :is-loading-report="isLoadingReport"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-form-item
+                style="margin-top: 20px; margin-left: 3%;"
               >
                 <download-buttom
                   :container-uuid="containerUuid"
@@ -124,7 +124,8 @@
                 />
               </el-form-item>
             </el-col>
-            <el-col :span="4" style="margin-top: 45px; margin-left: 3%">
+
+            <el-col :span="7" style="margin-top: 25px;">
               <custom-pagination
                 :total-records="recordData.record_count"
                 :page-size="currentPageSize"
@@ -160,7 +161,7 @@ import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/dow
 import InfoReport from '@/components/ADempiere/ReportManager/infoReport.vue'
 import PrintFormatField from '@/components/ADempiere/ReportManager/SetupReport/printFormatField.vue'
 import RefreshButton from '@/components/ADempiere/ReportManager/SetupReport/refreshButton.vue'
-import ReportSummary from '@/components/ADempiere/ReportManager/SetupReport/reportSumary.vue'
+import ReportSummary from '@/components/ADempiere/ReportManager/SetupReport/reportSummary.vue'
 import ReportViewsField from '@/components/ADempiere/ReportManager/SetupReport/reportViewsField.vue'
 
 // Utils and Helper Methods

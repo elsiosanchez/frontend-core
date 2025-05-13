@@ -25,7 +25,7 @@ import language from '@/lang'
 import {
   REPORT_VIEWER_NAME,
   REPORT_VIEWER_ENGINE_NAME,
-  REPORT_VIEWER_PRINT_FORMAT_NAME
+  REPORT_VIEWER_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report'
 import { REQUEST_ALL_WINDOW_ID } from '@/utils/ADempiere/dictionary/form/Issues'
 
@@ -296,7 +296,6 @@ const staticRoutes = [
       }
     ]
   },
-
   {
     path: '/report-viewer-engine/:reportId/:reportUuid',
     component: Layout,
@@ -316,16 +315,15 @@ const staticRoutes = [
     ]
   },
   {
-    path: '/report-viewer-engine/print-format/:tableName/:printFormatId/:printFormatUuid?',
+    path: '/report-viewer-engine/table/:tableName/:printFormatId/:printFormatUuid?',
     component: Layout,
     hidden: true,
     children: [
       {
         path: '', // Path vacío para que coincida con la ruta padre
-        component: () => import('@/views/ADempiere/ReportPrintFormatEngine'),
-        name: REPORT_VIEWER_PRINT_FORMAT_NAME,
+        component: () => import('@/views/ADempiere/ReportViewerEngine/ReportViewerTable.vue'),
+        name: REPORT_VIEWER_TABLE_NAME,
         meta: {
-          // title: language.t('route.printFormatViewer'),
           title: language.t('route.reportViewer'),
           type: 'print-format',
           icon: 'el-icon-printer',

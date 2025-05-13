@@ -15,15 +15,20 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
-  <div style="margin-left: 50px; margin-top: -5px; display: flex; align-items: center;">
-    <input
+  <div style="display: flex; align-items: center;">
+    <el-checkbox
       v-model="showChildren"
       :disabled="isLoadingReport"
-      type="checkbox"
-      style="height: 15px; width: 15px; margin-left: 15px; margin-right: 10px;"
+      :loading="isLoadingReport"
+      border
+      size="medium"
     >
-    <label class="select-label">{{ $t('report.reportEnginer.summary') }}</label>
+      <b>
+        {{ $t('report.reportEnginer.summary') }}
+      </b>
+    </el-checkbox>
   </div>
 </template>
 
@@ -33,6 +38,8 @@ import { defineComponent, watch, computed } from '@vue/composition-api'
 import store from '@/store'
 
 export default defineComponent({
+  name: 'ReportSummary',
+
   props: {
     isLoadingReport: {
       type: Boolean,

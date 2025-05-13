@@ -98,7 +98,7 @@ import {
   FINANCIAL_REPORT_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report/financialReport.ts'
 import {
-  REPORT_VIEWER_PRINT_FORMAT_NAME
+  REPORT_VIEWER_TABLE_NAME
 } from '@/utils/ADempiere/dictionary/report'
 
 // Utils and Helper Methods
@@ -242,8 +242,8 @@ export default defineComponent({
             instance_id
           } = reportResponse
           router.push({
-            path: `/report-viewer-engine/print-format/${currentTableName.value}/${command.id}/${command.uuid}`,
-            name: REPORT_VIEWER_PRINT_FORMAT_NAME,
+            path: `/report-viewer-engine/table/${currentTableName.value}/${command.id}/${command.uuid}`,
+            name: REPORT_VIEWER_TABLE_NAME,
             params: {
               printFormatId: command.id,
               printFormatUuid: command.uuid,

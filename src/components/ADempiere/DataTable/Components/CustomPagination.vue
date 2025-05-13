@@ -32,7 +32,10 @@
       >
         <span class="selections-number">
           <span style="padding-top: 3px;">
-            {{ currentIndex + ' / ' + recordCount }}
+            <template v-if="!isEmptyValue(currentIndex) && currentIndex > 0">
+              {{ currentIndex + ' / ' }}
+            </template>
+            {{ recordCount }}
           </span>
           <span :class="isMobile ? 'is-pagination-content-panel-mobile' : 'is-pagination-content-panel'">
             <span v-show="isShowedSelected">
@@ -171,16 +174,24 @@ export default defineComponent({
 
     const disableNextRecord = computed(() => {
       const recordUuid = store.getters.getUuidOfContainer(containerUuid)
-      const posicionIndex = recordsWithFilter.value.findIndex(record => record.UUID === recordUuid)
-      if (posicionIndex > 0) return false
+      const posicionIndex = recordsWithFilter.value.findIndex(record => {
+        return record.UUID === recordUuid
+      })
+      if (posicionIndex > 0) {
+        return false
+      }
       return true
     })
 
     const disablePreviousRecord = computed(() => {
       const recordUuid = store.getters.getUuidOfContainer(containerUuid)
-      const posicionIndex = recordsWithFilter.value.findIndex(record => record.UUID === recordUuid)
+      const posicionIndex = recordsWithFilter.value.findIndex(record => {
+        return record.UUID === recordUuid
+      })
       const maxRecord = recordsWithFilter.value.length - 1
-      if (posicionIndex < maxRecord) return false
+      if (posicionIndex < maxRecord) {
+        return false
+      }
       return true
     })
 
@@ -192,7 +203,9 @@ export default defineComponent({
     })
 
     const currentIndex = computed(() => {
-      if (props.isEmptyIndex) return ''
+      if (props.isEmptyIndex) {
+        return -1
+      }
       if (!isEmptyValue(props.rowIndex) || !isEmptyValue(props.rowUid)) {
         return indexRowByPage({
           indexRow: props.rowIndex,
@@ -206,7 +219,9 @@ export default defineComponent({
         return props.selection
       }
       const recordUuid = store.getters.getUuidOfContainer(containerUuid)
-      const index = records.findIndex(row => row.UUID === recordUuid)
+      const index = records.findIndex(row => {
+        return row.UUID === recordUuid
+      })
       return indexRowByPage({
         indexRow: index,
         pageNumber: currentPageNumber.value,

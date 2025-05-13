@@ -51,11 +51,12 @@
       :title="$t('report.reportSettings')"
       :size="isMobile ? '100%' : '75%'"
     >
-      <options-report
+      <options-report-viewer
         :container-uuid="storedReportOutput.containerUuid"
         :container-manager="containerManager"
         :report-output="storedReportOutput"
         :is-show-title="false"
+        :is-loading-report="isLoadingReport"
       />
     </el-drawer>
     <el-button
@@ -91,7 +92,7 @@ import FileRender from '@/components/ADempiere/FileRender/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import mixinReport from '@/views/ADempiere/Report/mixinReport.js'
 import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
-import OptionsReport from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
+import OptionsReportViewer from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
 import ReportPanel from '@/components/ADempiere/ReportManager/reportPanel.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 
@@ -110,7 +111,7 @@ export default defineComponent({
     ActionMenu,
     ModalDialog,
     TitleAndHelp,
-    OptionsReport,
+    OptionsReportViewer,
     ReportPanel
   },
 
@@ -163,6 +164,11 @@ export default defineComponent({
         containerUuid: reportUuid
       })
     })
+
+    const isLoadingReport = computed(() => {
+      return store.getters.getReportIsLoading
+    })
+
     function displayReport(reportOutput) {
       if (root.$route.params.isPos) {
         isLoading.value = true
@@ -298,6 +304,7 @@ export default defineComponent({
       containerManager,
       storedReportDefinition,
       containerUuid,
+      isLoadingReport,
       // Methods
       handleOpen,
       handleClose,

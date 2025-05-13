@@ -23,6 +23,7 @@
     <el-select
       v-model="printFormatValue"
       :disabled="isLoadingReport"
+      :loading="isLoadingReport"
       style="display: contents;"
       size="mini"
       @change="runReport()"
@@ -65,10 +66,6 @@ export default defineComponent({
   props: {
     containerUuid: {
       type: [String, Number],
-      required: true
-    },
-    containerManager: {
-      type: Object,
       required: true
     },
     reportOutput: {
