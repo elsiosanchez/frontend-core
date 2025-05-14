@@ -195,7 +195,7 @@ export default defineComponent({
     })
 
     const confirmDisableTitle = computed(() => {
-      let title = language.t('window.disabledSelectedRecord')
+      let title = language.t('window.disabledRecord')
       if (tabAttributes.value.isShowedTableRecords) {
         if (!isEmptyValue(recordsListToDelete.value) && recordsListToDelete.value.length > 1) {
           title = language.t('window.disabledSelectedRecords')

@@ -413,11 +413,10 @@ const windowManager = {
           })
         }
         // page size
-        const storedSize = getters.getTabPageSize({
-          containerUuid
-        })
-        if (isEmptyValue(pageSize) && !isEmptyValue(storedSize)) {
-          pageSize = storedSize
+        if (isEmptyValue(pageSize)) {
+          pageSize = getters.getTabPageSize({
+            containerUuid
+          })
         }
         if (isEmptyValue(sortBy)) {
           const storeSortBy = getters.getTabSortBy({
@@ -476,7 +475,7 @@ const windowManager = {
         let pageToken = generatePageToken({
           pageNumber
         })
-        if (!isEmptyValue(searchValue)) {
+        if (!isEmptyValue(pageToken)) {
           pageToken = ''
         }
         if (contextAttributesList[link_column_name] < 0) {
