@@ -45,11 +45,11 @@ import {
 } from '@/utils/ADempiere/dictionary/window'
 import {
   // record
-  createNewRecord,
+  // createNewRecord,
   refreshRecord,
   refreshRecords,
-  deleteRecord,
-  undoChange,
+  // deleteRecord,
+  // undoChange,
   exportCurrentRecord,
   // dictionary
   openDocumentAction,
@@ -150,8 +150,8 @@ export default {
     }
     const actionsList = []
 
-    actionsList.push(createNewRecord)
-    actionsList.push(undoChange)
+    // actionsList.push(createNewRecord)
+    // actionsList.push(undoChange)
 
     if (!isEmptyValue(tabDefinition.processes)) {
       let relatedColumns = []
@@ -642,8 +642,8 @@ export default {
       })
     }
 
-    actionsList.push(deleteRecord)
-    actionsList.push(refreshRecords)
+    // actionsList.push(deleteRecord)
+    // actionsList.push(refreshRecords)
     const { sequenceTabsList } = tabDefinition
 
     if (!isEmptyValue(sequenceTabsList)) {
