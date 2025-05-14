@@ -20,7 +20,7 @@
   <span>
     <!-- Show cell label -->
     <el-dropdown
-      v-if="!isEmptyValue(attributes.column_name)"
+      v-if="isSearchZoom"
       :style="styleFont(attributes)"
       trigger="click"
       @visible-change="loadZoom"
@@ -37,7 +37,7 @@
       </el-dropdown>
 
       <span v-else :class="'el-dropdown-link ' + cellStyle(attributes, rowData)">
-        {{ displayLabel(attributes, rowData) }}
+        {{ displayedValue }}
       </span>
       <el-dropdown-menu
         v-if="isLoaded"
@@ -57,14 +57,14 @@
           <i class="el-icon-zoom-in" style="font-weight: bolder;" />
           <b>
             {{ $t('page.processActivity.zoomIn') }}
-            {{ ' - ' + zoom.name + ' ( ' + displayLabel(attributes, rowData) + ' )' }}
+            {{ ' - ' + zoom.name + ' ( ' + displayedValue + ' )' }}
           </b>
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
 
     <span v-else>
-      {{ displayLabel(attributes, rowData) }}
+      {{ displayedValue }}
     </span>
 
     <!-- Show popover only if the row is selected and is parent -->
@@ -93,6 +93,7 @@ import {
 
 // Constants
 import { COLUMNNAME_Record_ID } from '@/utils/ADempiere/constants/systemColumns'
+import { ID } from '@/utils/ADempiere/references'
 
 // Components and Mixins
 import InfoReport from '@/components/ADempiere/ReportManager/infoReport.vue'
@@ -102,7 +103,7 @@ import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { formatField } from '@/utils/ADempiere/valueFormat.js'
-import { isNumberField } from '@/utils/ADempiere/references'
+import { isLookup, isNumberField } from '@/utils/ADempiere/references'
 
 // API Request Methods
 import { listZoomWindowsRequest } from '@/api/ADempiere/fields/zoom.js'
@@ -169,22 +170,65 @@ export default defineComponent({
       }
     })
 
+    const isSearchZoom = computed(() => {
+      if (isEmptyValue(props.attributes)) {
+        return false
+      }
+      if (!(isLookup(props.attributes.display_type) || props.attributes.display_type === ID.id)) {
+        return false
+      }
+      if (isEmptyValue(props.tableName)) {
+        return false
+      }
+      // TODO: Validate RECORD_ID
+      if (isEmptyValue(props.attributes.column_name)) {
+        return false
+      }
+      return true
+    })
+
+    const displayedValue = computed(() => {
+      if (props.attributes.is_encrypted) {
+        return '••••••••••••••••••'
+      }
+      const { code, column_name, display_type } = props.attributes
+      const cellData = props.rowData.cells[code]
+      if (isEmptyValue(cellData)) {
+        return
+      }
+      const { datePattern } = store.getters['getCurrentLanguageDefinition']
+      const precision = store.getters['user/getCurrencyPrecision'].standard_precision
+      const { display_value, value: currentValue } = cellData
+      const currentDisplayValue = formatField({
+        value: currentValue,
+        displayedValue: display_value,
+        displayType: display_type,
+        columnName: column_name,
+        precision,
+        optionalFormat: datePattern
+      })
+      // if (props.attributes.is_key) {
+      //   return `<${currentValue}> - ${currentDisplayValue}`
+      // }
+      return currentDisplayValue
+    })
+
     // Methods
 
-    /**
-     * Should Hide Name
-     * (Function to determine if cell should be hidden)
-     * @param {Object} row
-     */
-    function shouldHideName(row) {
-      if (row.is_parent && row.isTopLevel) {
-        return true
-      }
-      if (!row.is_parent) {
-        return true
-      }
-      return false
-    }
+    // /**
+    //  * Should Hide Name
+    //  * (Function to determine if cell should be hidden)
+    //  * @param {Object} row
+    //  */
+    // function shouldHideName(row) {
+    //   if (row.is_parent && row.isTopLevel) {
+    //     return true
+    //   }
+    //   if (!row.is_parent) {
+    //     return true
+    //   }
+    //   return false
+    // }
 
     function styleFont(font) {
       let fontStyle = ''
@@ -225,34 +269,6 @@ export default defineComponent({
         }
       }
       return ''
-    }
-
-    /**
-     * Display Label
-     * (Function to display the cell label)
-     * @param {Object} field
-     * @param {Object} row
-     */
-    function displayLabel(field, row) {
-      if (isEmptyValue(row.cells)) {
-        return
-      }
-      const { code, column_name, display_type } = field
-      const cellData = row.cells[code]
-      if (isEmptyValue(cellData)) {
-        return
-      }
-      const { datePattern } = store.getters['getCurrentLanguageDefinition']
-      const precision = store.getters['user/getCurrencyPrecision'].standard_precision
-      const { display_value, value: currentValue } = cellData
-      return formatField({
-        value: currentValue,
-        displayedValue: display_value,
-        displayType: display_type,
-        columnName: column_name,
-        precision,
-        optionalFormat: datePattern
-      })
     }
 
     function loadZoom(show) {
@@ -364,13 +380,14 @@ export default defineComponent({
       // Ref
       isLoaded,
       // Computed
+      isSearchZoom,
+      displayedValue,
       show,
       // Métodos
       loadZoom,
       cellStyle,
-      displayLabel,
       zoomInWindow,
-      shouldHideName,
+      // shouldHideName,
       styleFont,
       newZoom,
       searchZoom
