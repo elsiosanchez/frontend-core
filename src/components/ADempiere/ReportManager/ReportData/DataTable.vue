@@ -161,10 +161,6 @@ export default defineComponent({
       return store.getters.getIsSummary
     })
 
-    const recordData = computed(() => {
-      return store.getters.getReportOutput(props.instanceUuid)
-    })
-
     const currentPageSize = computed(() => {
       return parseInt(props.reportOutput.pageSize, 10)
     })
@@ -231,7 +227,7 @@ export default defineComponent({
     }
 
     function getRowClassName({ row, rowIndex }) {
-      const parent = this.findParent(row)
+      const parent = findParent(row)
       if (parent && parent.children[parent.children.length - 1] === row) {
         return 'last-child-row'
       }
@@ -244,7 +240,7 @@ export default defineComponent({
      * @returns {Object|null} The parent of the row or null if not found.
      */
     function findParent(row) {
-      const stack = [...this.dataList]
+      const stack = [...dataList.value]
 
       while (stack.length) {
         const current = stack.pop()
@@ -293,28 +289,29 @@ export default defineComponent({
       })
     }
 
+    function recursiveSum(cells, columnCode) {
+      let sum = 0
+      cells.forEach(e => {
+        const dataCell = e.cells[columnCode]
+        if (!isEmptyValue(dataCell) && dataCell.sum_value) {
+          const value = dataCell?.value?.value
+          if (!isEmptyValue(value) && parseFloat(value) !== 0) {
+            sum += parseFloat(value)
+          }
+        }
+        if (e.children && e.children.length > 0) {
+          sum += recursiveSum(e.children, columnCode)
+        }
+      })
+      return sum
+    }
+
     function getSummaries(param) {
       if (isEmptyValue(param)) {
         return []
       }
       const { data } = param
       const sums = []
-      function recursiveSum(cells, columnCode) {
-        let sum = 0
-        cells.forEach(e => {
-          const dataCell = e.cells[columnCode]
-          if (!isEmptyValue(dataCell) && dataCell.sum_value) {
-            const value = dataCell?.value?.value
-            if (!isEmptyValue(value) && parseFloat(value) !== 0) {
-              sum += parseFloat(value)
-            }
-          }
-          if (e.children && e.children.length > 0) {
-            sum += recursiveSum(e.children, columnCode)
-          }
-        })
-        return sum
-      }
       columns.value.forEach((column, index) => {
         if (index === 0) {
           sums[index] = ''
@@ -430,7 +427,6 @@ export default defineComponent({
       columns,
       dataList,
       expanded,
-      recordData,
       isLoadingReport,
       currentPageSize,
       currentPageNumber,

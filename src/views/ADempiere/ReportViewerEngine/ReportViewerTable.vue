@@ -122,7 +122,7 @@ export default defineComponent({
     })
 
     const storedReportOutput = computed(() => {
-      return store.getters.getReportOutput(printFormatUuid)
+      return store.getters.getReportOutput(tableName)
     })
 
     const name = computed(() => {
@@ -149,7 +149,7 @@ export default defineComponent({
 
     const isShowPanelConfig = computed(() => {
       return store.getters.getShowPanelConfig({
-        containerUuid: props.containerUuid
+        containerUuid: containerUuid.value
       })
     })
 
@@ -179,7 +179,7 @@ export default defineComponent({
 
     function showPanelConfigReport(value) {
       store.commit('setShowPanelConfig', {
-        containerUuid: props.containerUuid,
+        containerUuid: containerUuid.value,
         value
       })
     }
@@ -192,6 +192,7 @@ export default defineComponent({
 
     return {
       containerUuid,
+      tableName,
       printFormatId,
       printFormatUuid,
       isLoading,
@@ -208,8 +209,7 @@ export default defineComponent({
       isLoadingReport,
       // Methods
       handleOpen,
-      handleClose,
-      showPanelConfigReport
+      handleClose
     }
   }
 })
