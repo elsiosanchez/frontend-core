@@ -319,7 +319,8 @@ export default defineComponent({
       pageNumber,
       pageSize,
       closeList,
-      setValues
+      setValues,
+      hangleRowChange
     } = useProduct({
       uuidForm: props.uuidForm,
       parentUuid: props.metadata.parentUuid,
@@ -352,6 +353,7 @@ export default defineComponent({
 
     function handleCurrentChange(newCurrentRow, oldCurrentRow) {
       if (!isEmptyValue(newCurrentRow)) {
+        hangleRowChange(newCurrentRow)
         if (newCurrentRow.is_active === false || newCurrentRow.IsActive === false) {
           return
         }
@@ -412,6 +414,7 @@ export default defineComponent({
       pageSize,
       recordsList,
       //
+      hangleRowChange,
       convertBooleanToTranslationLang,
       formatQuantity,
       handleCurrentChange,

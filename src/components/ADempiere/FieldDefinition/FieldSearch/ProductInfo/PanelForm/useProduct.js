@@ -155,6 +155,10 @@ export default ({
     })
   }
 
+  function hangleRowChange(row) {
+    currentRow.value = row
+  }
+
   function setValues(recordRow) {
     const { columnName, elementName, isSameColumnElement } = fieldAttributes
     const { uuid, id } = recordRow
@@ -304,6 +308,7 @@ export default ({
     generateDisplayedValue,
     keyAction,
     setValues,
+    hangleRowChange,
     loadRecordsList
   }
 }
