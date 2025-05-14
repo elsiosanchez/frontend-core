@@ -119,16 +119,17 @@ export function generateReport({
 export function getView({
   reportType,
   filters,
-  sortBy,
-  pageSize,
-  pageToken,
   printFormatId,
   reportViewId,
   isSummary,
   instanceId,
   // window
   tableName,
-  recordId
+  recordId,
+  // limits
+  pageSize,
+  pageToken,
+  sortBy
 }) {
   return request({
     url: `/report-engine/views/${printFormatId}`,
@@ -136,15 +137,16 @@ export function getView({
     params: {
       report_type: reportType,
       filters,
-      sort_by: sortBy,
-      page_size: pageSize,
-      page_token: pageToken,
       print_format_id: printFormatId,
       report_view_id: reportViewId,
       is_summary: isSummary,
       table_name: tableName,
       record_id: recordId,
-      instance_id: instanceId
+      instance_id: instanceId,
+      page_size: pageSize,
+      page_token: pageToken,
+      sort_by: sortBy
+
     }
   })
 }

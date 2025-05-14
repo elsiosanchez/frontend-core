@@ -109,9 +109,12 @@ export default defineComponent({
     // Ref
     const isPreview = ref(false)
     const textMarkdown = ref(props.text)
+
     // Computed
     const ListToolbar = computed(() => {
-      if (props.isToolbars) return props.additionalToolbars
+      if (props.isToolbars) {
+        return props.additionalToolbars
+      }
       return {}
     })
     // Methods

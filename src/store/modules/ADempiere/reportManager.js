@@ -48,6 +48,7 @@ import {
   REPORT_VIEWER_NAME,
   REPORT_VIEWER_ENGINE_NAME
 } from '@/utils/ADempiere/dictionary/report'
+import { ROWS_OF_RECORDS_BY_PAGE_HIGH } from '@/utils/ADempiere/tableUtils'
 
 // Utils and Helper Methods
 import { getToken } from '@/utils/auth'
@@ -64,6 +65,7 @@ import {
   isLegacyPrintFormat,
   generateRecordsList
 } from '@/utils/ADempiere/dictionary/report'
+import { generatePageToken } from '@/utils/ADempiere/dataUtils'
 
 const initState = {
   printFormat: {},
@@ -76,7 +78,7 @@ const initState = {
   reportsOutput: {},
   reportsGenerated: {},
   isShowPanelConfig: {},
-  pageSize: 100,
+  pageSize: ROWS_OF_RECORDS_BY_PAGE_HIGH,
   isLoading: false,
   showDialog: false,
   isSummary: false,
@@ -174,14 +176,51 @@ const reportManager = {
     setReportOutput(state, reportOutput) {
       Vue.set(state.reportsOutput, reportOutput.instanceUuid, reportOutput)
     },
-    setReportGenerated(state, { containerUuid, parametersList, reportType, printFormatId, reportViewId, isSummary }) {
+    setReportGenerated(state, {
+      containerUuid,
+      tableName,
+      recordId,
+      parametersList,
+      reportType,
+      printFormatId,
+      reportViewId,
+      isSummary,
+      pageNumber,
+      pageSize
+    }) {
       Vue.set(state.reportsGenerated, containerUuid, {
         containerUuid,
+        tableName,
+        recordId,
         parametersList,
         reportType,
         printFormatId,
         reportViewId,
-        isSummary
+        isSummary,
+        pageNumber,
+        pageSize
+      })
+    },
+    setReportGeneratedTableName(state, { containerUuid, tableName }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        tableName
+      })
+    },
+    setReportGeneratedRecordId(state, { containerUuid, recordId }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        recordId
       })
     },
     setReportGeneratedParametersList(state, { containerUuid, parametersList }) {
@@ -237,6 +276,28 @@ const reportManager = {
         ...currentValue,
         containerUuid,
         isSummary
+      })
+    },
+    setReportGeneratedPageNumber(state, { containerUuid, pageNumber }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        pageNumber
+      })
+    },
+    setReportGeneratedPageSize(state, { containerUuid, pageSize }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        pageSize
       })
     },
 
@@ -898,24 +959,39 @@ const reportManager = {
     },
 
     printViewByTable({ commit, getters }, {
-      printFormatId,
-      reportViewId,
       tableName,
       recordId,
+      filters,
+      printFormatId,
+      reportViewId,
       isSummary,
-      filters
+      pageNumber = 1,
+      pageSize = ROWS_OF_RECORDS_BY_PAGE_HIGH
     }) {
       return new Promise((resolve, reject) => {
+        commit('setReportIsLoading', true)
+        showNotification({
+          title: language.t('notifications.processing'),
+          // message: name,
+          // summary: description,
+          type: 'info'
+        })
+        let pageToken = generatePageToken({
+          pageNumber
+        })
+        if (!isEmptyValue(pageToken)) {
+          pageToken = undefined
+        }
         getView({
+          tableName,
+          recordId,
+          filters,
           printFormatId,
           reportViewId,
           isSummary,
-          tableName,
-          recordId,
-          filters
           // instanceId,
-          // pageSize,
-          // pageToken,
+          pageSize,
+          pageToken
           // sortBy
         })
           .then(reportResponse => {
@@ -937,18 +1013,24 @@ const reportManager = {
               recordsList,
               isError: false,
               instanceId: tableName,
-              instanceUuid: tableName
-              // pageSize,
-              // pageToken
+              instanceUuid: tableName,
+              pageNumber,
+              pageSize,
+              pageToken
             }
 
             commit('setReportOutput', reportOutput)
             commit('setReportGenerated', {
               containerUuid: tableName,
+              tableName,
+              recordId,
               parametersList: filters,
               printFormatId: print_format_id,
               reportViewId: report_view_id,
-              isSummary
+              isSummary,
+              pageNumber,
+              pageSize,
+              pageToken
             })
             showNotification({
               title: language.t('notifications.succesful'),
@@ -983,7 +1065,7 @@ const reportManager = {
       reportType,
       filters,
       sortBy,
-      pageSize = 100,
+      pageSize = ROWS_OF_RECORDS_BY_PAGE_HIGH,
       pageToken = 1,
       containerUuid,
       printFormatId,
@@ -1408,12 +1490,22 @@ const reportManager = {
     getReportGenerated: (state) => (containerUuid) => {
       return state.reportsGenerated[containerUuid] || {
         containerUuid,
+        tableName: undefined,
+        recordId: -1,
         parametersList: [],
         reportType: DEFAULT_REPORT_TYPE,
         printFormatId: 0,
         reportViewId: 0,
-        isSummary: false
+        isSummary: false,
+        pageNumber: 1,
+        pageSise: ROWS_OF_RECORDS_BY_PAGE_HIGH
       }
+    },
+    getReportGeneratedTableName: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).tableName
+    },
+    getReportGeneratedRecordId: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).recordId
     },
     getReportGeneratedParametersList: (state, getters) => (containerUuid) => {
       return getters.getReportGenerated(containerUuid).parametersList

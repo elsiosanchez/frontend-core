@@ -26,9 +26,10 @@
             :name="name"
             :help="help"
           />
-          <report-panel
+
+          <report-panel-table
             :instance-uuid="storedReportOutput.instanceUuid"
-            :container-manager="containerManager"
+            :container-manager="containerManagerReportViwer"
             :report-output="storedReportOutput"
             :container-uuid="containerUuid"
           />
@@ -36,13 +37,12 @@
       </el-col>
     </el-row>
 
-    <modal-dialog
-      :container-manager="containerManager"
+    <!-- <modal-dialog
+      :container-manager="containerManagerReportViwer"
       :container-uuid="containerUuid"
       :report-output="storedReportOutput"
-    />
+    /> -->
 
-    <!--
     <el-drawer
       :visible.sync="isShowPanelConfig"
       :with-header="true"
@@ -53,8 +53,8 @@
       :size="isMobile ? '100%' : '75%'"
     >
       <options-report-viewer
-        :container-uuid="storedReportOutput.containerUuid"
-        :container-manager="containerManager"
+        :container-uuid="containerUuid"
+        :container-manager="containerManagerReportViwer"
         :report-output="storedReportOutput"
         :is-show-title="false"
         :is-loading-report="isLoadingReport"
@@ -72,7 +72,6 @@
       "
       @click="handleOpen()"
     />
-    -->
   </div>
 
   <loading-view
@@ -82,17 +81,20 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
+import {
+  defineComponent, computed, nextTick, ref, onMounted
+} from '@vue/composition-api'
 
 import lang from '@/lang'
+import router from '@/router'
 import store from '@/store'
 
 // Components and Mixins
 import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
-import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
-import OptionsReportViewer from '@/components/ADempiere/ReportManager/SetupReport/optionsReportViewer.vue'
-import ReportPanel from '@/components/ADempiere/ReportManager/reportPanel.vue'
+// import ModalDialog from '@/components/ADempiere/ModalDialog/index.vue'
+import OptionsReportViewer from '@/components/ADempiere/ReportManager/SetupReportTable/optionsReportViewer.vue'
+import ReportPanelTable from '@/components/ADempiere/ReportManager/reportPanelTable.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 
 // Utils and Helper Methods
@@ -100,14 +102,14 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { containerManager } from '@/utils/ADempiere/dictionary/report'
 
 export default defineComponent({
-  name: 'ReportPrintFormatEngine',
+  name: 'ReportViewerTable',
 
   components: {
     ActionMenu,
     LoadingView,
-    ModalDialog,
+    // ModalDialog,
     OptionsReportViewer,
-    ReportPanel,
+    ReportPanelTable,
     TitleAndHelp
   },
 
@@ -119,6 +121,12 @@ export default defineComponent({
 
     const containerUuid = computed(() => {
       return tableName.toString()
+    })
+
+    const storedPanelReport = computed(() => {
+      return store.getters.getModalDialogManager({
+        containerUuid: containerUuid.value
+      })
     })
 
     const storedReportOutput = computed(() => {
@@ -157,6 +165,60 @@ export default defineComponent({
       return store.getters.getReportIsLoading
     })
 
+    const containerManagerReportViwer = computed(() => {
+      const modalDialogStored = storedPanelReport.value
+      if (!isEmptyValue(modalDialogStored) && !isEmptyValue(modalDialogStored.containerManager)) {
+        return {
+          ...containerManager,
+          ...modalDialogStored.containerManager,
+          generateReport
+        }
+      }
+      return {
+        ...containerManager,
+        generateReport
+      }
+    })
+
+    function generateReport() {
+      const reportGenerated = store.getters.getReportGenerated(containerUuid.value)
+
+      store.dispatch('printViewByTable', {
+        tableName: containerUuid.value || root.$route.params.tableName,
+        recordId: reportGenerated.recordId,
+        // filters: reportOutputParams,
+        printFormatId: reportGenerated.printFormatId,
+        // instanceUuid: defaultParams.instance_id,
+        reportViewId: reportGenerated.reportViewId,
+        isSummary: reportGenerated.isSummary,
+        pageNumber: reportGenerated.pageNumber,
+        pageSize: reportGenerated.pageSize
+      })
+        .then(response => {
+          const findTagViwer = store.getters.visitedViews.find(tag => {
+            if (isEmptyValue(root.$route) || isEmptyValue(root.$route.params)) {
+              return false
+            }
+            return tag.instanceUuid === root.$route.params.instanceUuid
+          })
+          if (!isEmptyValue(findTagViwer)) {
+            store.dispatch('tagsView/delCachedView', findTagViwer)
+              .then(() => {
+                const { fullPath } = findTagViwer
+                nextTick(() => {
+                  router.replace({
+                    path: '/redirect' + fullPath
+                  })
+                })
+              })
+          }
+        })
+      store.commit('setShowPanelConfig', {
+        containerUuid: containerUuid.value,
+        value: false
+      })
+    }
+
     function displayReport(reportOutput) {
       if (!reportOutput.isError) {
         isLoading.value = true
@@ -188,8 +250,6 @@ export default defineComponent({
       displayReport(storedReportOutput.value)
     })
 
-    // store.dispatch('findListMailTemplates')
-
     return {
       containerUuid,
       tableName,
@@ -205,7 +265,7 @@ export default defineComponent({
       link,
       isMobile,
       storedReportOutput,
-      containerManager,
+      containerManagerReportViwer,
       isLoadingReport,
       // Methods
       handleOpen,

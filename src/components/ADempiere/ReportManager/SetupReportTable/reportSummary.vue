@@ -17,29 +17,19 @@
 -->
 
 <template>
-  <el-form-item
-    :label="$t('report.reportViews')"
-  >
-    <el-select
-      v-model="reportViewValue"
+  <div style="display: flex; align-items: center;">
+    <el-checkbox
+      v-model="isSummaryValue"
       :disabled="isLoadingReport"
       :loading="isLoadingReport"
-      style="display: contents;"
-      size="mini"
-      @change="generateReport()"
+      border
+      size="medium"
     >
-      <empty-option-select
-        :current-value="reportViewValue"
-        :is-allows-zero="false"
-      />
-      <el-option
-        v-for="(item, key) in reportViewsList"
-        :key="key"
-        :label="item.name"
-        :value="item.id"
-      />
-    </el-select>
-  </el-form-item>
+      <b>
+        {{ $t('report.reportEnginer.summary') }}
+      </b>
+    </el-checkbox>
+  </div>
 </template>
 
 <script>
@@ -47,18 +37,8 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 import store from '@/store'
 
-// Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-
-// Components and Mixins
-import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
-
 export default defineComponent({
-  name: 'ReportViewsField',
-
-  components: {
-    EmptyOptionSelect
-  },
+  name: 'ReportSummary',
 
   props: {
     containerUuid: {
@@ -82,37 +62,23 @@ export default defineComponent({
       return store.getters.getReportGenerated(props.containerUuid)
     })
 
-    const reportViewValue = computed({
+    const isSummaryValue = computed({
       set(newValue) {
-        store.commit('setReportGeneratedReportViewId', {
+        store.commit('setReportGeneratedIsSummary', {
           containerUuid: props.containerUuid,
-          reportViewId: newValue
+          isSummary: newValue
         })
+        // TODO: Deprecated remove complete support
+        store.commit('setIsSummary', newValue)
       },
       get() {
-        return storedReportGenerated.value.reportViewId
+        return storedReportGenerated.value.isSummary
       }
-    })
-
-    const reportViewsList = computed(() => {
-      const optionsList = store.getters.getReportViewsList(props.containerUuid)
-      if (!isEmptyValue(optionsList)) {
-        return optionsList
-      }
-      return []
     })
 
     return {
-      reportViewValue,
-      // Computeds
-      reportViewsList
+      isSummaryValue
     }
   }
 })
 </script>
-
-<style>
-.el-form--label-top .el-form-item__label {
-  padding: 0 !important;
-}
-</style>

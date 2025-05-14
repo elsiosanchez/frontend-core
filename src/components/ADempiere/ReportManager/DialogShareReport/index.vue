@@ -203,7 +203,9 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, nextTick } from '@vue/composition-api'
+import {
+  defineComponent, computed, ref, nextTick
+} from '@vue/composition-api'
 
 import store from '@/store'
 import language from '@/lang'
@@ -595,6 +597,7 @@ export default defineComponent({
     }
 
     blankValue()
+    store.dispatch('findListMailTemplates')
 
     return {
       isCollapseComments,
@@ -617,6 +620,7 @@ export default defineComponent({
       showDialog,
       shortsKey,
       pageToken,
+      storedMailTemplatesList,
       updateContent,
       updateMardown,
       copyToClipboard,

@@ -73,20 +73,12 @@
         class="el-icon-loading"
       />
     </el-button>
-
-    <dialog-share-report-legacy
-      :table-name="currentTableName"
-      :process="process"
-      :record-id="recordId"
-      :container-uuid="containerUuid"
-    />
   </span>
 </template>
 
 <script>
 import { defineComponent, computed, ref, onMounted } from '@vue/composition-api'
 
-import language from '@/lang'
 import router from '@/router'
 import store from '@/store'
 
@@ -103,18 +95,10 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { showNotification } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
-
-// Components and Mixins
-import DialogShareReportLegacy from '@/components/ADempiere/ReportManager/DialogShareReport/DialogShareReportLegacy.vue'
 
 export default defineComponent({
   name: 'PrintFormatsButton',
-
-  components: {
-    DialogShareReportLegacy
-  },
 
   props: {
     parentUuid: {
@@ -222,13 +206,6 @@ export default defineComponent({
     }
 
     function handleStartPrintFormat(command) {
-      showNotification({
-        title: language.t('notifications.processing'),
-        message: process.name,
-        summary: process.description,
-        type: 'info'
-      })
-
       store.dispatch('printViewByTable', {
         printFormatId: command.id,
         tableName: currentTableName.value,
@@ -245,21 +222,22 @@ export default defineComponent({
             path: `/report-viewer-engine/table/${currentTableName.value}/${command.id}/${command.uuid}`,
             name: REPORT_VIEWER_TABLE_NAME,
             params: {
+              tableName: currentTableName.value,
               printFormatId: command.id,
               printFormatUuid: command.uuid,
-              // instanceUuid: instance_id,
+              instanceUuid: currentTableName.value,
               fileName: name,
+              name: name
               // menuParentUuid,
-              name: name,
-              tableName: currentTableName.value
             },
             query: {
+              tableName: currentTableName.value,
+              recordId: recordId.value,
               printFormatId: command.id,
               printFormatUuid: command.uuid,
               instanceUuid: instance_id,
               fileName: name,
-              name: name,
-              tableName: currentTableName.value
+              name: name
             }
           }, () => {})
         })
@@ -282,7 +260,6 @@ export default defineComponent({
       // Ref
       isLoading,
       // Const
-      process,
       FINANCIAL_REPORT_TABLE_NAME,
       selectionsList,
       containerUuid,
