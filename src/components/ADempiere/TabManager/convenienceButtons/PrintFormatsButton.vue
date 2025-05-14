@@ -74,7 +74,7 @@
       />
     </el-button>
 
-    <dialog-legacy
+    <dialog-share-report-legacy
       :table-name="currentTableName"
       :process="process"
       :record-id="recordId"
@@ -107,13 +107,13 @@ import { showNotification } from '@/utils/ADempiere/notification.js'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 // Components and Mixins
-import DialogLegacy from '@/components/ADempiere/ReportManager/ReportData/Dialog.vue'
+import DialogShareReportLegacy from '@/components/ADempiere/ReportManager/DialogShareReport/DialogShareReportLegacy.vue'
 
 export default defineComponent({
   name: 'PrintFormatsButton',
 
   components: {
-    DialogLegacy
+    DialogShareReportLegacy
   },
 
   props: {
@@ -229,7 +229,7 @@ export default defineComponent({
         type: 'info'
       })
 
-      store.dispatch('printViewByWindow', {
+      store.dispatch('printViewByTable', {
         printFormatId: command.id,
         tableName: currentTableName.value,
         recordId: recordId.value,

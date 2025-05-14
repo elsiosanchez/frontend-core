@@ -1,0 +1,455 @@
+<!--
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
+-->
+
+<template>
+  <el-table
+    ref="tableReportEngine"
+    v-loading="isLoadingReport"
+    class="table-report-engine"
+    :data="dataList"
+    lazy
+    show-summary
+    :summary-method="getSummaries"
+    :border="true"
+    row-key="rowUid"
+    :height="height"
+    style="width: 100%; font-size: 12px !important;"
+    :default-expand-all="false"
+    :row-class-name="tableRowClassName"
+    :tree-props="{ children: 'children' }"
+    :cell-style="getColumnStyle"
+    :cell-class-name="getRowClassName"
+    @row-click="handleRowClick"
+    @cell-contextmenu="activatePopover"
+  >
+    <el-table-column
+      v-for="(fieldAttributes, key) in columns"
+      :key="fieldAttributes.code + key"
+      :column-key="fieldAttributes.code"
+      :align="getAlignment(fieldAttributes.display_type)"
+      :fixed="fieldAttributes.is_group_column"
+      :width="widthColumn(fieldAttributes.display_type)[key]"
+    >
+      <template slot="header">
+        {{ fieldAttributes.title }}
+      </template>
+
+      <template slot-scope="scope">
+        <!-- Show cell only if it should not be hidden -->
+        <data-cells
+          :key-column="key"
+          :row-data="scope.row"
+          :data-modal="dataModal"
+          :show-details="showPopover"
+          :attributes="fieldAttributes"
+          :current-selected-row="selectedRow"
+          :table-name="reportOutput.table_name"
+          :current-selected-column="selectedColumn"
+          :container-uuid="reportOutput.containerUuid"
+        />
+      </template>
+    </el-table-column>
+  </el-table>
+</template>
+
+<script>
+import {
+  defineComponent,
+  onMounted,
+  computed,
+  nextTick,
+  watch,
+  ref
+} from '@vue/composition-api'
+
+import store from '@/store'
+
+// Components and Mixins
+import DataCells from '@/components/ADempiere/ReportManager/ReportData/DataCells.vue'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import {
+  isNumberField, isDateField, isBooleanField, isDecimalField
+} from '@/utils/ADempiere/references'
+import {
+  formatQuantity
+} from '@/utils/ADempiere/formatValue/numberFormat'
+
+export default defineComponent({
+  name: 'DataTable',
+
+  components: {
+    DataCells
+  },
+
+  props: {
+    containerManager: {
+      type: Object,
+      default: () => {}
+    },
+    instanceUuid: {
+      type: [String, Number],
+      default: 0
+    },
+    containerUuid: {
+      type: [String, Number],
+      required: true
+    },
+    reportOutput: {
+      type: Object,
+      required: false
+    }
+  },
+
+  setup(props) {
+    // Ref
+    const dataModal = ref({})
+    const showPopover = ref(false)
+    const selectedRow = ref(undefined)
+    const selectedColumn = ref(undefined)
+    const tableReportEngine = ref(undefined)
+
+    // Components
+    const storedPanelReport = computed(() => {
+      return store.getters.getModalDialogManager({
+        containerUuid: props.containerUuid
+      })
+    })
+
+    const tableHeight = computed(() => {
+      return store.getters.getIsActiateCollapse
+    })
+
+    const height = computed(() => {
+      if (store.getters.device !== 'mobile') {
+        return 'calc(100vh - 280px)'
+      }
+      return 'calc(100vh - 385px)'
+    })
+
+    const columns = computed(() => {
+      const { columns } = props.reportOutput
+      if (isEmptyValue(columns)) return []
+      return columns
+    })
+
+    const dataList = computed(() => {
+      const { recordsList } = props.reportOutput
+      if (isEmptyValue(recordsList)) {
+        return []
+      }
+      return recordsList
+    })
+
+    const expanded = computed(() => {
+      return store.getters.getIsSummary
+    })
+
+    const recordData = computed(() => {
+      return store.getters.getReportOutput(props.instanceUuid)
+    })
+
+    const currentPageSize = computed(() => {
+      return parseInt(props.reportOutput.pageSize, 10)
+    })
+
+    const isLoadingReport = computed(() => {
+      return store.getters.getReportIsLoading
+    })
+
+    const currentPageNumber = computed(() => {
+      return parseInt(props.reportOutput.pageToken, 10)
+    })
+
+    function getColumnStyle() {
+      return 'padding: 0; height: 30px; border: none; '
+    }
+
+    function handleRowClick(row) {
+      if (row.children && row.children.length > 0) {
+        // tableReportEngine.value.toggleRowExpansion(row)
+        showPopover.value = false
+      }
+    }
+
+    function activatePopover(row, column) {
+      event.preventDefault()
+      Object.values(row.cells).forEach(dataCell => {
+        if (dataCell && 'sum_value' in dataCell) {
+          selectedColumn.value = column.columnKey
+          selectedRow.value = row
+          dataModal.value = dataCell
+          showPopover.value = true
+        }
+      })
+    }
+
+    function hasChildren(children, parentLevel, parentColumnKey, parentDisplayValue) {
+      if (children.length < 1) return children
+      return children.map((child, indexChild) => {
+        const index = parentLevel + indexChild
+        let value = ''
+        if (!isEmptyValue(parentColumnKey)) {
+          value = child.cells[parentColumnKey].display_value
+        }
+        const newRow = {
+          ...child,
+          children: hasChildren(child.children, index.toString(), parentColumnKey, value),
+          level: index,
+          zoom_windows: [],
+          isLoadingZoom: false
+        }
+        if (child.is_parent && value === parentDisplayValue && !isEmptyValue(parentColumnKey)) {
+          newRow.cells[parentColumnKey].display_value = ''
+        }
+        return newRow
+      })
+    }
+
+    function tableRowClassName({ row, rowIndex }) {
+      const { children } = row
+      if (!isEmptyValue(children) || row.isTopLevel) {
+        return 'success-row'
+      }
+      return 'children-row'
+    }
+
+    function getRowClassName({ row, rowIndex }) {
+      const parent = this.findParent(row)
+      if (parent && parent.children[parent.children.length - 1] === row) {
+        return 'last-child-row'
+      }
+      return ''
+    }
+
+    /**
+     * Searches for the parent of a row in the data list.
+     * @param {Object} row The row for which the parent is searched.
+     * @returns {Object|null} The parent of the row or null if not found.
+     */
+    function findParent(row) {
+      const stack = [...this.dataList]
+
+      while (stack.length) {
+        const current = stack.pop()
+        if (current.children && current.children.includes(row)) {
+          return current
+        }
+        if (current.children) {
+          stack.push(...current.children)
+        }
+      }
+      return null
+    }
+
+    /**
+     * Expands or collapses all table rows
+     */
+    function expandedRowAll() {
+      // Auxiliary function for toggle row expansion.
+      const toggleRowExpansion = (row, expand) => {
+        tableReportEngine.value.toggleRowExpansion(row, expand)
+      }
+
+      // Recursive function to expand all rows.
+      const expandRecursively = (row) => {
+        toggleRowExpansion(row, true)
+        row.children?.forEach(expandRecursively) // Recursion to expand children.
+      }
+
+      // Recursive function to collapse all rows.
+      const collapseRecursively = (row) => {
+        // Check if the row has children and if any of them is not a parent.
+        const shouldHide = row.children?.some(child => !child.is_parent)
+
+        // Recursion to collapse children.
+        row.children?.forEach(collapseRecursively)
+
+        // Collapses the current row if it is not a parent or if any of its children is not a parent.
+        if (!row.is_parent || shouldHide) {
+          toggleRowExpansion(row, false)
+        }
+      }
+
+      // Itera sobre todas las filas y expande o colapsa según el estado de `expanded`.
+      dataList.value.forEach(row => {
+        expanded.value ? collapseRecursively(row) : expandRecursively(row)
+      })
+    }
+
+    function getSummaries(param) {
+      if (isEmptyValue(param)) {
+        return []
+      }
+      const { data } = param
+      const sums = []
+      function recursiveSum(cells, columnCode) {
+        let sum = 0
+        cells.forEach(e => {
+          const dataCell = e.cells[columnCode]
+          if (!isEmptyValue(dataCell) && dataCell.sum_value) {
+            const value = dataCell?.value?.value
+            if (!isEmptyValue(value) && parseFloat(value) !== 0) {
+              sum += parseFloat(value)
+            }
+          }
+          if (e.children && e.children.length > 0) {
+            sum += recursiveSum(e.children, columnCode)
+          }
+        })
+        return sum
+      }
+      columns.value.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = ''
+          return
+        }
+        const totalSum = recursiveSum(data, column.code)
+        if (column.is_hide_grand_total) {
+          sums[index] = ''
+          return
+        }
+        sums[index] = formatQuantity({ value: totalSum })
+      })
+      nextTick(() => {
+        highlightNegativeFooterValues()
+      })
+      return sums
+    }
+
+    function highlightNegativeFooterValues() {
+      const footerCells = document.querySelectorAll('.el-table__footer-wrapper td.el-table__cell')
+      footerCells.forEach((cell) => {
+        const num = parseFloat(cell.textContent)
+        if (!isNaN(num) && num < 0) {
+          cell.style.color = 'red'
+        }
+      })
+    }
+
+    function getAlignment(displayType) {
+      if (isNumberField(displayType)) {
+        return 'right'
+      }
+      return 'left'
+    }
+
+    function widthColumn(data) {
+      if (!isEmptyValue(columns.value)) {
+        const widths = {}
+        columns.value.forEach((column, index) => {
+          let width = 0
+          if (column.column_width > 0 && column.is_fixed_width) {
+            width = column.column_width
+          }
+          if (column.column_characters_size > 0 && !column.is_fixed_width) {
+            let fontCode = 10
+            let character = column.column_characters_size
+            if (!isEmptyValue(column.title) && column.column_characters_size < column.title.length) {
+              character = column.title.length
+            }
+            if (!isEmptyValue(column.font_code)) {
+              const number = column.font_code.replace(/[^\d]/g, '')
+              fontCode = number
+            }
+            fontCode = fontCode * 0.9
+            width = character * fontCode
+          }
+          if (width === 0) {
+            if (
+              isNumberField(data) ||
+              isDateField(data) ||
+              isBooleanField(data) ||
+              isDecimalField(data)
+            ) {
+              width = 250
+            } else {
+              width = 300
+            }
+          }
+          if (!column.is_fixed_width && column.column_width > 0 && column.column_width > width) {
+            width = column.column_width
+          }
+          widths[index] = width + 10
+        })
+        return widths
+      }
+    }
+
+    /**
+     * Watch - watch works directly on a ref
+     * @param newValue - New Assessed Property value
+     * @param oldValue - Old Assessed Property value
+     */
+    watch(dataList, () => {
+      nextTick(() => {
+        expandedRowAll()
+      })
+    })
+
+    watch(expanded, () => {
+      nextTick(() => {
+        expandedRowAll()
+      })
+    })
+
+    /**
+     * On Mounted
+     */
+    onMounted(() => {
+      nextTick(() => {
+        expandedRowAll()
+      })
+    })
+
+    return {
+      // Refs
+      dataModal,
+      showPopover,
+      selectedRow,
+      selectedColumn,
+      tableReportEngine,
+      // Components
+      height,
+      columns,
+      dataList,
+      expanded,
+      recordData,
+      isLoadingReport,
+      currentPageSize,
+      currentPageNumber,
+      tableHeight,
+      storedPanelReport,
+      // Methods
+      getColumnStyle,
+      widthColumn,
+      findParent,
+      hasChildren,
+      getAlignment,
+      handleRowClick,
+      expandedRowAll,
+      activatePopover,
+      getRowClassName,
+      tableRowClassName,
+      getSummaries,
+      highlightNegativeFooterValues
+    }
+  }
+})
+</script>

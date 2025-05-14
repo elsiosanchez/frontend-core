@@ -184,6 +184,62 @@ const reportManager = {
         isSummary
       })
     },
+    setReportGeneratedParametersList(state, { containerUuid, parametersList }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        parametersList
+      })
+    },
+    setReportGeneratedReportType(state, { containerUuid, reportType }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        reportType
+      })
+    },
+    setReportGeneratedPrintFormatId(state, { containerUuid, printFormatId }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        printFormatId
+      })
+    },
+    setReportGeneratedReportViewId(state, { containerUuid, reportViewId }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        reportViewId
+      })
+    },
+    setReportGeneratedIsSummary(state, { containerUuid, isSummary }) {
+      let currentValue = {}
+      if (!isEmptyValue(state.reportsGenerated[containerUuid])) {
+        currentValue = state.reportsGenerated[containerUuid]
+      }
+      Vue.set(state.reportsGenerated, containerUuid, {
+        ...currentValue,
+        containerUuid,
+        isSummary
+      })
+    },
+
     resetStateReportManager(state) {
       state = initState
     },
@@ -841,7 +897,7 @@ const reportManager = {
       })
     },
 
-    printViewByWindow({ commit, getters }, {
+    printViewByTable({ commit, getters }, {
       printFormatId,
       reportViewId,
       tableName,
@@ -863,23 +919,37 @@ const reportManager = {
           // sortBy
         })
           .then(reportResponse => {
-            const { rows } = reportResponse
+            const {
+              name,
+              print_format_id,
+              report_view_id,
+              rows
+            } = reportResponse
             const recordsList = generateRecordsList(rows)
 
-            const printFormat = getters.getPrintFormat(printFormatId)
+            // const printFormat = getters.getPrintFormat(printFormatId)
 
             const reportOutput = {
               ...reportResponse,
               containerUuid: tableName,
+              parametersList: filters,
               rowCells: rows,
               recordsList,
-              instanceId: printFormat.id,
-              instanceUuid: printFormat.uuid
+              isError: false,
+              instanceId: tableName,
+              instanceUuid: tableName
               // pageSize,
               // pageToken
             }
 
             commit('setReportOutput', reportOutput)
+            commit('setReportGenerated', {
+              containerUuid: tableName,
+              parametersList: filters,
+              printFormatId: print_format_id,
+              reportViewId: report_view_id,
+              isSummary
+            })
             showNotification({
               title: language.t('notifications.succesful'),
               message: name,
@@ -1334,9 +1404,33 @@ const reportManager = {
     getIsSummary: (state) => {
       return state.isSummary
     },
+
     getReportGenerated: (state) => (containerUuid) => {
-      return state.reportsGenerated[containerUuid]
+      return state.reportsGenerated[containerUuid] || {
+        containerUuid,
+        parametersList: [],
+        reportType: DEFAULT_REPORT_TYPE,
+        printFormatId: 0,
+        reportViewId: 0,
+        isSummary: false
+      }
     },
+    getReportGeneratedParametersList: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).parametersList
+    },
+    getReportGeneratedReportType: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).reportType
+    },
+    getReportGeneratedPrintFormatId: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).printFormatId
+    },
+    getReportGeneratedReportViewId: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).reportViewId
+    },
+    getReportGeneratedIsSummary: (state, getters) => (containerUuid) => {
+      return getters.getReportGenerated(containerUuid).isSummary
+    },
+
     getReportShowDialog: (state) => {
       return state.showDialog
     },
