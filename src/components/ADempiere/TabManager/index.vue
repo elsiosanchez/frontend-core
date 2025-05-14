@@ -894,6 +894,7 @@ export default defineComponent({
       showIsNote.value = false
       if (
         isEmptyValue(currentTabTableName.value) ||
+        isEmptyValue(currentRecordUuid.value) ||
         isEmptyValue(currentRecordId.value)
       ) {
         return
@@ -921,7 +922,8 @@ export default defineComponent({
     const chatAvailable = () => {
       if (
         isEmptyValue(currentTabTableName.value) ||
-        isEmptyValue(currentRecordUuid.value)
+        isEmptyValue(currentRecordUuid.value) ||
+        isEmptyValue(currentRecordId.value)
       ) {
         return
       }
@@ -944,9 +946,11 @@ export default defineComponent({
      */
     const attachmentAvailable = () => {
       showAttachmentAvailable.value = false
-      if (isEmptyValue(currentTabTableName.value) ||
-        (isEmptyValue(currentRecordUuid.value) &&
-        (isEmptyValue(currentRecordId.value) || currentRecordId.value <= 0))) {
+      if (
+        isEmptyValue(currentTabTableName.value) ||
+        isEmptyValue(currentRecordUuid.value) ||
+        isEmptyValue(currentRecordId.value)
+      ) {
         return
       }
       countAttachment.value = 0
