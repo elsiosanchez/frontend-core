@@ -45,13 +45,11 @@
 <script>
 import { defineComponent, computed, watch } from '@vue/composition-api'
 
-import router from '@/router'
 import store from '@/store'
-import lang from '@/lang'
+import router from '@/router'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { showNotification } from '@/utils/ADempiere/notification'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
@@ -128,13 +126,6 @@ export default defineComponent({
       const reportOutputParams = store.getters.getReportParameters({
         containerUuid: props.containerUuid,
         fieldsList: reportDefinition.fieldsList
-      })
-      const { name, description } = store.getters.getReportOutput(root.$route.params.reportId)
-      showNotification({
-        title: lang.t('notifications.processing'),
-        message: name,
-        summary: description,
-        type: 'info'
       })
       let url = 'buildReport'
       if (reportDefinition.is_jasper_report) {

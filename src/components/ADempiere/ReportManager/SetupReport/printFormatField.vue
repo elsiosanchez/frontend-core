@@ -47,14 +47,12 @@ import { defineComponent, computed, watch } from '@vue/composition-api'
 
 import router from '@/router'
 import store from '@/store'
-import lang from '@/lang'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { showNotification } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
   name: 'PrintFormatField',
@@ -127,13 +125,7 @@ export default defineComponent({
         containerUuid: props.containerUuid,
         fieldsList: reportDefinition.fieldsList
       })
-      const { name, description } = store.getters.getReportOutput(root.$route.params.reportId)
-      showNotification({
-        title: lang.t('notifications.processing'),
-        message: name,
-        summary: description,
-        type: 'info'
-      })
+
       let url = 'buildReport'
       if (reportDefinition.is_jasper_report) {
         url = 'runReport'
