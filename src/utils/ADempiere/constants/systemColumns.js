@@ -54,6 +54,8 @@ export const COLUMNNAME_DocStatus = 'DocStatus'
 
 export const COLUMNNAME_DocAction = 'DocAction'
 
+export const COLUMNNAME_Posted = 'Posted'
+
 export const COLUMNNAME_StdPrecision = 'StdPrecision'
 
 /**

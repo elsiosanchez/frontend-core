@@ -43,7 +43,7 @@ const initState = {
   isDisplayDocumentInfo: false,
   isDisplaySourceInfo: false,
   isDisplayQuantity: false,
-  isShowAccoutingFacts: false
+  isShowAccoutingFacts: false // TODO: Add support by Table Name and Record ID
 }
 
 const acctViewer = {

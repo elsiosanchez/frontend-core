@@ -64,7 +64,9 @@ import {
   TRUE_STRING, FALSE_STRING
 } from '@/utils/ADempiere/formatValue/booleanFormat'
 import {
-  COLUMNNAME_AD_Table_ID, COLUMNNAME_Record_ID
+  COLUMNNAME_AD_Table_ID,
+  COLUMNNAME_Posted,
+  COLUMNNAME_Record_ID
 } from '@/utils/ADempiere/constants/systemColumns'
 import { IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 import {
@@ -108,7 +110,7 @@ export default {
 
   computed: {
     isDisabledButton() {
-      return (this.metadata.readonly || this.isDisableAction) && !['Posted', COLUMNNAME_Record_ID].includes(this.metadata.columnName)
+      return (this.metadata.readonly || this.isDisableAction) && ![COLUMNNAME_Posted, COLUMNNAME_Record_ID].includes(this.metadata.columnName)
     },
     isDisableAction() {
       return this.actionAssociated.isEnabled && !this.actionAssociated.isEnabled()
@@ -145,7 +147,7 @@ export default {
     },
     actionAssociated() {
       // is Post
-      if (this.metadata.columnName === 'Posted') {
+      if (this.metadata.columnName === COLUMNNAME_Posted) {
         return {
           is: 'svg-icon',
           'icon-class': 'balance',
@@ -178,10 +180,19 @@ export default {
             if (isEmptyValue(storedTab)) {
               return false
             }
+            if (storedTab.table.is_view) {
+              return false
+            }
             if (!storedTab.table.is_document) {
               // TODO: Remove this condition when complete support to document table
               if (!POSTED_TABLES_WITHOUT_DOCUMENT.includes(storedTab.table_name)) {
-                return false
+                // const isPostedField = storedTab.fieldsList.any(fieldItem => {
+                //   return COLUMNNAME_Posted === fieldItem.columnName
+                // })
+                // // TODO: Validate is displayed on tab return server
+                // if (!isPostedField) {
+                //   return false
+                // }
               }
             }
             const recordId = this.currentRecord[this.metadata.tabTableName + '_ID']

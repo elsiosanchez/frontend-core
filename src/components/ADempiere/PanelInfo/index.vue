@@ -86,6 +86,7 @@
 
 <script>
 import { defineComponent, computed, watch, ref } from '@vue/composition-api'
+
 import language from '@/lang'
 import router from '@/router'
 import store from '@/store'
@@ -113,14 +114,17 @@ import { listProductStorage } from '@/api/ADempiere/form/storeProduct.js'
 import {
   POSTED_TABLES_WITHOUT_DOCUMENT
 } from '@/utils/ADempiere/dictionary/form/VFactReconcile'
+import {
+  // COLUMNNAME_Posted,
+  COLUMNNAME_Processed
+} from '@/utils/ADempiere/constants/systemColumns'
 
 // Utils and Helper Methods
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { isEmptyValue } from '@/utils/ADempiere'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import { capitalize } from '@/utils/ADempiere/formatValue/stringFormat'
-
-// import { isDisplayedField } from '@/utils/ADempiere/dictionary/window'
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 export default defineComponent({
   name: 'ContainerInfo',
@@ -563,17 +567,33 @@ export default defineComponent({
       if (isEmptyValue(storedTab)) {
         return false
       }
+      if (storedTab.table.is_view) {
+        return false
+      }
       if (!storedTab.table.is_document) {
         // TODO: Remove this condition when complete support to document table
         if (!POSTED_TABLES_WITHOUT_DOCUMENT.includes(storedTab.table_name)) {
-          return false
+          // const isPostedField = storedTab.fieldsList.any(fieldItem => {
+          //   return COLUMNNAME_Posted === fieldItem.columnName
+          // })
+          // // TODO: Validate is displayed on tab return server
+          // if (!isPostedField) {
+          //   return false
+          // }
         }
       }
       const recordId = currentRecordId.value
       if (isEmptyValue(recordId) || recordId <= 0 || recordId === 'create-new') {
         return false
       }
-      return true
+      const isProcessed = store.getters.getValueOfField({
+        containerUuid: storedTab.containerUuid,
+        columnName: COLUMNNAME_Processed
+      })
+      if (!convertStringToBoolean(isProcessed)) {
+        return false
+      }
+      return store.getters.getIsShowAccoutingFacts
     })
 
     /**
@@ -619,7 +639,9 @@ export default defineComponent({
       }
       if (tab.name === 'accountingInformation') {
         const recordId = currentRecordId.value
-        if (isEmptyValue(recordId)) return
+        if (isEmptyValue(recordId)) {
+          return
+        }
         store.dispatch('getAccoutingFactsFromServer', {
           recordUuid: currentRecordUuid.value,
           tableName: currentTab.value.table_name,
@@ -723,7 +745,9 @@ export default defineComponent({
         tabName: data.type
       })
       if (!isEmptyValue(currentDisplay)) {
-        if (data.id === currentDisplay.id) return 'color: #409eff'
+        if (data.id === currentDisplay.id) {
+          return 'color: #409eff'
+        }
       }
       return ''
     }
@@ -756,27 +780,59 @@ export default defineComponent({
         name: props.defaultOpenedTab
       })
     }
-    store.dispatch('findListMailTemplates')
+
     function showAccoutingFacts() {
+      const { allow_info_account } = store.getters['user/getRole']
+      if (!allow_info_account) {
+        store.commit('setIsShowAccoutingFacts', false)
+        return false
+      }
+      if (isEmptyValue(accoutingSchemaId.value) || accoutingSchemaId.value <= 0) {
+        return false
+      }
       if (isEmptyValue(currentRecordId.value)) {
         store.commit('setIsShowAccoutingFacts', false)
         return
       }
+      const storedTab = currentTab.value
       if (
-        isEmptyValue(currentTab) ||
-        !currentTab.value.table.is_document
+        isEmptyValue(storedTab) ||
+        storedTab.table.is_view
       ) {
+        store.commit('setIsShowAccoutingFacts', false)
+        return
+      }
+      if (!storedTab.table.is_document) {
+        // TODO: Remove this condition when complete support to document table
+        if (!POSTED_TABLES_WITHOUT_DOCUMENT.includes(storedTab.table_name)) {
+          // const isPostedField = storedTab.fieldsList.any(fieldItem => {
+          //   return COLUMNNAME_Posted === fieldItem.columnName
+          // })
+          // if (!isPostedField) {
+          //   // TODO: Validate is displayed on tab return server
+          //   store.commit('setIsShowAccoutingFacts', false)
+          //   return
+          // }
+        }
+      }
+
+      const isProcessed = store.getters.getValueOfField({
+        containerUuid: storedTab.containerUuid,
+        columnName: COLUMNNAME_Processed
+      })
+      if (!convertStringToBoolean(isProcessed)) {
         store.commit('setIsShowAccoutingFacts', false)
         return
       }
 
       store.dispatch('getExistsAccoutingDocument', {
         accoutingSchemaId: accoutingSchemaId.value,
-        tableName: currentTab.value.table_name,
+        tableName: storedTab.table_name,
         recordId: currentRecordId.value
       })
     }
 
+    store.dispatch('findListMailTemplates')
     findRecordLogs(props.allTabsList[parseInt(currentTabLogs.value)])
     showAccoutingFacts()
 
