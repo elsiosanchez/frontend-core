@@ -278,9 +278,9 @@ export default defineComponent({
         return ''
       }
       if (isShowedTableRecords.value) {
-        return 'position: absolute;right: 66px;display: inline-block;padding-right: 5px;float: right;width: 293px;'
+        return 'position: absolute;right: 22px;display: inline-block;padding-right: 5px;float: right;width: 293px;'
       }
-      return 'position: absolute;right: 70px;display: inline-block;padding-right: 0px;float: right;width: 289px;margin-top: -1px;'
+      return 'position: absolute;right: 35px;display: inline-block;padding-right: 0px;float: right;width: 289px;margin-top: -1px;'
     })
 
     const styleInput = computed(() => {

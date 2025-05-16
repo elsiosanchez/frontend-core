@@ -425,10 +425,33 @@ const windowManager = {
           if (!isEmptyValue(storeSortBy)) sortBy = storeSortBy
           else sortBy = ''
         }
+        // page token
+        const storedPage = getters.getTabPageNumber({
+          containerUuid
+        })
+        if (isEmptyValue(pageNumber)) {
+          pageNumber = storedPage
+        }
+        let pageToken = generatePageToken({
+          pageNumber
+        })
+        if (!isEmptyValue(pageToken)) {
+          pageToken = ''
+        }
+        // search value to filter
+        if (isEmptyValue(searchValue)) {
+          searchValue = getters.getSearchValueTabRecordsList({
+            containerUuid
+          })
+        }
+
         commit('setTabData', {
           parentUuid,
           isLoaded: false,
           containerUuid,
+          searchValue,
+          pageNumber,
+          pageToken,
           pageSize,
           sortBy
         })
@@ -454,29 +477,6 @@ const windowManager = {
             console.warn(`Get entites without response, fill the **${filters}**`)
             filters = []
           }
-        }
-
-        // search value to filter
-        if (isEmptyValue(searchValue)) {
-          searchValue = getters.getSearchValueTabRecordsList({
-            containerUuid
-          })
-        }
-        if (!isEmptyValue(searchValue)) {
-          searchValue = encodeURI(searchValue)
-        }
-        // page token
-        const storedPage = getters.getTabPageNumber({
-          containerUuid
-        })
-        if (isEmptyValue(pageNumber)) {
-          pageNumber = storedPage
-        }
-        let pageToken = generatePageToken({
-          pageNumber
-        })
-        if (!isEmptyValue(pageToken)) {
-          pageToken = ''
         }
         if (contextAttributesList[link_column_name] < 0) {
           resolve()
@@ -523,7 +523,7 @@ const windowManager = {
         requestGetEntities({
           tabId: internal_id,
           contextAttributes,
-          searchValue,
+          searchValue: encodeURI(searchValue),
           referenceUuid,
           filters: listFilters,
           pageToken,
@@ -684,10 +684,14 @@ const windowManager = {
             }
 
             commit('setTabData', {
+              pageSize,
+              pageToken,
               parentUuid,
+              pageNumber,
+              searchValue,
+              containerUuid,
               isError: true,
-              isLoaded: true,
-              containerUuid
+              isLoaded: true
             })
             commit('setIsLoadingTabRecordsList', {
               containerUuid,
@@ -827,13 +831,16 @@ const windowManager = {
       dispatch,
       getters
     }, {
+      recordIds,
       parentUuid,
       containerUuid,
-      activate
+      activate = false
     }) {
       const tableName = getters.getTableName(parentUuid, containerUuid)
       const selectionsList = getters.getTabSelectionsList({ containerUuid })
-      const recordIds = selectionsList.map(list => list[tableName + '_ID'])
+      if (isEmptyValue(recordIds)) {
+        recordIds = selectionsList.map(list => list[tableName + '_ID'])
+      }
 
       return new Promise((resolve, reject) => {
         disabledAllEntity({
@@ -841,14 +848,10 @@ const windowManager = {
           recordIds,
           activate
         })
-          .then(async(response) => {
+          .then((response) => {
             showMessage({
               message: language.t('notifications.succesful'),
               type: 'success'
-            })
-            await dispatch('getEntities', {
-              parentUuid,
-              containerUuid
             })
             resolve(response)
           })

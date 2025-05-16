@@ -105,14 +105,6 @@
     >
       <svg-icon icon-class="keyboardArrowDown" />
     </el-button>
-    <action-menu
-      :parent-uuid="parentUuid"
-      :container-uuid="containerUuid? containerUuid: tabAttributes.uuid"
-      :container-manager="containerManager"
-      :actions-manager="listAction"
-      :tab-attributes="tabAttributes"
-      style="float: right;"
-    />
     <el-drawer
       :visible.sync="showMenuMobile"
       :with-header="true"
@@ -143,10 +135,8 @@ import store from '@/store'
 import router from '@/router'
 
 // Components and Mixins
-import ActionMenu from '@/components/ADempiere/ActionMenu/index.vue'
 import menuMobile from '@/components/ADempiere/ActionMenu/menuMobile.vue'
 import ConvenienceButtons from '@/components/ADempiere/TabManager/convenienceButtons/index.vue'
-// import FullScreenContainer from '@/components/ADempiere/ContainerOptions/FullScreenContainer'
 import ChangeRecord from '@/components/ADempiere/DataTable/Components/ChangeRecord.vue'
 
 // Utils and Helper Methods
@@ -156,10 +146,8 @@ export default defineComponent({
   name: 'TabOptions',
 
   components: {
-    ActionMenu,
     ConvenienceButtons,
     // AdvancedTabQuery,
-    // FullScreenContainer,
     ChangeRecord,
     menuMobile
   },

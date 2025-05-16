@@ -170,6 +170,14 @@
 
       <div style="float: right">
         <el-button
+          plain
+          type="info"
+          class="button-base-icon"
+          @click="clearParameters()"
+        >
+          <svg-icon icon-class="layers-clear" />
+        </el-button>
+        <el-button
           type="danger"
           class="button-base-icon"
           icon="el-icon-close"
@@ -696,6 +704,21 @@ export default defineComponent({
       editingColumn.value = null
     }
 
+    function clearParameters() {
+      store.dispatch('setBrowserDefaultValues', {
+        containerUuid: props.panelMetadata.uuid
+      })
+
+      const emptyMandatory = store.getters.getBrowserFieldsEmptyMandatory({
+        containerUuid: props.panelMetadata.uuid
+      })
+      if (isEmptyValue(emptyMandatory)) {
+        store.dispatch('getBrowserSearch', {
+          containerUuid: props.panelMetadata.uuid
+        })
+      }
+    }
+
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -756,6 +779,7 @@ export default defineComponent({
       isSelectDefault,
       editCell,
       noEditCell,
+      clearParameters,
       getColumnStyle,
       //
       setTableHeight,

@@ -29,14 +29,14 @@
       />
 
       <div id="process-loaded">
-        <p style="text-align: end; margin-top: 0px;">
+        <!-- <p style="text-align: end; margin-top: 0px;">
           <action-menu
             id="action-menu"
             :container-uuid="processUuid"
             :container-manager="containerManager"
             :actions-manager="actionsManager"
           />
-        </p>
+        </p> -->
         <!-- <br> -->
         <!-- style="float: right;padding-left: 1%;z-index: 99;" -->
         <panel-definition

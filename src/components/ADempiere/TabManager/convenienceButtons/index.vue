@@ -88,6 +88,11 @@
         :tab-attributes="tabAttributes"
         :container-manager="containerManager"
       />
+      <options-batch
+        :parent-uuid="parentUuid"
+        :container-uuid="tabAttributes.uuid"
+        :container-manager="containerManager"
+      />
     </div>
   </span>
   <div v-else>
@@ -113,6 +118,7 @@ import SaveRecordButton from '@/components/ADempiere/TabManager/convenienceButto
 import UndoChangeButton from '@/components/ADempiere/TabManager/convenienceButtons/UndoChangeButton.vue'
 import OptionsSecuence from '@/components/ADempiere/TabManager/convenienceButtons/OptionsSecuence.vue'
 import DeleteRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/DeleteRecordButton.vue'
+import OptionsBatch from '@/components/ADempiere/TabManager/convenienceButtons/OptionsBatch.vue'
 import RefreshRecordButton from '@/components/ADempiere/TabManager/convenienceButtons/RefreshRecordButton.vue'
 import PrintReportsButton from '@/components/ADempiere/TabManager/convenienceButtons/PrintReportsButton.vue'
 import PrintFormatsButton from '@/components/ADempiere/TabManager/convenienceButtons/PrintFormatsButton.vue'
@@ -123,6 +129,7 @@ export default defineComponent({
   name: 'ConvenienceButtons',
 
   components: {
+    OptionsBatch,
     DocumentAction,
     NewRecordButton,
     OptionsSecuence,
@@ -154,6 +161,12 @@ export default defineComponent({
 
   setup(props) {
     const containerUuid = props.tabAttributes.uuid
+
+    const selectionsRecords = computed(() => {
+      return props.containerManager.getSelection({
+        containerUuid: props.tabAttributes.containerUuid
+      })
+    })
 
     const recordUuid = computed(() => {
       return store.getters.getUuidOfContainer(containerUuid)
@@ -208,6 +221,7 @@ export default defineComponent({
       recordUuid,
       getCurrentTab,
       isEditSecuence,
+      selectionsRecords,
       isShowedTableRecords,
       isDisableOptionsTabChild,
       // Methodss

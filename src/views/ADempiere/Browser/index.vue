@@ -24,16 +24,11 @@
     class="view-base browser-view"
   >
     <el-card class="content-collapse card-browser">
-      <div style="display:flex; justify-content: space-between;">
+      <div style="justify-content: space-between;">
         <div />
         <title-and-help
           :name="browserMetadata.name"
           :help="browserMetadata.help"
-        />
-        <action-menu
-          :container-manager="containerManager"
-          :container-uuid="browserMetadata.uuid"
-          :actions-manager="actionsManager"
         />
       </div>
       <div id="browser-query-criteria">

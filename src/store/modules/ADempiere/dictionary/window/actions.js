@@ -44,28 +44,17 @@ import {
   generateWindow
 } from '@/utils/ADempiere/dictionary/window'
 import {
-  // record
-  // createNewRecord,
   refreshRecord,
   refreshRecords,
-  // deleteRecord,
-  // undoChange,
-  exportCurrentRecord,
-  // dictionary
   openDocumentAction,
   generateReportOfWindow,
   runProcessOfWindow,
   openBrowserAssociated,
   openFormAssociated,
   openSequenceTab,
-  // additional
   recordAccess
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { panelAdvanceQuery } from '@/utils/ADempiere/dictionary/panel.js'
-import {
-  exportRecordsSelected,
-  sharedLink
-} from '@/utils/ADempiere/constants/actionsMenuList.js'
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
 import { getContext, isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
@@ -149,9 +138,6 @@ export default {
       tabDefinition = getters.getStoredTab(windowUuid, tabUuid)
     }
     const actionsList = []
-
-    // actionsList.push(createNewRecord)
-    // actionsList.push(undoChange)
 
     if (!isEmptyValue(tabDefinition.processes)) {
       let relatedColumns = []
@@ -641,9 +627,6 @@ export default {
         })
       })
     }
-
-    // actionsList.push(deleteRecord)
-    // actionsList.push(refreshRecords)
     const { sequenceTabsList } = tabDefinition
 
     if (!isEmptyValue(sequenceTabsList)) {
@@ -752,18 +735,6 @@ export default {
     }
 
     actionsList.push(recordAccess)
-    actionsList.push(exportCurrentRecord)
-    actionsList.push({
-      ...exportRecordsSelected,
-      // overwrite displayed method
-      displayed: ({ parentUuid, containerUuid }) => {
-        const currentTab = store.getters.getStoredTab(parentUuid, containerUuid)
-
-        // only multi record
-        return currentTab.isShowedTableRecords
-      }
-    })
-    actionsList.push(sharedLink)
 
     commit('setActionMenu', {
       containerUuid: tabDefinition.uuid,
