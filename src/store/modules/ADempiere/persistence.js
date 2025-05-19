@@ -191,13 +191,13 @@ const persistence = {
         // start callout on server
         if (!containerUuid.endsWith(IS_ADVANCED_QUERY)) {
           dispatch('startCallout', {
-            parentUuid,
-            containerUuid,
             displayType: field.display_type,
             callout: field.callout,
+            containerUuid,
+            parentUuid,
             columnName,
-            value,
-            oldValue
+            oldValue,
+            value
           })
         }
 

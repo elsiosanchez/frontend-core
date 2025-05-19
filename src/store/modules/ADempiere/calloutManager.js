@@ -52,6 +52,11 @@ const calloutManager = {
           return
         }
 
+        if (value === oldValue) {
+          resolve({})
+          return
+        }
+
         const {
           id, fieldsList, isParentTab, firstTabUuid
         } = rootGetters.getStoredTab(parentUuid, containerUuid)

@@ -253,8 +253,7 @@ export default {
       } = this.metadata
       if (
         this.containerManager &&
-        this.containerManager.getDefaultValue &&
-        !this.currentTab.isShowedTableRecords
+        this.containerManager.getDefaultValue
       ) {
         return this.containerManager.getDefaultValue({
           contextColumnNames: context_column_names,
