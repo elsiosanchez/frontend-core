@@ -755,7 +755,7 @@ export default defineComponent({
         !isEmptyValue(main.clientHeight)) {
         heightSize.value = main.clientHeight
       }
-      loadSelection()
+      // loadSelection()
     })
 
     onBeforeMount(() => {
