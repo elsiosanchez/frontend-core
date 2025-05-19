@@ -87,6 +87,13 @@ export default defineComponent({
     })
 
     const warehouseId = computed(() => {
+      // Search Header Warehouse Value
+      const findHeaderValue = getContext({
+        parentUuid: props.parentUuid,
+        columnName: COLUMNNAME_M_Warehouse_ID
+      })
+      if (!isEmptyValue(findHeaderValue)) return findHeaderValue
+      // Set Context Warehouse Value
       return getContext({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
@@ -130,7 +137,6 @@ export default defineComponent({
     function remoteSearch(searchValue) {
       store.dispatch('loadWarehouses', searchValue)
     }
-
     if (!isEmptyValue(warehouseId.value)) {
       if (isEmptyValue(currentValue.value)) {
         currentValue.value = warehouseId.value
