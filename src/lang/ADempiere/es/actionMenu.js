@@ -26,7 +26,7 @@ const actionMenu = {
   disabled: 'Deshabilitar',
   disabledRecord: 'Deshabilitar Registro',
   disabledSelectedRecords: 'Deshabilitar Registros Seleccionados',
-  optionsBatch: 'Opciones en Lote',
+  actions: 'Acciones',
   new: 'Nuevo',
   createNewRecord: 'Nuevo Registro',
   shareLink: 'Compartir Enlace',

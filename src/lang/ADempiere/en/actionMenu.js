@@ -26,7 +26,7 @@ const actionMenu = {
   disabled: 'Disable',
   disabledRecord: 'Disable Record',
   disabledSelectedRecords: 'Disable Selected Records',
-  optionsBatch: 'Options in Batch',
+  actions: 'Actions',
   new: 'New',
   createNewRecord: 'New Record',
   shareLink: 'Share Link',

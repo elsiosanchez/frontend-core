@@ -51,8 +51,7 @@ import {
   runProcessOfWindow,
   openBrowserAssociated,
   openFormAssociated,
-  openSequenceTab,
-  recordAccess
+  openSequenceTab
 } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 import { panelAdvanceQuery } from '@/utils/ADempiere/dictionary/panel.js'
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
@@ -733,8 +732,6 @@ export default {
         })
       })
     }
-
-    actionsList.push(recordAccess)
 
     commit('setActionMenu', {
       containerUuid: tabDefinition.uuid,

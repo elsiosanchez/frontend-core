@@ -99,16 +99,14 @@ export function updateBrowserEntity({
  */
 export function requestDeleteBrowser({
   tableName,
-  recordId,
-  recordUuid,
   listRecordId
 }) {
-  const { requestDeleteEntity } = require('@/api/ADempiere/business-data/entities.ts')
-
-  return requestDeleteEntity({
-    tableName,
-    recordId,
-    recordUuid,
-    listRecordId
+  return request({
+    url: `/business-data/entities/batch-delete/${tableName}`,
+    method: 'post',
+    data: {
+      ids: listRecordId,
+      table_name: tableName
+    }
   })
 }

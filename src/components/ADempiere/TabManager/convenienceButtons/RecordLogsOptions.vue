@@ -17,7 +17,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <span>
+  <span style="padding-right: 9px;">
     <el-button
       v-if="!isEmptyValue(tabAttributes) && currentRecordId > 0"
       plain

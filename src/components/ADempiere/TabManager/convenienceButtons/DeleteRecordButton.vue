@@ -17,71 +17,56 @@
 -->
 
 <template>
-  <div class="el-dropdown">
-    <el-dropdown
-      v-if="isDeleteRecord"
-      split-button
+  <el-popover
+    v-model="isVisibleConfirmDelete"
+    placement="top"
+    width="450"
+    style="padding-left: 5 px"
+  >
+    <el-descriptions :title="$t(title)" direction="vertical" :column="tabAttributes.identifierColumns.length" border>
+      <el-descriptions-item
+        v-for="(item, index) in tabAttributes.identifierColumns"
+        :key="index"
+        :label="item.name"
+        :content-style="{'max-height': '200px', 'display': 'block', 'overflow': 'auto'}"
+      >
+        <cell-display-info
+          v-for="(record, key) in recordsListToDelete"
+          :key="key"
+          :field-attributes="item"
+          :data-row="record"
+        />
+      </el-descriptions-item>
+    </el-descriptions>
+    <div
+      style="text-align: right; margin: 0;margin-top: 5px;"
+    >
+      <el-button
+        type="danger"
+        class="button-base-icon"
+        icon="el-icon-close"
+        @click="isVisibleConfirmDelete = false"
+      />
+      <el-button
+        type="primary"
+        class="button-base-icon"
+        icon="el-icon-check"
+        @click="deleteCurrentRecord()"
+      />
+    </div>
+    <el-button
+      slot="reference"
+      plain
       size="small"
-      class="delete-record-container"
-      trigger="click"
-      @click="handleCommandActions('deleteRecord');"
-      @command="handleCommandActions"
+      type="danger"
+      class="undo-changes-button"
     >
       <svg-icon icon-class="delete" />
-      <span>
+      <span v-if="!isMobile">
         {{ $t('actionMenu.delete') }}
       </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="deleteRecord">
-          <svg-icon icon-class="delete" />
-          {{ deleteTitle }}
-        </el-dropdown-item>
-        <el-dropdown-item divided command="disabledRecord">
-          <svg-icon icon-class="disabled" />
-          {{ disableTitle }}
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-
-    <el-popover
-      v-model="isVisibleConfirmDelete"
-      tigger="click"
-      placement="top"
-      width="450"
-    >
-      <el-descriptions :title="$t(title)" direction="vertical" :column="tabAttributes.identifierColumns.length" border>
-        <el-descriptions-item
-          v-for="(item, index) in tabAttributes.identifierColumns"
-          :key="index"
-          :label="item.name"
-          :content-style="{'max-height': '200px', 'display': 'block', 'overflow': 'auto'}"
-        >
-          <cell-display-info
-            v-for="(record, key) in recordsListToDelete"
-            :key="key"
-            :field-attributes="item"
-            :data-row="record"
-          />
-        </el-descriptions-item>
-      </el-descriptions>
-      <div
-        style="text-align: right; margin: 0;margin-top: 5px;"
-      >
-        <el-button
-          type="danger"
-          class="button-base-icon"
-          icon="el-icon-close"
-          @click="isVisibleConfirmDelete = false"
-        />
-        <el-button
-          type="primary"
-          class="button-base-icon"
-          icon="el-icon-check"
-          @click="okMethod()"
-        />
-      </div>
-    </el-popover>
-  </div>
+    </el-button>
+  </el-popover>
 </template>
 
 <script>
@@ -225,15 +210,6 @@ export default defineComponent({
     })
 
     function deleteCurrentRecord() {
-      if (tabAttributes.value.isShowedTableRecords && !isEmptyValue(selectionsRecords.value)) {
-        store.dispatch('deleteSelectedRecordsFromWindow', {
-          parentUuid: props.parentUuid,
-          containerUuid: props.containerUuid
-        })
-        isVisibleConfirmDelete.value = false
-        return
-      }
-
       const info = {
         fieldsList: tabAttributes.value.fieldsList,
         option: language.t('actionMenu.delete')

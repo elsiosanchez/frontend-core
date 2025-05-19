@@ -17,7 +17,7 @@
 -->
 
 <template>
-  <div class="el-dropdown" style="padding: 0px 5px;">
+  <div class="el-dropdown" style="padding: 0px">
     <el-dropdown
       size="small"
       trigger="click"
@@ -32,7 +32,7 @@
         <svg-icon
           icon-class="more-vertical"
         />
-        {{ $t('actionMenu.optionsBatch') }}
+        {{ $t('actionMenu.actions') }}
         <i
           class="el-icon-arrow-down el-icon--right"
         />
@@ -121,7 +121,6 @@
       </div>
       <el-button slot="reference" type="text" style="padding: 0;" />
     </el-popover>
-
   </div>
 </template>
 

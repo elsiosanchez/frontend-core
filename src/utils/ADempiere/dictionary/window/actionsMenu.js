@@ -860,6 +860,19 @@ export const openFormAssociated = {
 export const openBrowserAssociated = {
   name: language.t('actionMenu.openSmartBrowser'),
   enabled: ({ parentUuid, containerUuid }) => {
+    const storedTab = store.getters.getStoredTab(
+      parentUuid,
+      containerUuid
+    )
+    if (storedTab.isShowedTableRecords) {
+      // multi selection process
+      const recordsSelection = store.getters.getTabSelectionsList({
+        containerUuid
+      })
+      if (recordsSelection.length > 1) return false
+      return true
+    }
+
     const recordUuid = store.getters.getUuidOfContainer(containerUuid)
     return !isEmptyValue(recordUuid)
   },

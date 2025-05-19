@@ -168,7 +168,53 @@
         </el-dropdown>
       </div>
 
-      <div style="float: right">
+      <div style="float: right;">
+        <el-popover
+          v-model="isVisibleConfirmDelete"
+          placement="left-start"
+          width="450"
+        >
+          <el-table
+            :data="selectionsList"
+            border
+            style="width: 100%"
+          >
+            <el-table-column
+              v-for="(item, index) in storedPanel.identifierColumns"
+              :key="index"
+              :prop="item.columnName"
+              :label="item.name"
+              width="180"
+            />
+          </el-table>
+          <div
+            style="text-align: right; margin: 0;margin-top: 5px;"
+          >
+            <el-button
+              type="danger"
+              class="button-base-icon"
+              icon="el-icon-close"
+              @click="isVisibleConfirmDelete = false"
+            />
+            <el-button
+              type="primary"
+              class="button-base-icon"
+              icon="el-icon-check"
+              @click="handleSubmit()"
+            />
+          </div>
+          <el-button
+            v-if="currentBrowser.is_deleteable"
+            slot="reference"
+            plain
+            type="danger"
+            class="button-base-icon"
+            style="margin-right: 10px;"
+            :disabled="isEmptyValue(selectionsList)"
+          >
+            <svg-icon icon-class="delete" />
+          </el-button>
+        </el-popover>
         <el-button
           plain
           type="info"
@@ -226,7 +272,7 @@ import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
 import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
-
+import { showNotification } from '@/utils/ADempiere/notification.js'
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
  */
@@ -292,6 +338,7 @@ export default defineComponent({
     const isChangeOptions = ref(false)
     const heightSize = ref()
     const currentRowSelect = ref({})
+    const isVisibleConfirmDelete = ref(false)
 
     const disableExport = computed(() => {
       return props.containerManager.enableExport({
@@ -464,6 +511,10 @@ export default defineComponent({
       return runProcessOfBrowser.enabled({
         containerUuid: props.panelMetadata.uuid
       })
+    })
+
+    const currentBrowser = computed(() => {
+      return store.getters.getStoredBrowser(props.containerUuid)
     })
 
     /**
@@ -719,6 +770,21 @@ export default defineComponent({
       }
     }
 
+    function handleSubmit() {
+      if (isEmptyValue(selectionsList.value)) {
+        showNotification({
+          title: lang.t('data.selectionRequired'),
+          type: 'warning'
+        })
+        return
+      }
+      store.dispatch('deleteRecordOfBrowser', {
+        containerUuid: props.panelMetadata.uuid,
+        selection: selectionsList.value
+      })
+      isVisibleConfirmDelete.value = false
+    }
+
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
@@ -752,11 +818,13 @@ export default defineComponent({
       isChangeOptions,
       heightTable,
       heightSize,
+      storedPanel,
       //
       isEditing,
       editingRow,
       editingColumn,
       // Computeds
+      currentBrowser,
       headerList,
       isLoadingDataTale,
       recordsWithFilter,
@@ -775,10 +843,12 @@ export default defineComponent({
       isEnableProcess,
       processDescription,
       selectionsList,
+      isVisibleConfirmDelete,
       // Methods
       isSelectDefault,
       editCell,
       noEditCell,
+      handleSubmit,
       clearParameters,
       getColumnStyle,
       //
