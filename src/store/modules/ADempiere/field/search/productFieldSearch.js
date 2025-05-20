@@ -356,10 +356,10 @@ const productFieldSearch = {
           })
       })
     },
-    loadWarehouses({ commit }, search) {
+    loadWarehouses({ commit }, searchValue) {
       return new Promise(resolve => {
         requestListWarehouses({
-          search,
+          searchValue,
           pageSize: 100
         })
           .then(response => {

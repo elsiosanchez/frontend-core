@@ -56,6 +56,7 @@ import { COLUMNNAME_M_Warehouse_ID } from '@/utils/ADempiere/constants/systemCol
 // Utils and Helper Methods
 import { getContext } from '@/utils/ADempiere/contextUtils'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { DISPLAY_COLUMN_PREFIX } from '@/utils/ADempiere/dictionaryUtils'
 
 export default defineComponent({
   name: 'WarehouseField',
@@ -76,6 +77,10 @@ export default defineComponent({
     containerUuid: {
       required: false,
       type: String
+    },
+    metadata: {
+      type: Object,
+      required: true
     }
   },
 
@@ -90,6 +95,7 @@ export default defineComponent({
       // Search Header Warehouse Value
       const findHeaderValue = getContext({
         parentUuid: props.parentUuid,
+        containerUuid: props.metadata.firstTabUuid,
         columnName: COLUMNNAME_M_Warehouse_ID
       })
       if (!isEmptyValue(findHeaderValue)) return findHeaderValue
@@ -98,6 +104,22 @@ export default defineComponent({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
         columnName: COLUMNNAME_M_Warehouse_ID,
+        isForceSession: true
+      })
+    })
+
+    const warehouseDisplay = computed(() => {
+      // Search Header Warehouse Value
+      const findHeaderValue = getContext({
+        parentUuid: props.parentUuid,
+        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_M_Warehouse_ID
+      })
+      if (!isEmptyValue(findHeaderValue)) return findHeaderValue
+      // Set Context Warehouse Value
+      return getContext({
+        parentUuid: props.parentUuid,
+        containerUuid: props.containerUuid,
+        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_M_Warehouse_ID,
         isForceSession: true
       })
     })
@@ -141,15 +163,21 @@ export default defineComponent({
       if (isEmptyValue(currentValue.value)) {
         currentValue.value = warehouseId.value
       }
+      const exist = optionsList.value.find(list => list.id === warehouseId.value)
+      if (!isEmptyValue(warehouseDisplay.value) && isEmptyValue(exist)) {
+        remoteSearch(warehouseDisplay.value)
+      }
     }
 
     return {
       optionsList,
       //
       currentValue,
+      warehouseDisplay,
       //
       loadWarehouses,
-      remoteSearch
+      remoteSearch,
+      getContext
     }
   }
 })

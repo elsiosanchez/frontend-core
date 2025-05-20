@@ -72,6 +72,7 @@
               :uuid-form="uuidForm"
               :parent-uuid="metadata.parentUuid"
               :container-uuid="metadata.containerUuid"
+              :metadata="metadata"
             />
           </el-col>
         </el-row>
