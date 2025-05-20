@@ -63,7 +63,8 @@ import { showMessage, showNotification } from '@/utils/ADempiere/notification.js
 import {
   containerManager,
   isLegacyPrintFormat,
-  generateRecordsList
+  generateRecordsList,
+  widthColumn
 } from '@/utils/ADempiere/dictionary/report'
 import { generatePageToken } from '@/utils/ADempiere/dataUtils'
 
@@ -923,11 +924,23 @@ const reportManager = {
           instanceId
         })
           .then(reportResponse => {
-            const { rows } = reportResponse
+            const {
+              columns,
+              rows
+            } = reportResponse
+
             const recordsList = generateRecordsList(rows)
+
+            const columnsList = columns.map(columnItem => {
+              return {
+                ...columnItem,
+                withdColumn: widthColumn(columnItem)
+              }
+            })
 
             const reportOutput = {
               ...reportResponse,
+              columns: columnsList,
               containerUuid,
               rowCells: rows,
               recordsList,
@@ -996,17 +1009,26 @@ const reportManager = {
         })
           .then(reportResponse => {
             const {
+              columns,
               name,
               print_format_id,
               report_view_id,
               rows
             } = reportResponse
+
             const recordsList = generateRecordsList(rows)
 
             // const printFormat = getters.getPrintFormat(printFormatId)
+            const columnsList = columns.map(columnItem => {
+              return {
+                ...columnItem,
+                withdColumn: widthColumn(columnItem)
+              }
+            })
 
             const reportOutput = {
               ...reportResponse,
+              columns: columnsList,
               containerUuid: tableName,
               parametersList: filters,
               rowCells: rows,
@@ -1094,8 +1116,10 @@ const reportManager = {
           .then(reportResponse => {
             const {
               // id,
+              columns,
               name,
-              instance_id
+              instance_id,
+              rows
             } = reportResponse
             if (!isView) {
               router.push({
@@ -1113,19 +1137,26 @@ const reportManager = {
                 query: {
                   reportId,
                   instanceUuid: instance_id,
-                  fileName: reportResponse.name,
+                  fileName: name,
                   reportUuid,
-                  name: reportResponse.name,
+                  name: name,
                   tableName
                 }
               }, () => {})
             }
 
-            const { rows } = reportResponse
             const recordsList = generateRecordsList(rows)
+
+            const columnsList = columns.map(columnItem => {
+              return {
+                ...columnItem,
+                withdColumn: widthColumn(columnItem)
+              }
+            })
 
             const reportOutput = {
               ...reportResponse,
+              columns: columnsList,
               instanceUuid: reportId,
               reportId: reportId,
               reportUuid: reportUuid,

@@ -188,6 +188,10 @@ export default defineComponent({
     })
 
     const displayedValue = computed(() => {
+      return getFormattedValue()
+    })
+
+    function getFormattedValue() {
       if (props.attributes.is_encrypted) {
         return '••••••••••••••••••'
       }
@@ -211,9 +215,7 @@ export default defineComponent({
       //   return `<${currentValue}> - ${currentDisplayValue}`
       // }
       return currentDisplayValue
-    })
-
-    // Methods
+    }
 
     // /**
     //  * Should Hide Name

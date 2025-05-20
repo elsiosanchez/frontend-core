@@ -43,7 +43,7 @@
       :column-key="fieldAttributes.code"
       :align="getAlignment(fieldAttributes.display_type)"
       :fixed="fieldAttributes.is_group_column"
-      :width="widthColumn(fieldAttributes.display_type)[key]"
+      :width="fieldAttributes.withdColumn"
     >
       <template slot="header">
         {{ fieldAttributes.title }}
@@ -85,7 +85,7 @@ import DataCells from '@/components/ADempiere/ReportManager/ReportData/DataCells
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import {
-  isNumberField, isDateField, isBooleanField, isDecimalField
+  isNumberField
 } from '@/utils/ADempiere/references'
 import {
   formatQuantity
@@ -193,28 +193,6 @@ export default defineComponent({
           dataModal.value = dataCell
           showPopover.value = true
         }
-      })
-    }
-
-    function hasChildren(children, parentLevel, parentColumnKey, parentDisplayValue) {
-      if (children.length < 1) return children
-      return children.map((child, indexChild) => {
-        const index = parentLevel + indexChild
-        let value = ''
-        if (!isEmptyValue(parentColumnKey)) {
-          value = child.cells[parentColumnKey].display_value
-        }
-        const newRow = {
-          ...child,
-          children: hasChildren(child.children, index.toString(), parentColumnKey, value),
-          level: index,
-          zoom_windows: [],
-          isLoadingZoom: false
-        }
-        if (child.is_parent && value === parentDisplayValue && !isEmptyValue(parentColumnKey)) {
-          newRow.cells[parentColumnKey].display_value = ''
-        }
-        return newRow
       })
     }
 
@@ -347,48 +325,6 @@ export default defineComponent({
       return 'left'
     }
 
-    function widthColumn(data) {
-      if (!isEmptyValue(columns.value)) {
-        const widths = {}
-        columns.value.forEach((column, index) => {
-          let width = 0
-          if (column.column_width > 0 && column.is_fixed_width) {
-            width = column.column_width
-          }
-          if (column.column_characters_size > 0 && !column.is_fixed_width) {
-            let fontCode = 10
-            let character = column.column_characters_size
-            if (!isEmptyValue(column.title) && column.column_characters_size < column.title.length) {
-              character = column.title.length
-            }
-            if (!isEmptyValue(column.font_code)) {
-              const number = column.font_code.replace(/[^\d]/g, '')
-              fontCode = number
-            }
-            fontCode = fontCode * 0.9
-            width = character * fontCode
-          }
-          if (width === 0) {
-            if (
-              isNumberField(data) ||
-              isDateField(data) ||
-              isBooleanField(data) ||
-              isDecimalField(data)
-            ) {
-              width = 250
-            } else {
-              width = 300
-            }
-          }
-          if (!column.is_fixed_width && column.column_width > 0 && column.column_width > width) {
-            width = column.column_width
-          }
-          widths[index] = width + 10
-        })
-        return widths
-      }
-    }
-
     /**
      * Watch - watch works directly on a ref
      * @param newValue - New Assessed Property value
@@ -434,9 +370,7 @@ export default defineComponent({
       storedPanelReport,
       // Methods
       getColumnStyle,
-      widthColumn,
       findParent,
-      hasChildren,
       getAlignment,
       handleRowClick,
       expandedRowAll,

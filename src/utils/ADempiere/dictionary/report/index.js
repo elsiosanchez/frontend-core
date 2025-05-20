@@ -26,6 +26,9 @@ import {
 import {
   isEmptyValue
 } from '@/utils/ADempiere/valueUtils.js'
+import {
+  isNumberField, isDateField, isBooleanField, isDecimalField
+} from '@/utils/ADempiere/references'
 import { getUuidv4 } from '@/utils/ADempiere/recordUtil'
 
 /**
@@ -210,6 +213,56 @@ export function changeFieldAttribure({
     attributeName,
     attributeValue
   })
+}
+
+export function widthColumn(columnReport) {
+  if (isEmptyValue(columnReport)) {
+    return -1
+  }
+  const {
+    column_characters_size,
+    column_width,
+    display_type,
+    font_code,
+    is_fixed_width,
+    title
+  } = columnReport
+
+  let width = 0
+  if (column_width > 0 && is_fixed_width) {
+    width = column_width
+  }
+  if (column_characters_size > 0 && !is_fixed_width) {
+    let fontCode = 10
+    let character = column_characters_size
+    if (!isEmptyValue(title) && column_characters_size < title.length) {
+      character = title.length
+    }
+    if (!isEmptyValue(font_code)) {
+      const number = font_code.replace(/[^\d]/g, '')
+      fontCode = number
+    }
+    fontCode = fontCode * 0.9
+    width = character * fontCode
+  }
+  if (width === 0) {
+    if (
+      isNumberField(display_type) ||
+      isDateField(display_type) ||
+      isBooleanField(display_type) ||
+      isDecimalField(display_type)
+    ) {
+      width = 250
+    } else {
+      width = 300
+    }
+  }
+  if (!is_fixed_width && column_width > 0 && column_width > width) {
+    width = column_width
+  }
+  width = width + 10
+
+  return width
 }
 
 /**
