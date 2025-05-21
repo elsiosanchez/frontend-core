@@ -428,15 +428,23 @@ export default defineComponent({
     }
 
     function downloadFile() {
+      let reprotDefinition = getStoreReport.value
+      let isSharePrintFormat = false
+      if (isEmptyValue(getStoreReport.value) && !isEmptyValue(props.reportOutput)) {
+        isSharePrintFormat = true
+        reprotDefinition = props.reportOutput
+        reprotDefinition.internal_id = props.reportOutput.id
+      }
       store.dispatch('exportReport', {
-        reportId: getStoreReport.value.internal_id,
+        reportId: reprotDefinition.internal_id,
         reportName: titleDocument.value,
-        printFormatId: getStoreReport.value.print_format_id,
-        reportViewId: getStoreReport.value.report_view_id,
-        containerUuid: getStoreReport.value.containerUuid,
+        printFormatId: reprotDefinition.print_format_id,
+        reportViewId: reprotDefinition.report_view_id,
+        containerUuid: reprotDefinition.containerUuid,
         pageSize: pageSize.value,
         pageToken: pageToken.value,
         isSummary: isSummary.value,
+        isSharePrintFormat,
         recordId: props.reportOutput.recordId,
         tableName: props.reportOutput.tableName,
         isLegacy: props.isLegacy
@@ -519,18 +527,25 @@ export default defineComponent({
 
     function sendLink() {
       const user_id = store.getters['user/userInfo'].id
-      console.log({ getStoreReport: getStoreReport.value })
+      let reprotDefinition = getStoreReport.value
+      let isSharePrintFormat = false
+      if (isEmptyValue(getStoreReport.value) && !isEmptyValue(props.reportOutput)) {
+        isSharePrintFormat = true
+        reprotDefinition = props.reportOutput
+        reprotDefinition.internal_id = props.reportOutput.id
+      }
       store.dispatch('exportReport', {
-        reportId: getStoreReport.value.internal_id,
+        reportId: reprotDefinition.internal_id,
         reportName: titleDocument.value,
-        printFormatId: getStoreReport.value.print_format_id,
-        reportViewId: getStoreReport.value.report_view_id,
+        printFormatId: reprotDefinition.print_format_id,
+        reportViewId: reprotDefinition.report_view_id,
         seconds: validTime.value,
         isDownload: false,
-        containerUuid: getStoreReport.value.containerUuid,
+        containerUuid: reprotDefinition.containerUuid,
         pageSize: pageSize.value,
         pageToken: pageToken.value,
         isSummary: isSummary.value,
+        isSharePrintFormat,
         recordId: props.reportOutput.recordId,
         tableName: props.reportOutput.tableName,
         isLegacy: props.isLegacy
