@@ -173,7 +173,7 @@ export default defineComponent({
     },
     defaultOpenedTab: {
       type: String,
-      default: 'listReference'
+      default: 'recordNotesTab'
     },
     recordId: {
       type: [String, Number],
@@ -187,7 +187,7 @@ export default defineComponent({
     const typeAction = ref(0)
     const currentTabLogs = ref('0')
     const tableName = ref('')
-    const nameTab = ref('listReference')
+    const nameTab = ref('recordNotesTab')
     const recordsListStoreProduct = ref([])
     const isLoadingListReference = ref(false)
     if (!isEmptyValue(props.defaultOpenedTab)) {
@@ -200,16 +200,16 @@ export default defineComponent({
 
     const listInfoPanel = computed(() => {
       return [
-        {
-          name: 'listReference',
-          title: language.t('window.containerInfo.referenceRecords'),
-          show: true,
-          svg: false,
-          isMenu: false,
-          isLoading: isLoadingListReference.value,
-          iconClass: 'el-icon-zoom-in',
-          component: ReferenceRecords
-        },
+        // {
+        //   name: 'listReference',
+        //   title: language.t('window.containerInfo.referenceRecords'),
+        //   show: true,
+        //   svg: false,
+        //   isMenu: false,
+        //   isLoading: isLoadingListReference.value,
+        //   iconClass: 'el-icon-zoom-in',
+        //   component: ReferenceRecords
+        // },
         {
           name: 'recordNotesTab',
           title: language.t('window.containerInfo.notes'),
@@ -250,16 +250,16 @@ export default defineComponent({
           iconClass: 'balance',
           component: AcctViewer // () => import('@/components/ADempiere/Form/AcctViewer')
         },
-        {
-          name: 'getRecordLogs',
-          title: language.t('window.containerInfo.log.changeHistory'),
-          show: true,
-          svg: true,
-          isMenu: false,
-          iconClass: 'tree-table',
-          isLoading: isLoadingRecordLogsList.value,
-          component: RecordLogs
-        },
+        // {
+        //   name: 'getRecordLogs',
+        //   title: language.t('window.containerInfo.log.changeHistory'),
+        //   show: true,
+        //   svg: true,
+        //   isMenu: false,
+        //   iconClass: 'tree-table',
+        //   isLoading: isLoadingRecordLogsList.value,
+        //   component: RecordLogs
+        // },
         {
           name: 'listDashboard',
           show: !isEmptyValue(showPanelDashboard.value),

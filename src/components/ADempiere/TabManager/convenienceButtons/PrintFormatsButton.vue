@@ -57,7 +57,7 @@
       plain
       type="info"
       size="small"
-      style="margin-left: 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
+      style="margin: 0px 5px;padding-top: 1px;padding-right: 5px;padding-bottom: 8px;padding-left: 5px;"
       :disabled="isLoading || isEmptyValue(printFormatsList)"
       :loading="isLoading"
       @click="printWithFormat()"

@@ -105,7 +105,7 @@
         size="medium"
         type="primary"
         circle
-        @click="openRecordLogs('listReference')"
+        @click="openRecordLogs('recordNotesTab')"
       >
         <i class="el-icon-arrow-left" />
       </el-button>
@@ -122,7 +122,7 @@
         </el-button>
       </el-badge>
 
-      <el-badge v-show="showReference && !isMobile" :value="countReference" class="item" type="primary">
+      <!-- <el-badge v-show="showReference && !isMobile" :value="countReference" class="item" type="primary">
         <el-button
           v-show="showReference"
           type="primary"
@@ -133,7 +133,7 @@
         >
           <i class="el-icon-zoom-in" />
         </el-button>
-      </el-badge>
+      </el-badge> -->
       <el-badge v-show="showDashboard && !isMobile" :value="countDashboard" class="item" type="primary">
         <el-button
           v-show="showDashboard"

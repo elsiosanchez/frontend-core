@@ -75,14 +75,12 @@
       />
       <slot name="additional-options" />
       <documents-reference
-        v-if="!tabAttributes.isParentTab"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
         :tab-attributes="tabAttributes"
         :container-manager="containerManager"
       />
       <record-logs-options
-        v-if="!tabAttributes.isParentTab"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
         :tab-attributes="tabAttributes"
