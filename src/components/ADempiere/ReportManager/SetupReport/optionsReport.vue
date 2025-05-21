@@ -118,8 +118,7 @@
             <i style="font-size: 18px;" class="el-icon-set-up" />
           </b>
         </template>
-        <component
-          :is="componentRender"
+        <panel-definition
           :container-uuid="containerUuid"
           :container-manager="containerManagerReportViwer"
           :is-tab-panel="true"
@@ -175,6 +174,7 @@ import store from '@/store'
 
 // Components and Mixins
 import DownloadButtom from '@/components/ADempiere/ReportManager/SetupReport/downloadButtom.vue'
+import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -186,7 +186,8 @@ export default defineComponent({
   name: 'OptionsReport',
 
   components: {
-    DownloadButtom
+    DownloadButtom,
+    PanelDefinition
   },
 
   props: {
@@ -259,9 +260,7 @@ export default defineComponent({
       }
       return options
     })
-    const componentRender = computed(() => {
-      return () => import('@/components/ADempiere/PanelDefinition/index.vue')
-    })
+
     const reportTypeFormat = computed(() => {
       const options = store.getters.getStoredActionsMenu({
         containerUuid: props.containerUuid
@@ -367,7 +366,6 @@ export default defineComponent({
       reportAsView,
       reportAsPrintFormat,
       reportTypeFormat,
-      componentRender,
       activeCollapse,
       storedPanelReport,
       isShowSetupReport,

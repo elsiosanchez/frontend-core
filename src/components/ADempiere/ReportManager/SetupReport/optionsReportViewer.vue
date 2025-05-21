@@ -130,8 +130,7 @@
             <i style="font-size: 18px;" class="el-icon-set-up" />
           </b>
         </template>
-        <component
-          :is="componentRender"
+        <panel-definition
           :container-uuid="containerUuid"
           :container-manager="containerManagerReportViwer"
           :is-tab-panel="true"
@@ -192,6 +191,7 @@ import lang from '@/lang'
 
 // Components adn Mixins
 import DownloadButtom from './downloadButtom.vue'
+import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import PrintFormatField from './printFormatField.vue'
 import RefreshButton from './refreshButton.vue'
 import ReportSummary from './reportSummary.vue'
@@ -206,6 +206,7 @@ export default defineComponent({
 
   components: {
     DownloadButtom,
+    PanelDefinition,
     PrintFormatField,
     RefreshButton,
     ReportSummary,
@@ -342,10 +343,6 @@ export default defineComponent({
       return {
         ...props.containerManager
       }
-    })
-
-    const componentRender = computed(() => {
-      return () => import('@/components/ADempiere/PanelDefinition/index.vue')
     })
 
     const findTagViwer = computed(() => {
@@ -533,7 +530,6 @@ export default defineComponent({
       defaultParams,
       isShowSetupReport,
       containerManagerReportViwer,
-      componentRender,
       findTagViwer,
       // methods
       clearParameters,
