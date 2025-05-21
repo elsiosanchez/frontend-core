@@ -154,6 +154,7 @@ export function getView({
 export function runExport({
   format = 'xlsx',
   reportViewId,
+  isSharePrintFormat,
   printFormatId,
   reportId,
   pageSize,
@@ -164,8 +165,12 @@ export function runExport({
   tableName,
   recordId
 }) {
+  let url = `/report-engine/export/${reportId}/${format}`
+  if (isSharePrintFormat) {
+    url = `/report-engine/export/print-format/${printFormatId}/${format}`
+  }
   return request({
-    url: `/report-engine/export/${reportId}/${format}`,
+    url,
     method: 'post',
     data: {
       print_format_id: printFormatId,

@@ -1205,6 +1205,7 @@ const reportManager = {
       dispatch
     }, {
       containerUuid,
+      isSharePrintFormat = false,
       reportId,
       reportName,
       printFormatId,
@@ -1225,7 +1226,12 @@ const reportManager = {
       if (isEmptyValue(reportViewId) || reportViewId <= 0) {
         reportViewId = storedReportGenerated.reportViewId
       }
-      const { fieldsList } = reportDefinition
+      let fieldsList
+
+      if (!isEmptyValue(reportDefinition)) {
+        fieldsList = reportDefinition.fieldsList
+      }
+      // const { fieldsList } = reportDefinition
       const filters = getOperatorAndValue({
         format: 'array',
         containerUuid,
@@ -1249,6 +1255,7 @@ const reportManager = {
             reportViewId,
             pageSize,
             pageToken,
+            isSharePrintFormat,
             filters,
             tableName,
             recordId,
