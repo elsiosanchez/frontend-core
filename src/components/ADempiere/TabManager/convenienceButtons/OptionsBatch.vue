@@ -59,26 +59,26 @@
           <svg-icon
             v-if="action.isSvgIcon || action.svg === true"
             :icon-class="action.icon"
-            style="font-size: 18"
+            style="font-size: 18px"
           />
           <i
             v-else
             :class="action.icon"
-            style="font-size: 18"
+            style="font-size: 18px"
           />
           {{ action.name }}
         </el-dropdown-item>
         <el-dropdown-item
           command="deleteRecord"
         >
-          <svg-icon icon-class="delete" />
+          <svg-icon icon-class="delete" style="font-size: 18px" />
           {{ deleteTitle }}
         </el-dropdown-item>
         <el-dropdown-item
           divided
           command="disabledRecord"
         >
-          <svg-icon icon-class="disabled" />
+          <svg-icon icon-class="disabled" style="font-size: 18px" />
           {{ disableTitle }}
         </el-dropdown-item>
       </el-dropdown-menu>
