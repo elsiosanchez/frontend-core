@@ -59,7 +59,7 @@
           <svg-icon
             v-if="action.isSvgIcon || action.svg === true"
             :icon-class="action.icon"
-            style="font-size: 18px"
+            class="size-icon"
           />
           <i
             v-else
@@ -71,14 +71,14 @@
         <el-dropdown-item
           command="deleteRecord"
         >
-          <svg-icon icon-class="delete" style="font-size: 18px" />
+          <svg-icon icon-class="delete" class="size-icon" />
           {{ deleteTitle }}
         </el-dropdown-item>
         <el-dropdown-item
           divided
           command="disabledRecord"
         >
-          <svg-icon icon-class="disabled" style="font-size: 18px" />
+          <svg-icon icon-class="disabled" class="size-icon" />
           {{ disableTitle }}
         </el-dropdown-item>
       </el-dropdown-menu>
@@ -443,6 +443,9 @@ export default defineComponent({
   color: #909399;
     background: #f4f4f5;
     border-color: #d3d4d6;
+}
+.size-icon {
+  font-size: 18px;
 }
 // background-color: #e8f4ff;
 // color: #46a6ff;
