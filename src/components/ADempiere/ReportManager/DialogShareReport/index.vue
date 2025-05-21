@@ -379,6 +379,14 @@ export default defineComponent({
       return store.getters.getStoredReport(containerUuid)
     })
 
+    function keyAction(event) {
+      switch (event.srcKey) {
+        case 'close':
+          showDialog.value = false
+          break
+      }
+    }
+
     function loadData() {
       isLoading.value = true
       requestShareResources({
@@ -645,6 +653,7 @@ export default defineComponent({
       shortsKey,
       pageToken,
       storedMailTemplatesList,
+      keyAction,
       updateContent,
       updateMardown,
       copyToClipboard,

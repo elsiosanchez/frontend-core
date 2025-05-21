@@ -231,7 +231,7 @@ export default defineComponent({
           attributeValue
         }) {
           return store.dispatch('changeTableFieldAttribute', {
-            containerUuid,
+            tableName: containerUuid,
             columnName,
             attributeName,
             attributeValue
@@ -239,7 +239,7 @@ export default defineComponent({
         },
         changeFieldShowedFromUser({ containerUuid, fieldsShowed }) {
           store.dispatch('changeTableFieldShowedFromUser', {
-            containerUuid,
+            tableName: containerUuid,
             fieldsShowed
           })
         },

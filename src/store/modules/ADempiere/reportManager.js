@@ -1237,6 +1237,7 @@ const reportManager = {
       pageSize,
       pageToken,
       isDownload = true,
+      filters,
       isSummary,
       tableName,
       recordId,
@@ -1250,17 +1251,22 @@ const reportManager = {
       if (isEmptyValue(reportViewId) || reportViewId <= 0) {
         reportViewId = storedReportGenerated.reportViewId
       }
-      let fieldsList
 
-      if (!isEmptyValue(reportDefinition)) {
-        fieldsList = reportDefinition.fieldsList
+      if (isEmptyValue(filters)) {
+        let fieldsList
+        if (!isEmptyValue(reportDefinition)) {
+          fieldsList = reportDefinition.fieldsList
+        } else {
+          fieldsList = getters.getSelectionColumnsList({
+            tableName: containerUuid
+          })
+        }
+        filters = getOperatorAndValue({
+          format: 'array',
+          containerUuid: containerUuid,
+          fieldsList
+        })
       }
-      // const { fieldsList } = reportDefinition
-      const filters = getOperatorAndValue({
-        format: 'array',
-        containerUuid,
-        fieldsList
-      })
       const reportOutput = rootGetters.getReportOutput(reportId)
       return new Promise(resolve => {
         if (isLegacy) {
