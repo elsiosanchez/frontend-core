@@ -69,6 +69,20 @@ export function requestIdentifierColumns({
 }
 
 /**
+ * Load identifiers to build display column by rows
+ * @param {String} tableName
+ * @returns
+ */
+export function requestSelectionColumns({
+  tableName
+}) {
+  return request({
+    url: `/dictionary/selections/${tableName}`,
+    method: 'get'
+  })
+}
+
+/**
  * Load fields to query
  * @param {String} tableName
  * @returns

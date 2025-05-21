@@ -120,12 +120,13 @@ export default {
     },
 
     storedIdentifierColumns() {
-      const listIdentifier = store.getters.getIdentifier({
-        containerUuid: this.uuidForm
+      const listIdentifier = store.getters.getIdentifierColumns({
+        tableName: this.searchTableName
       })
       if (this.isEmptyValue(listIdentifier)) {
         return []
       }
+      // TODO: Validate if is only column name
       return listIdentifier
         .filter(field => {
           // return field.display_type === CHAR.id

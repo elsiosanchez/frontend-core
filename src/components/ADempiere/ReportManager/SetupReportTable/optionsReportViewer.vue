@@ -121,20 +121,19 @@
       </el-collapse-item>
 
       <!-- report parameters -->
-      <!-- <el-collapse-item v-if="isReportEnginer" name="2" class="parameters-fields">
+      <el-collapse-item v-if="isReportEnginer" name="2" class="parameters-fields">
         <template slot="title">
           <b style="font-size: 18px">
             {{ $t('actionMenu.changeParameters') }}
             <i style="font-size: 18px;" class="el-icon-set-up" />
           </b>
         </template>
-        <component
-          :is="componentRender"
+        <panel-definition
           :container-uuid="containerUuid"
-          :container-manager="containerManagerReportViwer"
+          :container-manager="containerManager"
           :is-tab-panel="true"
         />
-      </el-collapse-item> -->
+      </el-collapse-item>
     </el-collapse>
 
     <el-row
@@ -173,7 +172,7 @@
             icon="el-icon-check"
             :disabled="isLoadingReport"
             :loading="isLoadingReport"
-            @click="runReport()"
+            @click="containerManager.generateReport"
           />
         </samp>
       </el-col>
@@ -182,12 +181,16 @@
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
+import {
+  defineComponent,
+  ref
+} from '@vue/composition-api'
 
 import store from '@/store'
 
 // Components adn Mixins
 import DownloadButton from './downloadButton.vue'
+import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import PrintFormatField from './printFormatField.vue'
 import RefreshButton from './refreshButton.vue'
 import ReportSummary from './reportSummary.vue'
@@ -198,6 +201,7 @@ export default defineComponent({
 
   components: {
     DownloadButton,
+    PanelDefinition,
     PrintFormatField,
     RefreshButton,
     ReportSummary,
@@ -246,9 +250,9 @@ export default defineComponent({
     }
 
     function clearParameters() {
-      // store.dispatch('setReportDefaultValues', {
-      //   containerUuid: props.containerUuid
-      // })
+      store.dispatch('setTableDefaultValues', {
+        tableName: props.containerUuid
+      })
       store.commit('setReportGenerated', {
         containerUuid: props.containerUuid
       })

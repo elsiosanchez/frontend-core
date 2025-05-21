@@ -54,7 +54,6 @@ const initState = {
   },
   accountCombinations: {},
   tableHeaderList: {},
-  fileListIdentifier: [],
   AccountCombinationsShow: {},
   rowAccountCombinations: {}
 }
@@ -103,13 +102,6 @@ const AccountCombinations = {
       fieldsList = []
     }) {
       Vue.set(state.tableHeaderList, containerUuid, fieldsList)
-    },
-
-    setIdentifier(state, {
-      containerUuid,
-      fieldsList = []
-    }) {
-      Vue.set(state.fileListIdentifier, containerUuid, fieldsList)
     }
   },
 

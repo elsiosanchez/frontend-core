@@ -54,7 +54,8 @@ import { ROWS_OF_RECORDS_BY_PAGE_HIGH } from '@/utils/ADempiere/tableUtils'
 import { getToken } from '@/utils/auth'
 import {
   isEmptyValue,
-  getOperatorAndValue
+  getOperatorAndValue,
+  isSameValues
 } from '@/utils/ADempiere/valueUtils.js'
 import {
   buildLinkHref
@@ -989,12 +990,27 @@ const reportManager = {
           // summary: description,
           type: 'info'
         })
+        const storedReportOutput = getters.getReportOutput(tableName)
+        const storedReportGenerated = getters.getReportGenerated(tableName)
+
         let pageToken = generatePageToken({
           pageNumber
         })
         if (!isEmptyValue(pageToken)) {
           pageToken = undefined
         }
+
+        if (isEmptyValue(filters)) {
+          const fieldsList = getters.getSelectionColumnsList({
+            tableName
+          })
+          filters = getOperatorAndValue({
+            format: 'array',
+            containerUuid: tableName,
+            fieldsList
+          })
+        }
+
         getView({
           tableName,
           recordId,
@@ -1019,12 +1035,20 @@ const reportManager = {
             const recordsList = generateRecordsList(rows)
 
             // const printFormat = getters.getPrintFormat(printFormatId)
-            const columnsList = columns.map(columnItem => {
-              return {
-                ...columnItem,
-                withdColumn: widthColumn(columnItem)
-              }
-            })
+            let columnsList = []
+            const isReload = !isEmptyValue(storedReportOutput) && !isEmptyValue(storedReportOutput.columns)
+            const isSamePrintFormat = !isEmptyValue(storedReportGenerated) && isSameValues(storedReportGenerated.printFormatId, print_format_id)
+            if (isReload && isSamePrintFormat) {
+              columnsList = storedReportOutput.columns
+            } else {
+              // regenerate columns
+              columnsList = columns.map(columnItem => {
+                return {
+                  ...columnItem,
+                  withdColumn: widthColumn(columnItem)
+                }
+              })
+            }
 
             const reportOutput = {
               ...reportResponse,

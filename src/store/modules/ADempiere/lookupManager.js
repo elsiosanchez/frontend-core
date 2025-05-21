@@ -141,6 +141,7 @@ const lookupManager = {
       tableName,
       columnName,
       columnId,
+      columnUuid,
       isWithoutValidation
     }) {
       return new Promise(resolve => {
@@ -171,7 +172,7 @@ const lookupManager = {
         } else if (!isEmptyValue(browseFieldId)) {
           key += `|${browseFieldUuid}`
         } else if (!isEmptyValue(columnId)) {
-          key += `|${columnId}`
+          key += `|${columnUuid}`
         } else if (!isEmptyValue(tableName) && !isEmptyValue(columnName)) {
           key += `|${tableName}.${columnName}`
         }

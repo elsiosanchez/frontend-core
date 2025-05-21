@@ -22,6 +22,7 @@ import Vue from 'vue'
 // API Request Methods
 import {
   requestIdentifierColumns,
+  requestSelectionColumns,
   requestSearchFields
 } from '@/api/ADempiere/dictionary/field.ts'
 import { requestGridGeneralInfo } from '@/api/ADempiere/fields/search/index.js'
@@ -41,6 +42,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { generatePageToken } from '@/utils/ADempiere/dataUtils'
 import { generateField } from '@/utils/ADempiere/dictionaryUtils'
+import { isSalesTransaction } from '@/utils/ADempiere/contextUtils'
 import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttributes'
 
 const initState = {
@@ -66,13 +68,14 @@ const initState = {
 
   tableNameField: {},
   tableNameContainer: {},
-  setIdentifierColumns: {},
+  identifierColumns: {},
+  selectionColumns: {},
+  tableColumnsList: {},
   searchQueryFields: {},
   searchTableFields: {},
 
   generalInfoSearch: {},
   tableHeaderList: {},
-  fileListIdentifier: [],
   generalInfoShow: {},
   filtersList: {}
 }
@@ -88,12 +91,31 @@ const generalInfoSearch = {
       Vue.set(state.tableNameContainer, containerUuid, tableName)
     },
 
-    setSearchIdentifierFields(state, {
+    setIdentifierColumns(state, {
       tableName,
       fieldsList
     }) {
-      Vue.set(state.setIdentifierColumns, tableName, fieldsList)
+      Vue.set(state.identifierColumns, tableName, fieldsList)
     },
+    setSelectionColumnsList(state, {
+      tableName,
+      fieldsList = []
+    }) {
+      Vue.set(state.selectionColumns, tableName, fieldsList)
+    },
+
+    /**
+     * Change table field attribute
+     * @param {object} field
+     * @param {string} attributeName
+     * @param {mixed} attributeValue
+     */
+    changeTableFieldAttribute(state, payload) {
+      const { attributeName, attributeValue } = payload
+
+      payload.field[attributeName] = attributeValue
+    },
+
     setSearchQueryFields(state, {
       tableName,
       fieldsList
@@ -156,13 +178,6 @@ const generalInfoSearch = {
       isSOTrx = false
     }) {
       Vue.set(state.filtersList, containerUuid, isSOTrx)
-    },
-
-    setIdentifier(state, {
-      containerUuid,
-      fieldsList = []
-    }) {
-      Vue.set(state.fileListIdentifier, containerUuid, fieldsList)
     },
 
     /**
@@ -229,6 +244,136 @@ const generalInfoSearch = {
 
             resolve(identifier_fields)
           })
+      })
+    },
+
+    getSelectionColumnsFromServer({ commit, getters }, {
+      tableName
+    }) {
+      return new Promise((resolve, reject) => {
+        requestSelectionColumns({
+          tableName
+        })
+          .then(response => {
+            const {
+              selection_fields
+            } = response
+
+            const fieldsList = selection_fields.map(selectionColumn => {
+              const columnField = generateField({
+                fieldToGenerate: selectionColumn,
+                moreAttributes: {
+                  containerUuid: tableName,
+                  isAdvancedQuery: true
+                },
+                evaluateDefaultFieldShowed: ({ isShowedFromUser }) => {
+                  return true
+                }
+              })
+
+              return {
+                ...columnField
+                // isCustomField: true
+              }
+            })
+
+            commit('setSelectionColumnsList', {
+              tableName,
+              fieldsList: fieldsList
+            })
+            resolve(fieldsList)
+          })
+      })
+    },
+
+    /**
+     * Set default values to panel
+     * @param {string}  containerUuid
+     * @param {array} fieldsList
+     */
+    setTableDefaultValues({ dispatch, getters }, {
+      tableName,
+      fieldsList = []
+    }) {
+      return new Promise(resolve => {
+        if (isEmptyValue(fieldsList)) {
+          fieldsList = getters.getSelectionColumnsList({
+            tableName
+          })
+        }
+
+        const isSalesTransactionContext = isSalesTransaction({
+          containerUuid: tableName,
+          isRecord: false
+        })
+        const defaultAttributesList = getters.getParsedDefaultValues({
+          containerUuid: tableName,
+          isSOTrxDictionary: isSalesTransactionContext,
+          fieldsList
+        })
+
+        dispatch('updateValuesOfContainer', {
+          containerUuid: tableName,
+          // isOverWriteParent: true,
+          attributes: defaultAttributesList
+        })
+
+        resolve(defaultAttributesList)
+      })
+    },
+
+    changeTableFieldAttribute({ commit, getters }, {
+      tableName,
+      columnName,
+      field,
+      attributeName,
+      attributeValue
+    }) {
+      if (isEmptyValue(field)) {
+        field = getters.getStoredTableFieldFromColumnName({
+          tableName,
+          columnName
+        })
+      }
+
+      commit('changeTableFieldAttribute', {
+        field,
+        attributeName,
+        attributeValue
+      })
+    },
+
+    /**
+     * Used by components/fields/filterFields
+     * @param {string} containerUuid
+     * @param {array} fieldsShowed fields to displayed
+     * @param {array} fieldsList all fields list in container
+     */
+    changeTableFieldShowedFromUser({ commit, dispatch, getters, rootGetters }, {
+      tableName,
+      fieldsShowed,
+      fieldsList = []
+    }) {
+      if (isEmptyValue(fieldsList)) {
+        fieldsList = getters.getSelectionColumnsList({
+          tableName
+        })
+      }
+
+      fieldsList.forEach(itemField => {
+        const { column_name } = itemField
+
+        const isShowedFromUser = fieldsShowed.includes(column_name)
+        if (itemField.isShowedFromUser === isShowedFromUser) {
+          // no to mutate the state unnecessarily
+          return
+        }
+
+        commit('changeTableFieldAttribute', {
+          field: itemField,
+          attributeName: 'isShowedFromUser',
+          attributeValue: isShowedFromUser
+        })
       })
     },
 
@@ -556,8 +701,31 @@ const generalInfoSearch = {
       return state.tableNameContainer[containerUuid]
     },
     getIdentifierColumns: (state) => ({ tableName }) => {
-      return state.setIdentifierColumns[tableName] || []
+      return state.identifierColumns[tableName] || []
     },
+
+    getSelectionColumnsList: (state) => ({ tableName }) => {
+      return state.selectionColumns[tableName] || []
+    },
+    getStoredTableFieldFromColumnName: (state, getters) => ({
+      tableName,
+      columnName,
+      fieldsList
+    }) => {
+      if (isEmptyValue(fieldsList)) {
+        fieldsList = getters.getSelectionColumnsList({
+          tableName
+        })
+        if (isEmptyValue(fieldsList)) {
+          return undefined
+        }
+      }
+
+      return fieldsList.find(itemField => {
+        return itemField.column_name === columnName
+      })
+    },
+
     getSearchQueryFields: (state) => ({ tableName }) => {
       return state.searchQueryFields[tableName] || []
     },
@@ -620,9 +788,6 @@ const generalInfoSearch = {
     },
     getGeneralInfoShow: (state) => ({ containerUuid }) => {
       return state.generalInfoShow[containerUuid] || false
-    },
-    getIdentifier: (state) => ({ containerUuid }) => {
-      return state.fileListIdentifier[containerUuid] || []
     },
     getFilterList: (state) => ({ containerUuid }) => {
       return state.filtersList[containerUuid] || false

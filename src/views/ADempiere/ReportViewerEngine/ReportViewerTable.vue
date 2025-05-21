@@ -100,6 +100,7 @@ import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { containerManager } from '@/utils/ADempiere/dictionary/report'
+import { isHiddenField } from '@/utils/ADempiere/references'
 
 export default defineComponent({
   name: 'ReportViewerTable',
@@ -123,11 +124,17 @@ export default defineComponent({
       return tableName.toString()
     })
 
-    const storedPanelReport = computed(() => {
-      return store.getters.getModalDialogManager({
-        containerUuid: containerUuid.value
+    const tableFiltersList = computed(() => {
+      return store.getters.getSelectionColumnsList({
+        tableName: containerUuid.value
       })
     })
+
+    // const storedPanelReport = computed(() => {
+    //   return store.getters.getModalDialogManager({
+    //     containerUuid: containerUuid.value
+    //   })
+    // })
 
     const storedReportOutput = computed(() => {
       return store.getters.getReportOutput(tableName)
@@ -166,17 +173,174 @@ export default defineComponent({
     })
 
     const containerManagerReportViwer = computed(() => {
-      const modalDialogStored = storedPanelReport.value
-      if (!isEmptyValue(modalDialogStored) && !isEmptyValue(modalDialogStored.containerManager)) {
-        return {
-          ...containerManager,
-          ...modalDialogStored.containerManager,
-          generateReport
-        }
-      }
+      // const modalDialogStored = storedPanelReport.value
+      // if (!isEmptyValue(modalDialogStored) && !isEmptyValue(modalDialogStored.containerManager)) {
+      //   return {
+      //     ...containerManager,
+      //     ...modalDialogStored.containerManager,
+      //     generateReport
+      //   }
+      // }
       return {
         ...containerManager,
-        generateReport
+        generateReport,
+
+        getFieldsList({ containerUuid }) {
+          return store.getters.getSelectionColumnsList({
+            tableName: containerUuid
+          })
+        },
+        getFieldsToHidden: ({ parentUuid, containerUuid, fieldsList, showedMethod, isEvaluateDefaultValue, isTable }) => {
+          return store.getters.getSelectionColumnsList({
+            tableName: containerUuid
+          })
+        },
+
+        actionPerformed: ({ field, value }) => {
+          // without logics
+        },
+
+        setDefaultValues: ({ containerUuid }) => {
+          store.dispatch('setTableDefaultValues', {
+            tableName: containerUuid
+          })
+        },
+        isDisplayedField({ display_type }) {
+          // button field not showed
+          if (isHiddenField(display_type)) {
+            return false
+          }
+
+          // verify if field is active
+          return true
+        },
+        isDisplayedDefault: ({ isShowedFromUser }) => {
+          return isShowedFromUser
+        },
+        isReadOnlyField: ({ is_read_only }) => {
+          return false
+        },
+        isMandatoryField: ({ is_mandatory }) => {
+          return false
+        },
+
+        changeFieldAttribure({
+          containerUuid,
+          columnName,
+          attributeName,
+          attributeValue
+        }) {
+          return store.dispatch('changeTableFieldAttribute', {
+            containerUuid,
+            columnName,
+            attributeName,
+            attributeValue
+          })
+        },
+        changeFieldShowedFromUser({ containerUuid, fieldsShowed }) {
+          store.dispatch('changeTableFieldShowedFromUser', {
+            containerUuid,
+            fieldsShowed
+          })
+        },
+
+        /**
+         * @returns Promisse with value and displayedValue
+         */
+        getDefaultValue({ parentUuid, containerUuid, uuid, id, contextColumnNames, columnName, value }) {
+          return store.dispatch('getDefaultValueFromServer', {
+            parentUuid,
+            containerUuid,
+            contextColumnNames,
+            id,
+            columnId: id,
+            uuid,
+            columnUuid: uuid,
+            //
+            columnName,
+            value
+          })
+        },
+        getLookupList({ parentUuid, containerUuid, contextColumnNames, id, uuid, searchValue, isAddBlankValue = false, blankValue }) {
+          return store.dispatch('getLookupListFromServer', {
+            parentUuid,
+            containerUuid,
+            contextColumnNames,
+            columnId: id,
+            columnUuid: uuid,
+            searchValue,
+            // app attributes
+            isAddBlankValue,
+            blankValue
+          })
+        },
+        getSearchDefinition({ parentUuid, containerUuid, contextColumnNames, tableName, columnName, uuid, id }) {
+          return store.dispatch('getSearchFieldsFromServer', {
+            parentUuid,
+            containerUuid,
+            contextColumnNames,
+            uuid,
+            columnId: id,
+            tableName,
+            columnName
+          })
+        },
+        getSearchRecordsList({ parentUuid, containerUuid, contextColumnNames, tableName, columnName, id, filters, searchValue, pageNumber, pageSize }) {
+          return store.dispatch('getSearchRecordsFromServer', {
+            parentUuid,
+            containerUuid,
+            contextColumnNames,
+            columnId: id,
+            tableName,
+            columnName,
+            filters,
+            searchValue,
+            pageNumber,
+            pageSize
+          })
+        },
+
+        warehouseLocatorSearch({
+          containerUuid,
+          parentUuid,
+          warehouseId,
+          contextColumnNames,
+          contextAttributesList,
+          id,
+          searchValue,
+          // tableName,
+          // columnName,
+          pageNumber,
+          pageSize
+        }) {
+          return store.dispatch('listWarehouseLocatorsFromServer', {
+            containerUuid,
+            parentUuid,
+            warehouseId,
+            contextColumnNames,
+            contextAttributesList,
+            columnId: id,
+            searchValue,
+            // tableName,
+            // columnName,
+            pageNumber,
+            pageSize
+          })
+        },
+
+        searchFieldZoom({
+          id,
+          columnName,
+          tabTableName,
+          valueField
+        }) {
+          return store.dispatch('getListZoomWindowsRequest', {
+            column_id: id,
+            column_name: columnName,
+            table_name: tabTableName,
+            valueField
+          })
+        }
       }
     })
 
@@ -231,6 +395,18 @@ export default defineComponent({
       })
     }
 
+    function loadTableFilters() {
+      if (isEmptyValue(tableName)) {
+        return
+      }
+      if (!isEmptyValue(tableFiltersList.value)) {
+        return
+      }
+      store.dispatch('getSelectionColumnsFromServer', {
+        tableName: tableName
+      })
+    }
+
     function handleClose() {
       showPanelConfigReport(false)
     }
@@ -248,6 +424,7 @@ export default defineComponent({
 
     onMounted(() => {
       displayReport(storedReportOutput.value)
+      loadTableFilters()
     })
 
     return {
