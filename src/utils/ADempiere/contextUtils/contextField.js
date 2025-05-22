@@ -152,6 +152,17 @@ export function getContextDefaultValue({
   is_key
 }) {
   let parsedDefaultValue = default_value
+  // default value is empty
+  if (String(default_value).trim() === '-1') {
+    parsedDefaultValue = parsedValueComponent({
+      columnName: column_name,
+      componentPath,
+      displayType: display_type,
+      isMandatory: is_mandatory,
+      value: default_value
+    })
+    return parsedDefaultValue
+  }
 
   const isContextValue = String(parsedDefaultValue).includes('@')
 

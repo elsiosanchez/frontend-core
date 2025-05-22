@@ -1007,7 +1007,9 @@ export function getOperatorAndValue({
 
   fieldsList.forEach(field => {
     // default operator
-    const { columnName, columnNameTo, operator, valueType, display_type } = field
+    const {
+      columnName, columnNameTo, operator, valueType, display_type
+    } = field
 
     let value, valueTo, values
 
