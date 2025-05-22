@@ -17,7 +17,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <template>
   <el-row>
     <el-result v-if="isError" :title="message" icon="error" class="result-cancelet-info" />
-    <el-result v-else-if="statusPayment === 'A'" :title="message" icon="error" class="result-cancelet-info" />
+    <el-result v-else-if="statusPayment === 'A'" :title="message" icon="success" class="result-cancelet-info" />
     <el-result v-else :title="mainInfoMessage" class="result-cancelet-info">
       <template slot="icon">
         <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />

@@ -129,7 +129,7 @@
           </b>
         </el-button>
         <el-button
-          v-else-if="getInfoOnline.status === 'R' || 'E'"
+          v-else-if="getInfoOnline.status === 'R' || getInfoOnline.status === 'E'"
           type="danger"
           class="button-base-icon"
           @click="cancelPayment(payment)"
@@ -192,7 +192,7 @@
           </b>
         </el-button>
         <el-button
-          v-else-if="getInfoOnline.status === 'R' || 'E'"
+          v-else-if="getInfoOnline.status === 'R' || getInfoOnline.status === 'E'"
           type="danger"
           class="button-base-icon"
           @click="cancelPayment(payment)"

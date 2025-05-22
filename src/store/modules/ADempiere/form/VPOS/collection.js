@@ -602,6 +602,19 @@ export default {
               }
             })
             if (status === 'A') {
+              if (existPaymetOnline) {
+                const updatePayment = getters.getListPayments.map(payments => {
+                  if (paymentId === payments.id) {
+                    return {
+                      ...payments,
+                      response_status: status,
+                      response_message: 'APROBADA'
+                    }
+                  }
+                  return payments
+                })
+                commit('setListPayments', updatePayment)
+              }
               commit('setShowedModalDialogVPOS', {
                 isShowed: false
               })
