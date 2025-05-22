@@ -55,7 +55,7 @@ export const ROWS_OF_RECORDS_BY_PAGE_HIGH = 100
  * Default 50
  */
 export const NUMBER_RECORDS_PER_PAGE = [
-  25, 50, 100, 250, 500
+  25, 50, 100, 250
 ]
 
 /**
