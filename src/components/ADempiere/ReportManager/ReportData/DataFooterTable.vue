@@ -151,12 +151,18 @@ export default defineComponent({
 
     // Methods
     function handleChangePageSize(pageSize) {
-      store.commit('setReportGeneratedPageSize', pageSize)
+      store.commit('setReportGeneratedPageSize', {
+        containerUuid: props.containerUuid,
+        pageSize
+      })
       props.containerManager.generateReport()
     }
 
     function handleChangePageNumber(pageNumber) {
-      store.commit('setReportGeneratedPageNumber', pageNumber)
+      store.commit('setReportGeneratedPageNumber', {
+        containerUuid: props.containerUuid,
+        pageNumber
+      })
       props.containerManager.generateReport()
     }
 
