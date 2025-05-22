@@ -90,7 +90,8 @@ const defaultValueManager = {
       columnUuid,
       tableName,
       columnName,
-      value
+      value,
+      defaultValue
     }) {
       const defaultEmptyResponse = {
         uuid: undefined,
@@ -115,7 +116,10 @@ const defaultValueManager = {
         })
 
         // fill context value to continue
-        if (isContextSQL(value) && !isSameSize(contextColumnNames, Object.values(contextAttributesList))) {
+        const contextValuesList = Object.values(contextAttributesList)
+        const isWithoutValues = !isSameSize(contextColumnNames, contextValuesList) ||
+          contextValuesList.some(contextValue => isEmptyValue(contextValue))
+        if (isContextSQL(defaultValue) && isWithoutValues) {
           resolve({
             parentUuid,
             containerUuid,

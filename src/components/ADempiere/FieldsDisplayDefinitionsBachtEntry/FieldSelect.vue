@@ -325,10 +325,10 @@ export default defineComponent({
         parentUuid,
         containerUuid,
         contextColumnNames: context_column_names,
-        defaultValue: default_value,
         uuid,
         id: internal_id,
         columnName,
+        default_value: default_value,
         value: defaultValue.value
       })
         .then(responseLookupItem => {

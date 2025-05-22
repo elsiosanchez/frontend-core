@@ -209,7 +209,9 @@ export default {
       return {}
     },
     parentTabColumName() {
-      if (isEmptyValue(this.parentTabs)) return ''
+      if (isEmptyValue(this.parentTabs)) {
+        return ''
+      }
       return this.parentTabs.table_name + IDENTIFIER_COLUMN_SUFFIX
     }
   },
@@ -245,19 +247,6 @@ export default {
       immediate: true
     },
     value(newValue) {
-      // Value Exists Inside the List
-      const isExistValue = this.findOption(newValue)
-
-      if (!isEmptyValue(isExistValue) && isEmptyValue(isExistValue.value)) {
-        this.getValueOfLookup()
-        return
-      }
-      if (isEmptyValue(newValue)) {
-        this.displayedValue = undefined
-        this.uuidValue = undefined
-        return
-      }
-
       this.setDisplayedValue()
     },
     recordUuid(value) {
@@ -320,29 +309,31 @@ export default {
         return
       }
 
-      this.optionsList = this.getStoredLookupAll
+      this.optionsList = [...this.getStoredLookupAll]
       this.forceRerender()
 
       // find local list value
       const option = this.findOption(value)
-      if (!isEmptyValue(option.uuid)) {
-        this.uuidValue = option.uuid
-      }
-      if (!isEmptyValue(option.displayedValue)) {
-        this.displayedValue = option.displayedValue
-        return
-      }
+      if (!isEmptyValue(option) && !isEmptyValue(option.value)) {
+        if (!isEmptyValue(option.uuid)) {
+          this.uuidValue = option.uuid
+        }
+        if (!isEmptyValue(option.displayedValue)) {
+          this.displayedValue = option.displayedValue
+          return
+        }
 
-      // add to list if no exist (with callouts, table record)
-      const displayedValue = this.displayedValue
-      if (!isEmptyValue(displayedValue)) {
-        // verify if exists to add (in table)
-        this.optionsList.push({
-          value,
-          uuid: option.uuid,
-          displayedValue
-        })
-        return
+        // add to list if no exist (with callouts, table record)
+        const displayedValue = this.displayedValue
+        if (!isEmptyValue(displayedValue)) {
+          // verify if exists to add (in table)
+          this.optionsList.push({
+            value,
+            uuid: option.uuid,
+            displayedValue
+          })
+          return
+        }
       }
 
       // request displayed value

@@ -257,7 +257,7 @@ export default {
       ) {
         return this.containerManager.getDefaultValue({
           contextColumnNames: context_column_names,
-          defaultValue: default_value,
+          default_value: default_value,
           columnName: column_name,
           value: this.value,
           id: internal_id,

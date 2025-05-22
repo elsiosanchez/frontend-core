@@ -56,7 +56,7 @@ export const TAB_CONTEXT_PREFIX = /\d\|/gi // evaluator.TAB_CONTEXT_PREFIX
 /**
  * Prefix context of sql value prefix (@SQL=) or (@SQL =)
  */
-export const SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/gi // evaluator.SQL_CONTEXT_PREFIX
+export const SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/i // evaluator.SQL_CONTEXT_PREFIX
 
 /**
  * Evaluate if is context string start with `@SQL=` or `@SQL =`

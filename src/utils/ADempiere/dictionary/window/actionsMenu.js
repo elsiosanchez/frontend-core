@@ -366,6 +366,12 @@ export const refreshRecord = {
           ]
         })
 
+        // Discard local changes and overwrite from server
+        store.commit('clearPersistenceQueue', {
+          containerUuid,
+          recordUuid
+        })
+
         // update fields values
         store.dispatch('updateValuesOfContainer', {
           parentUuid,

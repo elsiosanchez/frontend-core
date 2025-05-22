@@ -557,6 +557,11 @@ const windowManager = {
               }
               currentRecordUuid = currentRow[COLUMNNAME_UUID]
               currentRecordId = currentRow[table_name + '_ID']
+              // Discard local changes and overwrite from server
+              commit('clearPersistenceQueue', {
+                containerUuid,
+                recordUuid: currentRecordUuid
+              })
 
               if (isParentTab) {
                 setRecordPath({

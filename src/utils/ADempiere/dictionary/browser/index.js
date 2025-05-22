@@ -342,7 +342,7 @@ export const containerManager = {
   /**
    * @returns Promisse with value and displayedValue
    */
-  getDefaultValue({ parentUuid, containerUuid, name, uuid, id, contextColumnNames, inTable, rowUid, columnName, value }) {
+  getDefaultValue({ parentUuid, containerUuid, name, uuid, id, contextColumnNames, inTable, rowUid, columnName, default_value, value }) {
     return store.dispatch('getDefaultValueFromServer', {
       parentUuid,
       containerUuid,
@@ -353,6 +353,7 @@ export const containerManager = {
       browseFieldUuid: uuid,
       //
       columnName,
+      defaultValue: default_value,
       value
     }).then(response => {
       let newValueByServer, newDisplayValueByServer

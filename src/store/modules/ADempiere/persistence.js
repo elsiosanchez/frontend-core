@@ -621,14 +621,20 @@ const persistence = {
           return valuesList
             // only changes with default value
             .filter(attribute => {
-              const { value, columnName } = attribute
+              const { columnName, value } = attribute
+              if (columnName.startsWith(DISPLAY_COLUMN_PREFIX)) {
+                return false
+              }
               return !isSameValues(value, defaultRow[columnName])
             })
         }
         return valuesList
           // only changes
           .filter(attribute => {
-            const { value, oldValue } = attribute
+            const { columnName, value, oldValue } = attribute
+            if (columnName.startsWith(DISPLAY_COLUMN_PREFIX)) {
+              return false
+            }
             if (value === 0) {
               return true
             }
@@ -650,7 +656,10 @@ const persistence = {
           ...attributesMap.values()
         ]
           .filter(attribute => {
-            const { value, oldValue } = attribute
+            const { columnName, value, oldValue } = attribute
+            if (columnName.startsWith(DISPLAY_COLUMN_PREFIX)) {
+              return false
+            }
             return !isSameValues(value, oldValue)
           })
       }

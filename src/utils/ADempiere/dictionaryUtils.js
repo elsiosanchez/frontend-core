@@ -182,18 +182,20 @@ export function generateField({
       }
     }
 
-    parsedDefaultValue = getContextDefaultValue({
-      ...fieldToGenerate,
-      isColumnReadOnlyForm,
-      parentUuid: moreAttributes.parentUuid,
-      containerUuid: moreAttributes.containerUuid,
-      componentPath: componentReference.componentPath,
-      isSOTrxDictionary
-    })
-
     if (isContextSQL(fieldToGenerate.default_value)) {
       // isShowedFromUser = true
+      // not parsed `@SQL=` to get from server
       isGetServerValue = true
+      parsedDefaultValue = null // clear and get server
+    } else {
+      parsedDefaultValue = getContextDefaultValue({
+        ...fieldToGenerate,
+        isColumnReadOnlyForm,
+        parentUuid: moreAttributes.parentUuid,
+        containerUuid: moreAttributes.containerUuid,
+        componentPath: componentReference.componentPath,
+        isSOTrxDictionary
+      })
     }
 
     // Value To

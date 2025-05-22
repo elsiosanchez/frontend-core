@@ -1107,6 +1107,7 @@ export const containerManager = {
       fieldUuid: uuid,
       //
       columnName,
+      defaultValue: default_value,
       value
     }).then(response => {
       const recordUuid = store.getters.getUuidOfContainer(containerUuid)

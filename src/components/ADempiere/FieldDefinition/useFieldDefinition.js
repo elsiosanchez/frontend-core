@@ -196,6 +196,7 @@ export default function useFieldDefinition({ fieldMetadata, containerManager }) 
         uuid: fieldMetadata.uuid,
         id: fieldMetadata.internal_id,
         columnName: fieldMetadata.column_name,
+        default_value: fieldMetadata.default_value,
         value: value.value
       })
     }

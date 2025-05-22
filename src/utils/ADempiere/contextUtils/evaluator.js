@@ -61,7 +61,7 @@ export class evaluator {
   /**
    * Prefix context of sql value prefix (@SQL=) or (@SQL =)
    */
-  static SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/gi
+  static SQL_CONTEXT_PREFIX = /^(@SQL)\s*=/i
 
   /**
    * Evaluate logic's

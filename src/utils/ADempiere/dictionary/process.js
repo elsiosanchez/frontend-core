@@ -275,7 +275,7 @@ export const containerManager = {
   /**
    * @returns Promisse with value and displayedValue
    */
-  getDefaultValue({ parentUuid, containerUuid, uuid, id, contextColumnNames, columnName, value }) {
+  getDefaultValue({ parentUuid, containerUuid, uuid, id, contextColumnNames, columnName, default_value, value }) {
     return store.dispatch('getDefaultValueFromServer', {
       parentUuid,
       containerUuid,
@@ -286,6 +286,7 @@ export const containerManager = {
       processParameterUuid: uuid,
       //
       columnName,
+      defaultValue: default_value,
       value
     })
   },

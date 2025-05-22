@@ -154,7 +154,7 @@ const actions = {
               valueGetDisplayColumn = await dispatch('getDefaultValueFromServer', {
                 parentUuid,
                 containerUuid,
-                query: itemField.default_value,
+                defaultValue: itemField.default_value,
                 columnName
               })
               values[columnName] = valueGetDisplayColumn

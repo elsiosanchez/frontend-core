@@ -25,7 +25,13 @@ import {
 
 // Utils and Helper Methods
 import evaluator from '@/utils/ADempiere/contextUtils/evaluator'
-import { getContext, parseContext, getPreference, isSalesTransaction } from '@/utils/ADempiere/contextUtils'
+import {
+  getContext,
+  getPreference,
+  isContextSQL,
+  isSalesTransaction,
+  parseContext
+} from '@/utils/ADempiere/contextUtils'
 import { arrayMatches, isEmptyValue, parsedValueComponent } from '@/utils/ADempiere/valueUtils'
 import { isNumberField, isIdentifierField } from '@/utils/ADempiere/references'
 
@@ -222,14 +228,19 @@ export function getContextDefaultValue({
     })
   }
 
-  // convert to element-ui compatible value
-  parsedDefaultValue = parsedValueComponent({
-    columnName: column_name,
-    componentPath,
-    displayType: display_type,
-    isMandatory: is_mandatory,
-    value: parsedDefaultValue
-  })
+  if (isContextSQL(default_value)) {
+    // not parsed `@SQL=` to get from server
+    parsedDefaultValue = null
+  } else {
+    // convert to element-ui compatible value
+    parsedDefaultValue = parsedValueComponent({
+      columnName: column_name,
+      componentPath,
+      displayType: display_type,
+      isMandatory: is_mandatory,
+      value: parsedDefaultValue
+    })
+  }
 
   return parsedDefaultValue
 }

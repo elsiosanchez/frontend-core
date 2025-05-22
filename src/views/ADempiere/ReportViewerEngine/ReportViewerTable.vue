@@ -247,7 +247,7 @@ export default defineComponent({
         /**
          * @returns Promisse with value and displayedValue
          */
-        getDefaultValue({ parentUuid, containerUuid, uuid, id, contextColumnNames, columnName, value }) {
+        getDefaultValue({ parentUuid, containerUuid, uuid, id, contextColumnNames, columnName, default_value, value }) {
           return store.dispatch('getDefaultValueFromServer', {
             parentUuid,
             containerUuid,
@@ -258,6 +258,7 @@ export default defineComponent({
             columnUuid: uuid,
             //
             columnName,
+            defaultValue: default_value,
             value
           })
         },
