@@ -4,7 +4,6 @@ import store from '@/store'
 // Utils and Helper Methods
 import getPageTitle from '@/utils/get-page-title'
 // import { pathImageWindows } from '@/utils/ADempiere/resource'
-import { isEmptyValue } from '@/utils/ADempiere'
 
 function getPageFavicon({
   logo
@@ -42,23 +41,3 @@ export function setSystemValues({
     })
 }
 
-/**
- * Get Session Information (Session Logo, User Logo and Session Name)
- */
-export function setSessionValues({
-  routeName
-}) {
-  const {
-    client
-  } = store.getters['user/getRole']
-  const nameSystem = client ? client.name : ''
-  // Set Page Title
-  document.title = getPageTitle({
-    key: routeName,
-    nameSystem
-  })
-
-  if (isEmptyValue(client)) return
-  const link = 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4'
-  document.head.appendChild(link)
-}

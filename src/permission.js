@@ -4,7 +4,7 @@ import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
-import { setSystemValues, setSessionValues } from '@/utils/set-value-page.js'
+import { setSystemValues } from '@/utils/set-value-page.js'
 import { isEmptyValue } from '@/utils/ADempiere'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -20,9 +20,9 @@ router.beforeEach(async(to, from, next) => {
 
   if (hasToken) {
     // Set Page Title and Favicon
-    setSessionValues({
-      routeName: to.meta.title
-    })
+    // setSessionValues({
+    //   routeName: to.meta.title
+    // })
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
