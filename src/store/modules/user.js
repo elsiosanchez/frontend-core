@@ -93,7 +93,7 @@ const state = {
   precisionContext: {},
   precisionUOMContext: {},
   reportEngineVersion: {},
-  logoUrl: 'https://avatars1.githubusercontent.com/u/1263359?s=200&v=4',
+  logoUrl: 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4',
   userImageUrl: ''
 }
 
@@ -934,7 +934,7 @@ const actions = {
           commit('setLogo', url)
           return
         }
-        commit('setLogo', 'https://avatars1.githubusercontent.com/u/1263359?s=200&v=4')
+        commit('setLogo', 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4')
       })
   },
   async searchImageUserOnServer({ commit, getters }, {

@@ -74,7 +74,7 @@ export default {
       if (logoUrl) {
         return logoUrl
       }
-      return 'https://avatars1.githubusercontent.com/u/1263359?s=200&v=4'
+      return 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4'
     }
   },
   methods: {

@@ -14,7 +14,7 @@ function getPageFavicon({
     link = document.createElement('link')
     link.rel = 'icon'
   }
-  link.href = logo
+  link.href = 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4'
   document.head.appendChild(link)
   return link
 }
@@ -59,8 +59,6 @@ export function setSessionValues({
   })
 
   if (isEmptyValue(client)) return
-  const link = getPageFavicon({
-    logo: store.getters.getLogoUrl
-  })
+  const link = 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4'
   document.head.appendChild(link)
 }

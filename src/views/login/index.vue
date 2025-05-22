@@ -29,13 +29,18 @@
       autocomplete="on"
       label-position="left"
     >
+      <el-row :gutter="20">
+        <el-col :span="12" :offset="6">
+          <el-image src="https://avatars.githubusercontent.com/u/54648828" fit="contain" />
+        </el-col>
+      </el-row>
       <el-row>
-        <el-col :span="11" :offset="5">
+        <!-- <el-col :span="24" :offset="10">
           <img
             :src="logo"
             class="image"
           >
-        </el-col>
+        </el-col> -->
         <el-col :span="20">
           <div class="title-container">
             <h3 class="title">
@@ -214,7 +219,7 @@ export default {
       if (logoUrl) {
         return logoUrl
       }
-      return 'https://avatars1.githubusercontent.com/u/1263359?s=200&v=4'
+      return 'https://avatars.githubusercontent.com/u/54648828?s=200&v=4'
     }
   },
 
