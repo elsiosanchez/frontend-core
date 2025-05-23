@@ -207,7 +207,7 @@ export default {
       // find local list value
       const optionsList = this.getStoredLookupsAndDefaultValues
       const option = optionsList.find(item => item.value === value)
-      if (option) {
+      if (!isEmptyValue(option) && !isEmptyValue(option.value)) {
         if (!isEmptyValue(option.uuid)) {
           this.uuidValue = option.uuid
         }
@@ -215,6 +215,7 @@ export default {
         if (!isEmptyValue(option.displayedValue)) {
           this.displayedValue = option.displayedValue
         }
+        return
       }
 
       // request lookup
