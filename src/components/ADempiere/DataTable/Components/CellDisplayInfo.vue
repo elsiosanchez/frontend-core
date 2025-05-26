@@ -118,7 +118,7 @@
         >
       </el-popover>
 
-      <p v-else key="only-value" style="margin: 0px !important;">
+      <p v-else key="only-value" :style="styleDisplay">
         {{ displayedValue }}
       </p>
     </span>
@@ -171,6 +171,10 @@ export default defineComponent({
     columnWidth: {
       type: Number,
       default: 23
+    },
+    styleDisplay: {
+      type: String,
+      default: 'margin: 0px!important;'
     }
   },
 

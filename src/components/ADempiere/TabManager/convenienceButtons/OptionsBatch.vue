@@ -86,23 +86,49 @@
     <el-popover
       v-model="isVisibleConfirmDelete"
       placement="top"
-      width="450"
+      width="485"
     >
-      <el-descriptions :title="$t(title)" direction="vertical" :column="tabAttributes.identifierColumns.length" border>
-        <el-descriptions-item
-          v-for="(item, index) in tabAttributes.identifierColumns"
-          :key="index"
-          :label="item.name"
-          :content-style="{'max-height': '200px', 'display': 'block', 'overflow': 'auto'}"
-        >
-          <cell-display-info
-            v-for="(record, key) in recordsListToDelete"
-            :key="key"
-            :field-attributes="item"
-            :data-row="record"
-          />
-        </el-descriptions-item>
-      </el-descriptions>
+      <p style="margin-left: 5px;margin-bottom: 5px;margin-top: 5px;font-size: 18px;">
+        <b>
+          {{ $t(title) }}
+        </b>
+      </p>
+      <el-card
+        shadow="never"
+        :body-style="{ padding: '0px' }"
+      >
+        <div class="table-options-delete">
+          <el-table
+            :data="recordsListToDelete"
+            :border="true"
+            style="width: 100%"
+          >
+            <el-table-column
+              v-for="(fieldAttributes, index) in tabAttributes.identifierColumns"
+              :key="index"
+              :prop="fieldAttributes.columnName"
+              header-align="center"
+              label-class-name="header-table"
+              width="auto"
+            >
+              <template slot="header">
+                <b>
+                  {{ fieldAttributes.name }}
+                </b>
+              </template>
+              <template slot-scope="scope">
+                <cell-display-info
+                  key="info-value"
+                  :class="'cell-delete'"
+                  :field-attributes="fieldAttributes"
+                  :data-row="scope.row"
+                  :style-display="'margin: 0px 10px!important;'"
+                />
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-card>
       <div
         style="text-align: right; margin: 0;margin-top: 5px;"
       >
@@ -223,9 +249,9 @@ export default defineComponent({
     })
 
     const selectionsRecords = computed(() => {
-      return containerManager.getSelection({
+      return containerManager.getRecordsList({
         containerUuid: props.containerUuid
-      })
+      }).filter(i => i.isSelectedRow)
     })
 
     const recordsListToDelete = computed(() => {
@@ -447,6 +473,47 @@ export default defineComponent({
 .size-icon {
   font-size: 18px;
 }
-// background-color: #e8f4ff;
-// color: #46a6ff;
+.table-options-delete {
+  height: 100%;
+  overflow: auto;
+  .el-table {
+    height: 100% !important;
+    overflow: hidden !important;
+  }
+  .el-table .el-table__cell {
+    padding: 0px !important;
+    line-height: 1.5 !important;
+  }
+  .el-table .success-row {
+    background: #e8f4ff;
+  }
+  .el-table .cell {
+    padding: 0px !important;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 1.5 !important;
+  }
+  .el-table .cell:hover {
+    border: 1px solid blue;
+    overflow: hidden;
+  }
+  .el-table th.el-table__cell > .cell{
+    padding-left: 5px !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .header-table {
+    padding: 0px !important;
+    background: #f5f7fa;
+  }
+}
+.header-table {
+  padding: 0px !important;
+  background: #f5f7fa;
+}
 </style>
