@@ -432,12 +432,12 @@ const windowManager = {
         if (isEmptyValue(pageNumber)) {
           pageNumber = storedPage
         }
-        let pageToken = generatePageToken({
+        const pageToken = generatePageToken({
           pageNumber
         })
-        if (!isEmptyValue(pageToken)) {
-          pageToken = ''
-        }
+        // if (!isEmptyValue(pageToken)) {
+        //   pageToken = ''
+        // }
         // search value to filter
         if (isEmptyValue(searchValue)) {
           searchValue = getters.getSearchValueTabRecordsList({
