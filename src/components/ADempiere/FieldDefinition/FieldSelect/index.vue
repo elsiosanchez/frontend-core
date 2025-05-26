@@ -143,10 +143,10 @@ export default {
           columnName: column_name
         })
       },
-      set(value) {
+      set(newValue) {
         const { column_name, containerUuid, inTable } = this.metadata
         // Before handling the change
-        this.preHandleChange(value)
+        this.preHandleChange(newValue)
         // table records values
         if (inTable) {
           this.containerManager.setCell({
@@ -154,10 +154,10 @@ export default {
             rowIndex: this.metadata.rowIndex,
             rowUid: this.metadata.rowUid,
             columnName: column_name,
-            value
+            value: newValue
           })
         } else {
-          const option = this.findOption(value)
+          const option = this.findOption(newValue)
           // always update uuid
           this.uuidValue = option.uuid
 
@@ -165,7 +165,7 @@ export default {
             parentUuid: this.metadata.parentUuid,
             containerUuid,
             columnName: column_name,
-            value
+            value: newValue
           })
           // update element column name
           if (!this.metadata.isSameColumnElement) {
@@ -173,12 +173,12 @@ export default {
               parentUuid: this.metadata.parentUuid,
               containerUuid,
               columnName: this.metadata.element_name,
-              value
+              value: newValue
             })
           }
         }
         this.handleFieldChange({
-          value,
+          value: newValue,
           displayedValue: this.displayedValue
         })
       }
@@ -249,8 +249,8 @@ export default {
     value(newValue) {
       this.setDisplayedValue()
     },
-    recordUuid(value) {
-      if (!isEmptyValue(value)) {
+    recordUuid(newRecordUuid) {
+      if (!isEmptyValue(newRecordUuid)) {
         this.setDisplayedValue()
       }
     }

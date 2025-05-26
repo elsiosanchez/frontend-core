@@ -52,7 +52,7 @@ const calloutManager = {
           return
         }
 
-        if (value === oldValue) {
+        if (isSameValues(value, oldValue)) {
           resolve({})
           return
         }
@@ -178,10 +178,13 @@ const calloutManager = {
               if (!isSameValues(attributeValue, attributeOldValue)) {
                 const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeColumnName)
                 if (!isEmptyValue(field)) {
-                  commit('addChangeToPersistenceQueue', {
+                  // commit('addChangeToPersistenceQueue', {
+                  dispatch('windowActionPerformed', {
                     containerUuid,
                     recordUuid,
+                    field,
                     columnName: attributeColumnName,
+                    currentCallout: callout,
                     oldValue: attributeOldValue,
                     value: attributeValue
                   })

@@ -128,6 +128,7 @@ const persistence = {
     windowActionPerformed({ commit, getters, rootState, dispatch }, {
       field,
       columnName,
+      currentCallout,
       recordUuid,
       value
     }) {
@@ -189,7 +190,8 @@ const persistence = {
         })
 
         // start callout on server
-        if (!containerUuid.endsWith(IS_ADVANCED_QUERY)) {
+        if (!containerUuid.endsWith(IS_ADVANCED_QUERY) &&
+          (isEmptyValue(currentCallout) || !isSameValues(field.callout, currentCallout))) {
           dispatch('startCallout', {
             displayType: field.display_type,
             callout: field.callout,
