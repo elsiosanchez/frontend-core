@@ -100,6 +100,7 @@
     <el-footer :style="styleFooterPanel" class="tab-panel-footer">
       <!-- pagination table, set custom or use default change page method -->
       <custom-pagination
+        v-if="isLoadingDataTale"
         :parent-uuid="parentUuid"
         :container-uuid="tabAttributes.uuid"
         :container-manager="containerManager"
@@ -287,6 +288,11 @@ export default defineComponent({
     const collapseWindow = computed(() => {
       return !isEmptyValue(store.getters.getCollapseWindow)
     })
+    const isLoadingDataTale = computed(() => {
+      return store.getters.getIsLoadedTabRecord({
+        containerUuid: props.tabAttributes.uuid
+      })
+    })
     const currentPageNumber = computed(() => {
       if (props.containerManager.getPageNumber) {
         return parseInt(props.containerManager.getPageNumber({
@@ -424,6 +430,7 @@ export default defineComponent({
       styleScroll,
       showFullGridMode,
       collapseWindow,
+      isLoadingDataTale,
       isParent,
       // pagination
       styleHeadPanel,
