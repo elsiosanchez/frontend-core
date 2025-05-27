@@ -69,17 +69,18 @@
           {{ action.name }}
         </el-dropdown-item>
         <el-dropdown-item
-          command="deleteRecord"
-        >
-          <svg-icon icon-class="delete" class="size-icon" />
-          {{ deleteTitle }}
-        </el-dropdown-item>
-        <el-dropdown-item
           divided
           command="disabledRecord"
         >
           <svg-icon icon-class="disabled" class="size-icon" />
           {{ disableTitle }}
+        </el-dropdown-item>
+        <el-dropdown-item
+          divided
+          command="deleteRecord"
+        >
+          <svg-icon icon-class="delete" class="size-icon" />
+          {{ deleteTitle }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
