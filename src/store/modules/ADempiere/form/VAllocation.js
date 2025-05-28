@@ -233,7 +233,7 @@ export default {
           transactionType,
           isAutomaticWriteOff
         } = state.searchCriteria
-        console.log({ organizationId })
+
         commit('setIsLoadingPayments', true)
         requestListPayments({
           businessPartnerId,

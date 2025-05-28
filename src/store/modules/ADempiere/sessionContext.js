@@ -20,9 +20,12 @@ import Vue from 'vue'
 
 // constants
 import {
-  COLUMNNAME_AD_Client_ID, COLUMNNAME_C_Country_ID, COLUMNNAME_AD_Org_ID
+  COLUMNNAME_AD_Client_ID, COLUMNNAME_AD_Org_ID,
+  COLUMNNAME_C_Country_ID, COLUMNNAME_C_Currency_ID
 } from '@/utils/ADempiere/constants/systemColumns.js'
-import { ACCOUNTING_CONTEXT_PREFIX, GLOBAL_CONTEXT_PREFIX } from '@/utils/ADempiere/contextUtils'
+import {
+  ACCOUNTING_CONTEXT_PREFIX, GLOBAL_CONTEXT_PREFIX
+} from '@/utils/ADempiere/contextUtils'
 
 // utils and helper methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils.js'
@@ -221,6 +224,9 @@ const sessionContext = {
     },
     getSessionContextCountrytId: (state) => {
       return parseInt(state.preference[GLOBAL_CONTEXT_PREFIX + COLUMNNAME_C_Country_ID], 10)
+    },
+    getSessionContextCurrencyId: (state) => {
+      return parseInt(state.preference[ACCOUNTING_CONTEXT_PREFIX + COLUMNNAME_C_Currency_ID], 10)
     },
     getSessionContextClientId: (state) => {
       return parseInt(state.preference[GLOBAL_CONTEXT_PREFIX + COLUMNNAME_AD_Client_ID], 10)

@@ -34,7 +34,7 @@
       :default-first-option="true"
       remote
       :remote-method="remoteSearchCurrencies"
-      @visible-change="findCurrencies"
+      @visible-change="loadCurrencies"
     >
       <empty-option-select
         :current-value="currentCurrencyValue"
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent, onMounted } from '@vue/composition-api'
 
 import store from '@/store'
 
@@ -66,7 +66,7 @@ import {
 } from '@/api/ADempiere/form/VAllocation.ts'
 
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'CurrencyField',
@@ -76,6 +76,10 @@ export default defineComponent({
   },
 
   setup() {
+    const sessionCurrencyId = computed(() => {
+      return store.getters.getSessionContextCurrencyId
+    })
+
     const currentCurrencyValue = computed({
       // getter
       get() {
@@ -110,7 +114,7 @@ export default defineComponent({
       }
     })
 
-    function findCurrencies(isFind, searchValue) {
+    function loadCurrencies(isFind, searchValue) {
       if (!isFind) {
         return
       }
@@ -137,18 +141,28 @@ export default defineComponent({
       //     return textValue.label.toLowerCase().includes(search)
       //   })
       //   if (isEmptyValue(result)) {
-      //     findCurrencies(true, searchValue)
+      //     loadCurrencies(true, searchValue)
       //   }
       // }
-      findCurrencies(true, searchValue)
+      loadCurrencies(true, searchValue)
     }
+
+    onMounted(() => {
+      loadCurrencies(true, '')
+
+      const currentValue = currentCurrencyValue.value
+      if (isEmptyValue(currentValue) || currentValue <= 0) {
+        currentCurrencyValue.value = sessionCurrencyId.value
+      }
+    })
 
     return {
       // Computeds
+      sessionCurrencyId,
       currentCurrencyValue,
       optionsCurrency,
       // Methods
-      findCurrencies,
+      loadCurrencies,
       remoteSearchCurrencies
     }
   }
