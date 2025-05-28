@@ -31,7 +31,7 @@
   color: red !important;
 
   &.custom-field-number {
-    &.el-input {
+    &.el-input, &.el-input-number {
       .el-input__inner {
         color: red !important;
       }

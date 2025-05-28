@@ -136,7 +136,7 @@
       :label="$t('form.VAllocation.invoice.table.converted')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
           {{ formatPrice({ value: scope.row.converted_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -148,7 +148,7 @@
       :label="$t('form.VAllocation.invoice.table.open')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
           {{ formatPrice({ value: scope.row.open_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -160,7 +160,7 @@
       :label="$t('form.VAllocation.invoice.table.tradeDiscount')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.discount_amount < 0 }">
           {{ formatPrice({ value: scope.row.discount_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -176,7 +176,8 @@
           v-model="scope.row.writeOff"
           controls-position="right"
           size="mini"
-          style="width: 100% !important"
+          :class="{ 'custom-field-number': true, 'number-negative': scope.row.writeOff < 0 }"
+          style="width: 100% !important;"
         />
       </template>
     </el-table-column>
@@ -191,7 +192,8 @@
           v-model="scope.row.applied"
           controls-position="right"
           size="mini"
-          style="width: 100% !important"
+          :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
+          style="width: 100% !important;"
         />
       </template>
     </el-table-column>
@@ -202,7 +204,7 @@
       :label="$t('form.VAllocation.invoice.table.overUnderPay')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.original_amount < 0 }">
           {{ formatPrice({ value: scope.row.original_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -226,6 +228,7 @@ export default defineComponent({
 
   setup() {
     const diference = ref(0)
+
     const sumApplied = computed(() => {
       const sumInvoce = selectListAll.value.map(list => {
         if (list.type === 'isInvoce') {

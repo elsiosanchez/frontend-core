@@ -30,6 +30,7 @@
           <payments-table />
         </el-card>
       </div>
+
       <div style="height: 45%;margin-bottom: 5px;border: solid 1px lightgrey;border-radius: 10px;padding: 10px;">
         <p style="text-align: center;font-size: 20px;margin: 0px 0px 7px 0px;">
           <b> {{ $t('form.VAllocation.invoice.title') }} </b>
@@ -62,13 +63,14 @@
                   label-width="120px"
                   style="margin: 0px;padding: 0px;"
                 >
-                  <el-tag>
+                  <el-tag :type="sumApplied.replace('.', '').replace(',', '.') >= 0 ? '' : 'danger'">
                     <b style="text-align: right; font-size: 19px">
                       {{ sumApplied }}
                     </b>
                   </el-tag>
                 </el-form-item>
               </el-col>
+
               <el-col
                 :span="3"
                 style="text-align: center;"
@@ -86,6 +88,7 @@
                   />
                 </el-form-item>
               </el-col>
+
               <el-col
                 :span="5"
                 style="text-align: center;"
@@ -98,6 +101,7 @@
               >
                 <organization-transaction-field />
               </el-col>
+
               <el-col
                 :span="5"
                 style="padding-left: 0px;padding-right: 0px;text-align: center;"

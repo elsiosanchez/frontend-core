@@ -119,7 +119,7 @@
       :label="$t('form.VAllocation.payment.table.converted')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.payment_amount < 0 }">
           {{ formatPrice({ value: scope.row.payment_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -131,7 +131,7 @@
       :label="$t('form.VAllocation.payment.table.open')"
     >
       <template slot-scope="scope">
-        <span class="cell-align-right">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
           {{ formatPrice({ value: scope.row.open_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -147,7 +147,8 @@
           v-model="scope.row.applied"
           controls-position="right"
           size="mini"
-          style="width: 100% !important"
+          :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
+          style="width: 100% !important;"
         />
       </template>
     </el-table-column>
@@ -170,6 +171,7 @@ export default defineComponent({
 
   setup() {
     const diference = ref(0)
+
     const sumApplied = computed(() => {
       const sum = selectListAll.value.map(list => list.applied)
       const initialValue = 0
