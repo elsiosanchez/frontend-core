@@ -98,7 +98,8 @@ const windowManager = {
       pageSize = ROWS_OF_RECORDS_BY_PAGE_HIGH,
       sortBy,
       referenceUuid,
-      contextAttributes
+      contextAttributes,
+      isOldTabData = true
     }) {
       const dataTab = {
         parentUuid,
@@ -120,7 +121,7 @@ const windowManager = {
         contextAttributes
       }
       Vue.set(state.tabData, containerUuid, dataTab)
-      Vue.set(state.oldTabData, containerUuid, dataTab)
+      if (isOldTabData) Vue.set(state.oldTabData, containerUuid, dataTab)
     },
 
     setNewTabData(state, { parentUuid, containerUuid }) {
@@ -448,6 +449,7 @@ const windowManager = {
         commit('setTabData', {
           parentUuid,
           isLoaded: false,
+          isOldTabData: !isAdvancedQuery,
           containerUuid,
           searchValue,
           pageNumber,
@@ -505,12 +507,14 @@ const windowManager = {
         }
         if (!isEmptyValue(contextAttributes)) {
           commit('setTabData', {
+            isOldTabData: !isAdvancedQuery,
             containerUuid,
             contextAttributes
           })
         }
         if (!isEmptyValue(referenceUuid)) {
           commit('setTabData', {
+            isOldTabData: !isAdvancedQuery,
             containerUuid,
             referenceUuid
           })
@@ -657,10 +661,11 @@ const windowManager = {
               isError: false,
               isLoading: false,
               recordCount: dataResponse.recordCount,
+              isOldTabData: !isAdvancedQuery,
               sortBy
             })
 
-            if (isEmptyValue(dataToStored)) {
+            if (isEmptyValue(dataToStored) && (!isAdvancedQuery && isEmptyValue(searchValue))) {
               // set default values to create if without records response
               dispatch('setTabDefaultValues', {
                 parentUuid,
@@ -1056,6 +1061,9 @@ const windowManager = {
     getTabRecordsList: (state, getters) => ({ containerUuid }) => {
       return getters.getTabData({ containerUuid }).recordsList
     },
+    getTabOldbRecordsList: (state, getters) => ({ containerUuid }) => {
+      return getters.getTabOldData({ containerUuid }).recordsList
+    },
     getTabSelectionsList: (state, getters) => ({ containerUuid }) => {
       return getters.getTabData({ containerUuid }).selectionsList
     },
@@ -1127,7 +1135,7 @@ const windowManager = {
       return getters.getTabRowData({ containerUuid, recordUuid })
     },
     getTabRowData: (state, getters) => ({ containerUuid, recordUuid, rowIndex }) => {
-      const recordsList = getters.getTabRecordsList({ containerUuid })
+      const recordsList = getters.getTabOldbRecordsList({ containerUuid })
       if (isEmptyValue(recordsList)) {
         return {}
       }

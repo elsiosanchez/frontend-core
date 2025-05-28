@@ -271,6 +271,7 @@ export default {
       isUnlock: 'Desbloquear',
       isError: 'Error al '
     },
+    recordNotFound: 'Registro no Encontrado',
     selectionRequired: 'Debe seleccionar un registro',
     undo: 'Deshacer',
     notification: {

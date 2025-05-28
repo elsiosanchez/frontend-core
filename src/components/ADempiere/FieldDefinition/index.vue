@@ -112,7 +112,7 @@ import { ALWAYS_DISPLAY_COLUMN } from '@/utils/ADempiere/dictionaryUtils'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
-
+import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 /**
  * This is the base component for linking the components according to the
  * reference (or type of visualization) of each field
@@ -313,7 +313,7 @@ export default {
         isAdvancedQuery: this.field.isAdvancedQuery,
         // DOM properties
         required: this.isMandatoryField,
-        readonly: isReadOnlyGenerated || isReadOnlyFromOperator,
+        readonly: isReadOnlyGenerated || isReadOnlyFromOperator || this.searchNotFound,
         displayed: this.isDisplayField,
         // disabled: !this.field.isActive,
         isSelectCreated: this.isSelectCreated,
@@ -321,6 +321,25 @@ export default {
         isReadOnlyFromOperator: isReadOnlyFromOperator,
         placeholder: this.field.help ? this.field.help.slice(0, 40) + '...' : ''
       }
+    },
+
+    isNewRecord() {
+      const { table } = this.currentTab
+      if (!isEmptyValue(table) && table.is_view) {
+        return false
+      }
+
+      return createNewRecord.enabled({
+        parentUuid: this.parentUuid,
+        containerUuid: this.containerUuid,
+        tabParentIndex: this.currentTab.tabParentIndex
+      })
+    },
+
+    searchNotFound() {
+      const { recordsList, searchValue } = this.$store.getters.getTabData({ containerUuid: this.containerUuid })
+      if (isEmptyValue(recordsList) && !isEmptyValue(searchValue) && this.isNewRecord) return true
+      return false
     },
 
     isDisplayField() {

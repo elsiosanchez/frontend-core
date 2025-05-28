@@ -190,7 +190,7 @@ import { defineComponent, ref, computed, watch } from '@vue/composition-api'
 
 import router from '@/router'
 import store from '@/store'
-
+import lang from '@/lang'
 // Components and Mixins
 import PanelDefinition from '@/components/ADempiere/PanelDefinition/index.vue'
 import TitleAndHelp from '@/components/ADempiere/TitleAndHelp/index.vue'
@@ -203,6 +203,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { showMessage } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
   name: 'AdvancedTabQuerySearch',
@@ -381,17 +382,25 @@ export default defineComponent({
       store.dispatch('getEntities', {
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
+        isAdvancedQuery: true,
         searchValue: searchText
       })
         .then(response => {
-          const tabData = store.getters.getTabData({
-            containerUuid: props.containerUuid
-          })
-          props.containerManager.seekRecord({
-            parentUuid: props.parentUuid,
-            containerUuid: props.containerUuid,
-            recordUuid: tabData.currentRecordUuid
-          })
+          if (!isEmptyValue(response)) {
+            const tabData = store.getters.getTabData({
+              containerUuid: props.containerUuid
+            })
+            props.containerManager.seekRecord({
+              parentUuid: props.parentUuid,
+              containerUuid: props.containerUuid,
+              recordUuid: tabData.currentRecordUuid
+            })
+          } else {
+            showMessage({
+              message: lang.t('data.recordNotFound'),
+              type: 'warning'
+            })
+          }
         })
         .finally(() => {
           isLoadingSearch.value = false

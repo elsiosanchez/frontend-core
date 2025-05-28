@@ -350,7 +350,9 @@ export default defineComponent({
      * Load Refresh
      */
     function handleLoadRefresh() {
+      const { searchValue } = store.getters.getTabData({ containerUuid: props.containerUuid })
       if (!isLoadingDataTale.value) return
+      if (!isEmptyValue(searchValue)) return
       store.dispatch('getEntities', {
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid

@@ -270,6 +270,7 @@ export default {
       isUnlock: 'Unblock',
       isError: 'Error on '
     },
+    recordNotFound: 'Record Not Found',
     selectionRequired: 'You must select a record',
     undo: 'Undo',
     notification: {
