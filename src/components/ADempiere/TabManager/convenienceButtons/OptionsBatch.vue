@@ -250,9 +250,9 @@ export default defineComponent({
     })
 
     const selectionsRecords = computed(() => {
-      return containerManager.getRecordsList({
+      return containerManager.getSelection({
         containerUuid: props.containerUuid
-      }).filter(i => i.isSelectedRow)
+      })
     })
 
     const recordsListToDelete = computed(() => {
