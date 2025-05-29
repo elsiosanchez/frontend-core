@@ -50,7 +50,6 @@
       border
       :row-key="keyColumn"
       reserve-selection
-      highlight-current-row
       :data="recordsWithFilter"
       size="small"
       :element-loading-text="$t('notifications.loading')"
@@ -58,6 +57,7 @@
       :class="tableClass"
       :row-class-name="tableRowClassName"
       :cell-class-name="getColumnStyle"
+      :header-cell-style="headerCellStyle"
       @row-click="handleRowClick"
       @row-dblclick="handleRowDblClick"
       @select="handleSelection"
@@ -75,7 +75,7 @@
         v-for="(fieldAttributes, key) in headerList"
         :key="key"
         :column-key="fieldAttributes.columnName"
-        :prop="fieldAttributes.columnName"
+        :prop="String(fieldAttributes.is_read_only)"
         sortable
         :label="fieldAttributes.columnName"
         :sort-by="fieldAttributes.sortByProperty"
@@ -269,10 +269,11 @@ import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
 
 // Utils and Helper Methods
-import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { isWidthColumn } from '@/utils/ADempiere/references'
-import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification.js'
+import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
+import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
  */
@@ -723,10 +724,19 @@ export default defineComponent({
         !isEmptyValue(currentCell)
       ) {
         if ([BINARY_DATA.id, BUTTON.id, IMAGE.id].includes(currentCell.display_type)) {
-          return ''
+          return 'highlight'
         }
         if (!currentCell.is_read_only) {
-          return 'highlight'
+          return ''
+        }
+      }
+      return 'highlight'
+    }
+
+    function headerCellStyle(row, column, rowIndex, columnIndex) {
+      if (!isEmptyValue(row) && !isEmptyValue(row.column) && !isEmptyValue(row.column.property)) {
+        if (convertStringToBoolean(row.column.property) || row.column.property === 'rowUid') {
+          return 'background-color: #f4f4f5'
         }
       }
       return ''
@@ -852,6 +862,7 @@ export default defineComponent({
       clearParameters,
       getColumnStyle,
       //
+      headerCellStyle,
       setTableHeight,
       adjustSize,
       tableRowClassName,
@@ -887,7 +898,7 @@ export default defineComponent({
 }
 
 .highlight {
-  background-color: #F2F6FC;
+  background-color: #f4f4f5;
 }
 
 .browser-footer {

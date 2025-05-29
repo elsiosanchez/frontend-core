@@ -251,9 +251,15 @@ export default {
         return () => import('@/components/ADempiere/FieldDefinition/FieldSelect/FieldSelectMultiple.vue')
       }
       let field
+      if (this.field.columnName === 'AttendanceTime') {
+        console.log({ ...this.field })
+      }
       switch (this.field.componentPath) {
         case 'FieldText':
           field = () => import('@/components/ADempiere/FieldDefinition/FieldText')
+          break
+        case 'FieldTime':
+          field = () => import('@/components/ADempiere/FieldDefinition/FieldTime')
           break
         case 'FieldDate':
           field = () => import('@/components/ADempiere/FieldDefinition/FieldDate')
