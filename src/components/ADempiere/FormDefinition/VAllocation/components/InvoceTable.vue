@@ -226,12 +226,12 @@
 
     <el-table-column
       align="left"
-      :min-width="150"
+      :min-width="180"
       :label="$t('form.VAllocation.invoice.table.overUnderPay')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.amountApplied < 0 }">
-          {{ formatPrice({ value: scope.row.amountApplied, currency }) }}
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.overUnderPay < 0 }">
+          {{ formatPrice({ value: calculateOverUnderPayment(scope.row), currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -410,6 +410,11 @@ export default defineComponent({
       return -(amount)
     }
 
+    function calculateOverUnderPayment(row) {
+      const { amountApplied, open_amount } = row
+      return amountApplied - open_amount
+    }
+
     watch(selectListAll, (newValue) => {
       if (newValue) {
         const index = newValue.length
@@ -440,6 +445,7 @@ export default defineComponent({
       formatDate,
       isCellInput,
       formatPrice,
+      calculateOverUnderPayment,
       selectionInvoces,
       selectionInvocesAll
     }

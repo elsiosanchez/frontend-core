@@ -313,7 +313,8 @@ export default {
                 isSelect: false,
                 discount_amount: Number(invoice.discount_amount),
                 open_amount: Number(invoice.open_amount),
-                amountApplied: Number(invoice.open_amount),
+                amountApplied: 0,
+                overUnderPay: 0,
                 type: 'isInvoce'
               }
             })
