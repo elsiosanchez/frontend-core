@@ -54,6 +54,10 @@
                     />
                   </el-form-item>
                 </el-col>
+
+                <el-col :span="12">
+                  <multi-currency-field />
+                </el-col>
               </el-row>
             </el-form>
           </el-card>
@@ -137,6 +141,7 @@ import store from '@/store'
 import BusinessPartnerField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/businessPartnerField.vue'
 import Carousel from '@/components/ADempiere/Carousel'
 import CurrencyField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/currencyField.vue'
+import multiCurrencyField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/multiCurrencyField.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 import OrganizationField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/organizationField.vue'
@@ -160,7 +165,8 @@ export default defineComponent({
     CurrencyField,
     FieldDefinition,
     EmptyOptionSelect,
-    OrganizationField
+    OrganizationField,
+    multiCurrencyField
   },
 
   props: {

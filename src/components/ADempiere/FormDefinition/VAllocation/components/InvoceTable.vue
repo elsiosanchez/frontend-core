@@ -131,13 +131,39 @@
     </el-table-column>
 
     <el-table-column
+      v-if="isMultiCurrency"
+      align="left"
+      :min-width="100"
+      :label="$t('form.VAllocation.invoice.table.transaction')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ scope.row.currency.iso_code }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      v-if="isMultiCurrency"
+      align="left"
+      :min-width="130"
+      :label="$t('form.VAllocation.invoice.table.quantity')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.original_amount < 0 }">
+          {{ formatPrice({ value: scope.row.original_amount, currency: scope.row.currency.iso_code }) }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
       align="left"
       :min-width="150"
       :label="$t('form.VAllocation.invoice.table.converted')"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
-          {{ formatPrice({ value: scope.row.converted_amount, currency: scope.row.currency.iso_code }) }}
+          {{ formatPrice({ value: scope.row.converted_amount, currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -149,7 +175,7 @@
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
-          {{ formatPrice({ value: scope.row.open_amount, currency: scope.row.currency.iso_code }) }}
+          {{ formatPrice({ value: scope.row.open_amount, currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -161,7 +187,7 @@
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.discount_amount < 0 }">
-          {{ formatPrice({ value: scope.row.discount_amount, currency: scope.row.currency.iso_code }) }}
+          {{ formatPrice({ value: scope.row.discount_amount, currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -204,8 +230,8 @@
       :label="$t('form.VAllocation.invoice.table.overUnderPay')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.original_amount < 0 }">
-          {{ formatPrice({ value: scope.row.original_amount, currency: scope.row.currency.iso_code }) }}
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.amountApplied < 0 }">
+          {{ formatPrice({ value: scope.row.amountApplied, currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -257,6 +283,16 @@ export default defineComponent({
     })
     const listInvoces = computed(() => {
       return store.getters.getListVAllocation.invoce
+    })
+
+    const isMultiCurrency = computed(() => {
+      return store.getters.getSearchFilter.isMultiCurrency
+    })
+
+    const currency = computed(() => {
+      const { listCurrency, currencyId } = store.getters.getSearchFilter
+      const currentCurrency = listCurrency.find(list => list.id === currencyId)
+      return currentCurrency.label
     })
 
     /**
@@ -396,8 +432,10 @@ export default defineComponent({
       listInvocesTable,
       // Computed
       isLoadingInvoices,
+      isMultiCurrency,
       selectListAll,
       listInvoces,
+      currency,
       // Methods
       formatDate,
       isCellInput,

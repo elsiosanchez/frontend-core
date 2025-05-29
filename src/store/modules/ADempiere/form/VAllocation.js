@@ -35,8 +35,10 @@ const initStateCriteria = {
   businessPartnerId: '',
   organizationId: -1,
   currencyId: -1,
+  currency: {},
   listOrganization: [],
   listCurrency: [],
+  isMultiCurrency: false,
   date: '',
   transactionType: '',
   description: '',
@@ -252,6 +254,8 @@ export default {
                 transaction_date: dateTimeFormats(payment.transaction_date, 'YYYY-MM-DD'),
                 applied: 0,
                 open_amount: Number(payment.open_amount),
+                payment_amount: Number(payment.payment_amount),
+                converted_amount: Number(payment.converted_amount),
                 isSelect: false,
                 type: 'isPayment'
               }
@@ -304,12 +308,12 @@ export default {
               return {
                 ...invoice,
                 date_invoiced: dateTimeFormats(invoice.date_invoiced, 'YYYY-MM-DD'),
-                applied: 0,
+                applied: Number(invoice.open_amount),
                 writeOff: 0,
                 isSelect: false,
                 discount_amount: Number(invoice.discount_amount),
                 open_amount: Number(invoice.open_amount),
-                amountApplied: 0,
+                amountApplied: Number(invoice.open_amount),
                 type: 'isInvoce'
               }
             })

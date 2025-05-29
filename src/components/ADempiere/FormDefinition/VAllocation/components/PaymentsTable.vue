@@ -114,9 +114,23 @@
     </el-table-column>
 
     <el-table-column
+      v-if="isMultiCurrency"
+      align="left"
+      :min-width="100"
+      :label="$t('form.VAllocation.invoice.table.transaction')"
+    >
+      <template slot-scope="scope">
+        <span class="cell-align-right">
+          {{ scope.row.currency.iso_code }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      v-if="isMultiCurrency"
       align="left"
       :min-width="130"
-      :label="$t('form.VAllocation.payment.table.converted')"
+      :label="$t('form.VAllocation.invoice.table.quantity')"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.payment_amount < 0 }">
@@ -128,11 +142,23 @@
     <el-table-column
       align="left"
       :min-width="130"
+      :label="$t('form.VAllocation.payment.table.converted')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
+          {{ formatPrice({ value: scope.row.converted_amount, currency }) }}
+        </span>
+      </template>
+    </el-table-column>
+
+    <el-table-column
+      align="left"
+      :min-width="130"
       :label="$t('form.VAllocation.payment.table.open')"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
-          {{ formatPrice({ value: scope.row.open_amount, currency: scope.row.currency.iso_code }) }}
+          {{ formatPrice({ value: scope.row.open_amount, currency }) }}
         </span>
       </template>
     </el-table-column>
@@ -186,6 +212,9 @@ export default defineComponent({
     /**
      * computed
      */
+    const isMultiCurrency = computed(() => {
+      return store.getters.getSearchFilter.isMultiCurrency
+    })
     const isLoadingPayments = computed(() => {
       return store.getters.getIsLoadingPayments
     })
@@ -195,6 +224,12 @@ export default defineComponent({
 
     const selectListAll = computed(() => {
       return store.getters.getListSelectInvoceandPayment
+    })
+
+    const currency = computed(() => {
+      const { listCurrency, currencyId } = store.getters.getSearchFilter
+      const currentCurrency = listCurrency.find(list => list.id === currencyId)
+      return currentCurrency.label
     })
 
     const sumAppliedInvoce = computed(() => {
@@ -347,9 +382,11 @@ export default defineComponent({
       // Refs
       listPaymentsTable,
       // Computed
+      currency,
       sumApplied,
       listPayments,
       selectListAll,
+      isMultiCurrency,
       sumAppliedInvoce,
       isLoadingPayments,
       // Methods

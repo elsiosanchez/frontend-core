@@ -30,6 +30,7 @@ const VAllocation = {
     date: 'Fecha',
     transactionType: 'Tipo de Transacción',
     option: {
+      multiCurrency: 'Multimoneda',
       assignFromOrder: 'Assignar desde Orden',
       fullAmount: 'Monto Completo',
       autoAssign: 'Auto-Asignar',
@@ -61,6 +62,8 @@ const VAllocation = {
       documentNo: 'No Documento',
       description: 'Descripción',
       converted: 'Convertido',
+      transaction: 'Transacción',
+      quantity: 'Cantidad',
       open: 'Abierto',
       tradeDiscount: 'Descuentos',
       writeOff: 'Ajuste',

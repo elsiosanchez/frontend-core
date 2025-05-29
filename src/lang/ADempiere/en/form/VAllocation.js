@@ -30,6 +30,7 @@ const VAllocation = {
     date: 'Date',
     transactionType: 'Transaction Type',
     option: {
+      multiCurrency: 'Multi-Currency',
       assignFromOrder: 'Assign from Order',
       fullAmount: 'Full Amount',
       autoAssign: 'Auto-Assign',
