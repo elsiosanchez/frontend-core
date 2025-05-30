@@ -23,6 +23,8 @@
       minTime: minValue,
       maxTime: maxValue
     }"
+    :format="'HH:mm:ss'"
+    :value-format="'yyyy-MM-dd HH:mm:ss'"
     :is-range="isPickerRange"
     range-separator="-"
     :size="sizeField"

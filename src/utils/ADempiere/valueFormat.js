@@ -167,7 +167,8 @@ export function formatField({
         value: currentValue,
         isTime: true,
         format: getDateFormat({
-          format: optionalFormat,
+          // TODO: Add support with `TimeFormat` on language
+          format: 'HH:mm:ss',
           isTime: true,
           isDate: false
         })
