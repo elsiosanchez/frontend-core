@@ -411,3 +411,20 @@ export function convertToNumber(value) {
 
   return 0 // Return null if unable to convert
 }
+
+/**
+ * Change sing in number `-123` to `123`, `456` to `-456`
+ * Test with `numberValue * -1`
+ * @param {number} numberValue
+ * @returns {number}
+ */
+export function invertNumberSign(numberValue) {
+  if (numberValue > 0) {
+    return -numberValue
+  }
+  return Math.abs(numberValue)
+}
+
+export function isPositive(numberValue) {
+  return numberValue >= 0
+}

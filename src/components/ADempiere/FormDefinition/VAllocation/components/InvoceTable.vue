@@ -33,6 +33,7 @@
   >
     <el-table-column
       type="selection"
+      fixed="left"
       :width="35"
     />
 
@@ -198,8 +199,10 @@
       :label="$t('form.VAllocation.invoice.table.writeOff')"
     >
       <template slot-scope="scope">
+        <!-- TODO: Service Currency -->
         <el-input-number
           v-model="scope.row.writeOff"
+          :precision="2"
           controls-position="right"
           size="mini"
           :class="{ 'custom-field-number': true, 'number-negative': scope.row.writeOff < 0 }"
@@ -214,9 +217,11 @@
       :label="$t('form.VAllocation.invoice.table.applied')"
     >
       <template slot-scope="scope">
+        <!-- TODO: Service Currency -->
         <el-input-number
-          v-model="scope.row.applied"
+          v-model="scope.row.amountApplied"
           controls-position="right"
+          :precision="2"
           size="mini"
           :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
           style="width: 100% !important;"
@@ -246,29 +251,24 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
-import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, isPositive } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'InvocesTable',
 
-  setup() {
-    const diference = ref(0)
+  props: {
+    difference: {
+      type: [String, Number],
+      default: undefined
+    }
+  },
 
-    const sumApplied = computed(() => {
-      const sumInvoce = selectListAll.value.map(list => {
-        if (list.type === 'isInvoce') {
-          return list.amountApplied
-        }
-        return list.applied
-      })
-      const initialValue = 0
-      return sumInvoce.reduce((accumulator, currentValue) => accumulator + currentValue, initialValue)
-    })
-
+  setup(props) {
     /**
      * Refs
      */
+    const diference = ref(0)
     const listInvocesTable = ref(null)
     const panelInvoce = ref(300)
 
@@ -289,10 +289,22 @@ export default defineComponent({
       return store.getters.getSearchFilter.isMultiCurrency
     })
 
+    // TODO: Change with Currency definition service
     const currency = computed(() => {
       const { listCurrency, currencyId } = store.getters.getSearchFilter
       const currentCurrency = listCurrency.find(list => list.id === currencyId)
       return currentCurrency.label
+    })
+
+    const sumApplied = computed(() => {
+      const sumInvoce = selectListAll.value.map(list => {
+        if (list.type === 'isInvoce') {
+          return list.amountApplied
+        }
+        return list.applied
+      })
+      const initialValue = 0
+      return sumInvoce.reduce((accumulator, currentValue) => accumulator + currentValue, initialValue)
     })
 
     /**
@@ -323,8 +335,26 @@ export default defineComponent({
       }
       row.isSelect = !isSelect
       row.applied = appliedPay(row)
-      row.amountApplied = appliedPay(row)
+      row.amountApplied = calculateAmountApplied(row)
       addRowSelect(row)
+    }
+
+    function calculateAmountApplied(row) {
+      if (props.difference === 0) return row.open_amount
+      if (
+        isPositive(row.open_amount) &&
+        !isPositive(props.difference)
+      ) {
+        return props.difference
+      } else if (
+        isPositive(row.open_amount) &&
+        isPositive(props.difference)
+      ) {
+        if (row.open_amount > props.difference) {
+          return props.difference
+        }
+      }
+      return row.open_amount
     }
 
     function selectionInvocesAll(selection) {
@@ -415,6 +445,9 @@ export default defineComponent({
       return amountApplied - open_amount
     }
 
+    /**
+     * Watch
+     */
     watch(selectListAll, (newValue) => {
       if (newValue) {
         const index = newValue.length
@@ -429,25 +462,24 @@ export default defineComponent({
     setToggleSelection()
 
     return {
-      //
+      // Refs
       diference,
       sumApplied,
-      // Refs
       panelInvoce,
       listInvocesTable,
       // Computed
-      isLoadingInvoices,
-      isMultiCurrency,
-      selectListAll,
-      listInvoces,
       currency,
+      listInvoces,
+      selectListAll,
+      isMultiCurrency,
+      isLoadingInvoices,
       // Methods
       formatDate,
       isCellInput,
       formatPrice,
-      calculateOverUnderPayment,
       selectionInvoces,
-      selectionInvocesAll
+      selectionInvocesAll,
+      calculateOverUnderPayment
     }
   }
 })

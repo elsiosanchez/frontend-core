@@ -27,7 +27,9 @@
           shadow="never"
           :body-style="{ padding: '5px' }"
         >
-          <payments-table />
+          <payments-table
+            :difference="sumApplied"
+          />
         </el-card>
       </div>
 
@@ -39,7 +41,9 @@
           shadow="never"
           :body-style="{ padding: '5px' }"
         >
-          <invoce-table />
+          <invoce-table
+            :difference="sumApplied"
+          />
         </el-card>
       </div>
     </div>
@@ -63,9 +67,9 @@
                   label-width="120px"
                   style="margin: 0px;padding: 0px;"
                 >
-                  <el-tag :type="sumApplied.replace('.', '').replace(',', '.') >= 0 ? '' : 'danger'">
+                  <el-tag :type="isPositive(sumApplied) ? '' : 'danger'">
                     <b style="text-align: right; font-size: 19px">
-                      {{ sumApplied }}
+                      {{ displaySumApplied }}
                     </b>
                   </el-tag>
                 </el-form-item>
@@ -149,7 +153,9 @@ import ChargeField from '@/components/ADempiere/FormDefinition/VAllocation/Proce
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import {
+  formatQuantity, invertNumberSign, isPositive
+} from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'Payments',
@@ -388,9 +394,9 @@ export default defineComponent({
           if (transaction_type.value === 'R') {
             return -(list.amountApplied)
           }
-          return list.applied
+          return list.amountApplied
         }
-        return list.applied
+        return list.amountApplied
       })
       const sumPayment = selectListAll.value.filter(list => {
         return list.type !== 'isInvoce'
@@ -404,12 +410,18 @@ export default defineComponent({
       const sumAllPayments = sumPayment.reduce((accumulator, currentValue) => accumulator + currentValue, initialValuePayment)
       const totalSum = [Math.abs(sumAllPayments), sumAllInvoce].reduce((accumulator, currentValue) => accumulator + currentValue, initialValueAll)
       if (!isEmptyValue(sumAllInvoce) && sumAllPayments === 0) {
-        return formatQuantity({ value: Math.abs(sumAllInvoce) })
+        return invertNumberSign(sumAllInvoce)
       }
       if (!isEmptyValue(sumAllPayments) && sumAllInvoce === 0) {
-        return formatQuantity({ value: sumAllPayments })
+        return sumAllPayments
       }
-      return formatQuantity({ value: Math.abs(totalSum) })
+      return Math.abs(totalSum)
+    })
+
+    const displaySumApplied = computed(() => {
+      return formatQuantity({
+        value: Math.abs(sumApplied.value)
+      })
     })
 
     function findFilter(queryString) {
@@ -660,6 +672,7 @@ export default defineComponent({
       listInvoces,
       listPayments,
       listDifference,
+      displaySumApplied,
       selectListInvoces,
       selectListPayments,
       currentDateProcess,
@@ -673,6 +686,7 @@ export default defineComponent({
       toggleSelectionInvoce,
       // toggleSelection,
       findFilter,
+      isPositive,
       //
       summaryDiference,
       paymentAssignment,

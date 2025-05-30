@@ -33,6 +33,7 @@
   >
     <el-table-column
       type="selection"
+      fixed="left"
       :width="35"
     />
 
@@ -169,9 +170,11 @@
       :label="$t('form.VAllocation.payment.table.applied')"
     >
       <template slot-scope="scope">
+        <!-- TODO: Service Currency -->
         <el-input-number
           v-model="scope.row.applied"
           controls-position="right"
+          :precision="2"
           size="mini"
           :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
           style="width: 100% !important;"
@@ -189,13 +192,20 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
-import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, invertNumberSign } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'PaymentsTable',
 
-  setup() {
+  props: {
+    difference: {
+      type: [String, Number],
+      default: undefined
+    }
+  },
+
+  setup(props) {
     const diference = ref(0)
 
     const sumApplied = computed(() => {
@@ -274,8 +284,16 @@ export default defineComponent({
         return
       }
       row.isSelect = !isSelect
-      row.applied = applied(row)
+      row.applied = calculateAmountApplied(row)
       addRowSelect(row)
+    }
+
+    function calculateAmountApplied(row) {
+      if (props.difference === 0) return row.open_amount
+      if (invertNumberSign(row.open_amount) > props.difference) {
+        return invertNumberSign(props.difference)
+      }
+      return row.open_amount
     }
 
     function selectionsPaymentsAll(selection) {

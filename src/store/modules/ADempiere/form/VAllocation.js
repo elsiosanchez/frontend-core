@@ -256,6 +256,7 @@ export default {
                 open_amount: Number(payment.open_amount),
                 payment_amount: Number(payment.payment_amount),
                 converted_amount: Number(payment.converted_amount),
+                amountApplied: 0,
                 isSelect: false,
                 type: 'isPayment'
               }
