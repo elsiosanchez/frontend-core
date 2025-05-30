@@ -102,6 +102,7 @@ import ComparisonOperator from '@/components/ADempiere/FieldDefinition/FieldOpti
 
 // Constants
 import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns'
+import { TOTAL_AMOUNT_COLUMS } from '@/utils/ADempiere/dictionary/field/number'
 import { BUTTON, TEXT, DEFAULT_SIZE } from '@/utils/ADempiere/references'
 import {
   MULTIPLE_VALUES_OPERATORS_LIST, IGNORE_VALUE_OPERATORS_LIST
@@ -242,14 +243,21 @@ export default {
         xl: this.field.size.xl
       }
     },
+
     // load the component that is indicated in the attributes of received property
     componentRender() {
       if (isEmptyValue(this.field.componentPath || !this.field.isSupported)) {
         return () => import('@/components/ADempiere/FieldDefinition/FieldText')
       }
+
       if (this.isSelectCreated) {
         return () => import('@/components/ADempiere/FieldDefinition/FieldSelect/FieldSelectMultiple.vue')
       }
+
+      if (TOTAL_AMOUNT_COLUMS.includes(this.field.columnName) && this.isReadOnlyField) {
+        return () => import('@/components/ADempiere/FieldDefinition/FieldGrandTotal.vue')
+      }
+
       let field
       if (this.field.columnName === 'AttendanceTime') {
         console.log({ ...this.field })
