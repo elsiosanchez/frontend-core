@@ -62,7 +62,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { showMessage } from '@/utils/ADempiere/notification'
+import { showMessage, showNotification } from '@/utils/ADempiere/notification'
 import { buildLinkHref } from '@/utils/ADempiere/resource.js'
 
 const options = {
@@ -314,7 +314,12 @@ export default {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
+        const currentGiftCard = getters.getCurrentGiftCard
         if (isEmptyValue(orderId)) orderId = currentOrder.id
+        showNotification({
+          title: lang.t('notifications.processing'),
+          type: 'info'
+        })
         printPreviewGiftCard({
           posId: currentPos.id,
           giftCardId,
@@ -332,16 +337,21 @@ export default {
             } = response
             const type = is_error ? 'error' : 'success'
             const message = isEmptyValue(summary) ? (is_error ? 'Error' : 'OK') : summary
-            showMessage({
-              type,
-              message,
-              showClose: true
-            })
+            // showMessage({
+            //   type,
+            //   message,
+            //   showClose: true
+            // })
             if (
               !isEmptyValue(process_log.output.output_stream) &&
               !isEmptyValue(process_log.output.mime_type) &&
               !isEmptyValue(process_log.output.file_name)
             ) {
+              showNotification({
+                title: message,
+                message: lang.t('form.pos.optionsPoinSales.salesOrder.giftCardGenerada') + currentGiftCard.document_no,
+                type
+              })
               dispatch('generateReportVPOS', {
                 orderId: process_log.id,
                 tableName: process_log.output.table_name,
@@ -361,10 +371,10 @@ export default {
               message = error.response.data.message
             }
 
-            showMessage({
-              type: 'error',
+            showNotification({
+              title: lang.t('notifications.error'),
               message,
-              showClose: true
+              type: 'error'
             })
             resolve({})
           })

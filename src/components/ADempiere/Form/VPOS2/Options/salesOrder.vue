@@ -1091,11 +1091,11 @@ export default defineComponent({
             isShowed: false
           })
           const currentGiftCard = store.getters.getCurrentGiftCard
-          this.$message({
-            message: lang.t('form.pos.optionsPoinSales.salesOrder.giftCardGenerada') + currentGiftCard.document_no,
-            type: 'success',
-            showClose: true
-          })
+          // this.$message({
+          //   message: lang.t('form.pos.optionsPoinSales.salesOrder.giftCardGenerada') + currentGiftCard.document_no,
+          //   type: 'success',
+          //   showClose: true
+          // })
           store.dispatch('printPreviewGiftCard', {
             orderId: currentOrder.value.id,
             giftCardId: currentGiftCard.id,

@@ -332,6 +332,8 @@ export default {
           createNewReturnOrder: 'Create a new return order',
           confirmDelivery: 'Confirm Delivery',
           giftCard: 'Gift Card',
+          generatingGiftCard: 'Generating Gift Card',
+          giftCardGenerated: 'Gift Card Generated',
           giftCardGenerada: 'Gift Card Generated  ',
           deliverAllProducts: 'Deliver all products',
           emptyProductDelivery: 'Product not in Order'
