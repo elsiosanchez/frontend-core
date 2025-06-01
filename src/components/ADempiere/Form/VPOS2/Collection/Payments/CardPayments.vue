@@ -399,7 +399,8 @@ export default defineComponent({
       store.dispatch('cancelOnline', {
         payment
       })
-        .then(() => {
+        .then(response => {
+          if (response.is_error) return
           if (props.isDeletePaymentMethods) {
             isLoading.value = true
             props.deletePayment(payment)

@@ -711,6 +711,13 @@ export default {
           paymentId: payment.id
         })
           .then(response => {
+            if (response.is_error) {
+              showMessage({
+                type: 'error',
+                message: `${response.message}. Status: ${response.status}.`,
+                showClose: true
+              })
+            }
             resolve(response)
           })
           .catch(error => {

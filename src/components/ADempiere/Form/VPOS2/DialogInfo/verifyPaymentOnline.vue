@@ -266,7 +266,8 @@ export default defineComponent({
       store.dispatch('cancelOnline', {
         payment: currentPaymentVerifications.value
       })
-        .then(() => {
+        .then(response => {
+          if (response.is_error) return
           store.dispatch('removePayment', {
             payment_id: currentPaymentVerifications.value.id
           })
