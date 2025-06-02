@@ -387,13 +387,10 @@ export default defineComponent({
       })
         .then(response => {
           if (!isEmptyValue(response)) {
-            const tabData = store.getters.getTabData({
-              containerUuid: props.containerUuid
-            })
             props.containerManager.seekRecord({
               parentUuid: props.parentUuid,
               containerUuid: props.containerUuid,
-              recordUuid: tabData.currentRecordUuid
+              row: response[0]
             })
           } else {
             showMessage({

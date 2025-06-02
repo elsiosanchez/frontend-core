@@ -472,6 +472,7 @@ export default defineComponent({
       if (isEmptyValue(recordUuid.value) || recordUuid.value === 'create-new') return
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
+        if (isEmptyValue(recordId.value)) return
         store.dispatch('getDocumentActionsListFromServer', {
           tableName: props.tabAttributes.table_name,
           recordUuid: recordUuid.value,
