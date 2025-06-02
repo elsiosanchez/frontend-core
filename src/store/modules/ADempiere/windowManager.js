@@ -177,12 +177,13 @@ const windowManager = {
         }
       }
 
-      if (!isEmptyValue(rowIndex)) {
-        recordsList.splice(rowIndex, 1, {
-          ...row,
-          rowIndex
-        })
-      }
+      // TODO: Replace empty line in table in new record
+      // if (!isEmptyValue(rowIndex)) {
+      //   recordsList.splice(rowIndex, 1, {
+      //     ...row,
+      //     rowIndex
+      //   })
+      // }
 
       Vue.set(state.tabData[containerUuid], 'recordsList', recordsList)
     },
