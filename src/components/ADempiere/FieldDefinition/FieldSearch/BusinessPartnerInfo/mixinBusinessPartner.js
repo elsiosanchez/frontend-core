@@ -20,10 +20,12 @@ import store from '@/store'
 
 // Constants
 import {
-  COLUMN_NAME
+  COLUMN_NAME,
+  BUSINESS_PARTNERS_LIST_FORM
 } from '@/utils/ADempiere/dictionary/field/search/businessPartner.ts'
 
 // Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { generateDisplayedValue } from '@/utils/ADempiere/dictionary/field/search/businessPartner.ts'
 
 export default {
@@ -56,8 +58,15 @@ export default {
         tax_id: undefined,
         name: undefined,
         name2: undefined,
-        description: undefined
+        description: undefined,
+        business_partner_group: undefined
       }
+    },
+    uuidForm() {
+      if (!isEmptyValue(this.metadata.containerUuid)) {
+        return this.metadata.columnName + '_' + this.metadata.containerUuid
+      }
+      return BUSINESS_PARTNERS_LIST_FORM
     },
     recordsList() {
       return store.getters.getBusinessPartnerRecordsList({

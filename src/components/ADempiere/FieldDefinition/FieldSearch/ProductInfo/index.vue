@@ -49,7 +49,8 @@
         </div>
         <span class="info">
           {{ recordRow.item.uom }}
-          {{ recordRow.item.description }} ({{ recordRow.item.product_category }})
+          {{ recordRow.item.description }}
+          ({{ recordRow.item.product_category }})
         </span>
       </span>
     </template>
@@ -64,7 +65,7 @@
 </template>
 
 <script>
-import store from '@/store'
+// import store from '@/store'
 
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
@@ -114,12 +115,6 @@ export default {
   computed: {
     cssClassCustomField() {
       return ' custom-field-product-info '
-    },
-    // implement to overwrite
-    recordsList() {
-      return store.getters.getProductSearchFieldRecordsList({
-        containerUuid: this.uuidForm
-      })
     }
   },
 
@@ -133,21 +128,22 @@ export default {
     enterKey(event) {
       // TODO: Implement key enter event.
     },
+    keyPressField() {
+      if (!this.isEmptyValue(this.$refs['autocompleteProduct' + this.metadata.columnName])) {
+        this.remoteSearch(this.displayedValue, true)
+      }
+    },
     searchFocus() {
       // if (this.recordsList.length <= 1) {
       //   this.$refs.autocompleteProduct.close()
       // } else {
       //   this.$refs.autocompleteProduct.getData()
       // }
+      this.hasFocus = true
       if (!isEmptyValue(this.displayedValue)) {
         this.$refs.autocompleteProduct.$el.firstElementChild.firstElementChild.select()
       }
       this.setNewDisplayedValue()
-    },
-    keyPressField() {
-      if (!this.isEmptyValue(this.$refs['autocompleteProduct' + this.metadata.columnName])) {
-        this.remoteSearch(this.displayedValue, true)
-      }
     },
     handleSelect(recordSelected) {
       if (isEmptyValue(recordSelected) || recordSelected[COLUMN_NAME] <= 0) { // || isEmptyValue(recordSelected.UUID)) {
@@ -206,10 +202,10 @@ export default {
               this.whitOutResultsMessage()
 
               // show table records
-              store.commit('setProductSearchFieldShow', {
-                containerUuid: this.uuidForm,
-                show: true
-              })
+              // store.commit('setProductSearchFieldShow', {
+              //   containerUuid: this.uuidForm,
+              //   show: true
+              // })
             } else {
               if (isKeyEnterPress || responseRecords.length === 1) {
                 const recordSelected = responseRecords.at()
@@ -220,9 +216,13 @@ export default {
             resolve(responseRecords)
           })
           .catch(error => {
+            // If an error occurs during the search, log a warning message to the console.
             console.warn(error.message)
 
+            // Show a message indicating no results.
             this.whitOutResultsMessage()
+
+            // Resolve the promise with an empty array.
             resolve([])
           })
           .finally(() => {

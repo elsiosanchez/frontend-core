@@ -18,37 +18,37 @@
 
 <template>
   <el-autocomplete
-    ref="autocompleteBPartner"
+    ref="autocompleteBusinessPartner"
     v-model="displayedValue"
     v-bind="commonsProperties"
     value-key="name"
-    clearablej
+    clearable
+    :debounce="10"
+    style="width: 100%;"
     popper-class="custom-field-bpartner-info"
+    :trigger-on-focus="false"
     :fetch-suggestions="localSearch"
     :select-when-unmatched="true"
     :highlight-first-item="true"
-    :trigger-on-focus="false"
-    style="width: 100%;"
     :size="sizeField"
+    @keyup.native="enterKey"
     @select="handleSelect"
     @clear="clearValues"
     @focus="searchFocus"
     @blur="setOldDisplayedValue"
   >
-    <template
-      slot-scope="recordRow"
-    >
-      <span
-        class="{ 'disabled-record': !recordRow.item.is_active }"
-      >
+    <template slot-scope="recordRow">
+      <span :class="{ 'disabled-record': !recordRow.item.is_active }">
         <div class="header">
           {{ recordRow.item.value }}
           -
           {{ recordRow.item.name }}
         </div>
         <span class="info">
-          {{ recordRow.item.tax_id }} {{ recordRow.item.name2 }}
-          {{ recordRow.item.description }} ({{ recordRow.item.business_partner_group }})
+          {{ recordRow.item.tax_id }}
+          {{ recordRow.item.name2 }}
+          {{ recordRow.item.description }}
+          ({{ recordRow.item.business_partner_group }})
         </span>
       </span>
     </template>
@@ -63,6 +63,8 @@
 </template>
 
 <script>
+// import store from '@/store'
+
 // Components and Mixins
 import fieldMixin from '@/components/ADempiere/FieldDefinition/mixin/mixinField.js'
 import fieldSearchMixin from '@/components/ADempiere/FieldDefinition/FieldSearch/mixinFieldSearch.js'
@@ -111,10 +113,6 @@ export default {
   computed: {
     cssClassCustomField() {
       return ' custom-field-bpartner-info '
-    },
-    // to recrods list overwrite
-    uuidForm() {
-      return this.metadata.containerUuid
     }
   },
 
@@ -125,8 +123,13 @@ export default {
   },
 
   methods: {
+    enterKey(event) {
+      // TODO: Implement key enter event.
+    },
     keyPressField() {
-      if (!this.isEmptyValue(this.$refs['autocompleteBPartner' + this.metadata.columnName])) this.remoteSearch(this.displayedValue, true)
+      if (!this.isEmptyValue(this.$refs['autocompleteBusinessPartner' + this.metadata.columnName])) {
+        this.remoteSearch(this.displayedValue, true)
+      }
     },
     /**
      * Search Focus
@@ -134,10 +137,47 @@ export default {
      */
     searchFocus() {
       // Checks if `displayedValue` is not empty
+      this.hasFocus = true
       if (!isEmptyValue(this.displayedValue)) {
-        this.$refs.autocompleteBPartner.$el.firstElementChild.firstElementChild.select()
+        this.$refs.autocompleteBusinessPartner.$el.firstElementChild.firstElementChild.select()
       }
       this.setNewDisplayedValue()
+    },
+    handleSelect(recordSelected) {
+      // Checks if the selected record is empty or if its value in the specified column is less than or equal to zero.
+      if (isEmptyValue(recordSelected) || recordSelected[COLUMN_NAME] <= 0) {
+        // If the above condition is true, assigns blank values to the selected record.
+        recordSelected = this.blankValues
+      }
+
+      // Calls the setValues function to set the values of the selected register in the component.
+      this.setValues(recordSelected)
+
+      // Generates a displayed value from the selected record and assigns it to `controlDisplayed`.
+      // This prevents loss of the displayed value when the field receives focus.
+      this.controlDisplayed = this.generateDisplayedValue(recordSelected)
+
+      // Disables autocomplete to prevent it from remaining active after selection.
+      this.$refs.autocompleteBusinessPartner.activated = false
+    },
+
+    localSearch(stringToMatch, callBack) {
+      if (isEmptyValue(stringToMatch)) {
+        // not show list
+        callBack([])
+        return
+      }
+
+      // Remote search
+      clearTimeout(this.timeOutSearchRecords)
+
+      this.timeOutSearchRecords = setTimeout(() => {
+        this.remoteSearch(stringToMatch)
+          .then(remoteResponse => {
+            callBack(remoteResponse)
+          })
+      }, 500)
+      return
     },
     remoteSearch(searchValue, isKeyEnterPress) {
       // Returns a new promise that will resolve with the search results.
@@ -167,6 +207,17 @@ export default {
             // If no records are returned, show a message indicating no results.
             if (isEmptyValue(responseRecords)) {
               this.whitOutResultsMessage()
+
+              // show table records
+              // store.commit('setBusinessPartnerShow', {
+              //   containerUuid: this.uuidForm,
+              //   show: true
+              // })
+            } else {
+              if (isKeyEnterPress || responseRecords.length === 1) {
+                const recordSelected = responseRecords.at()
+                this.handleSelect(recordSelected)
+              }
             }
 
             // Resolve the promise with the obtained records.
@@ -193,23 +244,6 @@ export default {
             }
           })
       })
-    },
-    handleSelect(recordSelected) {
-      // Checks if the selected record is empty or if its value in the specified column is less than or equal to zero.
-      if (isEmptyValue(recordSelected) || recordSelected[COLUMN_NAME] <= 0) {
-        // If the above condition is true, assigns blank values to the selected record.
-        recordSelected = this.blankValues
-      }
-
-      // Calls the setValues function to set the values of the selected register in the component.
-      this.setValues(recordSelected)
-
-      // Generates a displayed value from the selected record and assigns it to `controlDisplayed`.
-      // This prevents loss of the displayed value when the field receives focus.
-      this.controlDisplayed = this.generateDisplayedValue(recordSelected)
-
-      // Disables autocomplete to prevent it from remaining active after selection.
-      this.$refs.autocompleteBPartner.activated = false
     }
   }
 }

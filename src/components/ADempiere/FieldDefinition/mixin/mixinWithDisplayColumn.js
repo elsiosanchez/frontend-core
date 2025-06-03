@@ -23,10 +23,10 @@ import {
   DISPLAY_COLUMN_PREFIX,
   UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX
 } from '@/utils/ADempiere/dictionaryUtils'
+import { IMAGE } from '@/utils/ADempiere/references'
 
 // Utils and Helper Methods
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
-import { IMAGE } from '@/utils/ADempiere/references'
 
 export default {
   name: 'MixinWithDisplayColumn',

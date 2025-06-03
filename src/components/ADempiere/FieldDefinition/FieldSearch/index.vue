@@ -42,15 +42,15 @@ import { iconSearchFieldByTable } from '@/utils/ADempiere/dictionary/field/searc
 /**
  * This component emulates the behavior of the search field, contemplating:
  * - Search Field
- * - InfoBPartner
- * - InfoProduct
- * - InfoInvoice
  * - InfoAsset
- * - InfoOrder
- * - InfoInOut
- * - InfoPayment
- * - InfoCashLine
  * - InfoAssignment
+ * - InfoBPartner
+ * - InfoCashLine
+ * - InfoInvoice
+ * - InfoInOut
+ * - InfoOrder
+ * - InfoPayment
+ * - InfoProduct
  * - InfoGeneral
  *
  * Based on
@@ -105,22 +105,33 @@ export default {
         return fieldRender
       }
       switch (this.searchTableName) {
+        // case 'A_Asset':
+        //   fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/AssetInfo')
+        //   break
         case 'C_BPartner':
           fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/BusinessPartnerInfo')
           break
-        case 'M_Product':
-          fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/ProductInfo')
-          break
-        // case 'A_Asset':
-        case 'C_Order':
-          fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/Order')
-          break
+        // case 'C_CashLine':
+        //   fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/CashLineInfo')
+        //   break
         case 'C_Invoice':
           fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/InvoiceInfo')
+          break
+        case 'C_Order':
+          fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/Order')
           break
         case 'C_Payment':
           fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/Payment')
           break
+        // case 'M_InOut':
+        //   fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/InOutInfo')
+        //   break
+        case 'M_Product':
+          fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/ProductInfo')
+          break
+        // case 'S_ResourceAssigment':
+        //   fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/ResourceAssigmentInfo')
+        //   break
         default:
           fieldRender = () => import('@/components/ADempiere/FieldDefinition/FieldSearch/GeneralInfoSearch')
           break

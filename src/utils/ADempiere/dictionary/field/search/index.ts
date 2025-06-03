@@ -27,11 +27,15 @@ export const GENERAL_INFO_SEARCH_LIST_FORM = 'General-Info-Search-List'
  * Customized (and supported) search tables
  */
 export const CUSTOMIZED_SEARCH_TABLES = [
+  // 'A_Asset',
   'C_BPartner',
-  'M_Product',
-  'C_Order',
+  // 'C_CashLine',
   'C_Invoice',
-  'C_Payment'
+  'C_Order',
+  'C_Payment',
+  // 'M_InOut',
+  'M_Product'
+  // 'S_ResourceAssigment'
 ]
 
 /**

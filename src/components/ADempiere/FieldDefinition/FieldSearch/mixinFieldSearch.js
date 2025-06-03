@@ -24,6 +24,7 @@ import {
   DISPLAY_COLUMN_PREFIX,
   IDENTIFIER_COLUMN_SUFFIX
 } from '@/utils/ADempiere/dictionaryUtils'
+import { IMAGE } from '@/utils/ADempiere/references'
 
 // Components and Mixins
 import fieldWithDisplayColumn from '@/components/ADempiere/FieldDefinition/mixin/mixinWithDisplayColumn.js'
@@ -44,6 +45,7 @@ export default {
       timeOutSearchRecords: null,
       isLoading: false,
       searchText: '',
+      hasFocus: false,
       controlDisplayed: this.displayedValue
       // unsubscribe: null
     }
@@ -74,6 +76,67 @@ export default {
         return this.storedReferenceTableName
       }
       return this.metadata.referenceTableName
+    },
+
+    displayedValue: {
+      get() {
+        const { displayColumnName, containerUuid, inTable, display_type } = this.metadata
+
+        if (isEmptyValue(this.value) && display_type === IMAGE.id) {
+          return undefined
+        }
+
+        // DisplayColumn_'ColumnName'
+        // table records values
+        if (inTable) {
+          return this.containerManager.getCell({
+            containerUuid,
+            rowIndex: this.metadata.rowIndex,
+            rowUid: this.metadata.rowUid,
+            columnName: displayColumnName
+          })
+        }
+        // return store.getters.getValueOfFieldOnContainer({
+        //   parentUuid: this.metadata.parentUuid,
+        //   containerUuid,
+        //   columnName: displayColumnName
+        // })
+        return store.getters.getValueOfField({
+          containerUuid,
+          columnName: displayColumnName
+        })
+      },
+      set(newValue) {
+        const { displayColumnName, containerUuid, inTable } = this.metadata
+
+        // table records values
+        if (inTable) {
+          return this.containerManager.setCell({
+            containerUuid,
+            rowIndex: this.metadata.rowIndex,
+            rowUid: this.metadata.rowUid,
+            columnName: displayColumnName,
+            value: newValue
+          })
+        }
+
+        store.commit('updateValueOfField', {
+          parentUuid: this.metadata.parentUuid,
+          containerUuid,
+          // DisplayColumn_'ColumnName'
+          columnName: displayColumnName,
+          value: newValue
+        })
+        // update element column name
+        if (!this.metadata.isSameColumnElement) {
+          store.commit('updateValueOfField', {
+            parentUuid: this.metadata.parentUuid,
+            containerUuid,
+            columnName: DISPLAY_COLUMN_PREFIX + this.metadata.element_name,
+            value: newValue
+          })
+        }
+      }
     },
 
     blankValues() {
@@ -181,7 +244,9 @@ export default {
     setOldDisplayedValue() {
       if (!isSameValues(this.controlDisplayed, this.displayedValue)) {
         this.displayedValue = this.controlDisplayed
+        this.controlDisplayed = ''
       }
+      this.hasFocus = false
     },
     whitOutResultsMessage() {
       this.$message({
@@ -201,11 +266,14 @@ export default {
       if (isEmptyValue(value)) {
         this.displayedValue = undefined
         this.uuidValue = undefined
+        if (this.metadata.isGetServerValue) {
+          this.getValueOfLookup()
+        }
         return
       }
 
       // find local list value
-      const optionsList = this.getStoredLookupsAndDefaultValues
+      const optionsList = [...this.getStoredLookupsAndDefaultValues]
       const option = optionsList.find(item => item.value === value)
       if (!isEmptyValue(option) && !isEmptyValue(option.value)) {
         if (!isEmptyValue(option.uuid)) {
@@ -214,8 +282,20 @@ export default {
 
         if (!isEmptyValue(option.displayedValue)) {
           this.displayedValue = option.displayedValue
+          return
         }
-        return
+
+        // add to list if no exist (with callouts, table record)
+        const displayedValue = this.displayedValue
+        if (!isEmptyValue(displayedValue)) {
+          // verify if exists to add (in table)
+          this.optionsList.push({
+            value,
+            uuid: option.uuid,
+            displayedValue
+          })
+          return
+        }
       }
 
       // request lookup
@@ -432,15 +512,20 @@ export default {
     },
 
     handleSelect(recordSelected) {
+      // Checks if the selected record is empty or if its value in the specified column is less than or equal to zero.
       if (isEmptyValue(recordSelected) || isEmptyValue(recordSelected.UUID)) {
         // set empty values
         recordSelected = this.blankValues
       }
 
+      // Calls the setValues function to set the values of the selected register in the component.
       this.setValues(recordSelected)
 
-      // prevent losing display value with focus
+      // Generates a displayed value from the selected record and assigns it to `controlDisplayed`.
+      // This prevents loss of the displayed value when the field receives focus.
       this.controlDisplayed = this.generateDisplayedValue(recordSelected)
+
+      // Disables autocomplete to prevent it from remaining active after selection.
       this.$refs.autocompleteGeneralInfo.activated = false
     }
   }
