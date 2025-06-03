@@ -34,8 +34,24 @@ import { convertObjectToKeyValue } from '@/utils/ADempiere/formatValue/iterableF
 import { isDateField, isDecimalField } from '@/utils/ADempiere/references'
 
 const calloutManager = {
+  state: {
+    calloutQueue: [],
+    isProcessing: false
+  },
+  mutations: {
+    setIsProcessing(state, isProcessing) {
+      state.isProcessing = isProcessing
+    },
+    setAddCalloutToQueue(state, callout) {
+      state.calloutQueue.push({ payload: callout })
+    },
+    setUpdateCallout(state, { index, value, oldValue }) {
+      state.calloutQueue[index].payload.value = value
+      state.calloutQueue[index].payload.oldValue = oldValue
+    }
+  },
   actions: {
-    startCallout({ commit, dispatch, rootGetters }, {
+    startCallout({ dispatch }, {
       parentUuid,
       containerUuid,
       displayType,
@@ -46,28 +62,94 @@ const calloutManager = {
       oldValue
     }) {
       return new Promise((resolve, reject) => {
-        // validate callout
-        if (isEmptyValue(callout)) {
-          resolve({})
+        const currentCallout = {
+          parentUuid,
+          containerUuid,
+          displayType,
+          callout,
+          tableName,
+          columnName,
+          value,
+          oldValue
+        }
+
+        // Before processing
+        setTimeout(() => {
+          dispatch('addToCalloutQueue', currentCallout)
+        }, 300)
+      })
+    },
+    addToCalloutQueue({ commit, getters, dispatch }, currentCallout) {
+      const { parentUuid, containerUuid, tableName, columnName } = currentCallout
+      const allCalloutQueue = getters.getAllCalloutQueue
+      // Validate if it already exists in the queue
+      const existingCalloutIndex = allCalloutQueue.findIndex(item => {
+        const itemPayload = item.payload
+        return (
+          itemPayload.parentUuid === parentUuid &&
+          itemPayload.containerUuid === containerUuid &&
+          itemPayload.tableName === tableName &&
+          itemPayload.columnName === columnName
+        )
+      })
+
+      if (existingCalloutIndex !== -1) {
+        commit('setUpdateCallout', {
+          index: existingCalloutIndex,
+          value: currentCallout.value,
+          oldValue: currentCallout.oldValue
+        })
+      } else {
+        commit('setAddCalloutToQueue', currentCallout)
+      }
+      clearTimeout()
+      setTimeout(() => {
+        dispatch('processCalloutQueue')
+      }, 1000)
+    },
+    processCalloutQueue({ commit, dispatch, getters, state }) {
+      return new Promise((resolve, reject) => {
+        const allCalloutQueue = getters.getAllCalloutQueue
+        const isProcessing = getters.isProcessing
+        if (isProcessing || isEmptyValue(allCalloutQueue)) {
+          resolve()
           return
         }
 
-        if (isSameValues(value, oldValue)) {
+        commit('setIsProcessing', true)
+        const { payload } = state.calloutQueue.shift()
+
+        const {
+          parentUuid,
+          containerUuid,
+          displayType,
+          callout,
+          tableName,
+          columnName,
+          oldValue
+        } = payload
+
+        let value = payload.value
+
+        // Validate callout
+
+        if (isEmptyValue(callout) || isSameValues(value, oldValue)) {
           resolve({})
+          commit('setIsProcessing', false)
+          dispatch('processCalloutQueue')
           return
         }
 
         const {
           id, fieldsList, isParentTab, firstTabUuid
-        } = rootGetters.getStoredTab(parentUuid, containerUuid)
-        let fieldsListParent = []
+        } = getters.getStoredTab(parentUuid, containerUuid)
+        let parentFieldsList = []
         if (!isParentTab && !isEmptyValue(firstTabUuid)) {
-          fieldsListParent = rootGetters.getStoredFieldsFromTab(parentUuid, firstTabUuid)
+          parentFieldsList = getters.getStoredFieldsFromTab(parentUuid, firstTabUuid)
         }
 
-        // const window = rootGetters.getStoredWindow(parentUuid)
         const contextAttributes = {}
-        rootGetters.getValuesView({
+        getters.getValuesView({
           parentUuid,
           containerUuid
         }).filter(attribute => {
@@ -88,10 +170,7 @@ const calloutManager = {
           if (!isEmptyValue(field)) {
             currentDisplayType = field.display_type
           } else {
-            // find on parent tab (first tab)
-            const parentField = fieldsListParent.find(fieldItem => {
-              return fieldItem.column_name === columnName
-            })
+            const parentField = parentFieldsList.find(fieldItem => fieldItem.column_name === columnName)
             if (!isEmptyValue(parentField)) {
               currentDisplayType = parentField.display_type
             }
@@ -127,23 +206,21 @@ const calloutManager = {
           }
         }
 
-        const oldValues = {}
+        const previousValues = {}
         fieldsList.forEach(fieldItem => {
           const { column_name } = fieldItem
-          const oldStoredValue = rootGetters.getValueOfFieldOnContainer({
+          const oldStoredValue = getters.getValueOfFieldOnContainer({
             parentUuid,
             containerUuid,
             columnName: column_name
           })
-          oldValues[column_name] = oldStoredValue
+          previousValues[column_name] = oldStoredValue
           if (column_name === columnName) {
-            // overwrite value
-            oldValues[column_name] = oldValue
+            previousValues[column_name] = oldValue
           }
         })
 
         runCallOutRequest({
-          // windowNo: window.windowIndex,
           tabId: id,
           callout,
           tableName,
@@ -155,30 +232,18 @@ const calloutManager = {
           .then(calloutResponse => {
             const { values } = calloutResponse
 
-            resolve(values)
-
             const attributesList = convertObjectToKeyValue({
               object: values
             })
 
-            const recordUuid = rootGetters.getUuidOfContainer(containerUuid)
+            const recordUuid = getters.getUuidOfContainer(containerUuid)
             attributesList.forEach(attribute => {
               const { value: attributeValue, columnName: attributeColumnName } = attribute
+              const attributeOldValue = previousValues[attributeColumnName]
 
-              /*
-              const attributeOldValue = rootGetters.getValueOfFieldOnContainer({
-                parentUuid,
-                containerUuid,
-                columnName: attributeColumnName
-              })
-              */
-              const attributeOldValue = oldValues[attributeColumnName]
-
-              // add changes to send
               if (!isSameValues(attributeValue, attributeOldValue)) {
                 const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeColumnName)
                 if (!isEmptyValue(field)) {
-                  // commit('addChangeToPersistenceQueue', {
                   dispatch('windowActionPerformed', {
                     containerUuid,
                     recordUuid,
@@ -199,12 +264,11 @@ const calloutManager = {
               isOverWriteParent: isParentTab
             })
 
-            // set values on table
-            const rowIndex = rootGetters.getTabRowIndex({
+            const rowIndex = getters.getTabRowIndex({
               containerUuid,
               recordUuid
             })
-            const currentRow = rootGetters.getTabRowData({
+            const currentRow = getters.getTabRowData({
               containerUuid,
               recordUuid
             })
@@ -219,6 +283,7 @@ const calloutManager = {
                 ...values
               }
             })
+            resolve(values)
           })
           .catch(error => {
             reject(error)
@@ -228,7 +293,19 @@ const calloutManager = {
             })
             console.warn(`Field ${columnName} error callout. Code ${error.code}: ${error.message}`)
           })
+          .finally(() => {
+            commit('setIsProcessing', false)
+            dispatch('processCalloutQueue')
+          })
       })
+    }
+  },
+  getters: {
+    getAllCalloutQueue: (state) => {
+      return state.calloutQueue
+    },
+    isProcessing(state) {
+      return state.isProcessing
     }
   }
 }
