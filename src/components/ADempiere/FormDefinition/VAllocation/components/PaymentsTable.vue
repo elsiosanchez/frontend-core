@@ -134,7 +134,7 @@
       :label="$t('form.VAllocation.invoice.table.quantity')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.payment_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.payment_amount) < 0 }">
           {{ formatPrice({ value: scope.row.payment_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -146,7 +146,7 @@
       :label="$t('form.VAllocation.payment.table.converted')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.converted_amount) < 0 }">
           {{ formatPrice({ value: scope.row.converted_amount, currency }) }}
         </span>
       </template>
@@ -158,7 +158,7 @@
       :label="$t('form.VAllocation.payment.table.open')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.open_amount) < 0 }">
           {{ formatPrice({ value: scope.row.open_amount, currency }) }}
         </span>
       </template>
@@ -176,7 +176,7 @@
           controls-position="right"
           :precision="2"
           size="mini"
-          :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
+          :class="{ 'custom-field-number': true, 'number-negative': convertToNumber(scope.row.applied) < 0 }"
           style="width: 100% !important;"
         />
       </template>
@@ -192,7 +192,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
-import { formatPrice, invertNumberSign } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, invertNumberSign, isPositive, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
@@ -290,7 +290,9 @@ export default defineComponent({
 
     function calculateAmountApplied(row) {
       if (props.difference === 0) return row.open_amount
-      if (invertNumberSign(row.open_amount) > props.difference) {
+      if (!isPositive(row.open_amount) && !isPositive(props.difference)) {
+        return row.open_amount
+      } else if (invertNumberSign(row.open_amount) > props.difference) {
         return invertNumberSign(props.difference)
       }
       return row.open_amount
@@ -410,6 +412,7 @@ export default defineComponent({
       // Methods
       formatDate,
       formatPrice,
+      convertToNumber,
       selectionsPayments,
       selectionsPaymentsAll
     }

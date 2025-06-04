@@ -34,7 +34,7 @@
     <el-table-column
       type="selection"
       fixed="left"
-      :width="35"
+      :width="45"
     />
 
     <el-table-column
@@ -151,7 +151,7 @@
       :label="$t('form.VAllocation.invoice.table.quantity')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.original_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.original_amount) < 0 }">
           {{ formatPrice({ value: scope.row.original_amount, currency: scope.row.currency.iso_code }) }}
         </span>
       </template>
@@ -163,7 +163,7 @@
       :label="$t('form.VAllocation.invoice.table.converted')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.converted_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.converted_amount) < 0 }">
           {{ formatPrice({ value: scope.row.converted_amount, currency }) }}
         </span>
       </template>
@@ -175,7 +175,7 @@
       :label="$t('form.VAllocation.invoice.table.open')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.open_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.open_amount) < 0 }">
           {{ formatPrice({ value: scope.row.open_amount, currency }) }}
         </span>
       </template>
@@ -187,7 +187,7 @@
       :label="$t('form.VAllocation.invoice.table.tradeDiscount')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.discount_amount < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.discount_amount) < 0 }">
           {{ formatPrice({ value: scope.row.discount_amount, currency }) }}
         </span>
       </template>
@@ -205,7 +205,7 @@
           :precision="2"
           controls-position="right"
           size="mini"
-          :class="{ 'custom-field-number': true, 'number-negative': scope.row.writeOff < 0 }"
+          :class="{ 'custom-field-number': true, 'number-negative': convertToNumber(scope.row.writeOff) < 0 }"
           style="width: 100% !important;"
         />
       </template>
@@ -223,7 +223,7 @@
           controls-position="right"
           :precision="2"
           size="mini"
-          :class="{ 'custom-field-number': true, 'number-negative': scope.row.applied < 0 }"
+          :class="{ 'custom-field-number': true, 'number-negative': convertToNumber(scope.row.applied) < 0 }"
           style="width: 100% !important;"
         />
       </template>
@@ -235,7 +235,7 @@
       :label="$t('form.VAllocation.invoice.table.overUnderPay')"
     >
       <template slot-scope="scope">
-        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row.overUnderPay < 0 }">
+        <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.overUnderPay) < 0 }">
           {{ formatPrice({ value: calculateOverUnderPayment(scope.row), currency }) }}
         </span>
       </template>
@@ -251,7 +251,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { isEmptyValue, getTypeOfValue } from '@/utils/ADempiere/valueUtils'
-import { formatPrice, isPositive } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, isPositive, invertNumberSign, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
@@ -342,8 +342,14 @@ export default defineComponent({
     function calculateAmountApplied(row) {
       if (props.difference === 0) return row.open_amount
       if (
-        isPositive(row.open_amount) &&
-        !isPositive(props.difference)
+        !isPositive(row.open_amount) &&
+        !isPositive(props.difference) &&
+        invertNumberSign(row.open_amount) > invertNumberSign(props.difference)
+      ) {
+        return props.difference
+      } else if (
+        !isPositive(row.open_amount) &&
+        isPositive(props.difference)
       ) {
         return props.difference
       } else if (
@@ -477,6 +483,7 @@ export default defineComponent({
       formatDate,
       isCellInput,
       formatPrice,
+      convertToNumber,
       selectionInvoces,
       selectionInvocesAll,
       calculateOverUnderPayment
