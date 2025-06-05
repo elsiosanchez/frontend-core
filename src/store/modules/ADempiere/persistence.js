@@ -130,6 +130,7 @@ const persistence = {
       columnName,
       currentCallout,
       recordUuid,
+      oldValue,
       value
     }) {
       return new Promise((resolve, reject) => {
@@ -148,8 +149,8 @@ const persistence = {
         }
 
         // TODO: Old value is not working
-        let oldValue
-        if (!isEmptyValue(currentRecord)) {
+        // let oldValue
+        if (!isEmptyValue(currentRecord) && isEmptyValue(oldValue)) {
           oldValue = currentRecord[columnName]
         }
         if (isEmptyValue(currentRecord) || oldValue === value) {
@@ -666,6 +667,23 @@ const persistence = {
           })
       }
       return []
+    },
+    getCurrentAttributes: (state, getters) => ({ parentUuid, containerUuid, recordUuid, columnName }) => {
+      if (
+        !isEmptyValue(containerUuid) &&
+        !isEmptyValue(recordUuid) &&
+        !isEmptyValue(columnName)
+      ) {
+        const key = containerUuid + '_' + recordUuid
+        return {
+          columnName: state.persistence[key][columnName].value
+        }
+      }
+      return getters.getValueOfFieldOnContainer({
+        parentUuid,
+        containerUuid,
+        columnName
+      })
     }
   }
 }

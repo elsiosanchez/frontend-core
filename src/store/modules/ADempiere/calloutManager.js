@@ -239,12 +239,11 @@ const calloutManager = {
                 columnName: attributeColumnName
               } = attribute
 
-              const attributeOldValue = previousValues[attributeColumnName]
+              const attributeOldValue = getters.getCurrentAttributes({ parentUuid, containerUuid, recordUuid, columnName: attributeColumnName })
               if (
-                !isSameValues(attribute.value, attributeOldValue) &&
-                (attribute.columnName !== columnName && isSameValues(attribute.value, attributeOldValue))
+                !isSameValues(attribute.value, attributeOldValue)
               ) {
-                const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeValue)
+                const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeColumnName)
                 if (!isEmptyValue(field)) {
                   dispatch('windowActionPerformed', {
                     columnName: attributeColumnName,
