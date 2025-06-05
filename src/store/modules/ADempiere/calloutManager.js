@@ -109,10 +109,14 @@ const calloutManager = {
     },
     processCalloutQueue({ commit, dispatch, getters, state }) {
       return new Promise((resolve, reject) => {
+        const recordUuid = getters.getUuidOfContainer(containerUuid)
         const allCalloutQueue = getters.getAllCalloutQueue
         const isProcessing = getters.isProcessing
+        const contextAttributes = {}
+        let parentFieldsList = []
+
         if (isProcessing || isEmptyValue(allCalloutQueue)) {
-          resolve()
+          resolve({})
           return
         }
 
@@ -120,13 +124,13 @@ const calloutManager = {
         const { payload } = state.calloutQueue.shift()
 
         const {
-          parentUuid,
           containerUuid,
           displayType,
-          callout,
-          tableName,
+          parentUuid,
           columnName,
-          oldValue
+          tableName,
+          oldValue,
+          callout
         } = payload
 
         let value = payload.value
@@ -140,15 +144,12 @@ const calloutManager = {
           return
         }
 
-        const {
-          id, fieldsList, isParentTab, firstTabUuid
-        } = getters.getStoredTab(parentUuid, containerUuid)
-        let parentFieldsList = []
+        const { id, fieldsList, isParentTab, firstTabUuid } = getters.getStoredTab(parentUuid, containerUuid)
+
         if (!isParentTab && !isEmptyValue(firstTabUuid)) {
           parentFieldsList = getters.getStoredFieldsFromTab(parentUuid, firstTabUuid)
         }
 
-        const contextAttributes = {}
         getters.getValuesView({
           parentUuid,
           containerUuid
@@ -209,15 +210,9 @@ const calloutManager = {
         const previousValues = {}
         fieldsList.forEach(fieldItem => {
           const { column_name } = fieldItem
-          const oldStoredValue = getters.getValueOfFieldOnContainer({
-            parentUuid,
-            containerUuid,
-            columnName: column_name
-          })
+          const oldStoredValue = getters.getValueOfFieldOnContainer({ parentUuid, containerUuid, columnName: column_name })
           previousValues[column_name] = oldStoredValue
-          if (column_name === columnName) {
-            previousValues[column_name] = oldValue
-          }
+          if (column_name === columnName) previousValues[column_name] = oldValue
         })
 
         runCallOutRequest({
@@ -232,31 +227,37 @@ const calloutManager = {
           .then(calloutResponse => {
             const { values } = calloutResponse
 
-            const attributesList = convertObjectToKeyValue({
-              object: values
-            })
+            const attributesList = convertObjectToKeyValue({ object: values })
 
-            const recordUuid = getters.getUuidOfContainer(containerUuid)
+            const rowIndex = getters.getTabRowIndex({ containerUuid, recordUuid })
+
+            const currentRow = getters.getTabRowData({ containerUuid, recordUuid })
+
             attributesList.forEach(attribute => {
-              const { value: attributeValue, columnName: attributeColumnName } = attribute
-              const attributeOldValue = previousValues[attributeColumnName]
+              const {
+                value: attributeValue,
+                columnName: attributeColumnName
+              } = attribute
 
-              if (!isSameValues(attributeValue, attributeOldValue)) {
-                const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeColumnName)
+              const attributeOldValue = previousValues[attributeColumnName]
+              if (
+                !isSameValues(attribute.value, attributeOldValue) &&
+                (attribute.columnName !== columnName && isSameValues(attribute.value, attributeOldValue))
+              ) {
+                const field = fieldsList.find(fieldItem => fieldItem.column_name === attributeValue)
                 if (!isEmptyValue(field)) {
                   dispatch('windowActionPerformed', {
+                    columnName: attributeColumnName,
+                    oldValue: attributeOldValue,
+                    currentCallout: callout,
+                    value: attributeValue,
                     containerUuid,
                     recordUuid,
-                    field,
-                    columnName: attributeColumnName,
-                    currentCallout: callout,
-                    oldValue: attributeOldValue,
-                    value: attributeValue
+                    field
                   })
                 }
               }
             })
-
             dispatch('updateValuesOfContainer', {
               parentUuid,
               containerUuid,
@@ -264,14 +265,6 @@ const calloutManager = {
               isOverWriteParent: isParentTab
             })
 
-            const rowIndex = getters.getTabRowIndex({
-              containerUuid,
-              recordUuid
-            })
-            const currentRow = getters.getTabRowData({
-              containerUuid,
-              recordUuid
-            })
             commit('setTabRow', {
               parentUuid,
               containerUuid,
@@ -295,7 +288,6 @@ const calloutManager = {
           })
           .finally(() => {
             commit('setIsProcessing', false)
-            dispatch('processCalloutQueue')
           })
       })
     }
