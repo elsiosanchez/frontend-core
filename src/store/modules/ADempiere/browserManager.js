@@ -176,7 +176,7 @@ const browserControl = {
         })
 
         const {
-          id, fieldsList, contextColumnNames
+          id, is_selected_by_default, fieldsList, contextColumnNames
         } = rootGetters.getStoredBrowser(containerUuid)
         if (isEmptyValue(id) && isEmptyValue(fieldsList) && isEmptyValue(contextColumnNames)) {
           resolve(currentRecordsList)
@@ -298,15 +298,22 @@ const browserControl = {
                 ...values,
                 // datatables app attributes
                 ...ROW_ATTRIBUTES,
+                isSelectedRow: is_selected_by_default,
                 rowIndex,
                 rowUid: getUuidv4()
               }
             })
 
+            let selectionsList = []
+            if (is_selected_by_default) {
+              selectionsList = recordsList
+            }
+
             commit('setBrowserData', {
               containerUuid,
               recordsList,
               recordCount: browserSearchResponse.record_count,
+              selectionsList,
               nextPageToken: browserSearchResponse.next_page_token,
               pageNumber,
               pageSize,

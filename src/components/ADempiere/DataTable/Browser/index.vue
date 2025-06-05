@@ -47,10 +47,10 @@
       id="multipleTable"
       ref="multipleTable"
       v-loading="isLoadingDataTable"
-      border
+      :border="true"
       :row-key="keyColumn"
       reserve-selection
-      :data="recordsWithFilter"
+      :data="recordsList"
       size="small"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
@@ -61,8 +61,27 @@
       @row-click="handleRowClick"
       @row-dblclick="handleRowDblClick"
       @select="handleSelection"
-      @select-all="activateAll"
+      @select-all="handleSelectionAll"
     >
+      <span slot="empty" style="width: 100%;">
+        <el-button
+          plain
+          size="small"
+          type="primary"
+          class="undo-changes-button"
+          @click="refreshRecord()"
+        >
+          <svg-icon icon-class="refresh" />
+          <span v-if="!isMobile">
+            {{ $t('actionMenu.refresh') }}
+          </span>
+        </el-button>
+        <!-- <el-empty
+          v-show="!isLoadRefreshDataTale"
+          :image-size="100"
+        /> -->
+      </span>
+
       <!-- column with the checkbox -->
       <el-table-column
         v-if="isTableSelection"
@@ -180,7 +199,7 @@
             style="width: 100%"
           >
             <el-table-column
-              v-for="(item, index) in storedPanel.identifierColumns"
+              v-for="(item, index) in storedBrowser.identifierColumns"
               :key="index"
               :prop="item.columnName"
               :label="item.name"
@@ -204,7 +223,7 @@
             />
           </div>
           <el-button
-            v-if="currentBrowser.is_deleteable"
+            v-if="storedBrowser.is_deleteable"
             slot="reference"
             plain
             type="danger"
@@ -330,6 +349,7 @@ export default defineComponent({
   setup(props) {
     const panelMain = document.getElementById('mainBrowseDataTable')
     const multipleTable = ref(null)
+
     const isEditing = ref(true)
     const editingRow = ref(null)
     const editingColumn = ref(null)
@@ -341,10 +361,8 @@ export default defineComponent({
     const currentRowSelect = ref({})
     const isVisibleConfirmDelete = ref(false)
 
-    const disableExport = computed(() => {
-      return props.containerManager.enableExport({
-        containerUuid: props.containerUuid
-      })
+    const storedBrowser = computed(() => {
+      return store.getters.getStoredBrowser(props.containerUuid)
     })
 
     const isLoadingDataTale = computed(() => {
@@ -389,23 +407,32 @@ export default defineComponent({
       })
     })
 
-    function widthColumn(fieldAttributes) {
-      const { name, display_type } = fieldAttributes
-      const size = 12
-      let caracter = name.length
-      if (isWidthColumn(display_type)) {
-        return caracter * size + 100
+    const isMobile = computed(() => {
+      return store.state.app.device === 'mobile'
+    })
+
+    const recordsList = computed(() => {
+      if (props.containerManager && props.containerManager.getRecordsList) {
+        return props.containerManager.getRecordsList({
+          containerUuid: props.containerUuid
+        })
       }
-      if (caracter <= 9) {
-        caracter = 10
-      }
-      return caracter * size
-    }
+      return props.dataTable || []
+    })
 
     const selectionsLength = computed(() => {
       return props.containerManager.getSelection({
         containerUuid: props.containerUuid
       }).length
+    })
+
+    const selectionsList = computed(() => {
+      if (props.containerManager.getSelection) {
+        return props.containerManager.getSelection({
+          containerUuid: props.containerUuid
+        })
+      }
+      return []
     })
 
     const currentPageNumber = computed(() => {
@@ -426,26 +453,13 @@ export default defineComponent({
       return ROWS_OF_RECORDS_BY_PAGE
     })
 
-    const isMobile = computed(() => {
-      return store.state.app.device === 'mobile'
-    })
-
-    const selectionsList = computed(() => {
-      if (props.containerManager.getSelection) {
-        return props.containerManager.getSelection({
-          containerUuid: props.containerUuid
-        })
-      }
-      return []
-    })
-
     const recordCount = computed(() => {
       if (props.containerManager.getRecordCount) {
         return props.containerManager.getRecordCount({
           containerUuid: props.containerUuid
         })
       }
-      return recordsWithFilter.value.length
+      return recordsList.value.length
     })
 
     const defaultSize = computed(() => {
@@ -467,15 +481,14 @@ export default defineComponent({
       return defaultSize.value
     })
 
-    const storedPanel = computed(() => {
-      return props.containerManager.getPanel({
-        parentUuid: props.parentUuid,
+    const disableExport = computed(() => {
+      return props.containerManager.enableExport({
         containerUuid: props.containerUuid
       })
     })
 
     const isCollapse = computed(() => {
-      const panel = storedPanel.value
+      const panel = storedBrowser.value
       if (!isEmptyValue(panel)) {
         if (panel.isShowedCriteria) {
           // open criteria
@@ -512,10 +525,6 @@ export default defineComponent({
       return runProcessOfBrowser.enabled({
         containerUuid: props.panelMetadata.uuid
       })
-    })
-
-    const currentBrowser = computed(() => {
-      return store.getters.getStoredBrowser(props.containerUuid)
     })
 
     /**
@@ -568,16 +577,6 @@ export default defineComponent({
       })
     }
 
-    // get table data
-    const recordsWithFilter = computed(() => {
-      if (props.containerManager && props.containerManager.getRecordsList) {
-        return props.containerManager.getRecordsList({
-          containerUuid: props.containerUuid
-        })
-      }
-      return props.dataTable
-    })
-
     function handleSelection(selections, rowSelected) {
       let index = 0
       rowSelected.isSelectedRow = !rowSelected.isSelectedRow
@@ -588,20 +587,16 @@ export default defineComponent({
     }
 
     function handleSelectionAll(selections = []) {
+      if (isEmptyValue(selections)) {
+        // read only current cell
+        isEditing.value = false
+        editingRow.value = null
+        editingColumn.value = null
+      }
       props.containerManager.setSelection({
         containerUuid: props.containerUuid,
         recordsSelected: selections
       })
-    }
-
-    function activateAll() {
-      let index = 0
-      recordsWithFilter.value.forEach((row) => {
-        row.isSelectedRow = !row.isSelectedRow
-        row.rowSelectedIndex = index++
-        row.isEditRow = row.isSelectedRow
-      })
-      handleSelectionAll(recordsWithFilter.value)
     }
 
     /**
@@ -617,16 +612,6 @@ export default defineComponent({
         rows.forEach(row => {
           multipleTable.value.toggleRowSelection(row, true)
         })
-      }
-    }
-
-    function isSelectDefault() {
-      const browser = store.getters.getStoredBrowser(props.containerUuid)
-      if (!isEmptyValue(browser)) {
-        const { is_selected_by_default } = browser
-        if (is_selected_by_default) {
-          activateAll()
-        }
       }
     }
 
@@ -652,7 +637,7 @@ export default defineComponent({
     function adjustSize() {
       if (!isEmptyValue(panelMain) && !isEmptyValue(panelMain.clientHeight)) {
         const size = parseInt(panelMain.clientHeight) / 2
-        if (recordsWithFilter.value.length < 5) {
+        if (recordsList.value.length < 5) {
           heightTable.value = 'auto'
           return
         }
@@ -670,14 +655,17 @@ export default defineComponent({
       }
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
-        toggleSelection(selectionsList.value)
-      }, 100)
+        const selections = selectionsList.value
+        toggleSelection(selections)
+      }, 500)
     }
+
     function refreshRecord() {
       props.containerManager.refreshRecords({
         containerUuid: props.panelMetadata.uuid
       })
     }
+
     function runProcess() {
       runProcessOfBrowser.runProcessOfBrowser({
         containerUuid: props.panelMetadata.uuid
@@ -710,6 +698,19 @@ export default defineComponent({
       if (command === 'allRecord') {
         exportAllRecords()
       }
+    }
+
+    function widthColumn(fieldAttributes) {
+      const { name, display_type } = fieldAttributes
+      const size = 12
+      let caracter = name.length
+      if (isWidthColumn(display_type)) {
+        return caracter * size + 100
+      }
+      if (caracter <= 9) {
+        caracter = 10
+      }
+      return caracter * size
     }
 
     function getColumnStyle({
@@ -795,15 +796,26 @@ export default defineComponent({
       isVisibleConfirmDelete.value = false
     }
 
+    watch(selectionsList, (newValue, oldValue) => {
+      loadSelection()
+      // if (!isEmptyValue(newValue)) {
+      //   const row = newValue.at()
+      //   if (row.isNewRow) {
+      //     toggleSelection([row])
+      //   }
+      // }
+      // clearTimeout(timeOut.value)
+      // timeOut.value = setTimeout(() => {
+      //   toggleSelection(newValue)
+      //   // loadSelection()
+      // }, 100)
+    })
+
     watch(currentOption, (newValue, oldValue) => {
       isChangeOptions.value = true
       setTimeout(() => {
         isChangeOptions.value = false
       }, 500)
-    })
-
-    watch(recordsWithFilter, () => {
-      isSelectDefault()
     })
 
     onUpdated(() => {
@@ -828,34 +840,33 @@ export default defineComponent({
       isChangeOptions,
       heightTable,
       heightSize,
-      storedPanel,
+      storedBrowser,
       //
       isEditing,
       editingRow,
       editingColumn,
       // Computeds
-      currentBrowser,
-      headerList,
       isLoadingDataTale,
-      recordsWithFilter,
+      headerList,
+      recordsList,
       currentOption,
       keyColumn,
       recordCount,
       currentPageNumber,
       currentPageSize,
-      selectionsLength,
-      defaultSize,
-      sizeViewTable,
       tableClass,
-      isMobile,
       currentRowSelect,
       disableExport,
+      selectionsList,
+      selectionsLength,
+      sizeViewTable,
+      defaultSize,
+      isMobile,
+      //
       isEnableProcess,
       processDescription,
-      selectionsList,
       isVisibleConfirmDelete,
       // Methods
-      isSelectDefault,
       editCell,
       noEditCell,
       handleSubmit,
@@ -874,7 +885,6 @@ export default defineComponent({
       handleSelectionAll,
       loadSelection,
       handleChangeSizePage,
-      activateAll,
       widthColumn,
       refreshRecord,
       runProcess,
