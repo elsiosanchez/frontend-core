@@ -61,6 +61,10 @@ export function loadMainMenu({
       const { menus } = menuResponse
       const asyncRoutesMap = []
       menus.forEach(menuElement => {
+        if (isEmptyValue(menuElement.id)) {
+          console.warn(`Root menu without UUID`, menuElement)
+          return
+        }
         const optionMenu = getRouteFromMenuItem({
           menu: menuElement,
           clientId,
@@ -71,6 +75,10 @@ export function loadMainMenu({
         const children = []
         if (optionMenu.meta.isSummary && !isEmptyValue(menuElement.children)) {
           menuElement.children.forEach(menu => {
+            if (isEmptyValue(menu.id)) {
+              console.warn(`Root children menu without UUID`, menu)
+              return
+            }
             const childsSumaryConverted = getChildFromAction({
               menu,
               index: 0,
@@ -137,15 +145,15 @@ export function loadMainMenu({
  * @param {number} organizationId
  */
 function getChildFromAction({ menu, index, clientId, roleId, organizationId }) {
-  const { action, action_id, action_uuid } = menu
+  const { action, action_id, action_uuid, id, is_summary } = menu
   const { component, icon, name: type } = convertAction(action)
 
   const routeIdentifier = type + '/' + action_id
-  const isIndex = menu.is_summary
+  const isIndex = is_summary
   const option = {
-    path: '/' + clientId + '/' + roleId + '/' + organizationId + '/' + menu.id + '/' + routeIdentifier,
+    path: '/' + clientId + '/' + roleId + '/' + organizationId + '/' + id + '/' + routeIdentifier,
     component,
-    name: menu.id.toString(),
+    name: id.toString(),
     hidden: index > 0,
     meta: {
       alwaysShow: true,
@@ -153,7 +161,7 @@ function getChildFromAction({ menu, index, clientId, roleId, organizationId }) {
       icon,
       isIndex,
       isReadOnly: menu.is_read_only,
-      isSummary: menu.is_summary,
+      isSummary: is_summary,
       isSalesTransaction: menu.is_sales_transaction,
       parentId: menu.parent_id,
       // parentUuid: menu.parent_uuid,
@@ -173,6 +181,10 @@ function getChildFromAction({ menu, index, clientId, roleId, organizationId }) {
 
   if (isIndex && !isEmptyValue(menu.children)) {
     menu.children.forEach(child => {
+      if (isEmptyValue(child.id)) {
+        console.warn(`Children menu without UUID`, menu)
+        return
+      }
       const menuConverted = getChildFromAction({
         menu: child,
         index: 1,
