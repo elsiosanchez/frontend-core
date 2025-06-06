@@ -109,11 +109,13 @@ import {
 } from '@/utils/ADempiere/dataUtils'
 import { LAYOUT_MAX_COLUMNS_PER_ROW, DEFAULT_COLUMNS_PER_ROW } from '@/utils/ADempiere/componentUtils'
 import { ALWAYS_DISPLAY_COLUMN } from '@/utils/ADempiere/dictionaryUtils'
+import { CURRENCY } from '@/utils/ADempiere/constants/currency'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
 import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
+
 /**
  * This is the base component for linking the components according to the
  * reference (or type of visualization) of each field
@@ -259,8 +261,9 @@ export default {
       }
 
       let field
-      if (this.field.columnName === 'AttendanceTime') {
-        console.log({ ...this.field })
+      if (this.field.columnName.includes(CURRENCY)) {
+        field = () => import('@/components/ADempiere/FieldDefinition/FieldCurrency')
+        return field
       }
       switch (this.field.componentPath) {
         case 'FieldText':
