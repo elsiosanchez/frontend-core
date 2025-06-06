@@ -74,6 +74,8 @@ export default {
 
   language: 'Language',
   copyToClipboard: 'Copy to Clipboard',
+  qa: 'Quality Assurance Service',
+  dev: 'Development Service',
   notifications: {
     // simplex
     completed: 'Completed',

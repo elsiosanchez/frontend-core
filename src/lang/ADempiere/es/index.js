@@ -75,6 +75,8 @@ export default {
   timeControl,
   VPayPrint,
   copyToClipboard: 'Copiar al Portapapeles',
+  qa: 'Servicio de Aseguramiento de Calidad',
+  dev: 'Servicio de Desarrollo',
   notifications: {
     // simplex
     completed: 'Completado',
