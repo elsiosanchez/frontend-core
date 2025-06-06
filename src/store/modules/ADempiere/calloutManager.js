@@ -17,7 +17,7 @@
  */
 
 import lang from '@/lang'
-
+import Vue from 'vue'
 // API Request Methods
 import { runCallOutRequest } from '@/api/ADempiere/userInterface/window.ts'
 
@@ -36,11 +36,15 @@ import { isDateField, isDecimalField } from '@/utils/ADempiere/references'
 const calloutManager = {
   state: {
     calloutQueue: [],
-    isProcessing: false
+    isProcessing: {}
   },
   mutations: {
-    setIsProcessing(state, isProcessing) {
-      state.isProcessing = isProcessing
+    setIsProcessing(state, {
+      containerUuid,
+      isLoading
+    }) {
+      Vue.set(state.isProcessing, containerUuid, isLoading)
+      // state.isProcessing = isProcessing
     },
     setAddCalloutToQueue(state, callout) {
       state.calloutQueue.push({ payload: callout })
@@ -104,14 +108,18 @@ const calloutManager = {
       }
       clearTimeout()
       setTimeout(() => {
-        dispatch('processCalloutQueue')
-      }, 1000)
+        dispatch('processCalloutQueue', {
+          containerUuid
+        })
+      }, 500)
     },
-    processCalloutQueue({ commit, dispatch, getters, state }) {
+    processCalloutQueue({ commit, dispatch, getters, state }, {
+      containerUuid
+    }) {
       return new Promise((resolve, reject) => {
         const recordUuid = getters.getUuidOfContainer(containerUuid)
         const allCalloutQueue = getters.getAllCalloutQueue
-        const isProcessing = getters.isProcessing
+        const isProcessing = getters.isProcessing({ containerUuid })
         const contextAttributes = {}
         let parentFieldsList = []
 
@@ -120,11 +128,13 @@ const calloutManager = {
           return
         }
 
-        commit('setIsProcessing', true)
+        commit('setIsProcessing', {
+          containerUuid,
+          isLoading: true
+        })
         const { payload } = state.calloutQueue.shift()
 
         const {
-          containerUuid,
           displayType,
           parentUuid,
           columnName,
@@ -139,7 +149,10 @@ const calloutManager = {
 
         if (isEmptyValue(callout) || isSameValues(value, oldValue)) {
           resolve({})
-          commit('setIsProcessing', false)
+          commit('setIsProcessing', {
+            containerUuid,
+            isLoading: false
+          })
           dispatch('processCalloutQueue')
           return
         }
@@ -286,7 +299,10 @@ const calloutManager = {
             console.warn(`Field ${columnName} error callout. Code ${error.code}: ${error.message}`)
           })
           .finally(() => {
-            commit('setIsProcessing', false)
+            commit('setIsProcessing', {
+              containerUuid,
+              isLoading: false
+            })
           })
       })
     }
@@ -295,8 +311,10 @@ const calloutManager = {
     getAllCalloutQueue: (state) => {
       return state.calloutQueue
     },
-    isProcessing(state) {
-      return state.isProcessing
+    isProcessing: (state) => ({
+      containerUuid
+    }) => {
+      return state.isProcessing[containerUuid] || false
     }
   }
 }

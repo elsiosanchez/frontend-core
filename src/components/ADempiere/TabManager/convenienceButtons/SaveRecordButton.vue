@@ -22,8 +22,8 @@
     plain
     size="small"
     type="primary"
-    :loading="isSaveRecordLoading"
-    :disabled="isSaveRecordLoading"
+    :loading="isSaveRecordLoading || loadingCallout"
+    :disabled="isSaveRecordLoading || loadingCallout"
     :style="isMobile ? 'margin-left: 1px;padding-right: 6px;' : 'margin-left: 8px; padding-right: 9px;'"
     class="undo-changes-button"
     @click="saveChanges()"
@@ -68,6 +68,13 @@ export default defineComponent({
 
     const isMobile = computed(() => {
       return store.state.app.device === 'mobile'
+    })
+
+    const loadingCallout = computed(() => {
+      return store.getters.isProcessing({
+        containerUuid: props.containerUuid
+      })
+      // return ''
     })
 
     const recordUuid = computed(() => {
@@ -181,8 +188,9 @@ export default defineComponent({
 
     return {
       isSaveRecordLoading,
-      isMobile,
+      loadingCallout,
       isSaveRecord,
+      isMobile,
       // Methods
       saveChanges
     }
