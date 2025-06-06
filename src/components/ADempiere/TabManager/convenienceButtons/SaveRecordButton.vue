@@ -112,26 +112,12 @@ export default defineComponent({
 
       return isExistsChanges.value
     })
-    const currentRouter = root._route
+
     const recordId = computed(() => {
-      const { table } = tabAttributes.value
-      const { key_columns, table_name } = table
-      const { query } = currentRouter
-      const currentReccord = store.getters.getTabCurrentRow({
-        containerUuid: tabAttributes.value.containerUuid
+      return store.getters.getIdOfContainer({
+        containerUuid: tabAttributes.value.containerUuid,
+        tableName: tabAttributes.value.table_name
       })
-      let id = -1
-      if (!isEmptyValue(currentReccord[table_name + '_ID'])) {
-        id = currentReccord[table_name + '_ID']
-      }
-      if (isEmptyValue(id) && !isEmptyValue(key_columns)) {
-        const keyIndex = key_columns.length - 1
-        id = currentReccord[key_columns.at(keyIndex)]
-      }
-      if (isEmptyValue(id) && !isEmptyValue(query) && !isEmptyValue(query.recordId)) {
-        id = query.recordId
-      }
-      return id
     })
 
     function saveChanges() {
