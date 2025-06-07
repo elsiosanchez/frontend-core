@@ -906,7 +906,7 @@ const reportManager = {
         type: 'info'
       })
       return new Promise((resolve, reject) => {
-        const storedReportOutput = getters.getReportOutput(internal_id)
+        // const storedReportOutput = getters.getReportOutput(internal_id)
 
         const filters = getOperatorAndValue({
           format: 'array',
@@ -929,26 +929,33 @@ const reportManager = {
           .then(reportResponse => {
             const {
               columns,
-              print_format_id,
+              // print_format_id,
               rows
             } = reportResponse
 
             const recordsList = generateRecordsList(rows)
 
             let columnsList = []
-            const isReload = !isEmptyValue(storedReportOutput) && !isEmptyValue(storedReportOutput.columns)
-            const isSamePrintFormat = !isEmptyValue(storedReportGenerated) && isSameValues(storedReportGenerated.printFormatId, print_format_id)
-            if (isReload && isSamePrintFormat) {
-              columnsList = storedReportOutput.columns
-            } else {
-              // regenerate columns
-              columnsList = columns.map(columnItem => {
-                return {
-                  ...columnItem,
-                  withdColumn: widthColumn(columnItem)
-                }
-              })
-            }
+            // TODO: Error when changing print format
+            // const isReload = !isEmptyValue(storedReportOutput) && !isEmptyValue(storedReportOutput.columns)
+            // const isSamePrintFormat = !isEmptyValue(storedReportGenerated) && isSameValues(storedReportGenerated.printFormatId, print_format_id)
+            // // if (isReload && isSamePrintFormat) {
+            //   columnsList = storedReportOutput.columns
+            // } else {
+            //   // regenerate columns
+            //   columnsList = columns.map(columnItem => {
+            //     return {
+            //       ...columnItem,
+            //       withdColumn: widthColumn(columnItem)
+            //     }
+            //   })
+            // }
+            columnsList = columns.map(columnItem => {
+              return {
+                ...columnItem,
+                withdColumn: widthColumn(columnItem)
+              }
+            })
 
             const reportOutput = {
               ...reportResponse,
