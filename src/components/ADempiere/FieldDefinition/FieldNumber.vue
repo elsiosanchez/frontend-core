@@ -201,7 +201,8 @@ export default {
 
       const value = this.$store.getters.getValueOfField({
         parentUuid: this.metadata.parentUuid,
-        containerUuid: this.metadata.firstTabUuid,
+        // window is first tab, else process form or report
+        containerUuid: !isEmptyValue(this.metadata.firstTabUuid) ? this.metadata.firstTabUuid : this.metadata.containerUuid,
         columnName
       })
       // types `decimal` and `date` is a object struct
