@@ -29,6 +29,8 @@ import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
  */
 export function requestBrowserSearch({
   id,
+  tableName,
+  recordId,
   filters,
   pageToken,
   contextAttributes,
@@ -38,6 +40,8 @@ export function requestBrowserSearch({
     url: `/user-interface/browser-items/${id}`,
     method: 'get',
     params: {
+      table_name: tableName,
+      record_id: recordId,
       filters,
       context_attributes: contextAttributes,
       page_token: pageToken,
@@ -53,6 +57,8 @@ export function requestBrowserSearch({
  */
 export function browserExportRequest({
   id,
+  tableName,
+  recordId,
   filters,
   contextAttributes
 }) {
@@ -60,6 +66,8 @@ export function browserExportRequest({
     url: `/user-interface/browser-items/${id}/export`,
     method: 'get',
     params: {
+      table_name: tableName,
+      record_id: recordId,
       filters,
       context_attributes: contextAttributes
     }

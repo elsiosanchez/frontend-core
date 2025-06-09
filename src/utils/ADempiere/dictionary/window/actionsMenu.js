@@ -923,7 +923,7 @@ export const openBrowserAssociated = {
 
     // set record id from window
     const storedTab = store.getters.getStoredTab(parentUuid, containerUuid)
-    const { keyColumn } = storedTab
+    const { keyColumn, table_name } = storedTab
 
     // Set Record ID
     const recordId = store.getters.getValueOfField({
@@ -939,6 +939,7 @@ export const openBrowserAssociated = {
       query: {
         parentUuid,
         containerUuid,
+        tableName: table_name,
         recordId
       },
       isShowMessage: false
@@ -954,6 +955,7 @@ export const openBrowserAssociated = {
         query: {
           parentUuid,
           containerUuid,
+          tableName: table_name,
           recordId
         }
       }, () => {})

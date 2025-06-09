@@ -18,6 +18,7 @@
 
 import Vue from 'vue'
 import language from '@/lang'
+import router from '@/router'
 
 // API Request Methods
 import {
@@ -268,10 +269,20 @@ const browserControl = {
           // refresh with same page
           pageNumber = storedPage
         }
-        const pageToken = generatePageToken({ pageNumber })
+        const pageToken = generatePageToken({
+          pageNumber
+        })
+
+        const currentRoute = router.app._route
+        const {
+          tableName,
+          recordId
+        } = currentRoute.query
 
         requestBrowserSearch({
           id,
+          tableName,
+          recordId,
           contextAttributes,
           filters,
           pageToken,
@@ -425,6 +436,12 @@ const browserControl = {
         //   return
         // }
 
+        const currentRoute = router.app._route
+        const {
+          tableName,
+          recordId
+        } = currentRoute.query
+
         showMessage({
           title: language.t('notifications.loading'),
           message: language.t('notifications.searching'),
@@ -433,6 +450,8 @@ const browserControl = {
 
         browserExportRequest({
           id,
+          tableName,
+          recordId,
           contextAttributes,
           filters
         })
