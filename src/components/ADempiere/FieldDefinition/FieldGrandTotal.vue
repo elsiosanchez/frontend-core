@@ -140,26 +140,5 @@ export default {
   margin: 0px;
   font-size: 25px;
   font-family: serif;
-  .grant-total {
-    justify-content: end !important;
-    font-family: 'Atlassian Sans';
-    align-items: end !important;
-    text-align: end !important;
-    font-weight: 900;
-    display: flex;
-    .el-statistic {
-      justify-content: end !important;
-      align-items: end !important;
-      text-align: end !important;
-      .con {
-        justify-content: end !important;
-        font-family: 'Atlassian Sans';
-        align-items: end !important;
-        text-align: end !important;
-        font-weight: 900;
-        color: #303133;
-      }
-    }
-  }
 }
 </style>

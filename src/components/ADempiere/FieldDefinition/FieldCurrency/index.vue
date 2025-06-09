@@ -18,27 +18,29 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <div class="el-dropdown" style="width: -webkit-fill-available;padding: 0px">
-    <!-- {{ qlq.length }} -->
     <el-dropdown
       size="small"
       trigger="click"
       :disabled="metadata.readonly"
-      placement="bottom"
+      placement="bottom-start"
       class="currency-fiedls"
       @visible-change="showMenu"
       @command="changeValuewithCommand"
     >
-      <el-button-group style="width: 80%;">
+      <el-button-group style="width: 100%;">
         <el-button
           plain
           size="small"
           :disabled="metadata.readonly"
           style="width: -webkit-fill-available;"
         >
-          <b>
+          <b v-if="!isEmptyValue(displayedValue)" style="font-size: 17px;">
             {{ flagDisplay(displayedValue) }}
             {{ displayedValue }}
             <b v-if="!isEmptyValue(currencySymbolDisplay(displayedValue))"> {{ currencySymbolDisplay(displayedValue) }} </b>
+          </b>
+          <b v-else>
+            {{ '-' }}
           </b>
         </el-button>
         <el-button
@@ -72,6 +74,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           :class="cssOptionClass(option.value)"
           :disabled="!isEmptyValue(option.isActive) && option.isActive === false"
           :command="option"
+          style="width: 260px;"
         >
           {{ flagDisplay(option.displayedValue) }}
           {{ option.displayedValue }}
@@ -588,8 +591,8 @@ export default {
 <style lang="scss">
 .currency-fiedls{
   width: -webkit-fill-available;
-  .ul{
-    width: 300px;
-  }
+  // .ul{
+  //   width: 300px;
+  // }
 }
 </style>
