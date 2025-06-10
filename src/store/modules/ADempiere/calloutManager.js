@@ -76,11 +76,10 @@ const calloutManager = {
           value,
           oldValue
         }
-
         // Before processing
-        // setTimeout(() => {
-        dispatch('addToCalloutQueue', currentCallout)
-        // }, 500)
+        if (!isEmptyValue(callout)) {
+          dispatch('addToCalloutQueue', currentCallout)
+        }
       })
     },
     addToCalloutQueue({ commit, getters, dispatch }, currentCallout) {
@@ -108,9 +107,7 @@ const calloutManager = {
       }
       clearTimeout()
       setTimeout(() => {
-        dispatch('processCalloutQueue', {
-          containerUuid
-        })
+        dispatch('processCalloutQueue', { containerUuid })
       }, 500)
     },
     processCalloutQueue({ commit, dispatch, getters, state }, {
@@ -122,12 +119,10 @@ const calloutManager = {
         const isProcessing = getters.isProcessing({ containerUuid })
         const contextAttributes = {}
         let parentFieldsList = []
-
-        if (isProcessing || isEmptyValue(allCalloutQueue)) {
-          commit('setIsProcessing', {
-            containerUuid,
-            isLoading: false
-          })
+        if (
+          isProcessing &&
+          isEmptyValue(allCalloutQueue)
+        ) {
           resolve({})
           return
         }
@@ -138,14 +133,7 @@ const calloutManager = {
         })
         const { payload } = state.calloutQueue.shift()
 
-        const {
-          displayType,
-          parentUuid,
-          columnName,
-          tableName,
-          oldValue,
-          callout
-        } = payload
+        const { displayType, parentUuid, columnName, tableName, oldValue, callout } = payload
 
         let value = payload.value
 
@@ -292,10 +280,18 @@ const calloutManager = {
                 ...values
               }
             })
+            commit('setIsProcessing', {
+              containerUuid,
+              isLoading: false
+            })
             resolve(values)
           })
           .catch(error => {
             reject(error)
+            commit('setIsProcessing', {
+              containerUuid,
+              isLoading: false
+            })
             showMessage({
               message: error.message || lang.t('window.callout.error'),
               type: 'error'
