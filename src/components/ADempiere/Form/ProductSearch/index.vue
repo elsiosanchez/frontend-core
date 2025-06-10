@@ -51,42 +51,52 @@
         :page-number="1"
         :page-size="50"
       />
-      <el-table-column
+      <template
         v-for="(header, key) in headerList"
-        :key="key"
-        :align="header.align"
-        :min-width="header.width"
-        :label="header.label"
-        :prop="header.columnName"
-        header-align="center"
       >
-        <template slot-scope="scope">
-          <el-button
-            v-if="header.columnName === 'value'"
-            type="text"
-            icon="el-icon-document-copy"
-            @click="copyCode(scope.row)"
-          />
-          <el-dropdown
-            v-if="header.columnName === 'name' || header.columnName === 'value'"
-            trigger="click"
-            @command="zoomInWindow(scope.row)"
-          >
-            <span>{{ scope.row[header.columnName] }}</span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>
-                <i class="el-icon-zoom-in" style="font-weight: bolder;" />
-                <b>
-                  {{ $t('page.processActivity.zoomIn') }} {{ ' - ' }} {{ scope.row.value }}  {{ ' - ' }} {{ scope.row.name }}
-                </b>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <span v-else>
-            {{ scope.row[header.columnName] }}
-          </span>
-        </template>
-      </el-table-column>
+        <el-table-column
+          v-if="header.enable"
+          :key="key"
+          :align="header.align"
+          :min-width="header.width"
+          :label="header.label"
+          :prop="header.columnName"
+          header-align="center"
+        >
+          <template slot-scope="scope">
+            <el-button
+              v-if="header.columnName === 'value'"
+              type="text"
+              icon="el-icon-document-copy"
+              @click="copyCode(scope.row)"
+            />
+            <el-dropdown
+              v-if="header.columnName === 'name' || header.columnName === 'value'"
+              trigger="click"
+              @command="zoomInWindow(scope.row)"
+            >
+              <span>{{ scope.row[header.columnName] }}</span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>
+                  <i class="el-icon-zoom-in" style="font-weight: bolder;" />
+                  <b>
+                    {{ $t('page.processActivity.zoomIn') }} {{ ' - ' }} {{ scope.row.value }}  {{ ' - ' }} {{ scope.row.name }}
+                  </b>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <span
+              v-else-if="header.isNumber"
+              :class="{ 'cell-align-right': true, 'number-negative': scope.row[header.columnName] < 0 }"
+            >
+              {{ scope.row[header.displayColumnName] }}
+            </span>
+            <span v-else>
+              {{ scope.row[header.columnName] }}
+            </span>
+          </template>
+        </el-table-column>
+      </template>
     </el-table>
     <p>
       <span style="float: right;">
@@ -166,7 +176,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getContext } from '@/utils/ADempiere/contextUtils'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { closeTagView } from '@/utils/ADempiere/componentUtils.js'
-import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatQuantity, convertToNumber, formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 export default defineComponent({
@@ -205,74 +215,105 @@ export default defineComponent({
     const productInfoTable = ref(null)
     const downloadLoading = ref(false)
     const activeCollapse = ref(['1'])
-    const headerList = ref([
-      {
-        label: lang.t('field.product.value'),
-        columnName: 'value',
-        width: '70',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.name'),
-        columnName: 'name',
-        width: '300',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.standardPrice'),
-        columnName: 'standard_price',
-        width: '100',
-        align: 'right'
-      },
-      {
-        label: lang.t('field.product.uom'),
-        columnName: 'uom',
-        width: '70',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.stocked'),
-        columnName: 'is_stocked',
-        width: '100',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.available'),
-        columnName: 'available_quantity',
-        width: '150',
-        align: 'right'
-      },
-      {
-        label: lang.t('field.product.onHandQuantity'),
-        columnName: 'on_hand_quantity',
-        width: '150',
-        align: 'right'
-      },
-      {
-        label: lang.t('field.product.productCategory'),
-        columnName: 'product_category',
-        width: '150',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.productGroup'),
-        columnName: 'product_group',
-        width: '150',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.productClass'),
-        columnName: 'product_class',
-        width: '130',
-        align: 'left'
-      },
-      {
-        label: lang.t('field.product.vendor'),
-        columnName: 'vendor',
-        width: '150',
-        align: 'left'
-      }
-    ])
+    const priceListVersion = computed(() => {
+      return store.getters.getProductSearchFieldQueryFilterByAttribute({
+        containerUuid: 'product_search_form',
+        attributeKey: 'price_list_version_id'
+      })
+    })
+    const headerList = computed(() => {
+      return [
+        {
+          label: lang.t('field.product.value'),
+          columnName: 'value',
+          isNumber: false,
+          width: '70',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.name'),
+          columnName: 'name',
+          isNumber: false,
+          enable: true,
+          width: '300',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.standardPrice'),
+          columnName: 'standardPriceFormatted',
+          displayColumnName: 'standardPriceFormatted',
+          isNumber: true,
+          enable: !isEmptyValue(priceListVersion.value),
+          width: '100',
+          align: 'right'
+        },
+        {
+          label: lang.t('field.product.uom'),
+          columnName: 'uom',
+          isNumber: false,
+          enable: true,
+          width: '70',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.stocked'),
+          columnName: 'isTockedFormatted',
+          isNumber: false,
+          enable: true,
+          width: '100',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.available'),
+          columnName: 'availableQuantity',
+          displayColumnName: 'availableQuantityFormatted',
+          isNumber: true,
+          enable: true,
+          width: '150',
+          align: 'right'
+        },
+        {
+          label: lang.t('field.product.onHandQuantity'),
+          columnName: 'onHandQuantity',
+          displayColumnName: 'onHandQuantityFormatted',
+          isNumber: true,
+          width: '150',
+          align: 'right'
+        },
+        {
+          label: lang.t('field.product.productCategory'),
+          columnName: 'product_category',
+          isNumber: false,
+          enable: true,
+          width: '150',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.productGroup'),
+          columnName: 'product_group',
+          isNumber: false,
+          enable: true,
+          width: '150',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.productClass'),
+          columnName: 'product_class',
+          isNumber: false,
+          enable: true,
+          width: '130',
+          align: 'left'
+        },
+        {
+          label: lang.t('field.product.vendor'),
+          columnName: 'vendor',
+          isNumber: false,
+          enable: true,
+          width: '150',
+          align: 'left'
+        }
+      ]
+    })
     let timeoutSearch
 
     /**
@@ -280,16 +321,7 @@ export default defineComponent({
      */
 
     const listProducto = computed(() => {
-      return store.getters.getProductList.map(list => {
-        return {
-          ...list,
-          quantity_on_hand: formatQuantity({ value: Number(list.quantity_on_hand) }),
-          standard_price: formatQuantity({ value: Number(list.standard_price) }),
-          is_stocked: convertBooleanToTranslationLang(list.is_stocked),
-          available_quantity: formatQuantity({ value: Number(list.available_quantity) }),
-          on_hand_quantity: formatQuantity({ value: Number(list.on_hand_quantity) })
-        }
-      })
+      return store.getters.getProductList
     })
 
     const searchValue = computed(() => {
@@ -400,7 +432,40 @@ export default defineComponent({
             const { records, record_count, next_page_token } = response
             pageTokenNumber.value = next_page_token
             recordCount.value = Number(record_count)
-            store.commit('setProductList', records)
+            const recordList = records.map(list => {
+              const listPrice = convertToNumber(list.list_price)
+              const limitPrice = convertToNumber(list.limit_price)
+              const standardPrice = convertToNumber(list.standard_price)
+              const onHandQuantity = convertToNumber(list.on_hand_quantity)
+              const orderedQuantity = convertToNumber(list.ordered_quantity)
+              const reservedQuantity = convertToNumber(list.reserved_quantity)
+              const availableQuantity = convertToNumber(list.available_quantity)
+              const unconfirmedQuantity = convertToNumber(list.unconfirmed_quantity)
+              const unconfirmedMoveQuantity = convertToNumber(list.unconfirmed_move_quantity)
+              return {
+                ...list,
+                listPrice,
+                limitPrice,
+                standardPrice,
+                onHandQuantity,
+                orderedQuantity,
+                reservedQuantity,
+                availableQuantity,
+                unconfirmedQuantity,
+                unconfirmedMoveQuantity,
+                listPriceFormatted: formatQuantity({ value: listPrice }),
+                limitPriceFormatted: formatQuantity({ value: limitPrice }),
+                standardPriceFormatted: formatPrice({ value: standardPrice, currency: list.currency }),
+                onHandQuantityFormatted: formatQuantity({ value: onHandQuantity }),
+                isTockedFormatted: convertBooleanToTranslationLang(list.is_stocked),
+                orderedQuantityFormatted: formatQuantity({ value: orderedQuantity }),
+                reservedQuantityFormatted: formatQuantity({ value: reservedQuantity }),
+                availableQuantityFormatted: formatQuantity({ value: availableQuantity }),
+                unconfirmedQuantityFormatted: formatQuantity({ value: unconfirmedQuantity }),
+                unconfirmedMoveQuantityFormatted: formatQuantity({ value: unconfirmedMoveQuantity })
+              }
+            })
+            store.commit('setProductList', recordList)
           })
           .finally(() => {
             isLoading.value = false
@@ -662,6 +727,7 @@ export default defineComponent({
       getProductClassificationField,
       getProductGroupField,
       queryCriteria,
+      priceListVersion,
       product,
       tableHeight,
       // Methods

@@ -443,6 +443,30 @@ const formProductSearch = {
                 list_price: convertToNumber(
                   row.list_price
                 ),
+                min_order_quantity: convertToNumber(
+                  row.min_order_quantity
+                ),
+                minOrderQuantity: formatQuantity({
+                  value: convertToNumber(
+                    row.min_order_quantity
+                  )
+                }),
+                promised_delivery_time: convertToNumber(
+                  row.promised_delivery_time
+                ),
+                promisedDeliveryTime: formatQuantity({
+                  value: convertToNumber(
+                    row.promised_delivery_time
+                  )
+                }),
+                actual_delivery_time: convertToNumber(
+                  row.actual_delivery_time
+                ),
+                actualDeliveryTime: formatQuantity({
+                  value: convertToNumber(
+                    row.actual_delivery_time
+                  )
+                }),
                 listPriceFormatted: formatPrice({
                   value: row.list_price,
                   currency: row.currency

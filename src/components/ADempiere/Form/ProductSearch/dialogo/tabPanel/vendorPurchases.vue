@@ -32,21 +32,90 @@
     />
 
     <el-table-column
-      prop="is_current_vendor"
       header-align="center"
       :label="$t('field.product.vendorPurchasesTables.isCurrentVendor')"
-    />
-
+    >
+      <template slot-scope="scope">
+        {{ convertBooleanToTranslationLang(scope.row['is_current_vendor']) }}
+      </template>
+    </el-table-column>
     <el-table-column
       prop="unit_of_measure"
       header-align="center"
       :label="$t('field.product.vendorPurchasesTables.uom')"
     />
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.currency')"
+    >
+      <template slot-scope="scope">
+        {{ scope.row['currency'] }}
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.listPrice')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row['list_price'] < 0 }">
+          {{ scope.row['listPriceFormatted'] }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.purchasePrice')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row['purchase_price'] < 0 }">
+          {{ scope.row['purchasePriceFormatted'] }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.vendorProductKey')"
+    >
+      <template slot-scope="scope">
+        {{ scope.row['vendor_product_key'] }}
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.minOrderQuantity')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row['min_order_quantity'] < 0 }">
+          {{ scope.row['minOrderQuantity'] }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.promisedDeliveryTime')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row['promised_delivery_time'] < 0 }">
+          {{ scope.row['promisedDeliveryTime'] }}
+        </span>
+      </template>
+    </el-table-column>
+    <el-table-column
+      header-align="center"
+      :label="$t('field.product.vendorPurchasesTables.actualDeliveryTime')"
+    >
+      <template slot-scope="scope">
+        <span :class="{ 'cell-align-right': true, 'number-negative': scope.row['actual_delivery_time'] < 0 }">
+          {{ scope.row['actualDeliveryTime'] }}
+        </span>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
+import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
 
 import store from '@/store'
 
@@ -72,7 +141,9 @@ export default defineComponent({
       // Computed
       vendorPurchases,
       isLoadingTable,
-      recordList
+      recordList,
+      // Methods
+      convertBooleanToTranslationLang
     }
   }
 })

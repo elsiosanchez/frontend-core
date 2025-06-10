@@ -106,7 +106,14 @@ const product = {
   vendorPurchasesTables: {
     name: 'Name',
     isCurrentVendor: 'Current Vendor',
-    uom: 'UOM'
+    uom: 'UOM',
+    currency: 'Currency',
+    listPrice: 'List Price',
+    purchasePrice: 'Purchase Order Price',
+    vendorProductKey: 'Business Partner Product No.',
+    minOrderQuantity: 'Minimum to Order',
+    promisedDeliveryTime: 'Promised Delivery Time',
+    actualDeliveryTime: 'Actual Delivery Time'
   },
   infoProduct: {
     infoProductoclassification: 'Classification',
