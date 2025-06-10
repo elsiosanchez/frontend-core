@@ -78,9 +78,9 @@ const calloutManager = {
         }
 
         // Before processing
-        setTimeout(() => {
-          dispatch('addToCalloutQueue', currentCallout)
-        }, 300)
+        // setTimeout(() => {
+        dispatch('addToCalloutQueue', currentCallout)
+        // }, 500)
       })
     },
     addToCalloutQueue({ commit, getters, dispatch }, currentCallout) {
@@ -124,6 +124,10 @@ const calloutManager = {
         let parentFieldsList = []
 
         if (isProcessing || isEmptyValue(allCalloutQueue)) {
+          commit('setIsProcessing', {
+            containerUuid,
+            isLoading: false
+          })
           resolve({})
           return
         }
