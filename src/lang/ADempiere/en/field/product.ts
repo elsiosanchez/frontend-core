@@ -59,46 +59,49 @@ const product = {
   warehouseStocks: 'Warehouse Stocks',
   substitute: 'Substitute',
   relateds: 'Related',
-  availableToPromises: 'AvailableToPromises',
+  availableToPromises: 'Available to Promises',
   vendorPurchases: 'Vendor Purchases',
   searchCriteria: 'Search Criteria',
   wrehouseTables: {
     name: 'Name',
-    availableQuantity: 'AvailableQuantity',
-    reservedQuantity: 'Quantity Available',
-    orderedQuantity: 'ReservedQuantity',
-    onHandQuantity: 'OrderedQuantity'
+    availableQuantity: 'Available Quantity',
+    reservedQuantity: 'Reserved Quantity',
+    orderedQuantity: 'Ordered Quantity',
+    onHandQuantity: 'On Hand Quantity'
   },
   substituteTables: {
     name: 'Name',
     value: 'Code',
     warehouse: 'Warehouse',
-    availableQuantity: 'Quantity Available',
-    reservedQuantity: 'Quantity Available',
+    availableQuantity: 'Available Quantity',
+    reservedQuantity: 'Reserved Quantity',
     standardPrice: 'Standard Price',
-    onHandQuantity: 'Quantity Ordered'
+    onHandQuantity: 'On Hand Quantity'
   },
   relatedsTables: {
     name: 'Name',
     value: 'Code',
     warehouse: 'Warehouse',
-    availableQuantity: 'Quantity Available',
-    reservedQuantity: 'Quantity Available',
+    availableQuantity: 'Available Quantity',
+    reservedQuantity: 'Reserved Quantity',
     standardPrice: 'Standard Price',
-    onHandQuantity: 'Quantity Ordered'
+    onHandQuantity: 'On Hand Quantity'
   },
   availableToPromisesTables: {
     name: 'Name',
     value: 'Code',
     locator: 'location',
-    availableQuantity: 'Quantity Available',
-    onHandQuantity: 'Quantity Ordered',
-    expectedChangeQuantity: 'Expected Change Quantity',
     businessPartner: 'Business Partner',
-    reservedQuantity: 'Available Quantity',
-    standardPrice: 'Standard Price',
     documentNo: 'Document Number',
-    attributeSetInstance: 'Attribute'
+    date: 'Date',
+    quantityStock: 'Stock Quantity',
+    availableQuantity: 'Available Quantity',
+    onHandQuantity: 'On Hand Quantity',
+    expectedChangeQuantity: 'Expected Change Quantity',
+    reservedQuantity: 'Reserved Quantity',
+    standardPrice: 'Standard Price',
+    availablePromise: 'Available to Promise',
+    attributeSetInstance: 'Attribute Set Instance'
   },
   vendorPurchasesTables: {
     name: 'Name',

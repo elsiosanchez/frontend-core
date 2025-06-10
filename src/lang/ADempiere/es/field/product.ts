@@ -65,41 +65,44 @@ const product = {
   wrehouseTables: {
     name: 'Nombre',
     availableQuantity: 'Cantidad Disponible',
-    reservedQuantity: 'Cantidad Disponible',
-    orderedQuantity: 'Cantidad Reservada',
-    onHandQuantity: 'Cantidad Pedida'
+    reservedQuantity: 'Cantidad Reservada',
+    orderedQuantity: 'Cantidad Ordenada',
+    onHandQuantity: 'Cantidad Existencia'
   },
   substituteTables: {
     name: 'Nombre',
     value: 'Código',
     warehouse: 'Almacén',
     availableQuantity: 'Cantidad Disponible',
-    reservedQuantity: 'Cantidad Disponible',
+    reservedQuantity: 'Cantidad Reservada',
     standardPrice: 'Precio Estandar',
-    onHandQuantity: 'Cantidad Pedida'
+    onHandQuantity: 'Cantidad Existencia'
   },
   relatedsTables: {
     name: 'Nombre',
     value: 'Código',
     warehouse: 'Almacén',
     availableQuantity: 'Cantidad Disponible',
-    reservedQuantity: 'Cantidad Disponible',
+    reservedQuantity: 'Cantidad Reservada',
     standardPrice: 'Precio Estandar',
-    onHandQuantity: 'Cantidad Pedida'
+    onHandQuantity: 'Cantidad Existencia',
+    orderedQuantity: 'Cantidad Ordenada'
   },
   availableToPromisesTables: {
     showDetails: 'Mostrar Detalle',
     warehouse: 'Almacén',
     locator: 'Ubicacion',
+    businessPartner: 'Socio de Negocios',
     documentNo: 'Número de Documento',
     date: 'Fecha',
     quantityStock: 'Cantidad en Existencia',
-    onHandQuantity: 'Cantidad Reservada',
     availableQuantity: 'Cantidad Disponible',
-    quantityOrdered: 'Cantidad Ordenada',
-    businessPartner: 'Socio de Negocios',
+    expectedChangeQuantity: 'Cantidad de Carga Esperada',
+    onHandQuantity: 'Cantidad Existencia',
+    reservedQuantity: 'Cantidad Reservada',
+    orderedQuantity: 'Cantidad Ordenada',
     availablePromise: 'Disponible para Promesa',
-    instanceAttributeSet: 'Instancia Conjunto de Atributos'
+    attributeSetInstance: 'Instancia Conjunto de Atributos'
   },
   vendorPurchasesTables: {
     name: 'Nombre',

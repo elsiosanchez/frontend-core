@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -30,40 +30,44 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       header-align="center"
       :label="$t('field.product.wrehouseTables.name')"
     />
+
     <el-table-column
       prop="available_quantity"
       header-align="center"
       :label="$t('field.product.wrehouseTables.availableQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.available_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.available_quantity < 0 }">
+        {{ scope.row.availableQuantityFormatted }}
       </span>
     </el-table-column>
+
     <el-table-column
       prop="on_hand_quantity"
       header-align="center"
-      :label="$t('field.product.wrehouseTables.reservedQuantity')"
+      :label="$t('field.product.wrehouseTables.onHandQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
+        {{ scope.row.onHandQuantityFormatted }}
       </span>
     </el-table-column>
+
     <el-table-column
       prop="reserved_quantity"
       header-align="center"
-      :label="$t('field.product.wrehouseTables.orderedQuantity')"
+      :label="$t('field.product.wrehouseTables.reservedQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.reserved_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.reserved_quantity < 0 }">
+        {{ scope.row.reservedQuantityFormatted }}
       </span>
     </el-table-column>
+
     <el-table-column
       prop="ordered_quantity"
       header-align="center"
-      :label="$t('field.product.wrehouseTables.onHandQuantity')"
+      :label="$t('field.product.wrehouseTables.orderedQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.ordered_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.ordered_quantity < 0 }">
+        {{ scope.row.orderedQuantityFormatted }}
       </span>
     </el-table-column>
   </el-table>

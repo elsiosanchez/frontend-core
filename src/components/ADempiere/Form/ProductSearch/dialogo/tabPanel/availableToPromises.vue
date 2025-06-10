@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -42,6 +42,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       :label="$t('field.product.availableToPromisesTables.documentNo')"
       min-width="170"
     />
+
     <el-table-column
       v-if="showDetails"
       prop="date"
@@ -50,79 +51,89 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       min-width="120"
     >
       <span slot-scope="scope" class="cell-align-right">
-        {{ formatDate({ value: scope.row.date }) }}
+        {{ scope.row.dateFromatted }}
       </span>
     </el-table-column>
-    <el-table-column
-      prop="on_hand_quantity"
-      header-align="center"
-      :label="$t('field.product.availableToPromisesTables.quantityStock')"
-      min-width="175"
-    >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.on_hand_quantity }) }}
-      </span>
-    </el-table-column>
-    <el-table-column
-      prop="reserved_quantity"
-      header-align="center"
-      min-width="160"
-      :label="$t('field.product.availableToPromisesTables.onHandQuantity')"
-    >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.reserved_quantity }) }}
-      </span>
-    </el-table-column>
+
     <el-table-column
       prop="available_quantity"
       header-align="center"
       min-width="160"
       :label="$t('field.product.availableToPromisesTables.availableQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.available_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.available_quantity < 0 }">
+        {{ scope.row.availableQuantityFormatted }}
       </span>
     </el-table-column>
+
+    <el-table-column
+      prop="on_hand_quantity"
+      header-align="center"
+      :label="$t('field.product.availableToPromisesTables.onHandQuantity')"
+      min-width="175"
+    >
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.on_hand_quantity < 0 }">
+        {{ scope.row.onHandQuantityFormatted }}
+      </span>
+    </el-table-column>
+
     <el-table-column
       prop="ordered_quantity"
       header-align="center"
       min-width="150"
-      :label="$t('field.product.availableToPromisesTables.quantityOrdered')"
+      :label="$t('field.product.availableToPromisesTables.orderedQuantity')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.ordered_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.ordered_quantity < 0 }">
+        {{ scope.row.orderedQuantityFormatted }}
       </span>
     </el-table-column>
+
+    <el-table-column
+      prop="reserved_quantity"
+      header-align="center"
+      min-width="160"
+      :label="$t('field.product.availableToPromisesTables.reservedQuantity')"
+    >
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.reserved_quantity < 0 }">
+        {{ scope.row.reservedQuantityFormatted }}
+      </span>
+    </el-table-column>
+
     <el-table-column
       prop="available_to_promise_quantity"
       header-align="center"
       min-width="190"
       :label="$t('field.product.availableToPromisesTables.availablePromise')"
     >
-      <span slot-scope="scope" class="cell-align-right">
-        {{ formatQuantity({ value: scope.row.available_to_promise_quantity }) }}
+      <span slot-scope="scope" :class="{ 'cell-align-right': true, 'number-negative': scope.row.available_to_promise_quantity < 0 }">
+        {{ scope.row.availableToPromiseQuantityFormatted }}
       </span>
     </el-table-column>
+
     <el-table-column
       prop="business_partner"
       header-align="center"
       :label="$t('field.product.availableToPromisesTables.businessPartner')"
       min-width="150"
     />
+
     <el-table-column
       v-if="showDetails"
       prop="attribute_set_instance"
       header-align="center"
       min-width="180"
-      :label="$t('field.product.availableToPromisesTables.instanceAttributeSet')"
-    />
+      :label="$t('field.product.availableToPromisesTables.attributeSetInstance')"
+    >
+      <span slot-scope="scope" :class="{ 'cell-align-right': true }">
+        {{ scope.row.attribute_set_instance }}
+      </span>
+    </el-table-column>
   </el-table>
 </template>
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
-import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
+
 import store from '@/store'
 
 export default defineComponent({
@@ -154,10 +165,7 @@ export default defineComponent({
       // Computed
       availableToPromises,
       isLoadingTable,
-      recordList,
-      // Methods
-      formatQuantity,
-      formatDate
+      recordList
     }
   }
 })

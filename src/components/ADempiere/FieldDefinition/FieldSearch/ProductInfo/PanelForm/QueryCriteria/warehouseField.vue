@@ -80,7 +80,8 @@ export default defineComponent({
     },
     metadata: {
       type: Object,
-      required: true
+      // required: true // not required, used on ProductSeach form
+      default: () => {}
     }
   },
 
@@ -92,14 +93,16 @@ export default defineComponent({
     })
 
     const warehouseId = computed(() => {
-      // Search Header Warehouse Value
-      const findHeaderValue = getContext({
-        parentUuid: props.parentUuid,
-        containerUuid: props.metadata.firstTabUuid,
-        columnName: COLUMNNAME_M_Warehouse_ID
-      })
-      if (!isEmptyValue(findHeaderValue)) {
-        return findHeaderValue
+      // Search Header Warehouse Value (only window)
+      if (!isEmptyValue(props.metadata) && !isEmptyValue(props.metadata.firstTabUuid)) {
+        const findHeaderValue = getContext({
+          parentUuid: props.parentUuid,
+          containerUuid: props.metadata.firstTabUuid,
+          columnName: COLUMNNAME_M_Warehouse_ID
+        })
+        if (!isEmptyValue(findHeaderValue)) {
+          return findHeaderValue
+        }
       }
       // Set Context Warehouse Value
       return getContext({
@@ -111,13 +114,16 @@ export default defineComponent({
     })
 
     const warehouseDisplay = computed(() => {
-      // Search Header Warehouse Value
-      const findHeaderValue = getContext({
-        parentUuid: props.parentUuid,
-        columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_M_Warehouse_ID
-      })
-      if (!isEmptyValue(findHeaderValue)) {
-        return findHeaderValue
+      // Search Header Warehouse Value (only window)
+      if (!isEmptyValue(props.metadata) && !isEmptyValue(props.metadata.parentUuid)) {
+        const findHeaderValue = getContext({
+          parentUuid: props.parentUuid,
+          containerUuid: props.metadata.firstTabUuid,
+          columnName: DISPLAY_COLUMN_PREFIX + COLUMNNAME_M_Warehouse_ID
+        })
+        if (!isEmptyValue(findHeaderValue)) {
+          return findHeaderValue
+        }
       }
       // Set Context Warehouse Value
       return getContext({

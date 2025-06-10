@@ -52,7 +52,7 @@ const emptyQueryFilters = {
 }
 
 const initState = {
-  productPopoverList: false,
+  isShowProductPopoverList: false,
   // container uuid: record uuid
   emptyProductData: {
     parentUuid: undefined,
@@ -215,7 +215,7 @@ const productFieldSearch = {
      * @param {boolean} isShowed
      */
     changePopoverListProductSearchField(state, isShowed = false) {
-      state.productPopoverList = isShowed
+      state.isShowProductPopoverList = isShowed
     },
 
     /**
@@ -445,13 +445,13 @@ const productFieldSearch = {
       }).showQueryFields
     },
     getProductSearchFieldPopoverList: (state) => {
-      return state.productPopoverList || false
+      return state.isShowProductPopoverList || false
     },
     getProductSearchFieldShow: (state) => ({ containerUuid }) => {
       return state.productShow[containerUuid] || false
     },
     getWarehouseList: (state) => {
-      return state.warehouseList
+      return state.warehouseList || []
     }
   }
 }

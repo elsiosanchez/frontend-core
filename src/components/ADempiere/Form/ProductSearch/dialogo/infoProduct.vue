@@ -38,29 +38,44 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           <span v-if="isEmptyValue(product.description)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.description }}
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.onHandQuantity')" :content-style="{'justify-content': 'center !important'}">
-          {{ formatQuantity(product.on_hand_quantity) }}
+          <span :class="{ 'cell-align-right': true, 'number-negative': product.on_hand_quantity < 0 }">
+            {{ formatQuantity({ value: product.on_hand_quantity }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.standardPrice')" :content-style="{'justify-content': 'center !important', 'margin-left': '-20px'}">
           <span v-if="isEmptyValue(product.standard_price)" class="class-empty-value">{{ '-' }}</span>
-          {{ product.standard_price }}
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': product.standard_price < 0 }">
+            {{ formatQuantity({ value: convertToNumber(product.standard_price) }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.infoProduct.infoProductGroup')">
           <span v-if="isEmptyValue(product.product_group)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.product_group }}
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.uom')">
           <span v-if="isEmptyValue(product.uom)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.uom }}
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.available')" :content-style="{'justify-content': 'center !important'}">
           <span v-if="isEmptyValue(product.available_quantity)" class="class-empty-value"> {{ '-' }}</span>
-          {{ product.available_quantity }}
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': product.available_quantity < 0 }">
+            {{ formatQuantity({ value: product.available_quantity }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.listPrice')" :content-style="{'justify-content': 'center !important'}">
           <span v-if="isEmptyValue(product.listPrice)" class="class-empty-value"> {{ '-' }}</span>
-          {{ formatQuantity({ value: product.list_price }) }}
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': product.list_price < 0 }">
+            {{ formatQuantity({ value: convertToNumber(product.list_price) }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.infoProduct.infoProductCategory')">
           <span v-if="isEmptyValue(product.product_category)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.product_category }}
@@ -69,20 +84,28 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           <span v-if="isEmptyValue(product.sku)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.sku }}
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.reservedQuantity')" :content-style="{'justify-content': 'center !important'}">
           <span v-if="isEmptyValue(product.reserved_quantity)" class="class-empty-value"> {{ '-' }}</span>
-          {{ formatQuantity ({ value: product.reserved_quantity }) }}
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': product.reserved_quantity < 0 }">
+            {{ formatQuantity({ value: product.reserved_quantity }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.limitPrice')" :content-style="{'justify-content': 'center !important'}">
           <span v-if="isEmptyValue(product.limit_price)" class="class-empty-value"> {{ '-' }}</span>
-          {{ formatQuantity({ value: product.limit_price }) }}
+          <span v-else :class="{ 'cell-align-right': true, 'number-negative': product.limit_price < 0 }">
+            {{ formatQuantity({ value: convertToNumber(product.limit_price) }) }}
+          </span>
         </el-descriptions-item>
+
         <el-descriptions-item :label="$t('field.product.infoProduct.infoProductClass')">
           <span v-if="isEmptyValue(product.product_class)" class="class-empty-value"> {{ '-' }}</span>
           {{ product.product_class }}
         </el-descriptions-item>
       </el-descriptions>
     </el-col>
+
     <el-col :span="4">
       <el-image
         style="width: 80px; height: 80px;margin: 0 auto 0; display: flex; justify-content:center; align-items:center; background: #f5f7fa"
@@ -106,7 +129,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { convertBooleanToTranslationLang } from '@/utils/ADempiere/formatValue/booleanFormat'
-import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { convertToNumber, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'InfoProduct',
@@ -124,14 +147,15 @@ export default defineComponent({
     /**
      * Computed
      */
-
     const product = computed(() => {
       return store.getters.getCurrentProduct
     })
 
     return {
       product,
+      // Methods
       convertBooleanToTranslationLang,
+      convertToNumber,
       formatQuantity
     }
   }

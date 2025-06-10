@@ -28,6 +28,8 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
+import { convertToNumber, formatPrice, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 const productSearch = {
   isShowDialog: false,
@@ -62,6 +64,7 @@ const productSearch = {
 
 const formProductSearch = {
   state: productSearch,
+
   mutations: {
     setShowProductDetailDialog(state, show) {
       state.isShowDialog = show
@@ -128,6 +131,7 @@ const formProductSearch = {
       }
     }
   },
+
   actions: {
     changeShowDialog({ commit }, show) {
       commit('setShowProductDetailDialog', show)
@@ -145,13 +149,41 @@ const formProductSearch = {
           return resolve()
         }
         const { id } = product
-        let listWarehouse
+        let listWarehouse = []
         requestListWarehouseStocks({
           productId: id
         })
           .then(response => {
             const { records } = response
-            listWarehouse = records
+            listWarehouse = records.map(row => {
+              return {
+                ...row,
+                available_quantity: convertToNumber(
+                  row.available_quantity
+                ),
+                availableQuantityFormatted: formatQuantity({
+                  value: row.available_quantity
+                }),
+                on_hand_quantity: convertToNumber(
+                  row.on_hand_quantity
+                ),
+                onHandQuantityFormatted: formatQuantity({
+                  value: row.on_hand_quantity
+                }),
+                reserved_quantity: convertToNumber(
+                  row.reserved_quantity
+                ),
+                reservedQuantityFormatted: formatQuantity({
+                  value: row.reserved_quantity
+                }),
+                ordered_quantity: convertToNumber(
+                  row.ordered_quantity
+                ),
+                orderedQuantityFormatted: formatQuantity({
+                  value: row.ordered_quantity
+                })
+              }
+            })
           })
           .catch(error => {
             console.warn(error)
@@ -193,7 +225,35 @@ const formProductSearch = {
         })
           .then(response => {
             const { records } = response
-            listSubstitute = records
+            listSubstitute = records.map(row => {
+              return {
+                ...row,
+                available_quantity: convertToNumber(
+                  row.available_quantity
+                ),
+                availableQuantityFormatted: formatQuantity({
+                  value: row.available_quantity
+                }),
+                on_hand_quantity: convertToNumber(
+                  row.on_hand_quantity
+                ),
+                onHandQuantityFormatted: formatQuantity({
+                  value: row.on_hand_quantity
+                }),
+                reserved_quantity: convertToNumber(
+                  row.reserved_quantity
+                ),
+                reservedQuantityFormatted: formatQuantity({
+                  value: row.reserved_quantity
+                }),
+                standard_price: convertToNumber(
+                  row.standard_price
+                ),
+                standardPriceFormatted: formatPrice({
+                  value: row.standard_price
+                })
+              }
+            })
           })
           .catch(error => {
             console.warn(error)
@@ -235,7 +295,35 @@ const formProductSearch = {
         })
           .then(response => {
             const { records } = response
-            listRecords = records
+            listRecords = records.map(row => {
+              return {
+                ...row,
+                available_quantity: convertToNumber(
+                  row.available_quantity
+                ),
+                availableQuantityFormatted: formatQuantity({
+                  value: row.available_quantity
+                }),
+                on_hand_quantity: convertToNumber(
+                  row.on_hand_quantity
+                ),
+                onHandQuantityFormatted: formatQuantity({
+                  value: row.on_hand_quantity
+                }),
+                reserved_quantity: convertToNumber(
+                  row.reserved_quantity
+                ),
+                reservedQuantityFormatted: formatQuantity({
+                  value: row.reserved_quantity
+                }),
+                standard_price: convertToNumber(
+                  row.standard_price
+                ),
+                standardPriceFormatted: formatQuantity({
+                  value: row.standard_price
+                })
+              }
+            })
           })
           .catch(error => {
             console.warn(error)
@@ -272,7 +360,44 @@ const formProductSearch = {
         })
           .then(response => {
             const { records } = response
-            listRecords = records
+            listRecords = records.map(row => {
+              return {
+                ...row,
+                dateFromatted: formatDate({
+                  value: row.date
+                }),
+                on_hand_quantity: convertToNumber(
+                  row.on_hand_quantity
+                ),
+                onHandQuantityFormatted: formatQuantity({
+                  value: row.on_hand_quantity
+                }),
+                reserved_quantity: convertToNumber(
+                  row.reserved_quantity
+                ),
+                reservedQuantityFormatted: formatQuantity({
+                  value: row.reserved_quantity
+                }),
+                available_quantity: convertToNumber(
+                  row.available_quantity
+                ),
+                availableQuantityFormatted: formatQuantity({
+                  value: row.available_quantity
+                }),
+                ordered_quantity: convertToNumber(
+                  row.ordered_quantity
+                ),
+                orderedQuantityFormatted: formatQuantity({
+                  value: row.ordered_quantity
+                }),
+                available_to_promise_quantity: convertToNumber(
+                  row.available_to_promise_quantity
+                ),
+                availableToPromiseQuantityFormatted: formatQuantity({
+                  value: row.available_to_promise_quantity
+                })
+              }
+            })
           })
           .catch(error => {
             console.warn(error)
@@ -309,7 +434,35 @@ const formProductSearch = {
         })
           .then(response => {
             const { records } = response
-            listRecords = records
+            listRecords = records.map(row => {
+              return {
+                ...row,
+                dateFromatted: formatDate({
+                  value: row.date
+                }),
+                list_price: convertToNumber(
+                  row.list_price
+                ),
+                listPriceFormatted: formatPrice({
+                  value: row.list_price,
+                  currency: row.currency
+                }),
+                purchase_price: convertToNumber(
+                  row.purchase_price
+                ),
+                purchasePriceFormatted: formatPrice({
+                  value: row.purchase_price,
+                  currency: row.currency
+                }),
+                last_purchase_price: convertToNumber(
+                  row.last_purchase_price
+                ),
+                lastPurchasePriceFormatted: formatPrice({
+                  value: row.last_purchase_price,
+                  currency: row.currency
+                })
+              }
+            })
           })
           .catch(error => {
             console.warn(error)
@@ -328,6 +481,7 @@ const formProductSearch = {
       })
     }
   },
+
   getters: {
     getShowProductDetailDialog: (state) => {
       return state.isShowDialog
