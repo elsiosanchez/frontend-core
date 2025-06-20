@@ -92,10 +92,11 @@ export default {
     const uploadComponent = ref(null)
     // Methods
     function isValidUploadHandler(file) {
-      const { uuid, client } = store.getters['user/getRole']
+      const { uuid } = store.getters['user/userInfo']
+      const { client_info } = store.getters['user/getRole']
       isLoadingFile.value = true
       requestPresignedUrl({
-        clientId: client.uuid,
+        clientId: client_info.uuid,
         containerType: 'resource',
         filePath: 'tmp/',
         userId: uuid,
