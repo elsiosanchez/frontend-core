@@ -140,6 +140,7 @@ import currency from '@/components/ADempiere/Form/VPOS2/Options/cashManagement/c
 import CardPayments from '@/components/ADempiere/Form/VPOS2/Collection/Payments/CardPayments.vue'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { showMessage } from '@/utils/ADempiere/notification.js'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 // import { getCurrencyPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 export default defineComponent({
@@ -251,6 +252,16 @@ export default defineComponent({
         attribute: 'paymentMethods'
       })
       const { default_withdrawal_charge_id } = store.getters.getVPOS
+
+      if (isEmptyValue(currency)) {
+        showMessage({
+          message: lang.t('notifications.mandatoryFieldMissing') + lang.t('pointOfSales.collection.field.currency'),
+          type: 'warning',
+          showClose: true
+        })
+        isLoadingPayment.value = false
+        return
+      }
 
       store.dispatch('createPaymentWithdrawal', {
         amount: amount.value,

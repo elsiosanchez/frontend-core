@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -44,7 +44,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
                 <el-button v-if="scope.row.isLoading" :loading="scope.row.isLoading" />
                 <edit-qty-entered
                   v-else
-                  :qty="Number(scope.row.quantity_ordered.value)"
+                  :qty="scope.row.quantity_ordered"
                   :handle-change="updateQuantity"
                 />
               </span>
@@ -63,6 +63,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             </template>
           </el-table-column>
         </template>
+
         <el-table-column
           :label="$t('form.pos.tableProduct.options')"
           :align="'center'"
@@ -85,8 +86,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         </el-table-column>
       </el-table>
     </span>
+
     <info-r-m-a />
     <br>
+
     <span v-if="isShowCheck" style="float: right;margin-top: 10px;">
       <el-checkbox
         v-model="isCreateNewSubstituteOrder"
@@ -100,11 +103,16 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
+
 import store from '@/store'
-import lang from '@/lang'
-// // Components and Mixins
-import infoRMA from '@/components/ADempiere/Form/VPOS2/Options/RMA/infoRMA.vue'
-import editQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editQtyEntered.vue'
+
+// Components and Mixins
+import InfoRMA from '@/components/ADempiere/Form/VPOS2/Options/RMA/infoRMA.vue'
+import EditQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editQtyEntered.vue'
+
+// Constants
+import { RMA_LINE } from './contantsRMA'
+
 // Utils and Helper Methods
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 import {
@@ -114,71 +122,20 @@ import {
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 
 export default defineComponent({
-  name: 'Shipments',
+  name: 'PreviewRMA',
+
   components: {
-    infoRMA,
-    editQtyEntered
+    InfoRMA,
+    EditQtyEntered
   },
+
   setup() {
     const orderLineDefinition = computed(() => {
       return {
-        lineDescription: {
-          columnName: 'LineDescription',
-          label: lang.t('form.pos.tableProduct.product'),
-          isNumeric: false,
-          size: 'auto'
-        },
-        currentPrice: {
-          columnName: 'CurrentPrice',
-          label: lang.t('form.productInfo.price'),
-          isNumeric: true,
-          size: '150px'
-        },
-        quantityOrdered: {
-          columnName: 'QtyEntered',
-          label: lang.t('form.pos.tableProduct.quantity'),
-          isNumeric: true,
-          size: '125px'
-        },
-        uom: {
-          columnName: 'UOM',
-          label: lang.t('form.pos.tableProduct.uom'),
-          isNumeric: false,
-          size: '75px'
-        },
-        discount: {
-          columnName: 'Discount',
-          label: lang.t('form.pos.order.discount'),
-          isNumeric: true,
-          size: '100px'
-        },
-        discountTotal: {
-          columnName: 'DiscountTotal',
-          label: lang.t('form.pos.tableProduct.displayDiscountAmount'),
-          isNumeric: true,
-          size: '125px'
-        },
-        discounDisplayTaxIndicator: {
-          columnName: 'taxIndicator',
-          label: lang.t('form.pos.tableProduct.taxRate'),
-          isNumeric: true,
-          size: '80px'
-        },
-        discounDisplayTaxAmounttTotal: {
-          columnName: 'DisplayTaxAmount',
-          label: lang.t('form.pos.tableProduct.taxAmount'),
-          isNumeric: true,
-          size: '150px'
-        },
-        grandTotal: {
-          columnName: 'GrandTotal',
-          label: 'Total',
-          isNumeric: true,
-          isVisible: true,
-          size: '150px'
-        }
+        ...RMA_LINE
       }
     })
+
     const searchProduct = ref('')
     const line = ref({})
     const lines = computed(() => {

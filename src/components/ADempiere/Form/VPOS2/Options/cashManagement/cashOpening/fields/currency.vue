@@ -16,10 +16,16 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-form-item
-    :label="$t('pointOfSales.collection.field.currency')"
     class="form-item-criteria"
     style="margin: 0px;width: 100%;"
   >
+    <template slot="label">
+      <span class="field-title-name">
+        {{ $t('pointOfSales.collection.field.currency') }}
+      </span>
+
+      <span style="color: #f34b4b"> * </span>
+    </template>
     <el-select
       v-model="currency"
       :disabled="isDisabled"

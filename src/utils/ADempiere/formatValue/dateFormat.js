@@ -191,6 +191,26 @@ export function getValidDate(value) {
 }
 
 /**
+ * Get valid Date object
+ * @param {number|string} value
+ */
+export function convertToDate(value) {
+  let date = value
+  if (isEmptyValue(date)) {
+    date = null
+  } else if (typeof value === 'string') {
+    // TODO: Verify it time zone
+    // if (value.length <= 10) {
+    //   value += 'T00:00:00' // without time zone
+    // }
+    date = new Date(value)
+  } else if (typeof value === 'number') {
+    date = new Date(value)
+  }
+  return date
+}
+
+/**
  * Translate date value
  * @param {number} value
  * @param {string} format (short,onlyDate,long )

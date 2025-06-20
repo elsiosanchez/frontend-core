@@ -1,19 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2017-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Edwin Betancourt EdwinBetanc0urt@outlook.com https://github.com/EdwinBetanc0urt
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -119,8 +119,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import store from '@/store'
 import { defineComponent, computed } from '@vue/composition-api'
+
+import store from '@/store'
+
 // Utils and Helper Methods
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { formatDate } from '@/utils/ADempiere/valueFormat.js'
@@ -128,7 +130,8 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
-  name: 'infoRMA',
+  name: 'InfoRMA',
+
   setup() {
     const currentRMA = computed(() => {
       return store.getters.getAttributeRMA({
@@ -156,13 +159,20 @@ export default defineComponent({
     })
 
     function display(attribute) {
-      if (isEmptyValue(currentRMA.value[attribute])) return ''
+      if (isEmptyValue(currentRMA.value[attribute])) {
+        return ''
+      }
       return currentRMA.value[attribute]
     }
 
     function displayAmount(attribute) {
-      if (isEmptyValue(currentRMA.value[attribute])) return formatPrice({ value: 0.00 })
-      return formatPrice({ value: currentRMA.value[attribute], currency: currentRMA.value.price_list.currency.iso_code })
+      if (isEmptyValue(currentRMA.value[attribute])) {
+        return formatPrice({ value: 0.00 })
+      }
+      return formatPrice({
+        value: currentRMA.value[attribute],
+        currency: currentRMA.value.price_list.currency.iso_code
+      })
     }
 
     return {

@@ -37,6 +37,8 @@ import {
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { getMainPaymentMethods, getCurrencyPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
+import { convertToNumber, formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { convertToDate, formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 const fieldsCollections = {
   paymentMethods: {
@@ -107,8 +109,8 @@ export default {
       state.availableCurrencies.listCurrencies = list
     },
     setPayAmount(state, amount) {
-      if (isEmptyValue(amount)) return
-      state.amount = Number(amount)
+      // if (isEmptyValue(amount)) return
+      state.amount = convertToNumber(amount)
     },
     /**
      * Update Attribute
@@ -133,6 +135,7 @@ export default {
       state.modalPinManager.isShowed = isShowed
     }
   },
+
   actions: {
     availablePaymentMethods({
       commit,
@@ -150,7 +153,12 @@ export default {
         })
           .then(response => {
             const { payment_methods } = response
-            if (!isEmptyValue(payment_methods)) commit('setPaymentMethods', getMainPaymentMethods({ listPaymentMethods: payment_methods }))
+            if (!isEmptyValue(payment_methods)) {
+              const storedPaymentMethods = getMainPaymentMethods({
+                listPaymentMethods: payment_methods
+              })
+              commit('setPaymentMethods', storedPaymentMethods)
+            }
             commit('setListPaymentMethods', payment_methods)
             resolve(payment_methods)
           })
@@ -371,6 +379,7 @@ export default {
           })
       })
     },
+
     listCustomerCreditsMemo({
       commit,
       getters
@@ -380,23 +389,50 @@ export default {
         const currentOrder = getters.getCurrentOrder
         let document_type_id
         const currentPaymentMethods = getters.getPaymentMethods
-        if (currentPaymentMethods) document_type_id = currentPaymentMethods.document_type_id
-        if (isEmptyValue(currentPos.id)) resolve({})
+        if (currentPaymentMethods) {
+          document_type_id = currentPaymentMethods.document_type_id
+        }
+        if (isEmptyValue(currentPos.id)) {
+          resolve({})
+        }
         listCustomerCredits({
           posId: currentPos.id,
           customerId: currentOrder.customer.id,
           documentTypeId: document_type_id
         })
           .then(response => {
-            let validateRecords = []
             const { records } = response
-            if (!isEmptyValue(records)) {
-              validateRecords = records.filter(list => Number(list.open_amount.value) > 0)
-            }
+            const recordsList = records.map(recordItem => {
+              return {
+                ...recordItem,
+                displayValue: recordItem.document_no + ' - ' +
+                  formatDate({
+                    value: recordItem.document_date
+                  }) + ' - ' +
+                  formatPrice({
+                    value: recordItem.open_amount,
+                    currency: recordItem.currency.iso_code
+                  }),
+                amountCast: convertToNumber(recordItem.amount),
+                amountDisplayed: formatPrice({
+                  value: recordItem.amount,
+                  currency: recordItem.currency.iso_code
+                }),
+                openAmountCast: convertToNumber(recordItem.open_amount),
+                openAmountDisplayed: formatPrice({
+                  value: recordItem.open_amount,
+                  currency: recordItem.currency.iso_code
+                }),
+                documentDateCast: convertToDate(recordItem.document_date),
+                documentDateDisplayed: formatDate({
+                  value: recordItem.document_date
+                })
+              }
+            })
             commit('setAttributeField', {
               field: 'customerCredits',
               attribute: 'list',
-              value: validateRecords
+              value: recordsList
             })
           })
           .catch(error => {

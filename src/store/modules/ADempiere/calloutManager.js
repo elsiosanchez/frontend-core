@@ -76,9 +76,10 @@ const calloutManager = {
           value,
           oldValue
         }
-        // Before processing
         if (!isEmptyValue(callout)) {
-          dispatch('addToCalloutQueue', currentCallout)
+          setTimeout(() => {
+            dispatch('addToCalloutQueue', currentCallout)
+          }, 500)
         }
       })
     },

@@ -319,6 +319,12 @@ export function getPaymentValues({
     attribute: 'currentAccount'
   })
 
+  // invoice as credit memo
+  const creditMemoId = store.getters.getAttributeField({
+    field: 'field',
+    attribute: 'creditMemoId'
+  })
+
   // Set bank Accounts ID
   if (!isEmptyValue(currentAccount) && isEmptyValue(customer_bank_account_id)) {
     bank_id = currentAccount.bank_id
@@ -338,7 +344,7 @@ export function getPaymentValues({
     collecting_agent_id,
     payment_date,
     description,
-    invoice_id,
+    invoice_id: creditMemoId,
     is_refund,
     charge_id,
     bank_id,

@@ -148,6 +148,7 @@
       :container-uuid="containerUuid"
       :container-manager="containerManager"
       :total-records="recordCount"
+      :is-empty-index="true"
       :is-showed-selected="true"
       :selection="selectionsLength"
       :page-number="currentPageNumber"
@@ -280,9 +281,9 @@ import { BINARY_DATA, BUTTON, IMAGE } from '@/utils/ADempiere/references'
 import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 
 // Components and Mixins
-import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import CellDisplayInfo from '@/components/ADempiere/DataTable/Components/CellDisplayInfo.vue'
 import CellEditInfo from '@/components/ADempiere/DataTable/Components/CellEditInfo.vue'
+import CustomPagination from '@/components/ADempiere/DataTable/Components/CustomPagination.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import FilterFields from '@/components/ADempiere/FilterFields/index.vue'
 import LoadingView from '@/components/ADempiere/LoadingView/index.vue'
@@ -293,6 +294,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showNotification } from '@/utils/ADempiere/notification.js'
 import { runProcessOfBrowser } from '@/utils/ADempiere/dictionary/browser/actionsMenu'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
+
 /**
  * TODO: Reindex with `rowIndex` property when sorting by Column without refreshing records
  */
@@ -300,10 +302,10 @@ export default defineComponent({
   name: 'BrowserTable',
 
   components: {
-    CustomPagination,
-    FieldDefinition,
     CellDisplayInfo,
     CellEditInfo,
+    CustomPagination,
+    FieldDefinition,
     FilterFields,
     LoadingView
   },
@@ -359,6 +361,7 @@ export default defineComponent({
     const isChangeOptions = ref(false)
     const heightSize = ref()
     const currentRowSelect = ref({})
+    const selectionsKeysList = ref({})
     const isVisibleConfirmDelete = ref(false)
 
     const storedBrowser = computed(() => {
@@ -578,10 +581,10 @@ export default defineComponent({
     }
 
     function handleSelection(selections, rowSelected) {
-      let index = 0
-      rowSelected.isSelectedRow = !rowSelected.isSelectedRow
-      rowSelected.rowSelectedIndex = index++
-      rowSelected.isEditRow = rowSelected.isSelectedRow // edit record if is selected
+      // let index = 0
+      // rowSelected.isSelectedRow = !rowSelected.isSelectedRow
+      // rowSelected.rowSelectedIndex = index++
+      // rowSelected.isEditRow = rowSelected.isSelectedRow // edit record if is selected
 
       handleSelectionAll(selections)
     }
@@ -607,12 +610,17 @@ export default defineComponent({
       if (isEmptyValue(multipleTable.value)) {
         return
       }
+      const selectionsKeys = {}
       multipleTable.value.clearSelection()
       if (!isEmptyValue(rows)) {
         rows.forEach(row => {
+          // row.isSelectedRow = true
           multipleTable.value.toggleRowSelection(row, true)
+          const keyValue = row[keyColumn.value]
+          selectionsKeys[keyValue] = true
         })
       }
+      selectionsKeysList.value = selectionsKeys
     }
 
     /**
@@ -657,7 +665,7 @@ export default defineComponent({
       timeOut.value = setTimeout(() => {
         const selections = selectionsList.value
         toggleSelection(selections)
-      }, 500)
+      }, 300)
     }
 
     function refreshRecord() {
@@ -744,7 +752,9 @@ export default defineComponent({
     }
 
     function editCell(row, column) {
-      if (!row.isSelectedRow) {
+      const keyValue = row[keyColumn.value]
+      // if (!row.isSelectedRow) {
+      if (isEmptyValue(selectionsKeysList.value) || !selectionsKeysList.value[keyValue]) {
         isEditing.value = false
         return
       }
@@ -858,6 +868,7 @@ export default defineComponent({
       currentRowSelect,
       disableExport,
       selectionsList,
+      selectionsKeysList,
       selectionsLength,
       sizeViewTable,
       defaultSize,

@@ -676,9 +676,10 @@ const persistence = {
       ) {
         const key = containerUuid + '_' + recordUuid
         if (!isEmptyValue(state.persistence[key][columnName])) {
-          return {
-            columnName: state.persistence[key][columnName].value
-          }
+          // return {
+          //   columnName: state.persistence[key][columnName].value
+          // }
+          return state.persistence[key][columnName].value
         }
       }
       return getters.getValueOfFieldOnContainer({

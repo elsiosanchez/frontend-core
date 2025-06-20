@@ -32,12 +32,15 @@
 <script>
 import { defineComponent, onMounted, ref } from '@vue/composition-api'
 
+// Utils and Helper Methods
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat.js'
+
 export default defineComponent({
   name: 'EditQuantityEntered',
 
   props: {
     qty: {
-      type: Number,
+      type: [Number, String],
       required: true
     },
     precision: {
@@ -55,7 +58,9 @@ export default defineComponent({
   setup(props) {
     // Ref
     const inputField = ref(null)
-    const qtyEntered = ref(props.qty)
+    const qtyEntered = ref(
+      convertToNumber(props.qty)
+    )
 
     onMounted(() => {
       if (inputField.value != null) {
