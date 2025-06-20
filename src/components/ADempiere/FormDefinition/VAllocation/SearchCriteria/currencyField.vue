@@ -124,11 +124,11 @@ export default defineComponent({
         .then(response => {
           const { records } = response
           optionsCurrency.value = records.map(currency => {
-            const { id, uuid, values } = currency
+            const { id, uuid, name, iso_code } = currency
             return {
               id,
               uuid,
-              label: values.DisplayColumn
+              label: name + ' (' + iso_code + ')'
             }
           })
         })
