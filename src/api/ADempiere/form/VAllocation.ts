@@ -26,18 +26,18 @@ import { camelizeObjectKeys } from '@/utils/ADempiere/transformObject.js'
 
 export function requestListTransactionTypes() {
   return request({
-    url: '/payment-allocation/transaction-types',
+    url: '/forms/payment-allocation/transaction-types',
     method: 'get'
   })
 }
 
-export function listBusinessPartners({
+export function requestListBusinessPartners({
   searchValue,
   pageToken,
   pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
-    url: '/payment-allocation/business-partners',
+    url: '/forms/payment-allocation/business-partners',
     method: 'get',
     params: {
       page_size: pageSize,
@@ -47,9 +47,6 @@ export function listBusinessPartners({
       search_value: searchValue
     }
   })
-    .then(response => {
-      return camelizeObjectKeys(response)
-    })
 }
 
 export function requestListOrganizations({
@@ -58,7 +55,7 @@ export function requestListOrganizations({
   pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
-    url: '/payment-allocation/organizations',
+    url: '/forms/payment-allocation/organizations',
     method: 'get',
     params: {
       page_size: pageSize,
@@ -76,7 +73,7 @@ export function requestListCurrencies({
   pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
-    url: '/payment-allocation/currencies',
+    url: '/forms/payment-allocation/currencies',
     method: 'get',
     params: {
       page_size: pageSize,
@@ -103,7 +100,7 @@ export function requestListPayments({
   pageToken
 }) {
   return request({
-    url: `/payment-allocation/payments/${businessPartnerId}`,
+    url: `/forms/payment-allocation/payments/${businessPartnerId}`,
     method: 'get',
     params: {
       search_value: searchValue,
@@ -138,7 +135,7 @@ export function requestListInvoices({
   pageToken
 }) {
   return request({
-    url: `/payment-allocation/invoices/${businessPartnerId}`,
+    url: `/forms/payment-allocation/invoices/${businessPartnerId}`,
     method: 'get',
     params: {
       search_value: searchValue,
@@ -164,7 +161,7 @@ export function requestListCharges({
   pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
-    url: '/payment-allocation/charges',
+    url: '/forms/payment-allocation/charges',
     method: 'get',
     params: {
       page_size: pageSize,
@@ -183,7 +180,7 @@ export function requestListTransactionOrganizations({
   pageSize = RECORD_ROWS_BY_LIST
 }) {
   return request({
-    url: '/payment-allocation/organizations/transactions',
+    url: '/forms/payment-allocation/organizations/transactions',
     method: 'get',
     params: {
       page_size: pageSize,
@@ -208,7 +205,7 @@ export function requestProcess({
   transactionOrganizationId
 }) {
   return request({
-    url: '/payment-allocation/process',
+    url: '/forms/payment-allocation/process',
     method: 'post',
     data: {
       //  DSL Query

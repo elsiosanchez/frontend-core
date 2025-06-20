@@ -61,7 +61,7 @@ import store from '@/store'
 
 // API Request Methods
 import {
-  listBusinessPartners
+  requestListBusinessPartners
 } from '@/api/ADempiere/form/VAllocation.ts'
 
 // Components and Mixins
@@ -128,7 +128,7 @@ export default defineComponent({
           // }
 
           loadingBPartner.value = true
-          listBusinessPartners({
+          requestListBusinessPartners({
             searchValue
           })
             .then(response => {
@@ -164,7 +164,7 @@ export default defineComponent({
       //   })
       // }
       loadingBPartner.value = true
-      listBusinessPartners({
+      requestListBusinessPartners({
         searchValue
       })
         .then(response => {
