@@ -9,7 +9,9 @@
     "api": {
       "url": "http://localhost/api/",
       "timeout": 99999999
-    }
+    },
+    "vue_deploy_version": "vue_app_deploy_version_variable",
+    "vue_app_service_type_variable": "vue_app_service_type_variable"
   },
   "repository": {
     "url": "https://api.github.com",

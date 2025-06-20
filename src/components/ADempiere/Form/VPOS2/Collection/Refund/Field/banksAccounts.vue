@@ -82,7 +82,7 @@ export default defineComponent({
       if (!show) {
         return
       }
-      store.dispatch('listCustomerBankAccounts')
+      store.dispatch('listCustomerBankAccounts', {})
     }
 
     function setDataAccount(account) {

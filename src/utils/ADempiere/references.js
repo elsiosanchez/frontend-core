@@ -135,7 +135,7 @@ export const LOCAL_FILE = {
   name: language.t('field.displayType.fileName'),
   isSupported: true,
   valueType: 'STRING',
-  componentPath: 'FieldText',
+  componentPath: 'FieldFilePath',
   size: DEFAULT_SIZE
 }
 
@@ -145,7 +145,7 @@ export const LOCAL_FILE_PATH = {
   name: language.t('field.displayType.filePath'),
   isSupported: true,
   valueType: 'STRING',
-  componentPath: 'FieldText',
+  componentPath: 'FieldFilePath',
   size: DEFAULT_SIZE
 }
 
@@ -155,7 +155,7 @@ export const LOCAL_FILE_PATH_OR_NAME = {
   name: language.t('field.displayType.filePathOrName'),
   isSupported: true,
   valueType: 'STRING',
-  componentPath: 'FieldText',
+  componentPath: 'FieldFilePath',
   size: DEFAULT_SIZE
 }
 

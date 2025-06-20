@@ -4740,6 +4740,14 @@ cssstyle@^2.0.0, cssstyle@^2.3.0:
   dependencies:
     cssom "~0.3.6"
 
+currency-codes@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/currency-codes/-/currency-codes-2.2.0.tgz#447624b22fd31c9d2b5c498e77246b5d53501c7e"
+  integrity sha512-vpbQc5sEYHGdTVAYUhHnKv0DWiYLRvzl/KKyqeHzBh7HD/j3UlWoScpZ9tN/jG6w2feddWoObsBbaNVu5yDapg==
+  dependencies:
+    first-match "~0.0.1"
+    nub "~0.0.0"
+
 custom-event-polyfill@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/custom-event-polyfill/-/custom-event-polyfill-1.0.7.tgz#9bc993ddda937c1a30ccd335614c6c58c4f87aee"
@@ -6594,6 +6602,16 @@ fined@^1.0.1:
     object.pick "^1.2.0"
     parse-filepath "^1.0.1"
 
+first-match@~0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/first-match/-/first-match-0.0.1.tgz#a60ec642700f0f437234ebb7ec3f382476e542fd"
+  integrity sha512-VvKbnaxrC0polTFDC+teKPTdl2mn6B/KUW+WB3C9RzKDeNwbzfLdnUz3FxC+tnjvus6bI0jWrWicQyVIPdS37A==
+
+flag-icons@^6.4.4:
+  version "6.15.0"
+  resolved "https://registry.yarnpkg.com/flag-icons/-/flag-icons-6.15.0.tgz#9b9ea631f408ff41844872d1d7df9bd020d4c76d"
+  integrity sha512-ARo9Q+aATZEjyjveeec9e+orx+xLWUBdOX9baOKoGqDzMbvZ65ghPhaHbVt5T7ZB+Q4OFsB4Hr+eQnpV8Q+dLA==
+
 flagged-respawn@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/flagged-respawn/-/flagged-respawn-1.0.1.tgz#e7de6f1279ddd9ca9aac8a5971d618606b3aab41"
@@ -8139,6 +8157,11 @@ isexe@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha1-6PvzdNxVb/iUehDcsFctYz8s+hA=
+
+iso-country-currency@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/iso-country-currency/-/iso-country-currency-0.7.2.tgz#53f28cded446391cef4d97ce340bec61318bc880"
+  integrity sha512-RcFyqdvt1nbPPrUfAs2cuWnjynZYHU671r9MlcH7zn9Zkyif3tR9LJWVJmpFeSMDECDeycDUNiy9Mur+B21Sqw==
 
 isobject@^2.0.0, isobject@^2.1.0:
   version "2.1.0"
@@ -10135,6 +10158,11 @@ nth-check@^2.0.1:
   integrity sha512-it1vE95zF6dTT9lBsYbxvqh0Soy4SPowchj0UBGj/V6cTPnXXtQOPUbhZ6CmGzAD/rW22LQK6E96pcdJXk4A4w==
   dependencies:
     boolbase "^1.0.0"
+
+nub@~0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/nub/-/nub-0.0.0.tgz#b369bd32bdde66af59605c3b0520bc219dccc04f"
+  integrity sha512-dK0Ss9C34R/vV0FfYJXuqDAqHlaW9fvWVufq9MmGF2umCuDbd5GRfRD9fpi/LiM0l4ZXf8IBB+RYmZExqCrf0w==
 
 num2fraction@^1.2.2:
   version "1.2.2"
@@ -13847,6 +13875,13 @@ vue-eslint-parser@^7.0.0:
     esquery "^1.4.0"
     lodash "^4.17.21"
     semver "^6.3.0"
+
+vue-flag-icon@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vue-flag-icon/-/vue-flag-icon-2.1.0.tgz#9bd99df3a9174f7df3704108c407014db83500a0"
+  integrity sha512-Iwf5vltvDIh5s5WQ1Tr0eFVtwkXz70S2Ef1f5qgK3mj8t9haEqTrcZtInkePYP3Ir8HCqNaZwUwYipW/moBNVw==
+  dependencies:
+    flag-icons "^6.4.4"
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"

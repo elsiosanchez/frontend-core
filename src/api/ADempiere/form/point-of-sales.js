@@ -1048,41 +1048,59 @@ export function createShipment({
 }
 
 export function RefundReferenceRequest({
-  posUuid,
+  invoice_id,
+  posId,
+  bank_id,
+  order_id,
+  reference_no,
   description,
   amount,
-  date,
-  tenderTypeCode,
-  currencyUuid,
-  conversionTypeUuid,
-  paymentMethodUuid,
-  paymentAccountDate,
-  customerBankAccountUuid,
-  customerUuid,
-  isReceipt,
-  sourceAmount,
-  orderUuid,
-  salesRepresentativeUuid
+  payment_date,
+  tender_type_code,
+  currency_id,
+  payment_method_id,
+  payment_account_date,
+  is_refund,
+  charge_id,
+  gift_card_id,
+  is_receipt,
+  source_amount,
+  customer_id,
+  collecting_agent_id,
+  reference_bank_account_id,
+  sales_representative_id,
+  customer_bank_account_id,
+  invoice_reference_id,
+  allocate_payment_id
 }) {
   return request({
-    url: `${config.pointOfSales.endpoint}/create-payment-reference`,
+    url: `/point-of-sales/orders/${order_id}/references`,
     method: 'post',
     data: {
-      pos_uuid: posUuid,
+      pos_id: posId,
+      invoice_id,
+      bank_id,
+      customer_id,
+      reference_no,
+      gift_card_id,
       description,
       amount,
-      is_receipt: isReceipt,
-      source_amount: sourceAmount,
-      payment_date: date,
-      tender_type_code: tenderTypeCode,
-      currency_uuid: currencyUuid,
-      conversion_type_uuid: conversionTypeUuid,
-      payment_method_uuid: paymentMethodUuid,
-      payment_account_date: paymentAccountDate,
-      customer_bank_account_uuid: customerBankAccountUuid,
-      order_uuid: orderUuid,
-      customer_uuid: customerUuid,
-      sales_representative_uuid: salesRepresentativeUuid
+      order_id,
+      is_receipt,
+      payment_date,
+      tender_type_code,
+      currency_id,
+      payment_method_id,
+      payment_account_date,
+      is_refund,
+      charge_id,
+      source_amount,
+      collecting_agent_id,
+      reference_bank_account_id,
+      sales_representative_id,
+      customer_bank_account_id,
+      invoice_reference_id,
+      allocate_payment_id
     }
   })
     .then(responseCreateCustomerBankAccount => {
@@ -1091,39 +1109,35 @@ export function RefundReferenceRequest({
 }
 
 export function listRefundReference({
-  posUuid,
-  customerUuid,
-  orderUuid
+  pos_id,
+  customer_id,
+  order_id
 }) {
   return request({
-    url: `${config.pointOfSales.endpoint}/payment-references`,
+    url: `/point-of-sales/references`,
     method: 'get',
     params: {
-      pos_uuid: posUuid,
-      customer_uuid: customerUuid,
-      order_uuid: orderUuid
+      pos_id,
+      customer_id,
+      order_id
     }
   })
-    .then(responseCreateCustomerBankAccount => {
-      return camelizeObjectKeys(responseCreateCustomerBankAccount)
-    })
 }
 
 export function deleteRefundReference({
-  posUuid,
-  uuid
+  id,
+  pos_id,
+  order_id
 }) {
   return request({
-    url: `${config.pointOfSales.endpoint}/delete-payment-reference`,
+    url: `/point-of-sales/orders/${order_id}/references/${id}`,
     method: 'delete',
-    params: {
-      pos_uuid: posUuid,
-      uuid
+    data: {
+      id,
+      pos_id,
+      order_id
     }
   })
-    .then(responseShipmentLine => {
-      return camelizeObjectKeys(responseShipmentLine)
-    })
 }
 
 /**

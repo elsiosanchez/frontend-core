@@ -102,17 +102,20 @@ import ComparisonOperator from '@/components/ADempiere/FieldDefinition/FieldOpti
 
 // Constants
 import { COLUMNNAME_UUID } from '@/utils/ADempiere/constants/systemColumns'
+import { TOTAL_AMOUNT_COLUMS } from '@/utils/ADempiere/dictionary/field/number'
 import { BUTTON, TEXT, DEFAULT_SIZE } from '@/utils/ADempiere/references'
 import {
   MULTIPLE_VALUES_OPERATORS_LIST, IGNORE_VALUE_OPERATORS_LIST
 } from '@/utils/ADempiere/dataUtils'
 import { LAYOUT_MAX_COLUMNS_PER_ROW, DEFAULT_COLUMNS_PER_ROW } from '@/utils/ADempiere/componentUtils'
 import { ALWAYS_DISPLAY_COLUMN } from '@/utils/ADempiere/dictionaryUtils'
+import { CURRENCY } from '@/utils/ADempiere/constants/currency'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
 import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
+
 /**
  * This is the base component for linking the components according to the
  * reference (or type of visualization) of each field
@@ -242,17 +245,25 @@ export default {
         xl: this.field.size.xl
       }
     },
+
     // load the component that is indicated in the attributes of received property
     componentRender() {
       if (isEmptyValue(this.field.componentPath || !this.field.isSupported)) {
         return () => import('@/components/ADempiere/FieldDefinition/FieldText')
       }
+
       if (this.isSelectCreated) {
         return () => import('@/components/ADempiere/FieldDefinition/FieldSelect/FieldSelectMultiple.vue')
       }
+
+      if (TOTAL_AMOUNT_COLUMS.includes(this.field.columnName) && this.isReadOnlyField) {
+        return () => import('@/components/ADempiere/FieldDefinition/FieldGrandTotal.vue')
+      }
+
       let field
-      if (this.field.columnName === 'AttendanceTime') {
-        console.log({ ...this.field })
+      if (this.field.columnName.includes(CURRENCY)) {
+        field = () => import('@/components/ADempiere/FieldDefinition/FieldCurrency')
+        return field
       }
       switch (this.field.componentPath) {
         case 'FieldText':
@@ -305,6 +316,9 @@ export default {
           break
         case 'FieldProductAttribute':
           field = () => import('@/components/ADempiere/FieldDefinition/FieldProductAttribute')
+          break
+        case 'FieldFilePath':
+          field = () => import('@/components/ADempiere/FieldDefinition/FieldFilePath')
           break
       }
       return field

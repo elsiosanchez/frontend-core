@@ -18,7 +18,7 @@
   <el-dialog
     class="modal-dialog"
     :visible="isShowed"
-    width="80%"
+    :width="widthDialogo"
     top="10vh"
     @close="cancelActionMethod(false)"
   >
@@ -152,6 +152,13 @@ export default defineComponent({
       return storedModalDialog.value.isTypeButton()
     })
 
+    const widthDialogo = computed(() => {
+      // if (!isEmptyValue(storedModalDialog.value) && !isEmptyValue(storedModalDialog.value.widthDialogo)) {
+      //   return storedModalDialog.value.widthDialogo
+      // }
+      return '80%'
+    })
+
     const isSvgButton = computed(() => {
       if (isEmptyValue(storedModalDialog.value)) {
         return ''
@@ -214,6 +221,7 @@ export default defineComponent({
       componentRender,
       isDisabledDone,
       isLoadingDone,
+      widthDialogo,
       isTypeButton,
       isSvgButton,
       isShowed,

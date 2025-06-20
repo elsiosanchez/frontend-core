@@ -1824,3 +1824,16 @@ export function cancelOnlinePayment({
     method: 'put'
   })
 }
+
+/**
+ * Valid Gift Card
+ */
+export function getValidGiftCard({
+  posId,
+  searchValue
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/gift-cards/valid/${searchValue}`,
+    method: 'get'
+  })
+}

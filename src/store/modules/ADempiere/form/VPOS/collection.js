@@ -206,6 +206,7 @@ export default {
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentOrder.id)
         ) resolve({})
+        dispatch('listRefunds')
         listPayments({
           posId: currentPos.id,
           orderId: currentOrder.id

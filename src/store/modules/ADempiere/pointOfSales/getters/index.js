@@ -27,7 +27,9 @@ const withoutResponse = {
 }
 
 function isProcessed(order) {
-  if (!isEmptyValue(order.documentStatus.value) &&
+  if (
+    !isEmptyValue(order) &&
+    !isEmptyValue(order.documentStatus.value) &&
     (order.documentStatus.value === 'CO' ||
      order.documentStatus.value === 'VO' ||
      order.documentStatus.value === 'IP' ||

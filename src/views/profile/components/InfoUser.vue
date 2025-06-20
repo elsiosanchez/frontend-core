@@ -92,6 +92,24 @@
             <p
               class="label-system"
             >
+              <svg-icon icon-class="backend" />
+              {{ $t('profile.systemInformation.deployVersion') + ': ' }}
+            </p>
+          </el-col>
+          <el-col :span="12">
+            <el-tag>
+              <b>
+                <svg-icon icon-class="tag" />
+                {{ config.adempiere.vue_deploy_version }}
+              </b>
+            </el-tag>
+          </el-col>
+        </el-row>
+        <el-row style="margin-bottom: 2.5px;">
+          <el-col :span="12">
+            <p
+              class="label-system"
+            >
               <svg-icon icon-class="dictionary" />
               {{ $t('profile.systemInformation.dictionaryVersion') + ': ' }}
             </p>
@@ -536,7 +554,9 @@ export default defineComponent({
       isMobile,
       workflow,
       request,
-      notice
+      notice,
+      // Const
+      config
     }
   }
 })

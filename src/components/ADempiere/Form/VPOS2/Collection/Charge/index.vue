@@ -142,7 +142,7 @@
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
 
-// import lang from '@/lang'
+import lang from '@/lang'
 import store from '@/store'
 // import router from '@/router'
 
@@ -290,8 +290,33 @@ export default defineComponent({
      * @param {Object} paymentMethods
      */
     function changePaymentMethods(paymentMethods) {
-      if (isEmptyValue(paymentMethods)) return
       const currentPaymentMethod = store.getters.getListPaymentMethods.find(list => list.id === paymentMethods)
+      if (isEmptyValue(paymentMethods)) return
+      if (currentPaymentMethod.payment_method.tender_type === 'G') {
+        store.dispatch('setModalDialogVPOS', {
+          title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
+          doneMethod: () => {
+            const currentGiftCard = store.getters.getGiftCardSearch
+            if (isEmptyValue(currentGiftCard)) return
+            const { amount, currency, business_partner, id } = currentGiftCard
+            store.dispatch('refundReference', {
+              amount,
+              source_amount: amount,
+              tender_type_code: 'G',
+              gift_card_id: id,
+              currency_id: currency.id,
+              customer_id: business_partner.id,
+              sales_representative_id: currentOrder.value.sales_representative.id,
+              is_receipt: true
+            })
+            const listPaymentMethods = store.getters.getListPaymentMethods
+            store.commit('setPaymentMethods', listPaymentMethods[0])
+            store.commit('setCurrentGiftCard', {})
+          },
+          componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/giftCard.vue'),
+          isShowed: true
+        })
+      }
       const currency = getCurrencyPayment({
         paymentMethods: currentPaymentMethod
       })

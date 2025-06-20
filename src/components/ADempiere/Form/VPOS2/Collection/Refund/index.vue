@@ -129,7 +129,7 @@ import phone from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/pho
 import accountNo from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/accountNo'
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
@@ -318,7 +318,7 @@ export default defineComponent({
       store.commit('setAttributeField', {
         field: 'fieldsRefunds',
         attribute: 'amount',
-        value: Number(currentOrder.value.refund_amount.value)
+        value: convertToNumber(currentOrder.value.refund_amount)
       })
       // store.commit('setAvailableCurrencies', currency)
       clearFieldsCollections()
@@ -369,13 +369,13 @@ export default defineComponent({
         doneMethod: () => {
           isLoadingPay.value = true
           store.dispatch('addPayment', {
-            reference_no: referenceNo.value,
-            description: description.value,
-            amount: amount.value,
             tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
-            currency_id: currency.id,
             payment_method_id: currentPaymentMethod.value.payment_method.id,
             payment_account_date: date.value,
+            reference_no: referenceNo.value,
+            description: description.value,
+            currency_id: currency.id,
+            amount: amount.value,
             is_refund: true
           })
             .then(() => {
@@ -426,6 +426,55 @@ export default defineComponent({
         (Number(currentPos.value.maximum_refund_allowed.value) > amount.value && currentPos.value.refund_reference_currency.id === currency.id)
       ) {
         validatePaye()
+      }
+      if (currentPaymentMethod.value.is_payment_reference) {
+        store.dispatch('refundReference', {
+          reference_no: referenceNo.value,
+          description: description.value,
+          amount: String(amount.value),
+          source_amount: String(amount.value),
+          tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
+          currency_id: currency.id,
+          customer_id: currentOrder.value.customer.id,
+          sales_representative_id: currentOrder.value.sales_representative.id,
+          payment_method_id: currentPaymentMethod.value.payment_method.id,
+          payment_account_date: date.value,
+          is_refund: true
+        })
+          .then(() => {
+            if (currency.id === store.getters.getVPOS.price_list.currency.id) {
+              store.commit('setAttributeField', {
+                field: 'fieldsRefunds',
+                attribute: 'amount',
+                value: currentOrder.value.refund_amount
+              })
+            } else {
+              store.dispatch('findRate', {
+                currencyToId: currency.id,
+                currencyFromId: store.getters.getVPOS.price_list.currency.id
+              })
+                .then(response => {
+                  const {
+                    multiply_rate,
+                    divide_rate
+                  } = response
+                  if (
+                    !isEmptyValue(multiply_rate) &&
+                    !isEmptyValue(divide_rate)
+                  ) {
+                    const amountRate = (convertToNumber(multiply_rate) > convertToNumber(divide_rate)) ? multiply_rate : divide_rate
+                    const amountConvert = convertToNumber(currentOrder.value.refund_amount) / convertToNumber(amountRate)
+                    store.commit('setAttributeField', {
+                      field: 'fieldsRefunds',
+                      attribute: 'amount',
+                      value: amountConvert
+                    })
+                  }
+                })
+            }
+            isLoadingPay.value = false
+          })
+        return
       }
       store.dispatch('addPayment', {
         reference_no: referenceNo.value,

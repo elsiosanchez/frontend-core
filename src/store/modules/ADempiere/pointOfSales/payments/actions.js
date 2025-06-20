@@ -140,7 +140,7 @@ export default {
     payment.splice(0)
   },
   searchConversion({ commit, getters, rootGetters }, params) {
-    const posUuid = isEmptyValue(params.currentPOS) ? rootGetters.posAttributes.currentPointOfSales.uuid : params.currentPOS.uuid
+    const posUuid = isEmptyValue(params.currentPOS) ? getters.getVPOS.uuid : params.currentPOS.uuid
     if (isEmptyValue(params.currencyToUuid)) {
       return
     }
@@ -168,7 +168,7 @@ export default {
       })
   },
   conversionDivideRate({ commit, dispatch, getters, rootGetters }, params) {
-    const posUuid = isEmptyValue(params.currentPOS) ? rootGetters.posAttributes.currentPointOfSales.uuid : params.currentPOS.uuid
+    const posUuid = isEmptyValue(params.currentPOS) ? getters.getVPOS.uuid : params.currentPOS.uuid
     // TODO: Change by UUID to ID
     return getConversionRateRequest({
       posUuid,
@@ -605,11 +605,14 @@ export default {
         })
     })
   },
-  listCustomerBankAccounts({ commit, dispatch }, {
+  listCustomerBankAccounts({ commit, getters }, {
     posUuid,
     customerUuid,
     pageToken
   }) {
+    if (isEmptyValue(posUuid)) {
+      posUuid = getters.getVPOS.uuid
+    }
     listCustomerBankAccounts({
       posUuid,
       customerUuid,
@@ -619,77 +622,95 @@ export default {
         commit('setListCustomerBankAccounts', response.records)
       })
   },
-  refundReference({ commit, dispatch }, {
-    posUuid,
+  refundReference({ commit, dispatch, getters }, {
+    posId,
+    invoice_id,
+    bank_id,
+    gift_card_id,
+    reference_no,
     description,
     amount,
-    sourceAmount,
-    isReceipt,
-    date,
-    tenderTypeCode,
-    currencyUuid,
-    conversionTypeUuid,
-    paymentMethodUuid,
-    paymentAccountDate,
-    customerBankAccountUuid,
-    orderUuid,
-    customerUuid,
-    salesRepresentativeUuid
+    payment_date,
+    tender_type_code,
+    currency_id,
+    payment_method_id,
+    payment_account_date,
+    is_refund,
+    charge_id,
+    source_amount,
+    customer_id,
+    is_receipt,
+    sales_representative_id,
+    collecting_agent_id,
+    reference_bank_account_id,
+    customer_bank_account_id,
+    invoice_reference_id,
+    allocate_payment_id
   }) {
+    const currentPos = getters.getVPOS
+    const currentOrder = getters.getCurrentOrder
     RefundReferenceRequest({
-      posUuid,
+      posId: currentPos.id,
+      order_id: currentOrder.id,
+      invoice_id,
+      bank_id,
+      reference_no,
       description,
+      gift_card_id,
       amount,
-      sourceAmount,
-      date,
-      isReceipt,
-      customerUuid,
-      tenderTypeCode,
-      currencyUuid,
-      conversionTypeUuid,
-      paymentMethodUuid,
-      paymentAccountDate,
-      orderUuid,
-      customerBankAccountUuid,
-      salesRepresentativeUuid
+      payment_date,
+      tender_type_code,
+      currency_id,
+      payment_method_id,
+      payment_account_date,
+      is_refund,
+      charge_id,
+      is_receipt,
+      customer_id,
+      source_amount,
+      collecting_agent_id,
+      sales_representative_id,
+      reference_bank_account_id,
+      customer_bank_account_id,
+      invoice_reference_id,
+      allocate_payment_id
     })
       .then(response => {
-        dispatch('listRefunds', {
-          posUuid,
-          customerUuid,
-          orderUuid
-        })
-        dispatch('reloadOrder', { posUuid, orderUuid })
+        dispatch('listRefunds')
+        dispatch('overloadOrder', { order: currentOrder })
       })
   },
-  listRefunds({ commit }, {
-    posUuid,
-    orderUuid
-  }) {
+  listRefunds({ commit, getters }) {
+    const currentPos = getters.getVPOS
+    const currentOrder = getters.getCurrentOrder
     listRefundReference({
-      posUuid,
-      orderUuid
+      pos_id: currentPos.id,
+      customer_id: currentOrder.customer.id,
+      order_id: currentOrder.id
     })
       .then(response => {
-        commit('setListRefundReference', response.records)
+        const referencesList = response.payment_references.map(references => {
+          return {
+            ...references,
+            is_reference: true
+          }
+        })
+        commit('setListRefundReference', referencesList)
       })
   },
-  deleteRefundReferences({ dispatch }, {
-    posUuid,
-    customerUuid,
-    orderUuid,
-    uuid
+  deleteRefundReferences({ dispatch, getters }, {
+    id
   }) {
+    const currentPos = getters.getVPOS
+    const currentOrder = getters.getCurrentOrder
     deleteRefundReference({
-      posUuid,
-      uuid
+      pos_id: currentPos.id,
+      id,
+      order_id: currentOrder.id
     })
-      .then(response => {
-        dispatch('listRefunds', {
-          posUuid,
-          orderUuid
-        })
-        dispatch('reloadOrder', { posUuid, orderUuid })
+      .then(() => {
+        dispatch('listRefunds')
+        dispatch('overloadOrder', { order: currentOrder })
       })
       .catch(error => {
         console.warn(`ListPaymentsFromServer: ${error.message}. Code: ${error.code}.`)
@@ -742,13 +763,13 @@ export default {
         console.warn(`Error: ${error.message}. Code: ${error.code}.`)
       })
   },
-  listCashMovementsSummary({ commit, state, rootGetters }, {
+  listCashMovementsSummary({ commit, state, getters }, {
     posUuid,
     customerUuid,
     salesRepresentativeUuid
   }) {
     if (isEmptyValue(posUuid)) {
-      posUuid = rootGetters.posAttributes.currentPointOfSales.uuid
+      posUuid = getters.getVPOS.uuid
     }
     listCashMovements({
       posUuid,

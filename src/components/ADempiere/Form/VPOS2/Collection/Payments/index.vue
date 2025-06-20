@@ -78,12 +78,18 @@ export default defineComponent({
     const listPayments = computed(() => {
       return store.getters.getListPayments.filter(list => !list.is_refund)
     })
-    const listPaymentsRefund = computed(() => {
-      return store.getters.getListPayments.filter(list => list.is_refund)
+    const listRefundReference = computed(() => {
+      return store.getters.getListRefundReference
     })
+
+    const listPaymentsRefund = computed(() => {
+      return store.getters.getListPayments.filter(list => list.is_refund).concat(listRefundReference.value)
+    })
+
     return {
       listPayments,
-      listPaymentsRefund
+      listPaymentsRefund,
+      listRefundReference
     }
   }
 })

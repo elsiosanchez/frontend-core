@@ -35,7 +35,9 @@ export function requestPresignedUrl({
   clientId,
   containerType,
   containerId,
+  filePath,
   tableName,
+  userId,
   columnName,
   recordId,
   fileName
@@ -45,6 +47,9 @@ export function requestPresignedUrl({
   // Add parameters to the route only if they exist
   if (clientId) {
     path.push(clientId)
+  }
+  if (filePath) {
+    path.push(filePath)
   }
   if (containerId) {
     path.push(containerId)
@@ -57,6 +62,7 @@ export function requestPresignedUrl({
     table_name: tableName,
     record_id: recordId,
     column_name: columnName,
+    user_id: userId,
     container_type: containerType
   }
 

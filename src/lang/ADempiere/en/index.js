@@ -74,6 +74,8 @@ export default {
 
   language: 'Language',
   copyToClipboard: 'Copy to Clipboard',
+  qa: 'Quality Assurance Service',
+  dev: 'Development Service',
   notifications: {
     // simplex
     completed: 'Completed',
@@ -235,6 +237,7 @@ export default {
       tabLabel: 'System Information',
       releaseNumber: 'Release',
       backEndVersion: 'Back-End Version',
+      deployVersion: 'Versión del Deploy',
       dateVersion: 'Date Versión',
       frontEndVersion: 'Front-End Version',
       proxyVersion: 'Proxy Version',
@@ -332,9 +335,13 @@ export default {
           createNewReturnOrder: 'Create a new return order',
           confirmDelivery: 'Confirm Delivery',
           giftCard: 'Gift Card',
+          giftCardPlaceholder: 'Scan or Enter the Gift Card Code',
+          giftCardSearchCode: 'Enter Code to Perform Search',
           generatingGiftCard: 'Generating Gift Card',
           giftCardGenerated: 'Gift Card Generated',
           giftCardGenerada: 'Gift Card Generated  ',
+          giftCardNotFound: 'Gift Card * Not found *',
+          giftCardwithoutLines: 'Gift Card without Lines',
           deliverAllProducts: 'Deliver all products',
           emptyProductDelivery: 'Product not in Order'
         },
@@ -439,6 +446,7 @@ export default {
         pending: 'Pending',
         payment: 'Payment',
         change: 'Change',
+        addPayment: 'Add Payment',
         totalInvoiced: 'Total Invoiced',
         convertAmount: 'Convert Quantity',
         convertedAmount: 'Converted',

@@ -303,6 +303,15 @@ export default defineComponent({
     }
 
     function remove(payment) {
+      if (payment.is_reference) {
+        isLoading.value = true
+        store.dispatch('deleteRefundReferences', {
+          id: payment.id
+        })
+          .finally(() => {
+            isLoading.value = false
+          })
+      }
       if (payment.is_online) {
         isLoadingCancele.value = true
         store.dispatch('infoOnlinePayment', {

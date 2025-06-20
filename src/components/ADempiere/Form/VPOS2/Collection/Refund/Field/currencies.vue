@@ -73,13 +73,12 @@ export default defineComponent({
     })
 
     const isDisabled = computed(() => {
-      const {
-        refund_reference_currency
-      } = store.getters.getAttributeField({
+      const paymentMethods = store.getters.getAttributeField({
         field: 'fieldsRefunds',
         attribute: 'paymentMethods'
       })
-      return !isEmptyValue(refund_reference_currency)
+      if (isEmptyValue(paymentMethods)) return false
+      return !isEmptyValue(paymentMethods.refund_reference_currency)
     })
     const listCurrencies = computed(() => {
       return store.getters.getAvailableCurrencies.listCurrencies
