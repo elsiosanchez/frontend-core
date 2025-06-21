@@ -26,7 +26,7 @@ import {
   validatePIN
 } from '@/api/ADempiere/form/VPOS'
 import {
-  createCustomerBankAccount,
+  createCustomerBankAccountRequest,
   listCustomerBankAccountsRequest
 } from '@/api/ADempiere/form/VPOS/customer'
 import {
@@ -257,6 +257,10 @@ export default {
           })
       })
     },
+
+    /**
+     * TODO: Duplicated with dispatch name in `src/store/modules/ADempiere/pointOfSales/payments/actions.js`
+     */
     listCustomerBankAccounts({
       commit,
       getters
@@ -274,6 +278,7 @@ export default {
         }
         if (isEmptyValue(currentPos.id)) {
           resolve({})
+          return
         }
         listCustomerBankAccountsRequest({
           posId: currentPos.id,
@@ -308,6 +313,7 @@ export default {
           })
       })
     },
+
     newCustomerBankAccount({
       commit,
       getters
@@ -342,7 +348,7 @@ export default {
           driverLicense = value
         }
         if (isEmptyValue(currentPos.id)) resolve({})
-        createCustomerBankAccount({
+        createCustomerBankAccountRequest({
           posId: currentPos.id,
           bankId,
           customerId: currentOrder.customer.id,

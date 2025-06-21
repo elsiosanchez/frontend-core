@@ -18,11 +18,12 @@
 
 // API Request Methods
 import {
-  banks
-} from '@/api/ADempiere/form/point-of-sales.js'
+  listBanksRequest
+} from '@/api/ADempiere/form/VPOS/banks'
 
-// utils and helper methods
+// Utils and Helper Methods
 import { showMessage } from '@/utils/ADempiere/notification.js'
+
 const bank = {
   state: {
     listBanks: []
@@ -39,7 +40,7 @@ const bank = {
       searchValue
     }) {
       return new Promise(resolve => {
-        banks({
+        listBanksRequest({
           posUuid: rootGetters.posAttributes.currentPointOfSales.uuid,
           searchValue
         })
@@ -60,10 +61,12 @@ const bank = {
       })
     }
   },
+
   getters: {
     getListBanks: (state) => {
       return state.listBanks
     }
   }
 }
+
 export default bank

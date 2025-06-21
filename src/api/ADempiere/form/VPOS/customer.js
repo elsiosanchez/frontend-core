@@ -19,6 +19,26 @@
 import { request } from '@/utils/ADempiere/request'
 
 /**
+ * List Customer Templates
+ * @param {string} filters
+ * @param {string} sort_by
+ * @param {repeated string} group_columns
+ * @param {repeated string} select_columns
+ * @param {int32} page_size
+ * @param {string} page_token
+ * @param {string} search_value
+ * @param {int32} pos_id
+ */
+export function listCustomerTemplates({
+  posId
+}) {
+  return request({
+    url: `/point-of-sales/${posId}/customers/templates`,
+    method: 'get'
+  })
+}
+
+/**
  * Create Customer
  * @param {string} value
  * @param {string} tax_id
@@ -205,45 +225,50 @@ export function listCustomerBankAccountsRequest({
 /**
  * Create Customer Account
  */
-export function createCustomerBankAccount({
+export function createCustomerBankAccountRequest({
   posId,
   customerId,
+  bankId,
   accountNo,
   driverLicense,
-  bankId,
+  socialSecurityNumber,
   bankAccountType = 'C',
-  isAch = true
+  isAch = true,
+  //
+  city,
+  country,
+  email,
+  name,
+  state,
+  street,
+  zip,
+  addressVerified,
+  zipVerified,
+  routingNo,
+  iban
 }) {
   return request({
     url: `point-of-sales/${posId}/customers/${customerId}/bank-accounts`,
     method: 'post',
     data: {
-      account_no: accountNo,
-      driver_license: driverLicense,
       bank_id: bankId,
+      driver_license: driverLicense,
+      social_security_number: socialSecurityNumber,
+      account_no: accountNo,
       bank_account_type: bankAccountType,
-      social_security_number: driverLicense,
-      is_ach: isAch
+      is_ach: isAch,
+      //
+      city,
+      country,
+      email,
+      name,
+      state,
+      street,
+      zip,
+      address_verified: addressVerified,
+      zip_verified: zipVerified,
+      routing_no: routingNo,
+      iban
     }
-  })
-}
-
-/**
- * List Customer Templates
- * @param {string} filters
- * @param {string} sort_by
- * @param {repeated string} group_columns
- * @param {repeated string} select_columns
- * @param {int32} page_size
- * @param {string} page_token
- * @param {string} search_value
- * @param {int32} pos_id
- */
-export function listCustomerTemplates({
-  posId
-}) {
-  return request({
-    url: `/point-of-sales/${posId}/customers/templates`,
-    method: 'get'
   })
 }

@@ -24,9 +24,6 @@ import {
   deletePayment,
   updatePayment,
   getPaymentsList,
-  // Customer Bank Account
-  createCustomerBankAccount,
-  listCustomerBankAccounts,
   // Cash Summary Movements
   cashSummaryMovements,
   listCashMovements,
@@ -34,6 +31,11 @@ import {
   listRefundReference,
   deleteRefundReference
 } from '@/api/ADempiere/form/point-of-sales.js'
+import {
+  // Customer Bank Account
+  createCustomerBankAccountRequest,
+  listCustomerBankAccountsRequest
+} from '@/api/ADempiere/form/VPOS/customer'
 import {
   getConversionRateRequest
 } from '@/api/ADempiere/system-core'
@@ -567,7 +569,7 @@ export default {
     iban
   }) {
     return new Promise(resolve => {
-      createCustomerBankAccount({
+      createCustomerBankAccountRequest({
         customerUuid,
         posUuid,
         city,
@@ -605,23 +607,46 @@ export default {
         })
     })
   },
+
+  /**
+   * TODO: Duplicated with dispatch name in `src/store/modules/ADempiere/form/VPOS/fieldsCollections.js`
+   */
   listCustomerBankAccounts({ commit, getters }, {
-    posUuid,
-    customerUuid,
+    posId,
+    customerId,
     pageToken
   }) {
-    if (isEmptyValue(posUuid)) {
-      posUuid = getters.getVPOS.uuid
+    if (isEmptyValue(posId)) {
+      posId = getters.getVPOS.id
+      if (isEmptyValue(posId)) {
+        return
+      }
     }
-    listCustomerBankAccounts({
-      posUuid,
-      customerUuid,
-      pageToken
+    if (isEmptyValue(customerId)) {
+      const currentOrder = getters.getCurrentOrder
+      customerId = currentOrder.customer.id
+      if (isEmptyValue(customerId)) {
+        return
+      }
+    }
+    let bankId
+    const bank = getters.getAttributeField({
+      field: 'banks',
+      attribute: 'recipientBank'
+    })
+    if (bank) {
+      bankId = bank.id
+    }
+    listCustomerBankAccountsRequest({
+      posId: posId,
+      bankId,
+      customerId: customerId
     })
       .then(response => {
         commit('setListCustomerBankAccounts', response.records)
       })
   },
+
   refundReference({ commit, dispatch, getters }, {
     posId,
     invoice_id,

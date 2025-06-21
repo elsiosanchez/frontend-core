@@ -186,9 +186,6 @@ export function deleteOrder({
       // sales_representative_uuid: salesRepresentativeUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 // List orders from pos uuid
@@ -337,9 +334,6 @@ export function deleteOrderLine({
       order_line_uuid: orderLineUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 export function listOrderLines({
@@ -435,9 +429,6 @@ export function printTicket({
       order_id: orderId
     }
   })
-    .then(printTicketResponse => {
-      return printTicketResponse
-    })
 }
 
 export function printTicketPreviwer({
@@ -452,9 +443,6 @@ export function printTicketPreviwer({
       order_uuid: orderUuid
     }
   })
-    .then(printTicketPreviwer => {
-      return printTicketPreviwer
-    })
 }
 
 export function printShipmentPreviwer({
@@ -471,9 +459,6 @@ export function printShipmentPreviwer({
       report_type: reportType
     }
   })
-    .then(printShipmentPreviwer => {
-      return printShipmentPreviwer
-    })
 }
 
 export function generateImmediateInvoice({
@@ -583,9 +568,6 @@ export function updatePayment({
       reference_bank_account_uuid: referenceBankAccountUuid
     }
   })
-    .then(updatePaymentResponse => {
-      return updatePaymentResponse
-    })
 }
 
 // Delete Payment
@@ -601,9 +583,6 @@ export function deletePayment({
       payment_uuid: paymentUuid
     }
   })
-    .then(deletePaymentResponse => {
-      return deletePaymentResponse
-    })
 }
 
 // List Payments
@@ -686,9 +665,6 @@ export function processOrder({
       payments: payments
     }
   })
-    .then(processOrderResponse => {
-      return processOrderResponse
-    })
 }
 
 /**
@@ -752,9 +728,6 @@ export function overdrawnInvoice({
       option: option
     }
   })
-    .then(processOrderResponse => {
-      return processOrderResponse
-    })
 }
 
 /**
@@ -781,9 +754,6 @@ export function validatePin({
       requested_amount: requestedAmount
     }
   })
-    .then(pinResponse => {
-      return pinResponse
-    })
 }
 
 /**
@@ -800,9 +770,6 @@ export function listWarehouses({
       pos_uuid: posUuid
     }
   })
-    .then(listWarehouseResponse => {
-      return listWarehouseResponse
-    })
 }
 
 /**
@@ -819,9 +786,6 @@ export function listDocumentTypes({
       pos_uuid: posUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 /**
@@ -838,9 +802,6 @@ export function listPrices({
       pos_uuid: posUuid
     }
   })
-    .then(listPricesResponse => {
-      return listPricesResponse
-    })
 }
 
 /**
@@ -857,9 +818,6 @@ export function listCurrencies({
       pos_uuid: posUuid
     }
   })
-    .then(listCurrencies => {
-      return listCurrencies
-    })
 }
 
 /**
@@ -878,9 +836,6 @@ export function listTenderTypes({
       page_size: pageSize
     }
   })
-    .then(listTenderType => {
-      return listTenderType
-    })
 }
 
 /**
@@ -905,102 +860,6 @@ export function createCustomerAccount({
       currency_uuid: currencyUuid
     }
   })
-    .then(responseCustomerAccount => {
-      return responseCustomerAccount
-    })
-}
-
-/**
- * Refund payment at a later time
- * customer_uuid - Customer UUID
- * pos_uuid - Value
- * city - City
- * country - Country
- * email - EMail
- * driver_license - Driver Licence
- * social_security_number - Social Security Number (SSN)
- * name - Name
- * state - State
- * street - Strert
- * zip - ZIP
- * bank_account_type - Bank Accoubnt Type
- * bank_uuid - Bank UUID
- * is_ach - ACH
- * address_verified - Address Verified
- * zip_verified - ZIP Verified
- * routing_no - Routing No
- * iban - IBAN
- */
-export function createCustomerBankAccount({
-  posUuid,
-  customerUuid,
-  city,
-  country,
-  email,
-  driverLicense,
-  socialSecurityNumber,
-  name,
-  state,
-  street,
-  zip,
-  bankAccountType,
-  bankUuid,
-  isAch,
-  addressVerified,
-  zipVerified,
-  AccountNo,
-  routingNo,
-  iban
-}) {
-  return request({
-    url: `${config.pointOfSales.endpoint}/create-customer-bank-account`,
-    method: 'post',
-    data: {
-      pos_uuid: posUuid,
-      customer_uuid: customerUuid,
-      city,
-      country,
-      email,
-      driver_license: driverLicense,
-      social_security_number: socialSecurityNumber,
-      name,
-      state,
-      account_no: AccountNo,
-      street,
-      zip,
-      bank_account_type: bankAccountType,
-      bank_uuid: bankUuid,
-      is_ach: isAch,
-      address_verified: addressVerified,
-      zip_verified: zipVerified,
-      routing_no: routingNo,
-      iban
-    }
-  })
-    .then(responseCreateCustomerBankAccount => {
-      return camelizeObjectKeys(responseCreateCustomerBankAccount)
-    })
-}
-
-export function listCustomerBankAccounts({
-  posUuid,
-  customerUuid,
-  pageSize = ROWS_OF_RECORDS_BY_PAGE,
-  pageToken
-}) {
-  return request({
-    url: `${config.pointOfSales.endpoint}/customer-bank-accounts`,
-    method: 'get',
-    params: {
-      pos_uuid: posUuid,
-      customer_uuid: customerUuid,
-      page_size: pageSize,
-      page_token: pageToken
-    }
-  })
-    .then(responseListCustomerBankAccounts => {
-      return camelizeObjectKeys(responseListCustomerBankAccounts)
-    })
 }
 
 export function daleteCustomerBankAccounts({
@@ -1180,9 +1039,6 @@ export function deleteShipment({
       shipment_line_uuid: shipmentLineUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 // List Shipment
@@ -1198,9 +1054,6 @@ export function shipments({
       shipment_uuid: shipmentUuid
     }
   })
-    .then(response => {
-      return camelizeObjectKeys(response)
-    })
 }
 
 /**
@@ -1228,9 +1081,6 @@ export function processShipment({
       document_action: 'CO'
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 /**
@@ -1257,9 +1107,6 @@ export function reverseSales({
       description
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 /**
@@ -1276,9 +1123,6 @@ export function listDiscount({
       pos_uuid: posUuid
     }
   })
-    .then(listDiscountResponse => {
-      return listDiscountResponse
-    })
 }
 
 /**
@@ -1307,9 +1151,6 @@ export function cashOpening({
       payments
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 /**
@@ -1338,9 +1179,6 @@ export function cashWithdrawal({
       payments
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 export function cashSummaryMovements({
@@ -1372,9 +1210,6 @@ export function cashClosing({
       uuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 export function allocateSeller({
@@ -1389,9 +1224,6 @@ export function allocateSeller({
       sales_representative_uuid: salesRepresentativeUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 export function deallocate({
@@ -1406,9 +1238,6 @@ export function deallocate({
       sales_representative_uuid: salesRepresentativeUuid
     }
   })
-    .then(response => {
-      return response
-    })
 }
 
 export function releaseOrder({
@@ -1510,42 +1339,7 @@ export function listStocks({
 }
 
 /**
- * GET List Banks
- * req.query.token - user token
- * req.query.pos_uuid - POS UUID
- * req.query.search_value - search value
- * req.query.page_size - custom page size for batch
- * req.query.page_token - specific page token
- */
-export function banks({
-  posUuid,
-  searchValue,
-  pageSize = RECORD_ROWS_BY_LIST,
-  pageToken
-}) {
-  return request({
-    url: `${config.pointOfSales.endpoint}/banks`,
-    method: 'get',
-    params: {
-      pos_uuid: posUuid,
-      search_value: searchValue,
-      page_size: pageSize,
-      page_token: pageToken
-    }
-  })
-    .then(response => {
-      return {
-        nextPageToken: response.next_page_token,
-        recordCount: response.record_count,
-        records: response.records.map(bank => {
-          return camelizeObjectKeys(bank)
-        })
-      }
-    })
-}
-
-/**
- * GET List Banks
+ * GET List Campaigns
  * req.query.token - user token
  * req.query.pos_uuid - POS UUID
  * req.query.search_value - search value
