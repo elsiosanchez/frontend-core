@@ -260,8 +260,8 @@ export default defineComponent({
         is_refund: false
       })
         .then(() => {
-          const paymentMethods = store.getters.getListPaymentMethods[0]
-          store.commit('setPaymentMethods', paymentMethods)
+          const paymentMethod = store.getters.getListPaymentMethods[0]
+          store.commit('setPaymentMethod', paymentMethod)
           store.commit('setShowedModalDialogVPOS', {
             isShowed: false
           })

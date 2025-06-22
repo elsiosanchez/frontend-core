@@ -54,10 +54,12 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
 
+// Constants
+import { TENDERTYPE_MobilePaymentInterbank } from '@/utils/ADempiere/dictionary/form/VPOS/tenderType'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getPaymentValues } from '@/utils/ADempiere/dictionary/form/VPOS'
-// import { defaultValueCollections } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
   name: 'ButtonGroupOptions',
@@ -101,12 +103,12 @@ export default defineComponent({
 
     function addPayment() {
       const payment = store.getters.getPaymentMethods
-      isLoading.value = true
       if (
         !isEmptyValue(payment.payment_method) &&
         isEmptyValue(currentAccount.value) &&
-        payment.payment_method.tender_type === 'P'
+        payment.payment_method.tender_type === TENDERTYPE_MobilePaymentInterbank
       ) {
+        isLoading.value = true
         store.dispatch('newCustomerBankAccount')
           .then((responseCutomer) => {
             const { bank_id, customer_id } = responseCutomer
@@ -114,16 +116,30 @@ export default defineComponent({
               bank_id,
               customer_bank_account_id: customer_id
             })
+            isLoading.value = true
             store.dispatch('addPayment', params)
-              .then(() => {
+              .catch(() => {
                 isLoading.value = false
               })
+              .finally(() => {
+                isLoading.value = false
+              })
+          })
+          .catch(() => {
+            isLoading.value = false
+          })
+          .finally(() => {
+            isLoading.value = false
           })
         return
       }
       const params = getPaymentValues({})
+      isLoading.value = true
       store.dispatch('addPayment', params)
-        .then(() => {
+        .catch(() => {
+          isLoading.value = false
+        })
+        .finally(() => {
           isLoading.value = false
         })
     }

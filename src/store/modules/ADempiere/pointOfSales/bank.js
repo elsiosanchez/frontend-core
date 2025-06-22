@@ -26,12 +26,12 @@ import { showMessage } from '@/utils/ADempiere/notification.js'
 
 const bank = {
   state: {
-    listBanks: []
+    banksList: []
   },
 
   mutations: {
     setListBanks(state, list) {
-      state.listBanks = list
+      state.banksList = list
     }
   },
 
@@ -40,8 +40,10 @@ const bank = {
       searchValue
     }) {
       return new Promise(resolve => {
+        const posId = rootGetters.posAttributes.currentPointOfSales.id
+
         listBanksRequest({
-          posUuid: rootGetters.posAttributes.currentPointOfSales.uuid,
+          posId,
           searchValue
         })
           .then(response => {
@@ -64,7 +66,7 @@ const bank = {
 
   getters: {
     getListBanks: (state) => {
-      return state.listBanks
+      return state.banksList
     }
   }
 }

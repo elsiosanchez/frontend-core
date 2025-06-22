@@ -43,16 +43,20 @@
 import { computed, defineComponent, watch } from '@vue/composition-api'
 
 import store from '@/store'
-import { isEmptyValue } from '@/utils/ADempiere'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'banksAccounts',
+  name: 'BanksAccountsField',
+
   props: {
     isRefund: {
       type: Boolean,
       default: false
     }
   },
+
   setup(props) {
     const listBankAccounts = computed(() => {
       return store.getters.getAttributeField({
@@ -63,15 +67,13 @@ export default defineComponent({
 
     const bankAccount = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'currentAccount'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'currentAccount',
           value: value
         })
@@ -86,72 +88,62 @@ export default defineComponent({
     }
 
     function setDataAccount(account) {
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'phone',
         value: account.account_no
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'value',
         value: account.driver_license
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'issuingBank',
+        // TODO: Validate this value
         value: {
           ...account,
           id: account.bank_id
         }
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'bank',
+        // TODO: Validate this value
         value: {
           ...account,
           id: account.bank_id
         }
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'bankAccountType',
         value: account.bank_account_type
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'accountNo',
         value: account.account_no
       })
     }
 
     function clearDataAccount(value = undefined) {
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'phone',
         value
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'value',
         value
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'issuingBank',
         value
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
-        attribute: 'bankAccountType',
-        value
-      })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'bank',
         value
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
+        attribute: 'bankAccountType',
+        value
+      })
+      store.commit('setRefundAttributeField', {
         attribute: 'accountNo',
         value
       })

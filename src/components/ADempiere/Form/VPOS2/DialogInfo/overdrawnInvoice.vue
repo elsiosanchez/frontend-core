@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -25,7 +27,8 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           v-model="typeOptions"
           label="1"
         >
-          {{ $t('form.pos.collect.overdrawnInvoice.returned') }} {{ formatPrice({ value: currentOrder.refund_amount, currency: currentOrder.price_list.currency.iso_code }) }}
+          {{ $t('form.pos.collect.overdrawnInvoice.returned') }}
+          {{ formatPrice({ value: currentOrder.refund_amount, currency: currentOrder.price_list.currency.iso_code }) }}
         </el-radio>
       </el-col>
       <el-col
@@ -52,6 +55,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-col>
     </el-row>
     <br>
+
     <el-card
       shadow="never"
       :body-style="{ padding: '5px' }"
@@ -67,10 +71,11 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           </b>
         </span>
       </div>
-      <charge-refund
+      <pay-refund
         v-if="typeOptions !== '3'"
       />
     </el-card>
+
     <el-card
       v-if="!isEmptyValue(listPaymentsRefund)"
       shadow="never"
@@ -99,19 +104,22 @@ import {
 } from '@vue/composition-api'
 
 import store from '@/store'
+
 // Component and Mixins
-import ChargeRefund from '@/components/ADempiere/Form/VPOS2/Collection/Refund'
 import CardPayments from '@/components/ADempiere/Form/VPOS2/Collection/Payments/CardPayments.vue'
+import PayRefund from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund'
+
 // Utils and Helper Methods
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
-// import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
-  name: 'overdrawnInvoice',
+  name: 'OverdrawnInvoice',
+
   components: {
-    ChargeRefund,
+    PayRefund,
     CardPayments
   },
+
   setup() {
     // const typeOptions = ref('1')
     const typeOptions = computed({

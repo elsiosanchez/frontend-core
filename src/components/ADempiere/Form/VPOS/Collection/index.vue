@@ -1969,7 +1969,9 @@ export default {
       })
     },
     loadBankAccount() {
-      this.$store.dispatch('listCustomerBankAccounts', { customerUuid: this.currentOrder.businessPartner.uuid })
+      this.$store.dispatch('listCustomerBankAccounts', {
+        customerId: this.currentOrder.businessPartner.id
+      })
     },
     numberPrecision(amount, precision) {
       const num = Number((Math.round(amount * 100) / 100).toFixed(precision))

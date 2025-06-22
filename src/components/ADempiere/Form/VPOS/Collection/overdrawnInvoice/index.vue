@@ -926,7 +926,7 @@ export default {
       return this.currentPointOfSales.currentOrder.refundAmount
     },
     currentBusinessPartner() {
-      return this.currentOrder.businessPartner.uuid
+      return this.currentOrder.customer.id
     }
   },
   watch: {
@@ -946,8 +946,10 @@ export default {
         }
       }
     },
-    currentBusinessPartner(customerUuid) {
-      this.$store.dispatch('listCustomerBankAccounts', { customerUuid: this.currentOrder.businessPartner.uuid })
+    currentBusinessPartner(newValue) {
+      this.$store.dispatch('listCustomerBankAccounts', {
+        customerId: this.currentOrder.customer.id
+      })
     },
     option(value) {
       const clear = false
@@ -978,7 +980,9 @@ export default {
       }
       if (value === 3) {
         this.currentFieldCurrency = this.currentAvailablePaymentMethods.refund_reference_currency.iso_code
-        this.$store.dispatch('listCustomerBankAccounts', { customerUuid: this.currentOrder.businessPartner.uuid })
+        this.$store.dispatch('listCustomerBankAccounts', {
+          customerId: this.currentOrder.customer.id
+        })
       }
       this.$store.commit('updateValueOfField', {
         containerUuid: 'OverdrawnInvoice',
@@ -1967,7 +1971,9 @@ export default {
       this.$store.dispatch('updatePaymentPos', false)
     },
     loadBankAccount() {
-      this.$store.dispatch('listCustomerBankAccounts', { customerUuid: this.currentOrder.businessPartner.uuid })
+      this.$store.dispatch('listCustomerBankAccounts', {
+        customerId: this.currentOrder.customer.id
+      })
     },
     printPreview(posUuid, orderUuid) {
       this.$store.dispatch('printTicketPreviwer', { posUuid, orderUuid })

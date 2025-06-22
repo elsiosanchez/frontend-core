@@ -19,14 +19,14 @@
 import store from '@/store'
 import language from '@/lang'
 
+// Constants
+import { TENDERTYPE_GiftCard } from '@/utils/ADempiere/dictionary/form/VPOS/tenderType'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { formatPrice } from '@/utils/ADempiere/valueFormat.js'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-
-// Const
-// const isMobile = store.getters.device === 'mobile'
 
 /**
  * Show the correct display format
@@ -306,7 +306,9 @@ export function getPaymentValues({
 }) {
   const currentPayment = store.getters.getPaymentMethods
   let amount = store.getters.getPayAmount
-  if (isEmptyValue(amount)) amount = store.getters.getCurrentOrder.open_amount
+  if (isEmptyValue(amount)) {
+    amount = store.getters.getCurrentOrder.open_amount
+  }
   // Set Currency
   const currency = store.getters.getAvailableCurrencies.currencie
   // Set Value referenceNo
@@ -369,42 +371,53 @@ export function defaultValueCollections() {
  */
 export function isDisplayFieldPayment(
   fieldColumnanme,
-  paymentMethods
+  paymentMethod
 ) {
-  if (isEmptyValue(paymentMethods)) paymentMethods = store.getters.getPaymentMethods
-  const { payment_method } = paymentMethods
-  if (isEmptyValue(payment_method)) return false
+  let currentPaymentMethod = paymentMethod
+  if (isEmptyValue(paymentMethod)) {
+    currentPaymentMethod = store.getters.getPaymentMethods
+  }
+  if (isEmptyValue(currentPaymentMethod)) {
+    return false
+  }
+  const { payment_method } = currentPaymentMethod
+  if (isEmptyValue(payment_method)) {
+    return false
+  }
+  const { tender_type } = payment_method
+
   let isShow
   switch (fieldColumnanme) {
     case 'Value':
-      isShow = ['D', 'K', 'T', 'A', 'P', 'C'].includes(payment_method.tender_type)
+      isShow = ['D', 'K', 'T', 'A', 'P', 'C'].includes(tender_type)
       break
     case 'recipientBank':
     case 'issuingBank':
     case 'banksAccounts':
-      isShow = ['P'].includes(payment_method.tender_type)
+      isShow = ['P'].includes(tender_type)
       break
     case 'Date':
-      isShow = ['M', 'Z', 'D', 'K', 'T', 'A', 'P'].includes(payment_method.tender_type)
+      isShow = ['M', 'Z', 'D', 'K', 'T', 'A', 'P'].includes(tender_type)
       break
     case 'EMail':
-      isShow = ['Z'].includes(payment_method.tender_type)
+      isShow = ['Z'].includes(tender_type)
       break
     case 'Bank':
-      isShow = ['T', 'A'].includes(payment_method.tender_type)
+      isShow = ['T', 'A'].includes(tender_type)
       break
     case 'Phone':
-      isShow = ['K', 'T', 'A', 'P', 'C'].includes(payment_method.tender_type)
+      isShow = ['K', 'T', 'A', 'P', 'C'].includes(tender_type)
       break
     case 'ReferenceNo':
-      isShow = ['M', 'Z', 'K', 'T', 'A', 'P'].includes(payment_method.tender_type)
+      isShow = ['M', 'Z', 'K', 'T', 'A', 'P'].includes(tender_type)
       break
     case 'AccountNo':
-      isShow = ['A'].includes(payment_method.tender_type)
+    case 'BankAccountType':
+      isShow = ['A'].includes(tender_type)
       break
     case 'creditMemo':
     case 'Description':
-      isShow = ['M'].includes(payment_method.tender_type)
+      isShow = [TENDERTYPE_GiftCard, 'M'].includes(tender_type)
       break
     default:
       isShow = false

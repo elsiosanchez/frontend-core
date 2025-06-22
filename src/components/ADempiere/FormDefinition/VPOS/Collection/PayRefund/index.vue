@@ -39,58 +39,69 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             />
           </el-form-item>
         </el-col>
+
         <el-col :span="8">
           <payment-methods
             :handle-change="changePaymentMethods"
           />
         </el-col>
+
         <el-col :span="8">
           <currencie
             :handle-change="changeCurrency"
           />
         </el-col>
-        <el-col v-if="typeOptions === '2'" :span="8">
-          <banks-accounts />
-        </el-col>
+
         <!-- Payment Methods (Fields Display Logic) -->
+        <el-col v-if="isDisplayFieldPayment('banksAccounts')" :span="8">
+          <banks-accounts-field />
+        </el-col>
+
         <!-- <el-col v-if="isDisplayFieldPayment('creditMemo', currentPaymentMethod)" :span="8">
           <credit-memo />
         </el-col> -->
+
         <!-- <el-col v-if="isDisplayFieldPayment('recipientBank', currentPaymentMethod)" :span="8">
           <recipient-bank />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('issuingBank', currentPaymentMethod)" :span="8">
           <issuing-bank />
         </el-col> -->
-        <el-col
-          v-if="typeOptions === '2'"
-          :span="8"
-        >
+
+        <el-col v-if="isDisplayFieldPayment('Bank')" :span="8">
           <bank />
         </el-col>
-        <el-col v-if="typeOptions === '2'" :span="8">
+
+        <el-col v-if="isDisplayFieldPayment('BankAccountType', currentPaymentMethod)" :span="8">
           <bankAccount-type />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Value', currentPaymentMethod)" :span="8">
           <value />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Description', currentPaymentMethod)" :span="8">
           <description />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Date', currentPaymentMethod)" :span="8">
           <date />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Phone', currentPaymentMethod)" :span="8">
           <phone />
         </el-col>
+
         <el-col
-          v-if="typeOptions === '2'"
+          v-if="isDisplayFieldPayment('AccountNo', currentPaymentMethod)"
           :span="8"
         >
           <account-no />
         </el-col>
       </el-row>
     </el-form>
+
     <el-row style="text-align: end;padding: 5px 0px;">
       <span class="dialog-footer">
         <el-button
@@ -112,12 +123,13 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
 // import router from '@/router'
+
 // Component and Mixins
+import BanksAccountsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund/banksAccountsField.vue'
 import fieldAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
 import paymentMethods from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/paymentMethods'
 import currencie from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/currencies'
 import recipientBank from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/recipientBank.vue'
-import banksAccounts from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/banksAccounts.vue'
 import creditMemo from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/creditMemo.vue'
 import issuingBank from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/issuingBank.vue'
 import bankAccountType from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/bankAccountType.vue'
@@ -127,20 +139,31 @@ import description from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Fie
 import date from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/date'
 import phone from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/phone'
 import accountNo from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/accountNo'
+
+// Constants
+import {
+  TENDERTYPE_MobilePaymentInterbank
+} from '@/utils/ADempiere/dictionary/form/VPOS/tenderType'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
-import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
+import {
+  clearFieldsCollections,
+  getCurrencyPayment,
+  isDisplayFieldPayment
+} from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
-  name: 'Charge',
+  name: 'PayRefund',
+
   components: {
     bank,
+    BanksAccountsField,
     currencie,
     fieldAmount,
     paymentMethods,
     recipientBank,
-    banksAccounts,
     creditMemo,
     issuingBank,
     bankAccountType,
@@ -150,17 +173,19 @@ export default defineComponent({
     phone,
     Value
   },
+
   props: {
     isRefund: {
       type: Boolean,
       default: false
     }
   },
+
   setup() {
     const isLoadingPay = ref(false)
+
     const currentPaymentMethod = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return store.getters.getRefundAttributeField({
         attribute: 'paymentMethods'
       })
     })
@@ -170,53 +195,47 @@ export default defineComponent({
     })
 
     const currentAccount = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return store.getters.getRefundAttributeField({
         attribute: 'currentAccount'
       })
     })
 
     const customerCredits = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return store.getters.getRefundAttributeField({
         attribute: 'currentCustomerCredist'
       })
     })
 
     const typeOptions = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return store.getters.getRefundAttributeField({
         attribute: 'typeOptions'
       })
     })
 
     const code = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'value'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'value',
           value
         })
       }
     })
+
     const description = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'description'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'description',
           value
         })
@@ -225,15 +244,13 @@ export default defineComponent({
 
     const date = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'date'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'date',
           value
         })
@@ -242,15 +259,13 @@ export default defineComponent({
 
     const phone = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'phone'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'phone',
           value
         })
@@ -259,15 +274,13 @@ export default defineComponent({
 
     const referenceNo = computed({
       get() {
-        return store.getters.getAttributeField({
-          field: 'fieldsRefunds',
+        return store.getters.getRefundAttributeField({
           attribute: 'referenceNo'
         })
       },
       // setter
       set(value) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'referenceNo',
           value
         })
@@ -277,22 +290,19 @@ export default defineComponent({
     date.value = new Date()
 
     const currentCurrency = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return store.getters.getRefundAttributeField({
         attribute: 'currencie'
       })
     })
 
     const currentAmount = computed(() => {
-      return Number(store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      return Number(store.getters.getRefundAttributeField({
         attribute: 'amount'
       }))
     })
 
     if (!isEmptyValue(currentOrder.value.open_amount)) {
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'amount',
         value: Number(currentOrder.value.refund_amount.value)
       })
@@ -304,19 +314,19 @@ export default defineComponent({
      * @param {Object} paymentMethods
      */
     function changePaymentMethods(paymentMethods) {
-      if (isEmptyValue(paymentMethods)) return
+      if (isEmptyValue(paymentMethods)) {
+        return
+      }
       const currentPaymentMethod = store.getters.getListPaymentMethods.find(list => list.id === paymentMethods)
       const currency = getCurrencyPayment({
         paymentMethods: currentPaymentMethod,
         isRefund: true
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'currencie',
         value: currency
       })
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'amount',
         value: convertToNumber(currentOrder.value.refund_amount)
       })
@@ -352,16 +362,14 @@ export default defineComponent({
 
     function updateAmount(amount) {
       // store.commit('setPayAmount', amount)
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
+      store.commit('setRefundAttributeField', {
         attribute: 'amount',
         value: amount
       })
     }
 
     function validatePaye() {
-      const currency = store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      const currency = store.getters.getRefundAttributeField({
         attribute: 'currencie'
       })
       store.dispatch('setModalPin', {
@@ -390,35 +398,41 @@ export default defineComponent({
 
     function addPayment() {
       isLoadingPay.value = true
-      const currency = store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      const currency = store.getters.getRefundAttributeField({
         attribute: 'currencie'
       })
       if (isEmptyValue(currentAccount.value) && typeOptions.value === '2') {
-        let accountNo
-        accountNo = store.getters.getAttributeField({
-          field: 'fieldsRefunds',
-          attribute: 'accountNo'
-        })
-        const driverLicense = store.getters.getAttributeField({
-          field: 'fieldsRefunds',
-          attribute: 'value'
-        })
-        const bankId = store.getters.getAttributeField({
-          field: 'fieldsRefunds',
-          attribute: 'bank'
-        })
-        const bankAccountType = store.getters.getAttributeField({
-          field: 'fieldsRefunds',
-          attribute: 'bankAccountType'
-        })
-        if (isEmptyValue(accountNo)) accountNo = phone.value
-        store.dispatch('newCustomerBankAccount', {
-          accountNo,
-          driverLicense,
-          bankId: bankId.id,
-          bankAccountType
-        })
+        if (
+          !isEmptyValue(currentPaymentMethod.value.payment_method) &&
+          isEmptyValue(currentAccount.value) &&
+          currentPaymentMethod.value.payment_method.tender_type === TENDERTYPE_MobilePaymentInterbank
+        ) {
+          const bankId = store.getters.getRefundAttributeField({
+            attribute: 'bank'
+          })
+          let accountNo = store.getters.getRefundAttributeField({
+            attribute: 'accountNo'
+          })
+          const bankAccountType = store.getters.getRefundAttributeField({
+            attribute: 'bankAccountType'
+          })
+          if (isEmptyValue(accountNo)) {
+            accountNo = phone.value
+          }
+          const driverLicense = store.getters.getRefundAttributeField({
+            attribute: 'value'
+          })
+          store.dispatch('newCustomerBankAccount', {
+            accountNo,
+            driverLicense,
+            bankId: bankId.id,
+            bankAccountType
+          })
+            .then((responseCustomer) => {
+              store.dispatch('listCustomerBankAccounts', {})
+              // const { id, bank_id, customer_id } = responseCustomer
+            })
+        }
       }
       if (
         !isEmptyValue(currentPos.value.maximum_refund_allowed.value) &&
@@ -443,8 +457,7 @@ export default defineComponent({
         })
           .then(() => {
             if (currency.id === store.getters.getVPOS.price_list.currency.id) {
-              store.commit('setAttributeField', {
-                field: 'fieldsRefunds',
+              store.commit('setRefundAttributeField', {
                 attribute: 'amount',
                 value: currentOrder.value.refund_amount
               })
@@ -464,8 +477,7 @@ export default defineComponent({
                   ) {
                     const amountRate = (convertToNumber(multiply_rate) > convertToNumber(divide_rate)) ? multiply_rate : divide_rate
                     const amountConvert = convertToNumber(currentOrder.value.refund_amount) / convertToNumber(amountRate)
-                    store.commit('setAttributeField', {
-                      field: 'fieldsRefunds',
+                    store.commit('setRefundAttributeField', {
                       attribute: 'amount',
                       value: amountConvert
                     })
@@ -488,8 +500,7 @@ export default defineComponent({
       })
         .then(() => {
           if (currency.id === store.getters.getVPOS.price_list.currency.id) {
-            store.commit('setAttributeField', {
-              field: 'fieldsRefunds',
+            store.commit('setRefundAttributeField', {
               attribute: 'amount',
               value: currentOrder.value.refund_amount
             })
@@ -509,8 +520,7 @@ export default defineComponent({
                 ) {
                   const amountRate = (Number(multiply_rate) > Number(divide_rate)) ? multiply_rate : divide_rate
                   const amountConvert = Number(currentOrder.value.refund_amount) / Number(amountRate)
-                  store.commit('setAttributeField', {
-                    field: 'fieldsRefunds',
+                  store.commit('setRefundAttributeField', {
                     attribute: 'amount',
                     value: amountConvert
                   })
@@ -522,16 +532,14 @@ export default defineComponent({
     }
 
     function setAmount() {
-      const currency = store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      const currency = store.getters.getRefundAttributeField({
         attribute: 'currencie'
       })
       if (
         currency.id === store.getters.getVPOS.price_list.currency.id ||
         isEmptyValue(currency)
       ) {
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
+        store.commit('setRefundAttributeField', {
           attribute: 'amount',
           value: currentOrder.value.refund_amount
         })
@@ -551,8 +559,7 @@ export default defineComponent({
             ) {
               const amountRate = (Number(multiply_rate) > Number(divide_rate)) ? multiply_rate : divide_rate
               const amountConvert = Number(currentOrder.value.refund_amount) / Number(amountRate)
-              store.commit('setAttributeField', {
-                field: 'fieldsRefunds',
+              store.commit('setRefundAttributeField', {
                 attribute: 'amount',
                 value: amountConvert
               })
@@ -610,6 +617,7 @@ export default defineComponent({
       updateAmount,
       changeCurrency,
       changePaymentMethods,
+      // TODO: Change with computeds into individual computeds
       isDisplayFieldPayment
     }
   }

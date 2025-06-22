@@ -126,6 +126,12 @@ export default {
     }) {
       state[field][attribute] = value
     },
+    setRefundAttributeField(state, {
+      attribute,
+      value
+    }) {
+      state.fieldsRefunds[attribute] = value
+    },
     setDialogPin(state, modal) {
       state.modalPinManager = modal
     },
@@ -258,16 +264,29 @@ export default {
       })
     },
 
-    /**
-     * TODO: Duplicated with dispatch name in `src/store/modules/ADempiere/pointOfSales/payments/actions.js`
-     */
-    listCustomerBankAccounts({
-      commit,
-      getters
+    listCustomerBankAccounts({ commit, getters }, {
+      posId,
+      customerId,
+      pageToken
     }) {
       return new Promise(resolve => {
-        const currentPos = getters.getVPOS
-        const currentOrder = getters.getCurrentOrder
+        if (isEmptyValue(posId)) {
+          const currentPos = getters.getVPOS
+          if (isEmptyValue(currentPos)) {
+            return resolve({})
+          }
+          posId = currentPos.id
+          if (isEmptyValue(posId)) {
+            return resolve({})
+          }
+        }
+        if (isEmptyValue(customerId)) {
+          const currentOrder = getters.getCurrentOrder
+          if (isEmptyValue(currentOrder)) {
+            return resolve({})
+          }
+          customerId = currentOrder.customer.id
+        }
         let bankId
         const bank = getters.getAttributeField({
           field: 'banks',
@@ -276,14 +295,10 @@ export default {
         if (bank) {
           bankId = bank.id
         }
-        if (isEmptyValue(currentPos.id)) {
-          resolve({})
-          return
-        }
         listCustomerBankAccountsRequest({
-          posId: currentPos.id,
+          posId,
           bankId,
-          customerId: currentOrder.customer.id
+          customerId
         })
           .then(response => {
             const { customer_bank_accounts } = response
@@ -292,6 +307,7 @@ export default {
               attribute: 'list',
               value: customer_bank_accounts
             })
+            // commit('setListCustomerBankAccounts', response.records)
           })
           .catch(error => {
             console.warn(`List Banks Accounts: ${error.message}. Code: ${error.code}`)
@@ -326,25 +342,27 @@ export default {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
-        const banck = getters.getAttributeField({
-          field: 'banks',
-          attribute: 'issuingBank'
-        })
-        const phone = getters.getAttributeField({
-          field: 'field',
-          attribute: 'phone'
-        })
-        const value = getters.getAttributeField({
-          field: 'field',
-          attribute: 'value'
-        })
         if (isEmptyValue(bankId)) {
-          bankId = banck.id
+          const bank = getters.getAttributeField({
+            field: 'banks',
+            attribute: 'issuingBank'
+          })
+          if (!isEmptyValue(bank)) {
+            bankId = bank.id
+          }
         }
         if (isEmptyValue(accountNo)) {
+          const phone = getters.getAttributeField({
+            field: 'field',
+            attribute: 'phone'
+          })
           accountNo = phone
         }
         if (isEmptyValue(driverLicense)) {
+          const value = getters.getAttributeField({
+            field: 'field',
+            attribute: 'value'
+          })
           driverLicense = value
         }
         if (isEmptyValue(currentPos.id)) resolve({})
@@ -562,6 +580,12 @@ export default {
     getAttributeField: (state) => ({ field, attribute }) => {
       if (isEmptyValue(field) || isEmptyValue(attribute)) return ''
       return state[field][attribute]
+    },
+    getRefundAttributeField: (state) => ({ attribute }) => {
+      if (isEmptyValue(attribute)) {
+        return ''
+      }
+      return state.fieldsRefunds[attribute]
     },
     getModalPin: (state) => {
       return state.modalPinManager

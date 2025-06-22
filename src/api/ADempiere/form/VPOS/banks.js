@@ -18,17 +18,25 @@
 
 import { request } from '@/utils/ADempiere/request'
 
+// Constants
+import { RECORD_ROWS_BY_LIST } from '@/utils/ADempiere/dictionary/field/lookups'
+
 /**
  * List Banks
  */
 export function listBanksRequest({
-  posId
+  posId,
+  searchValue,
+  pageSize = RECORD_ROWS_BY_LIST,
+  pageToken
 }) {
   return request({
     url: `point-of-sales/${posId}/banks`,
     method: 'get',
     params: {
-      page_size: 100
+      search_value: searchValue,
+      page_size: pageSize,
+      page_token: pageToken
     }
   })
 }
