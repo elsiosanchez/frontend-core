@@ -36,14 +36,16 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent, onMounted, watch } from '@vue/composition-api'
 
 import store from '@/store'
+
 // Utils and Helper Methods
-import { getMainPaymentMethods } from '@/utils/ADempiere/dictionary/form/VPOS'
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
-  name: 'FieldPaymentMethods',
+  name: 'PaymentMethodsField',
+
   props: {
     handleChange: {
       type: Function,
@@ -52,57 +54,67 @@ export default defineComponent({
       }
     }
   },
+
   setup(props) {
-    // store.dispatch('availablePaymentMethods')
-    // getMainPaymentMethods({ listPaymentMethods: payment_methods })
-    const listPaymentMethods = computed(() => {
-      let listPaymentMethods
-      if (typeOptions.value === '2') {
-        listPaymentMethods = store.getters.getListPaymentMethods.filter(list => list.is_allowed_to_refund_open)
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
-          attribute: 'paymentMethods',
-          value: listPaymentMethods[0]
-        })
-        return listPaymentMethods
-      }
-      listPaymentMethods = store.getters.getListPaymentMethods.filter(list => list.is_allowed_to_refund)
-      store.commit('setAttributeField', {
-        field: 'fieldsRefunds',
-        attribute: 'paymentMethods',
-        value: getMainPaymentMethods({ listPaymentMethods })
+    const typeOptions = computed(() => {
+      return store.getters.getRefundAttributeField({
+        attribute: 'typeOptions'
       })
-      return listPaymentMethods
     })
 
-    const typeOptions = computed(() => {
-      return store.getters.getAttributeField({
-        field: 'fieldsRefunds',
-        attribute: 'typeOptions'
+    const listPaymentMethods = computed(() => {
+      const records = store.getters.getListPaymentMethods || []
+      if (typeOptions.value === '2') {
+        // To pay after
+        return records.filter(paymentMethodItem => {
+          return paymentMethodItem.is_allowed_to_refund_open
+        })
+      }
+      return records.filter(paymentMethodItem => {
+        return paymentMethodItem.is_allowed_to_refund
       })
     })
 
     const currentPaymentMethod = computed({
       get() {
-        const paymentMethods = store.getters.getAttributeField({
-          field: 'fieldsRefunds',
-          attribute: 'paymentMethods'
+        const paymentMethod = store.getters.getRefundAttributeField({
+          attribute: 'paymentMethod'
         })
-        if (paymentMethods) return paymentMethods.id
+        if (paymentMethod) {
+          return paymentMethod.id
+        }
         return ''
       },
       // setter
-      set(paymentMethods) {
-        if (paymentMethods) {
-          paymentMethods = listPaymentMethods.value.find(list => list.id === paymentMethods)
+      set(newPaymentMethodId) {
+        let paymentMethod = {}
+        if (newPaymentMethodId) {
+          paymentMethod = listPaymentMethods.value.find(paymentMethodItem => {
+            return paymentMethodItem.id === newPaymentMethodId
+          })
         }
-        store.commit('setAttributeField', {
-          field: 'fieldsRefunds',
-          attribute: 'paymentMethods',
-          value: paymentMethods
+        store.commit('setRefundAttributeField', {
+          attribute: 'paymentMethod',
+          value: paymentMethod
         })
       }
     })
+
+    watch(typeOptions, (newValue, oldValue) => {
+      const records = listPaymentMethods.value
+
+      store.commit('setRefundAttributeField', {
+        attribute: 'paymentMethod',
+        value: isEmptyValue(records) ? {} : records.at()
+      })
+    })
+
+    onMounted(() => {
+      if (isEmptyValue(listPaymentMethods.value)) {
+        store.dispatch('availablePaymentMethods')
+      }
+    })
+
     return {
       currentPaymentMethod,
       listPaymentMethods,

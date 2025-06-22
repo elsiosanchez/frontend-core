@@ -304,7 +304,7 @@ export function getPaymentValues({
   customer_bank_account_id,
   invoice_reference_id
 }) {
-  const currentPayment = store.getters.getPaymentMethods
+  const currentPayment = store.getters.getPaymentMethod
   let amount = store.getters.getPayAmount
   if (isEmptyValue(amount)) {
     amount = store.getters.getCurrentOrder.open_amount
@@ -356,13 +356,34 @@ export function getPaymentValues({
 
 export function defaultValueCollections() {
   const listPayments = store.getters.getListPaymentMethods
-  const { open_amount } = store.getters.getCurrentOrder
-  store.commit('setPaymentMethods', getMainPaymentMethods({ listPaymentMethods: listPayments }))
-  const currentPaymentMethods = store.getters.getPaymentMethods
+  const defaultPaymentMethod = getMainPaymentMethods({
+    listPaymentMethods: listPayments
+  })
+  store.commit('setPaymentMethod', defaultPaymentMethod)
+
+  const currentPaymentMethod = store.getters.getPaymentMethod
   store.commit('setAvailableCurrencies', getCurrencyPayment({
-    paymentMethods: currentPaymentMethods
+    paymentMethods: currentPaymentMethod
   }))
+
+  const {
+    // charge_amount,
+    open_amount,
+    refund_amount
+  } = store.getters.getCurrentOrder
+
   store.commit('setPayAmount', open_amount)
+
+  store.commit('setAttributeField', {
+    field: 'field',
+    attribute: 'amount',
+    value: open_amount
+  })
+  store.commit('setRefundAttributeField', {
+    // field: 'fieldsRefunds',
+    attribute: 'amount',
+    value: refund_amount
+  })
 }
 
 /**
@@ -375,7 +396,7 @@ export function isDisplayFieldPayment(
 ) {
   let currentPaymentMethod = paymentMethod
   if (isEmptyValue(paymentMethod)) {
-    currentPaymentMethod = store.getters.getPaymentMethods
+    currentPaymentMethod = store.getters.getPaymentMethod
   }
   if (isEmptyValue(currentPaymentMethod)) {
     return false

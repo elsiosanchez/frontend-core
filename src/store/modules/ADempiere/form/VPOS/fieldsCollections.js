@@ -41,7 +41,7 @@ import { convertToNumber, formatPrice } from '@/utils/ADempiere/formatValue/numb
 import { convertToDate, formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 const fieldsCollections = {
-  paymentMethods: {
+  paymentMethod: {
     id: ''
   },
   listPaymentMethods: [],
@@ -85,7 +85,7 @@ const fieldsCollections = {
     issuingBank: {},
     bankAccountType: '',
     recipientBank: {},
-    paymentMethods: {},
+    paymentMethod: {},
     currentAccount: {},
     currentCustomerCredist: {}
   },
@@ -95,9 +95,10 @@ const fieldsCollections = {
 
 export default {
   state: fieldsCollections,
+
   mutations: {
-    setPaymentMethods(state, paymentMethods) {
-      state.paymentMethods = paymentMethods
+    setPaymentMethod(state, paymentMethod) {
+      state.paymentMethod = paymentMethod
     },
     setListPaymentMethods(state, list) {
       state.listPaymentMethods = list
@@ -160,10 +161,10 @@ export default {
           .then(response => {
             const { payment_methods } = response
             if (!isEmptyValue(payment_methods)) {
-              const storedPaymentMethods = getMainPaymentMethods({
+              const storedPaymentMethod = getMainPaymentMethods({
                 listPaymentMethods: payment_methods
               })
-              commit('setPaymentMethods', storedPaymentMethods)
+              commit('setPaymentMethod', storedPaymentMethod)
             }
             commit('setListPaymentMethods', payment_methods)
             resolve(payment_methods)
@@ -193,7 +194,7 @@ export default {
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
-        const currentPaymentMethods = getters.getPaymentMethods
+        const currentPaymentMethod = getters.getPaymentMethod
         if (isEmptyValue(currentPos.id)) resolve({})
         listAvailableCurrencies({
           posId: currentPos.id
@@ -201,7 +202,7 @@ export default {
           .then(response => {
             const { currencies } = response
             const currency = getCurrencyPayment({
-              paymentMethods: currentPaymentMethods
+              paymentMethods: currentPaymentMethod
             })
             commit('setAvailableCurrencies', currency)
             commit('setAvailableListCurrencies', currencies)
@@ -412,9 +413,9 @@ export default {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
         let document_type_id
-        const currentPaymentMethods = getters.getPaymentMethods
-        if (currentPaymentMethods) {
-          document_type_id = currentPaymentMethods.document_type_id
+        const currentPaymentMethod = getters.getPaymentMethod
+        if (currentPaymentMethod) {
+          document_type_id = currentPaymentMethod.document_type_id
         }
         if (isEmptyValue(currentPos.id)) {
           resolve({})
@@ -565,8 +566,8 @@ export default {
     }
   },
   getters: {
-    getPaymentMethods: (state) => {
-      return state.paymentMethods
+    getPaymentMethod: (state) => {
+      return state.paymentMethod
     },
     getListPaymentMethods: (state) => {
       return state.listPaymentMethods

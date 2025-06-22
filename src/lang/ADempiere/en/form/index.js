@@ -50,6 +50,8 @@ export default {
   VAllocation,
   VBankStatementMatch,
   pointOfSales,
+  pos: pointOfSales,
+  VPOS: pointOfSales,
   VFileImport,
   timeRecord,
   match,

@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -33,15 +35,15 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             style="margin: 0px;width: 100%;"
           >
             <field-amount
-              :value-amount="amount"
-              :value-display="amountDisplay"
+              :value-amount="refundAmount"
+              :value-display="refundAmountDisplay"
               :handle-change="updateAmount"
             />
           </el-form-item>
         </el-col>
 
         <el-col :span="8">
-          <payment-methods
+          <payment-methods-field
             :handle-change="changePaymentMethods"
           />
         </el-col>
@@ -108,7 +110,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           type="success"
           icon="el-icon-plus"
           class="button-base-icon"
-          :disabled="amount <= 0 || isLoadingPay"
+          :disabled="refundAmount <= 0 || isLoadingPay"
           :loading="isLoadingPay"
           @click="addPayment"
         />
@@ -127,7 +129,7 @@ import store from '@/store'
 // Component and Mixins
 import BanksAccountsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund/banksAccountsField.vue'
 import fieldAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
-import paymentMethods from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/paymentMethods'
+import PaymentMethodsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund/paymentMethodsField'
 import currencie from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/currencies'
 import recipientBank from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/recipientBank.vue'
 import creditMemo from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/creditMemo.vue'
@@ -162,7 +164,7 @@ export default defineComponent({
     BanksAccountsField,
     currencie,
     fieldAmount,
-    paymentMethods,
+    PaymentMethodsField,
     recipientBank,
     creditMemo,
     issuingBank,
@@ -186,7 +188,7 @@ export default defineComponent({
 
     const currentPaymentMethod = computed(() => {
       return store.getters.getRefundAttributeField({
-        attribute: 'paymentMethods'
+        attribute: 'paymentMethod'
       })
     })
 
@@ -334,26 +336,31 @@ export default defineComponent({
       clearFieldsCollections()
     }
 
-    const amount = computed(() => {
+    const refundAmount = computed(() => {
       const {
         refund_amount
       } = currentOrder.value
-      if (isEmptyValue(refund_amount)) return 0.00
-      return Number(store.getters.getAttributeField({
-        field: 'fieldsRefunds',
+      if (isEmptyValue(refund_amount)) {
+        return 0.00
+      }
+      const refundValue = store.getters.getRefundAttributeField({
         attribute: 'amount'
-      }))
+      })
+      return convertToNumber(refundValue)
     })
 
-    const amountDisplay = computed(() => {
+    const refundAmountDisplay = computed(() => {
       const {
-        refund_amount,
         price_list
       } = currentOrder.value
       let currencyPayment = price_list.currency
-      if (isEmptyValue(refund_amount)) return '0.00'
-      if (!isEmptyValue(currentCurrency.value)) currencyPayment = currentCurrency.value
-      return formatPrice({ value: Number(amount.value), currency: currencyPayment.iso_code })
+      if (!isEmptyValue(currentCurrency.value)) {
+        currencyPayment = currentCurrency.value
+      }
+      return formatPrice({
+        value: refundAmount.value,
+        currency: currencyPayment.iso_code
+      })
     })
 
     const currentPos = computed(() => {
@@ -383,7 +390,7 @@ export default defineComponent({
             reference_no: referenceNo.value,
             description: description.value,
             currency_id: currency.id,
-            amount: amount.value,
+            amount: refundAmount.value,
             is_refund: true
           })
             .then(() => {
@@ -391,7 +398,7 @@ export default defineComponent({
             })
         },
         requestedAccess: 'IsAllowsInvoiceOpen',
-        requestedAmount: Number(amount.value),
+        requestedAmount: refundAmount.value,
         isShowed: true
       })
     }
@@ -437,7 +444,7 @@ export default defineComponent({
       if (
         !isEmptyValue(currentPos.value.maximum_refund_allowed.value) &&
         Number(currentPos.value.maximum_refund_allowed.value) > 0 &&
-        (Number(currentPos.value.maximum_refund_allowed.value) > amount.value && currentPos.value.refund_reference_currency.id === currency.id)
+        (Number(currentPos.value.maximum_refund_allowed.value) > refundAmount.value && currentPos.value.refund_reference_currency.id === currency.id)
       ) {
         validatePaye()
       }
@@ -445,8 +452,8 @@ export default defineComponent({
         store.dispatch('refundReference', {
           reference_no: referenceNo.value,
           description: description.value,
-          amount: String(amount.value),
-          source_amount: String(amount.value),
+          amount: String(refundAmount.value),
+          source_amount: String(refundAmount.value),
           tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
           currency_id: currency.id,
           customer_id: currentOrder.value.customer.id,
@@ -491,7 +498,7 @@ export default defineComponent({
       store.dispatch('addPayment', {
         reference_no: referenceNo.value,
         description: description.value,
-        amount: amount.value,
+        amount: refundAmount.value,
         tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
         currency_id: currency.id,
         payment_method_id: currentPaymentMethod.value.payment_method.id,
@@ -600,8 +607,8 @@ export default defineComponent({
       currentPos,
       isLoadingPay,
       currentOrder,
-      amount,
-      amountDisplay,
+      refundAmount,
+      refundAmountDisplay,
       code,
       date,
       phone,

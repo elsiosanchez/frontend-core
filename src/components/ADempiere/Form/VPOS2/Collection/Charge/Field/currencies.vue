@@ -68,7 +68,7 @@ export default defineComponent({
       const {
         reference_currency,
         refund_reference_currency
-      } = store.getters.getPaymentMethods
+      } = store.getters.getPaymentMethod
       if (props.isRefund) return !isEmptyValue(refund_reference_currency)
       return !isEmptyValue(reference_currency)
     })

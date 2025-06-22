@@ -31,6 +31,7 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere'
 import { showMessage } from '@/utils/ADempiere/notification.js'
+import { defaultValueCollections } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 const OrderVPOS = {
   // list: [],
@@ -295,6 +296,8 @@ export default {
           posId: id
         })
           .then(responseOrder => {
+            commit('setCurrentOrder', responseOrder)
+
             router.push({
               name,
               params,
@@ -303,8 +306,15 @@ export default {
                 orderId: responseOrder.id
               }
             }, () => {})
-            commit('setCurrentOrder', responseOrder)
-            if (isListLine) dispatch('listLines')
+
+            // set open amount
+            commit('setPayAmount', 0)
+            defaultValueCollections()
+
+            if (isListLine) {
+              dispatch('listLines')
+            }
+
             resolve(responseOrder)
           })
           .catch(error => {

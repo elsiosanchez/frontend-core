@@ -75,9 +75,11 @@ export default defineComponent({
     const isDisabled = computed(() => {
       const paymentMethods = store.getters.getAttributeField({
         field: 'fieldsRefunds',
-        attribute: 'paymentMethods'
+        attribute: 'paymentMethod'
       })
-      if (isEmptyValue(paymentMethods)) return false
+      if (isEmptyValue(paymentMethods)) {
+        return false
+      }
       return !isEmptyValue(paymentMethods.refund_reference_currency)
     })
     const listCurrencies = computed(() => {
@@ -90,7 +92,9 @@ export default defineComponent({
           field: 'fieldsRefunds',
           attribute: 'currencie'
         })
-        if (currency) return currency.id
+        if (currency) {
+          return currency.id
+        }
         return ''
       },
       // setter

@@ -102,7 +102,7 @@ export default defineComponent({
     })
 
     function addPayment() {
-      const payment = store.getters.getPaymentMethods
+      const payment = store.getters.getPaymentMethod
       if (
         !isEmptyValue(payment.payment_method) &&
         isEmptyValue(currentAccount.value) &&

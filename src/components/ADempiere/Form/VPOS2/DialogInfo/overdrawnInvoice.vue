@@ -144,7 +144,7 @@ export default defineComponent({
     })
 
     const currentPaymentMethods = computed(() => {
-      return store.getters.getPaymentMethods
+      return store.getters.getPaymentMethod
     })
 
     const currentOrder = computed(() => {

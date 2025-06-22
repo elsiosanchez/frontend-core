@@ -1,19 +1,17 @@
 <!--
-  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program. If not, see <https:www.gnu.org/licenses/>.
+ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -42,7 +40,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <payment-methods
+          <payment-methods-field
             :handle-change="changePaymentMethods"
           />
         </el-col>
@@ -148,7 +146,7 @@ import store from '@/store'
 
 // Component and Mixins
 import fieldAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
-import paymentMethods from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/paymentMethods'
+import PaymentMethodsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayReceipt/paymentMethodsField'
 import currencie from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/currencies'
 import recipientBank from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/recipientBank.vue'
 import banksAccounts from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/banksAccounts.vue'
@@ -162,17 +160,19 @@ import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
-  name: 'Charge',
+  name: 'PayReceipt',
+
   components: {
     bank,
     currencie,
     fieldAmount,
-    paymentMethods,
+    PaymentMethodsField,
     recipientBank,
     banksAccounts,
     creditMemo,
     issuingBank
   },
+
   setup() {
     const discountPercentage = ref('0')
     const currentOrder = computed(() => {
@@ -290,14 +290,18 @@ export default defineComponent({
      * @param {Object} paymentMethods
      */
     function changePaymentMethods(paymentMethods) {
+      if (isEmptyValue(paymentMethods)) {
+        return
+      }
       const currentPaymentMethod = store.getters.getListPaymentMethods.find(list => list.id === paymentMethods)
-      if (isEmptyValue(paymentMethods)) return
       if (currentPaymentMethod.payment_method.tender_type === 'G') {
         store.dispatch('setModalDialogVPOS', {
           title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
           doneMethod: () => {
             const currentGiftCard = store.getters.getGiftCardSearch
-            if (isEmptyValue(currentGiftCard)) return
+            if (isEmptyValue(currentGiftCard)) {
+              return
+            }
             const { amount, currency, business_partner, id } = currentGiftCard
             store.dispatch('refundReference', {
               amount,
@@ -310,7 +314,7 @@ export default defineComponent({
               is_receipt: true
             })
             const listPaymentMethods = store.getters.getListPaymentMethods
-            store.commit('setPaymentMethods', listPaymentMethods[0])
+            store.commit('setPaymentMethod', listPaymentMethods.at(0))
             store.commit('setCurrentGiftCard', {})
           },
           componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/giftCard.vue'),

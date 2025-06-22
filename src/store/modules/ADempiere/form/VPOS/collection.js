@@ -38,7 +38,6 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification'
-import { defaultValueCollections } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 const collection = {
   payments: [],
@@ -167,8 +166,6 @@ export default {
             dispatch('getListPayments')
             dispatch('overloadOrder', { order: currentOrder })
               .then(() => {
-                defaultValueCollections()
-                commit('setPayAmount', 0)
                 resolve(response)
                 showMessage({
                   type: 'success',
@@ -261,10 +258,10 @@ export default {
         })
           .then(response => {
             dispatch('getListPayments')
-            dispatch('overloadOrder', { order: currentOrder })
-              .then(() => {
-                defaultValueCollections()
-              })
+            dispatch('overloadOrder', {
+              order: currentOrder
+            })
+
             showMessage({
               type: 'success',
               message: 'OK',

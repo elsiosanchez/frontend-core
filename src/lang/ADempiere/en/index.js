@@ -480,7 +480,7 @@ export default {
           zelle: 'Zelle'
         },
         overdrawnInvoice: {
-          title: 'OverdrawnInvoice',
+          title: 'Overdrawn Invoice',
           below: 'Invoice will remain with an open balance',
           above: 'Customer Details',
           returned: 'Your change is',

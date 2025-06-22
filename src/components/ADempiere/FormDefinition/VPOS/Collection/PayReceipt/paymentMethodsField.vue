@@ -35,13 +35,16 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent, onMounted } from '@vue/composition-api'
 
 import store from '@/store'
+
 // Utils and Helper Methods
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
-  name: 'FieldPaymentMethods',
+  name: 'PaymentMethodsField',
+
   props: {
     handleChange: {
       type: Function,
@@ -50,24 +53,35 @@ export default defineComponent({
       }
     }
   },
+
   setup() {
-    store.dispatch('availablePaymentMethods')
     const listPaymentMethods = computed(() => {
       return store.getters.getListPaymentMethods
     })
 
     const currentPaymentMethod = computed({
       get() {
-        return store.getters.getPaymentMethods.id
+        return store.getters.getPaymentMethod.id
       },
       // setter
-      set(paymentMethods) {
-        if (paymentMethods) {
-          paymentMethods = listPaymentMethods.value.find(list => list.id === paymentMethods)
+      set(newPaymentMethodId) {
+        let paymentMethod = {}
+        if (newPaymentMethodId) {
+          paymentMethod = listPaymentMethods.value.find(paymentMethodItem => {
+            return paymentMethodItem.id === newPaymentMethodId
+          })
         }
-        store.commit('setPaymentMethods', paymentMethods)
+        store.commit('setPaymentMethod', paymentMethod)
       }
     })
+
+    onMounted(() => {
+      // TODO: Add support to load with POS ID
+      if (isEmptyValue(listPaymentMethods.value)) {
+        store.dispatch('availablePaymentMethods')
+      }
+    })
+
     return {
       currentPaymentMethod,
       listPaymentMethods
