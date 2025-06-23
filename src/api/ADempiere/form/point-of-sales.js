@@ -1181,21 +1181,6 @@ export function cashWithdrawal({
   })
 }
 
-export function cashSummaryMovements({
-  posUuid
-}) {
-  return request({
-    url: `${config.pointOfSales.endpoint}/cash-summary-movements`,
-    method: 'get',
-    params: {
-      pos_uuid: posUuid
-    }
-  })
-    .then(response => {
-      return camelizeObjectKeys(response)
-    })
-}
-
 export function cashClosing({
   posUuid,
   id,
@@ -1370,28 +1355,6 @@ export function campaigns({
           return camelizeObjectKeys(bank)
         })
       }
-    })
-}
-
-/**
- * GET List Cash Movements
- */
-export function listCashMovements({
-  posUuid,
-  customerUuid,
-  salesRepresentativeUuid
-}) {
-  return request({
-    url: `${config.pointOfSales.endpoint}/cash-movements`,
-    method: 'get',
-    params: {
-      pos_uuid: posUuid,
-      cuatomer_uuid: customerUuid,
-      sales_representative_uuid: salesRepresentativeUuid
-    }
-  })
-    .then(response => {
-      return camelizeObjectKeys(response)
     })
 }
 

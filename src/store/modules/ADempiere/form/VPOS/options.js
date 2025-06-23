@@ -45,9 +45,7 @@ import {
   deleteShipmentLine,
   printShipmentPreview,
   createOrderFromRMA,
-  listCashMovements,
   processCashClosing,
-  listCashSummaryMovements,
   // Gift Card
   createGiftCard,
   // updateGiftCard,
@@ -59,6 +57,11 @@ import {
   deleteGiftCardLines,
   updateGiftCardLines
 } from '@/api/ADempiere/form/VPOS'
+import {
+  // Cash
+  listCashMovements,
+  listCashSummaryMovements
+} from '@/api/ADempiere/form/VPOS/cash'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -1203,7 +1206,7 @@ export default {
           attribute: 'isDetails',
           value: false
         })
-        listCashMovements({
+        listCashSummaryMovements({
           posId: currentPos.id,
           isOnlyProcessed,
           isOnlyRefund
@@ -1269,7 +1272,7 @@ export default {
           attribute: 'isDetails',
           value: true
         })
-        listCashSummaryMovements({
+        listCashMovements({
           posId: currentPos.id,
           isOnlyProcessed,
           isOnlyRefund

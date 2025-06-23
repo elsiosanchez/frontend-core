@@ -1376,44 +1376,6 @@ export function processCashClosing({
 }
 
 /**
- * List Cash Summary
- */
-export function listCashMovements({
-  posId,
-  isOnlyProcessed,
-  isOnlyRefund
-}) {
-  return request({
-    url: `point-of-sales/cash/summary-movements`,
-    method: 'get',
-    params: {
-      pos_id: posId,
-      is_only_processed: isOnlyProcessed,
-      is_only_refund: isOnlyRefund
-    }
-  })
-}
-
-/**
- * List all cash movements
- */
-export function listCashSummaryMovements({
-  posId,
-  isOnlyProcessed,
-  isOnlyRefund
-}) {
-  return request({
-    url: `point-of-sales/cash/movements`,
-    method: 'get',
-    params: {
-      pos_id: posId,
-      is_only_processed: isOnlyProcessed,
-      is_only_refund: isOnlyRefund
-    }
-  })
-}
-
-/**
  * List Available Cash
  * @param {int32} posId
  */

@@ -25,12 +25,15 @@ import {
   updatePayment,
   getPaymentsList,
   // Cash Summary Movements
-  cashSummaryMovements,
-  listCashMovements,
   RefundReferenceRequest,
   listRefundReference,
   deleteRefundReference
 } from '@/api/ADempiere/form/point-of-sales.js'
+import {
+  // Cash
+  listCashMovements,
+  listCashSummaryMovements
+} from '@/api/ADempiere/form/VPOS/cash'
 import {
   // Customer Bank Account
   createCustomerBankAccountRequest,
@@ -771,9 +774,9 @@ export default {
       commit('setDeliveryList', deliveryList)
     }
   },
-  listCashSummary({ commit, state }, posUuid) {
-    cashSummaryMovements({
-      posUuid
+  listCashSummary({ commit, state }, posId) {
+    listCashMovements({
+      posId
     })
       .then(response => {
         commit('setListCashSummary', response)
@@ -789,17 +792,17 @@ export default {
       })
   },
   listCashMovementsSummary({ commit, state, getters }, {
-    posUuid,
-    customerUuid,
-    salesRepresentativeUuid
+    posId,
+    isOnlyProcessed,
+    isOnlyRefund
   }) {
-    if (isEmptyValue(posUuid)) {
-      posUuid = getters.getVPOS.uuid
+    if (isEmptyValue(posId)) {
+      posId = getters.getVPOS.id
     }
-    listCashMovements({
-      posUuid,
-      customerUuid,
-      salesRepresentativeUuid
+    listCashSummaryMovements({
+      posId,
+      isOnlyProcessed,
+      isOnlyRefund
     })
       .then(response => {
         const records = response.records.map(list => {
