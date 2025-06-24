@@ -53,7 +53,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </p>
               <edit-amount
                 v-else-if="scope.row.isEditCurrentPrice && valueOrder.columnName === 'CurrentPrice'"
-                :value="Number(scope.row.price)"
+                :value="convertToNumber(scope.row.price)"
                 :handle-change="updateCurrentPrice"
               />
             </span>
@@ -71,7 +71,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </p>
               <edit-qty-entered
                 v-else-if="scope.row.isEditQtyEntered && valueOrder.columnName === 'QtyEntered'"
-                :qty="Number(scope.row.quantity_ordered)"
+                :qty="convertToNumber(scope.row.quantity_ordered)"
                 :handle-change="updateQuantity"
               />
             </span>
@@ -89,9 +89,9 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
               </p>
               <edit-amount
                 v-else
-                :value="Number(scope.row.discount_rate)"
+                :value="convertToNumber(scope.row.discount_rate)"
                 :handle-change="updateDiscount"
-                :precision="0"
+                :precision="2"
               />
             </span>
             <span v-else>
@@ -129,10 +129,12 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
+
 // Components and Mixins
+import EditAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editAmount.vue'
+import EditQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editQtyEntered.vue'
 import OptionLine from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine'
-import editQtyEntered from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editQtyEntered.vue'
-import editAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/editAmount.vue'
+
 // Utils and Helper Methods
 import {
   displayLabel,
@@ -142,14 +144,17 @@ import {
 } from '@/utils/ADempiere/dictionary/form/VPOS'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
-  name: 'infoOrder',
+  name: 'MainOrder',
+
   components: {
-    OptionLine,
-    editAmount,
-    editQtyEntered
+    EditAmount,
+    EditQtyEntered,
+    OptionLine
   },
+
   setup() {
     /**
      * Ref
@@ -406,7 +411,9 @@ export default defineComponent({
               .then(updateLineResponse => {
                 refreshLine(updateLineResponse)
                 isLoadingPrice.value = false
-                currentLine.value.isEditCurrentPrice = false
+                if (currentLine && currentLine.value) {
+                  currentLine.value.isEditCurrentPrice = false
+                }
               })
               .catch(() => {
                 isLoadingPrice.value = false
@@ -414,7 +421,9 @@ export default defineComponent({
               })
           },
           cancelMethod: () => {
-            currentLine.value.isEditCurrentPrice = false
+            if (currentLine && currentLine.value) {
+              currentLine.value.isEditCurrentPrice = false
+            }
             isLoadingPrice.value = false
           },
           requestedAccess: 'IsModifyPrice',
@@ -432,15 +441,21 @@ export default defineComponent({
         .then(updateLineResponse => {
           refreshLine(updateLineResponse)
           isLoadingPrice.value = false
-          currentLine.value.isEditCurrentPrice = false
+          if (currentLine && currentLine.value) {
+            currentLine.value.isEditCurrentPrice = false
+          }
         })
         .catch(() => {
           isLoadingPrice.value = false
-          currentLine.value.isEditCurrentPrice = true
+          if (currentLine && currentLine.value) {
+            currentLine.value.isEditCurrentPrice = false
+          }
         })
     }
     function updateQuantity(quantity) {
-      if (isEmptyValue(currentLine.value)) return
+      if (isEmptyValue(currentLine.value)) {
+        return
+      }
       const { is_allows_modify_quantity } = currentPos.value
       if (!is_allows_modify_quantity) {
         store.dispatch('setModalPin', {
@@ -454,12 +469,16 @@ export default defineComponent({
               .then(updateLineResponse => {
                 refreshLine(updateLineResponse)
                 isLoadingQty.value = false
-                currentLine.value.isEditQtyEntered = false
+                if (currentLine && currentLine.value) {
+                  currentLine.value.isEditQtyEntered = false
+                }
               })
               .catch(() => {
                 refreshLine(currentLine.value)
                 isLoadingQty.value = false
-                // currentLine.value.isEditQtyEntered = true
+                if (currentLine && currentLine.value) {
+                  currentLine.value.isEditQtyEntered = false
+                }
               })
               .finally(() => {
                 isLoadingQty.value = false
@@ -467,7 +486,9 @@ export default defineComponent({
             isLoadingQty.value = false
           },
           cancelMethod: () => {
-            currentLine.value.isEditQtyEntered = false
+            if (currentLine && currentLine.value) {
+              currentLine.value.isEditQtyEntered = false
+            }
             isLoadingQty.value = false
           },
           requestedAccess: 'IsAllowsModifyQuantity',
@@ -484,7 +505,9 @@ export default defineComponent({
         .then(updateLineResponse => {
           refreshLine(updateLineResponse)
           isLoadingQty.value = false
-          currentLine.value.isEditQtyEntered = false
+          if (currentLine && currentLine.value) {
+            currentLine.value.isEditQtyEntered = false
+          }
         })
         .catch(() => {
           isLoadingQty.value = false
@@ -499,7 +522,7 @@ export default defineComponent({
         quantity_ordered
       } = currentLine.value
       isLoadingDiscount.value = true
-      if (!is_allows_modify_discount || (Number(maximum_line_discount_allowed) !== 0 && discount_rate > Number(maximum_line_discount_allowed))) {
+      if (!is_allows_modify_discount || (convertToNumber(maximum_line_discount_allowed) !== 0 && discount_rate > convertToNumber(maximum_line_discount_allowed))) {
         store.dispatch('setModalPin', {
           title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.pinMessage.qtyEntered'),
           doneMethod: () => {
@@ -510,16 +533,22 @@ export default defineComponent({
             })
               .then(updateLineResponse => {
                 refreshLine(updateLineResponse)
-                currentLine.value.isEditDiscount = false
+                if (currentLine && currentLine.value) {
+                  currentLine.value.isEditDiscount = false
+                }
                 isLoadingDiscount.value = false
               })
               .catch(() => {
-                currentLine.value.isEditDiscount = false
+                if (currentLine && currentLine.value) {
+                  currentLine.value.isEditDiscount = false
+                }
                 isLoadingDiscount.value = false
               })
           },
           cancelMethod: () => {
-            currentLine.value.isEditDiscount = false
+            if (currentLine && currentLine.value) {
+              currentLine.value.isEditDiscount = false
+            }
             isLoadingDiscount.value = false
           },
           requestedAccess: 'IsAllowsModifyDiscount',
@@ -535,11 +564,15 @@ export default defineComponent({
       })
         .then(updateLineResponse => {
           refreshLine(updateLineResponse)
-          currentLine.value.isEditDiscount = false
+          if (currentLine && currentLine.value) {
+            currentLine.value.isEditDiscount = false
+          }
           isLoadingDiscount.value = false
         })
         .catch(() => {
-          currentLine.value.isEditDiscount = false
+          if (currentLine && currentLine.value) {
+            currentLine.value.isEditDiscount = false
+          }
           isLoadingDiscount.value = false
         })
         .finally(() => {
@@ -561,6 +594,7 @@ export default defineComponent({
       validateProcess,
       orderLineDefinition,
       // Methods
+      convertToNumber,
       handleCurrentChangeOrderLine,
       displayLabel,
       displayValue,
