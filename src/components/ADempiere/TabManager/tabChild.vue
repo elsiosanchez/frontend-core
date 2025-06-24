@@ -172,7 +172,9 @@ export default defineComponent({
       })
     })
 
-    currentTabNo.value = showedTabsList.value[0].tabChildIndex.toString()
+    if (!isEmptyValue(showedTabsList.value)) {
+      currentTabNo.value = showedTabsList.value[0].tabChildIndex.toString()
+    }
 
     const isShowedTabs = computed(() => {
       const storedWindow = store.getters.getStoredWindow(props.parentUuid)
