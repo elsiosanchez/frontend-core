@@ -51,6 +51,31 @@
         @click="cancelActionMethod(false)"
       />
       <el-button
+        v-if="isDisplayedOptionsAxillary"
+        :type="optionsAxillary.typeButtons"
+        class="button-base-icon"
+        :loading="optionsAxillary.isLoading()"
+        :disabled="optionsAxillary.enable()"
+        @click="optionsAxillary.runActions()"
+      >
+        <span v-if="!optionsAxillary.isLoading()">
+          <svg-icon
+            v-if="optionsAxillary.svg"
+            :icon-class="optionsAxillary.svgClass"
+          />
+          <i
+            v-else
+            :class="optionsAxillary.iconsClass"
+          />
+        </span>
+        <b
+          v-if="!isEmptyValue(optionsAxillary.name)"
+          style="font-size: 18px !important"
+        >
+          {{ optionsAxillary.name }}
+        </b>
+      </el-button>
+      <el-button
         v-if="isOptionsCancel"
         :type="isTypeButton"
         class="button-base-icon"
@@ -136,6 +161,20 @@ export default defineComponent({
       return ''
     })
 
+    const isDisplayedOptionsAxillary = computed(() => {
+      if (
+        !isEmptyValue(storedModalDialog.value) &&
+        !isEmptyValue(storedModalDialog.value.axillaryMethod)
+      ) {
+        return storedModalDialog.value.axillaryMethod.isDisplayed
+      }
+      return false
+    })
+
+    const optionsAxillary = computed(() => {
+      return storedModalDialog.value.axillaryMethod
+    })
+
     const isDisabledDone = computed(() => {
       if (
         !isEmptyValue(storedModalDialog.value) &&
@@ -215,8 +254,10 @@ export default defineComponent({
 
     return {
       // computeds
+      isDisplayedOptionsAxillary,
       labelCancelMethod,
       storedModalDialog,
+      optionsAxillary,
       isOptionsCancel,
       componentRender,
       isDisabledDone,

@@ -357,6 +357,8 @@ export default {
           successfulCashWithdrawal: 'Retiro de caja exitoso',
           cashCloseBox: 'Caja Cerrada',
           closeBox: 'Cierre',
+          seeDetailsPaymentType: 'Ver Detalle por Tipo de Pago',
+          totals: 'Totales',
           detailedCloseBox: 'Cierre Detallado',
           assignSeller: 'Asignar vendedor',
           unassignSeller: 'Desasignar vendedor'

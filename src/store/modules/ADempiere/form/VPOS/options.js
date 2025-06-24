@@ -60,6 +60,7 @@ import {
 import {
   // Cash
   listCashMovements,
+  printTicketCashMovements,
   listCashSummaryMovements
 } from '@/api/ADempiere/form/VPOS/cash'
 
@@ -92,7 +93,9 @@ const options = {
   cashClosings: {
     isDetails: false,
     isLoading: false,
+    isLoadingPrint: false,
     listSummary: [],
+    totalMovements: [],
     summary: undefined
   }
 }
@@ -1191,7 +1194,8 @@ export default {
       getters
     }, {
       isOnlyProcessed,
-      isOnlyRefund
+      isOnlyRefund,
+      isDetailmovementType = false
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
@@ -1209,16 +1213,23 @@ export default {
         listCashSummaryMovements({
           posId: currentPos.id,
           isOnlyProcessed,
+          isDetailmovementType,
           isOnlyRefund
         })
           .then(response => {
             const {
               id,
-              cash_movements
+              cash_movements,
+              total_movements
             } = response
             commit('setAttributeCashClosings', {
               attribute: 'listSummary',
               value: cash_movements
+            })
+
+            commit('setAttributeCashClosings', {
+              attribute: 'totalMovements',
+              value: total_movements
             })
             commit('setAttributeCashClosings', {
               attribute: 'summary',
@@ -1372,6 +1383,84 @@ export default {
               attribute: 'isLoading',
               value: false
             })
+          })
+      })
+    },
+    printTicketCashVPOS({
+      dispatch,
+      getters,
+      commit
+    }, {
+      posId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        if (isEmptyValue(posId)) posId = currentPos.id
+        commit('setAttributeCashClosings', {
+          attribute: 'isLoadingPrint',
+          value: true
+        })
+        printTicketCashMovements({
+          posId
+        })
+          .then(response => {
+            let process_log
+
+            if (!isEmptyValue(response)) process_log = response.process_log
+            const {
+              output_stream,
+              result_type,
+              mime_type,
+              file_name,
+              is_error,
+              summary,
+              instance_id
+            } = process_log
+            const type = is_error ? 'error' : 'success'
+            const message = isEmptyValue(summary) ? (is_error ? 'Error' : 'OK') : summary
+            showMessage({
+              type,
+              message,
+              showClose: true
+            })
+            if (
+              !isEmptyValue(output_stream) &&
+              !isEmptyValue(mime_type) &&
+              !isEmptyValue(file_name)
+            ) {
+              dispatch('generateReportVPOS', {
+                orderId: instance_id,
+                file_name,
+                mime_type,
+                result_type,
+                output_stream,
+                instanceUuid: instance_id,
+                isPos: true
+              })
+            }
+            commit('setAttributeCashClosings', {
+              attribute: 'isLoadingPrint',
+              value: false
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            console.warn(`Prin Ticket: ${error.message}. Code: ${error.code}.`)
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'isLoadingPrint',
+              value: false
+            })
+            resolve({})
           })
       })
     },

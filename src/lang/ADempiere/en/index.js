@@ -349,6 +349,8 @@ export default {
           title: 'Cash Management',
           cashOpening: 'Opening',
           closeBox: 'Close',
+          seeDetailsPaymentType: 'See Details by Payment Type',
+          totals: 'Totals',
           assignSeller: 'Assign seller',
           unassignSeller: 'Unassign Seller',
           transfer: 'Transfer',

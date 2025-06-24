@@ -59,6 +59,9 @@ const modalDialogManagerVPOS = {
       doneMethod = function() {},
       loadData = function() {},
       containerManager = {},
+      axillaryMethod = {
+        isDisplayed: false
+      },
       componentPathSlot,
       isShowed = false,
       componentPath,
@@ -76,6 +79,7 @@ const modalDialogManagerVPOS = {
         isLoadingDone,
         widthDialogo,
         isTypeButton,
+        axillaryMethod,
         cancelMethod,
         isSvgButton,
         actionsName,

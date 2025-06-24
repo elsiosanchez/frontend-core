@@ -16,8 +16,19 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <span class="table-pos-dialogo">
+    <p
+      v-if="!isDetails"
+      style="text-align: right"
+    >
+      <el-checkbox
+        v-model="isSeeDetailsPaymentType"
+        :label="$t('form.pos.optionsPoinSales.cashManagement.seeDetailsPaymentType')"
+        :border="true"
+        @change="change"
+      />
+    </p>
     <el-table
-      v-loading="isLoading"
+      v-loading="isLoadingTable"
       :data="listCashSummary"
       style="width: 100%"
       height="250"
@@ -60,7 +71,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :label="$t('form.pos.collect.paymentMethod')"
       />
       <el-table-column
-        v-if="!isRefund"
+        v-if="isDetails || (!isDetails && isSeeDetailsPaymentType)"
         prop="is_refund"
         width="180"
         :label="$t('form.VBankStatementMatch.automaticMatch.table.tenderType')"
@@ -83,25 +94,55 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         align="right"
       >
         <template slot-scope="scope">
-          {{ formatPrice({ value: scope.row.amount, currency: scope.row.currency.iso_code}) }}
+          <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.amount) < 0 }">
+            {{ formatPrice({ value: scope.row.amount, currency: scope.row.currency.iso_code}) }}
+          </span>
         </template>
       </el-table-column>
     </el-table>
+    <p
+      v-if="!isEmptyValue(totalMovements) && !isDetails"
+    >
+      <span>
+        <p>
+          <b>
+            {{ $t('form.pos.optionsPoinSales.cashManagement.totals') }}
+          </b>
+        </p>
+      </span>
+      <span
+        v-for="(list, key) in totalMovements"
+        :key="key"
+      >
+        <b :class="{ '': true, 'amoutn-negative': convertToNumber(list.total_amount) < 0 }">
+          {{ formatPrice({ value: list.total_amount, currency: list.currency.iso_code}) }}
+        </b>
+        <el-divider v-if="isDisplayBar(key, totalMovements.length)" direction="vertical" />
+      </span>
+    </p>
   </span>
 </template>
 
 <script>
 import { defineComponent, computed, ref } from '@vue/composition-api'
-import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import store from '@/store'
 
 export default defineComponent({
   name: 'cashClosingPanel',
   setup() {
     const isRefund = ref(false)
+    const isLoadingTable = ref(false)
+    const isSeeDetailsPaymentType = ref(false)
     const listCashSummary = computed(() => {
       return store.getters.getAttributeCashClosings({
         attribute: 'listSummary'
+      })
+    })
+
+    const totalMovements = computed(() => {
+      return store.getters.getAttributeCashClosings({
+        attribute: 'totalMovements'
       })
     })
 
@@ -117,13 +158,33 @@ export default defineComponent({
       })
     })
 
+    function change(value) {
+      store.dispatch('listCashMovements', {
+        isDetailmovementType: value
+      })
+      isLoadingTable.value = true
+      setTimeout(() => {
+        isLoadingTable.value = false
+      }, 100)
+    }
+
+    function isDisplayBar(key, length) {
+      return key < (length - 1)
+    }
+
     return {
       isRefund,
       isLoading,
       isDetails,
+      isLoadingTable,
+      totalMovements,
       listCashSummary,
+      isSeeDetailsPaymentType,
       // Methods
-      formatPrice
+      change,
+      formatPrice,
+      isDisplayBar,
+      convertToNumber
     }
   }
 })
@@ -143,5 +204,8 @@ export default defineComponent({
 .custom-card-options:hover {
   background-color: #eaf5fe;
   border: 1px solid #36a3f7;
+}
+.amoutn-negative {
+  color: red
 }
 </style>

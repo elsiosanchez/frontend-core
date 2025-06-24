@@ -50,6 +50,32 @@ export default defineComponent({
         doneMethod: () => {
           store.dispatch('processCashClosing')
         },
+        axillaryMethod: {
+          runActions: () => {
+            store.dispatch('printTicketCashVPOS', {})
+              .then(() => {
+                store.commit('setShowedModalDialogVPOS', {
+                  isShowed: false
+                })
+              })
+          },
+          typeButtons: 'info',
+          isDisplayed: true,
+          isLoading: () => {
+            return store.getters.getAttributeCashClosings({
+              attribute: 'isLoadingPrint'
+            })
+          },
+          iconsClass: '',
+          svgClass: 'print',
+          enable: () => {
+            return store.getters.getAttributeCashClosings({
+              attribute: 'isLoadingPrint'
+            })
+          },
+          svg: true,
+          name: ''
+        },
         componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/cashManagement/cashClosing/panel.vue'),
         isShowed: true
       })

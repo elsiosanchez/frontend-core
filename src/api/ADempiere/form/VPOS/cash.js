@@ -43,6 +43,7 @@ export function listCashMovements({
 export function listCashSummaryMovements({
   posId,
   isOnlyProcessed,
+  isDetailmovementType,
   isOnlyRefund
 }) {
   return request({
@@ -51,7 +52,23 @@ export function listCashSummaryMovements({
     params: {
       pos_id: posId,
       is_only_processed: isOnlyProcessed,
-      is_only_refund: isOnlyRefund
+      is_only_refund: isOnlyRefund,
+      is_detail_movement_type: isDetailmovementType
+    }
+  })
+}
+
+/**
+ * List Cash Summary
+ */
+export function printTicketCashMovements({
+  posId
+}) {
+  return request({
+    url: `point-of-sales/${posId}/cash/movements/print-preview`,
+    method: 'get',
+    params: {
+      pos_id: posId
     }
   })
 }
