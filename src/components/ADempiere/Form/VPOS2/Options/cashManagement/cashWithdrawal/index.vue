@@ -37,13 +37,17 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 </template>
 
 <script>
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import lang from '@/lang'
 import store from '@/store'
 import { isEmptyValue } from '@/utils/ADempiere'
 export default defineComponent({
   name: 'cashwithdrawal',
   setup() {
+    const listPaymentsOpenst = computed(() => {
+      return store.getters.getCashOpeningPayments
+    })
+
     function cashwithdrawal() {
       store.dispatch('listPaymentsWithdrawal')
       store.dispatch('setModalDialogVPOS', {
@@ -52,15 +56,14 @@ export default defineComponent({
           store.dispatch('processCashWithdrawal')
         },
         isDisabledDone: () => {
-          return isEmptyValue(store.getters.getAttributeCashWithdrawalFields({
-            attribute: 'collectionAgent'
-          }))
+          return isEmptyValue(listPaymentsOpenst.value)
         },
         componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/cashManagement/cashWithdrawal/panel.vue'),
         isShowed: true
       })
     }
     return {
+      listPaymentsOpenst,
       cashwithdrawal
     }
   }

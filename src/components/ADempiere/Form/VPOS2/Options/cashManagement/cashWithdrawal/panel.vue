@@ -167,9 +167,9 @@ export default defineComponent({
 
     const disabledAddPay = computed(() => {
       if (isAddAcount.value) {
-        return isEmptyValue(cashBank.value) || isLoadingPayment.value || Number(amount.value) <= 0
+        return isEmptyValue(cashBank.value) || isLoadingPayment.value
       }
-      return isLoadingPayment.value || Number(amount.value) <= 0
+      return isLoadingPayment.value
     })
 
     const cashBank = computed(() => {

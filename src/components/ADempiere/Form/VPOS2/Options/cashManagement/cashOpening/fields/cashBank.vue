@@ -45,6 +45,7 @@ import {
 } from '@/api/ADempiere/form/VPOS'
 // Utils and Helper Methods
 import { showMessage } from '@/utils/ADempiere/notification'
+import { isEmptyValue } from '@/utils/ADempiere'
 // import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
@@ -57,6 +58,9 @@ export default defineComponent({
   },
   setup(props) {
     const listCash = ref([])
+    const currentPos = computed(() => {
+      return store.getters.getVPOS
+    })
 
     const cashBank = computed({
       get() {
@@ -81,9 +85,8 @@ export default defineComponent({
 
     function findSeller(isFindOrder) {
       if (!isFindOrder) return
-      const currentPos = store.getters.getVPOS
       listAvailableCash({
-        posId: currentPos.id
+        posId: currentPos.value.id
       })
         .then(response => {
           const { cash } = response
@@ -97,9 +100,28 @@ export default defineComponent({
         })
     }
 
+    findSeller(true)
+
+    setTimeout(() => {
+      if (
+        !isEmptyValue(currentPos.value) &&
+        !isEmptyValue(listCash.value) &&
+        !isEmptyValue(currentPos.value.default_opening_charge_id)
+      ) {
+        const defaultCashOpen = listCash.value.find(list => list.id === currentPos.value.default_opening_charge_id)
+        if (defaultCashOpen) {
+          store.commit('setAttributeCashOpenFields', {
+            attribute: 'cashBank',
+            value: defaultCashOpen
+          })
+        }
+      }
+    }, 500)
+
     return {
       cashBank,
       listCash,
+      currentPos,
       // Methods
       findSeller
     }
