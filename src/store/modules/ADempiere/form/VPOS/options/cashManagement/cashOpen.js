@@ -207,11 +207,13 @@ export default {
           description,
           collectionAgent
         } = getters.getCashOpen
+        let collectingAgentId
+        if (!isEmptyValue(collectionAgent)) collectingAgentId = collectionAgent.id
         cashOpening({
           posId: currentPos.id,
           payments,
           description,
-          collectingAgentId: collectionAgent.id
+          collectingAgentId
         })
           .then(response => {
             commit('setShowedModalDialogVPOS', {
