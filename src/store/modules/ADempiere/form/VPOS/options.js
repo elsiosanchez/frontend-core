@@ -1405,13 +1405,9 @@ export default {
         })
           .then(response => {
             let process_log
-
             if (!isEmptyValue(response)) process_log = response.process_log
             const {
-              output_stream,
-              result_type,
-              mime_type,
-              file_name,
+              output,
               is_error,
               summary,
               instance_id
@@ -1424,16 +1420,16 @@ export default {
               showClose: true
             })
             if (
-              !isEmptyValue(output_stream) &&
-              !isEmptyValue(mime_type) &&
-              !isEmptyValue(file_name)
+              !isEmptyValue(output.output_stream) &&
+              !isEmptyValue(output.mime_type) &&
+              !isEmptyValue(output.name)
             ) {
               dispatch('generateReportVPOS', {
                 orderId: instance_id,
-                file_name,
-                mime_type,
-                result_type,
-                output_stream,
+                file_name: output.name,
+                mime_type: output.mime_type,
+                result_type: output.report_type,
+                output_stream: output.output_stream,
                 instanceUuid: instance_id,
                 isPos: true
               })
