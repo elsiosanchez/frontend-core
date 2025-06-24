@@ -20,13 +20,14 @@
   <el-form-item>
     <template slot="label">
       {{ $t('form.outBoundOrder.process.charterOrder') }}
-      <el-switch
-        v-model="value"
-        :active-text="$t('form.outBoundOrder.process.yes')"
-        :inactive-text="$t('form.outBoundOrder.process.no')"
-        style="display: flex; justify-content: center; height: 36px;"
-      />
     </template>
+
+    <el-switch
+      v-model="value"
+      :active-text="$t('form.outBoundOrder.process.yes')"
+      :inactive-text="$t('form.outBoundOrder.process.no')"
+      style="display: flex; justify-content: center; height: 36px;"
+    />
   </el-form-item>
 </template>
 
@@ -40,7 +41,7 @@ import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelec
 // Constants
 
 export default defineComponent({
-  name: 'MovementTypeField',
+  name: 'CharterOrderField',
 
   components: {
     EmptyOptionSelect
@@ -54,13 +55,13 @@ export default defineComponent({
       },
       // setter
       set(newValue) {
-        if (!newValue) {
-          store.commit('clearFiltersFreightOrder')
-        } else {
+        if (newValue) {
           store.commit('updateAttributeCriteriaGenerateOrder', {
             attribute: 'charterOrder',
             value: newValue
           })
+        } else {
+          store.commit('clearFiltersFreightOrder')
         }
       }
     })

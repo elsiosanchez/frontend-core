@@ -32,11 +32,16 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <script>
 import { defineComponent, computed } from '@vue/composition-api'
+
+// Components and Mixins
 import ButtonBase from '@/components/ADempiere/FormDefinition/outBoundOrder/footer/ButtonBase.vue'
-// import { isEmptyValue } from '@/utils/ADempiere'
+
+// Utils and Helper Methods
+// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
   name: 'FooterButtons',
+
   components: {
     ButtonBase
   },
@@ -119,6 +124,7 @@ export default defineComponent({
       }
     }
   },
+
   setup(props) {
     const buttonConfigs = computed(() => {
       return {
@@ -215,12 +221,13 @@ export default defineComponent({
               type: 'primary',
               icon: 'el-icon-arrow-right',
               acttionButton: props.nextStep,
-              disabled: !props.isDisabledOrganizations
+              disabled: props.isDisabledOrganizations
             }
           }
         ]
       }
     })
+
     return {
       buttonConfigs
     }

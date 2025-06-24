@@ -23,6 +23,7 @@
     <template slot="label">
       {{ $t('form.outBoundOrder.process.documentAction') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -35,7 +36,9 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
+
       <el-option
         v-for="item in optionsList"
         :key="item.uuid"
@@ -52,12 +55,15 @@ import { defineComponent, computed } from '@vue/composition-api'
 
 // Components and Mixins
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import {
   requestListDocumentActions
 } from '@/api/ADempiere/form/outBoundOrder.ts'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+
 export default defineComponent({
   name: 'DocumentActionField',
 
@@ -83,6 +89,7 @@ export default defineComponent({
         }
       }
     })
+
     const optionsList = computed({
       get() {
         const { listDocumentAction } = store.getters.getSearchFilterGenerateOrder
@@ -107,6 +114,7 @@ export default defineComponent({
         })
       }
     })
+
     function remoteSearchCurrencies(searchValue) {
       loadRecords(true, searchValue)
     }
@@ -123,7 +131,9 @@ export default defineComponent({
           optionsList.value = records
         })
     }
+
     loadRecords(true)
+
     return {
       // Computeds
       value,

@@ -23,6 +23,7 @@
     <template slot="label">
       {{ $t('form.outBoundOrder.process.targetDocumentType') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -35,6 +36,7 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
       <el-option
         v-for="(item, index) in optionsList"

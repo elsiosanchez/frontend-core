@@ -24,6 +24,7 @@
       <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.process.documentDate') }}
     </template>
+
     <el-date-picker
       v-model="value"
       unlink-panels
@@ -43,7 +44,7 @@ import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelec
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'DocumentDataField',
+  name: 'DocumentDateField',
 
   components: {
     EmptyOptionSelect

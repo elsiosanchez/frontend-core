@@ -35,7 +35,9 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
+
       <el-option
         v-for="(item, index) in optionsList"
         :key="index"

@@ -24,6 +24,7 @@
     <template slot="label">
       {{ $t('form.outBoundOrder.process.car') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -37,7 +38,9 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
+
       <el-option
         v-for="(item, index) in optionsList"
         :key="index"
@@ -64,7 +67,7 @@ import {
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'DeliveryRuleField',
+  name: 'VehiclesField',
 
   components: {
     EmptyOptionSelect
@@ -85,6 +88,7 @@ export default defineComponent({
         })
       }
     })
+
     const shipper = computed(() => {
       const { shipperId } = store.getters.getSearchFilterGenerateOrder
       if (isEmptyValue(shipperId) || shipperId <= 0) {
@@ -92,6 +96,7 @@ export default defineComponent({
       }
       return shipperId
     })
+
     const optionsList = computed({
       get() {
         const { listVehicles } = store.getters.getSearchFilterGenerateOrder

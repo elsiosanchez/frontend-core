@@ -24,6 +24,7 @@
       <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.process.shipDate') }}
     </template>
+
     <el-date-picker
       v-model="value"
       unlink-panels

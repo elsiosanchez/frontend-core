@@ -24,6 +24,7 @@
       <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.warehouse') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -39,6 +40,7 @@
         :current-value="value"
         :is-allows-zero="false"
       />
+
       <el-option
         v-for="(item, index) in optionsList"
         :key="index"
@@ -65,7 +67,7 @@ import {
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'OrganizationField',
+  name: 'WarehouseField',
 
   components: {
     EmptyOptionSelect

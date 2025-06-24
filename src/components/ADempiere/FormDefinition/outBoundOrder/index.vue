@@ -27,11 +27,13 @@
         />
       </el-steps>
     </div>
+
     <div style="height: 80% !important; padding: 0px 15px">
       <component
         :is="componentRender"
       />
     </div>
+
     <div style="height: 14% !important;text-align: end;padding: 0px 15px;">
       <footer-buttons
         :current-step="stepList[currentStep].key"
@@ -48,6 +50,7 @@
         :action-close="exit"
       />
     </div>
+
     <el-drawer
       :visible.sync="showPanel"
       :show-close="true"
@@ -136,7 +139,10 @@ export default defineComponent({
 
     const isDisabled = computed(() => {
       const { organizationId, warehouseId } = store.getters.getSearchFilterGenerateOrder
-      return !isEmptyValue(organizationId) && !isEmptyValue(warehouseId)
+      if (isEmptyValue(organizationId) || organizationId <= 0) {
+        return true
+      }
+      return isEmptyValue(warehouseId) || warehouseId <= 0
     })
 
     const recordsSelecion = computed(() => {
@@ -159,7 +165,16 @@ export default defineComponent({
         charterOrder, vehiclesId, driverId, freightDocumentTypesId, shipperId
       } = store.getters.getSearchFilterGenerateOrder
       if (charterOrder) {
-        return isEmptyValue(vehiclesId) || isEmptyValue(driverId) || isEmptyValue(freightDocumentTypesId) || isEmptyValue(shipperId)
+        if (isEmptyValue(vehiclesId) || vehiclesId <= 0) {
+          return true
+        }
+        if (isEmptyValue(driverId) || driverId <= 0) {
+          return true
+        }
+        if (isEmptyValue(freightDocumentTypesId) || freightDocumentTypesId <= 0) {
+          return true
+        }
+        return isEmptyValue(shipperId) || shipperId <= 0
       }
       return false
     })
@@ -241,7 +256,7 @@ export default defineComponent({
         store.commit('setListDocumentList', [])
         store.commit('setRecordsId', [])
         store.commit('clearFiltersFreightOrder')
-        store.commit('clearOutputOrder')
+        // store.commit('clearOutputOrder')
       }
       searchRecords()
       currentStep.value++

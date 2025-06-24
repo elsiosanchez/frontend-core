@@ -24,6 +24,7 @@
       <span style="color: #f34b4b"> * </span>
       {{ $t('form.outBoundOrder.searchCriteria.organization') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -38,6 +39,7 @@
         :current-value="value"
         :is-allows-zero="false"
       />
+
       <el-option
         v-for="(item, index) in optionsList"
         :key="index"

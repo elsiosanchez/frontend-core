@@ -22,16 +22,17 @@
   >
     <template slot="label">
       {{ $t('form.outBoundOrder.searchCriteria.movementType') }}
-      <el-switch
-        v-model="value"
-        inactive-color="#13ce66"
-        :active-text="$t('form.outBoundOrder.searchCriteria.distributionOrder')"
-        :active-value="MOVEMENT_TYPE_DISTRIBUTION_ORDER"
-        :inactive-text="$t('form.outBoundOrder.searchCriteria.salesOrder')"
-        :inactive-value="MOVEMENT_TYPE_SALES_ORDER"
-        style="display: flex; justify-content: center; height: 30px;"
-      />
     </template>
+
+    <el-switch
+      v-model="value"
+      inactive-color="#13ce66"
+      :active-text="$t('form.outBoundOrder.searchCriteria.distributionOrder')"
+      :active-value="MOVEMENT_TYPE_DISTRIBUTION_ORDER"
+      :inactive-text="$t('form.outBoundOrder.searchCriteria.salesOrder')"
+      :inactive-value="MOVEMENT_TYPE_SALES_ORDER"
+      style="display: flex; justify-content: center; height: 30px;"
+    />
   </el-form-item>
 </template>
 
@@ -54,6 +55,7 @@ export default defineComponent({
   components: {
     EmptyOptionSelect
   },
+
   setup() {
     const value = computed({
       // getter

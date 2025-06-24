@@ -39,6 +39,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 export default {
   name: 'ButtonBase',
+
   props: {
     type: {
       type: String,

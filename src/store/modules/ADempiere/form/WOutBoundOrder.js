@@ -81,13 +81,17 @@ const initState = {
 
 const OutBoundOrder = {
   state: initState,
+
   mutations: {
     clearOutputOrder(state) {
       const preservedValues = {
         listOrganization: state.searchCriteria.listOrganization,
         organizationId: state.searchCriteria.organizationId,
         listWarehouse: state.searchCriteria.listWarehouse,
-        warehouseId: state.searchCriteria.warehouseId
+        warehouseId: state.searchCriteria.warehouseId,
+        movementTypeId: state.searchCriteria.movementTypeId,
+        listDocumentType: state.searchCriteria.listDocumentType,
+        documentTypeId: state.searchCriteria.documentTypeId
       }
       state.listDocument = []
       state.isLoadingDocument = false
@@ -100,15 +104,16 @@ const OutBoundOrder = {
       state.searchCriteria = {
         listOrganization: preservedValues.listOrganization,
         organizationId: preservedValues.organizationId,
-        movementTypeId: MOVEMENT_TYPE_SALES_ORDER,
-        listDocumentType: [],
-        documentTypeId: null,
+        movementTypeId: preservedValues.movementTypeId,
+        listDocumentType: preservedValues.listDocumentType,
+        documentTypeId: preservedValues.documentTypeId,
         listWarehouse: preservedValues.listWarehouse,
         warehouseId: preservedValues.warehouseId,
         listSalesRegion: [],
         salesRegionId: null,
         listSalesRepresentative: [],
         salesRepresentativeId: null,
+        //
         listTargetDocumentType: [],
         targetDocumentTypeId: null,
         listDeliveryRule: [],
@@ -174,6 +179,7 @@ const OutBoundOrder = {
       state.isLoadingProcess = loading
     }
   },
+
   actions: {
     searchListDocument({ commit }, {
       movementTypeId,
@@ -210,6 +216,7 @@ const OutBoundOrder = {
           })
       })
     },
+
     searchListDocumentLine({ commit }, {
       movementTypeId,
       recordsId

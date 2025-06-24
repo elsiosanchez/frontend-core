@@ -23,6 +23,7 @@
     <template slot="label">
       {{ $t('form.outBoundOrder.process.locator') }}
     </template>
+
     <el-select
       v-model="value"
       clearable
@@ -35,7 +36,9 @@
     >
       <empty-option-select
         :current-value="value"
+        :is-allows-zero="false"
       />
+
       <el-option
         v-for="item in optionsList"
         :key="item.uuid"
@@ -62,7 +65,7 @@ import {
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'DocumentDataField',
+  name: 'LocatorField',
 
   components: {
     EmptyOptionSelect
