@@ -65,6 +65,8 @@ const pointOfSales = {
       cardNumber: 'Card Number',
       email: 'Mail'
     },
+    currencyMandatory: 'Mandatory Currency',
+    paymentMethodMandatory: 'Mandatory Payment Method',
     chargeAmount: 'Charge',
     creditAmount: 'Installment',
     others: 'Others',

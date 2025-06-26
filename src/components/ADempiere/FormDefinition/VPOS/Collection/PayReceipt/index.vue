@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -31,38 +33,47 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             :label="$t('pointOfSales.collection.field.fullPayment')"
             class="form-item-criteria"
             style="margin: 0px;width: 100%;"
+            required
           >
-            <field-amount
+            <amount-field
               :value-amount="payAmount"
               :value-display="payAmount"
               :handle-change="updateAmount"
             />
           </el-form-item>
         </el-col>
+
         <el-col :span="8">
           <payment-methods-field
             :handle-change="changePaymentMethods"
           />
         </el-col>
+
         <el-col :span="8">
-          <currencie />
+          <currencies-field />
         </el-col>
+
         <!-- Payment Methods (Fields Display Logic) -->
         <el-col v-if="isDisplayFieldPayment('creditMemo')" :span="8">
           <credit-memo />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('recipientBank')" :span="8">
           <recipient-bank />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('banksAccounts')" :span="8">
           <banks-accounts />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('issuingBank')" :span="8">
           <issuing-bank />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Bank')" :span="8">
           <bank />
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Value')" :span="8">
           <el-form-item
             :label="$t('pointOfSales.collection.field.code')"
@@ -75,6 +86,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             />
           </el-form-item>
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Description')" :span="8">
           <el-form-item
             :label="$t('pointOfSales.collection.field.description')"
@@ -89,6 +101,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             />
           </el-form-item>
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Date')" :span="8">
           <el-form-item
             :label="$t('pointOfSales.collection.field.date')"
@@ -102,6 +115,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             />
           </el-form-item>
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('Phone')" :span="8">
           <el-form-item
             :label="$t('pointOfSales.collection.field.phone')"
@@ -114,6 +128,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
             />
           </el-form-item>
         </el-col>
+
         <el-col v-if="isDisplayFieldPayment('ReferenceNo')" :span="8">
           <el-form-item
             :label="$t('pointOfSales.collection.field.referenceNo')"
@@ -127,6 +142,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           </el-form-item>
         </el-col>
       </el-row>
+
       <p v-show="discountPercentage !== '0'" style="text-align: end;">
         <b>
           {{ $t('form.pos.pinMessage.discountApplied') }}
@@ -145,9 +161,9 @@ import store from '@/store'
 // import router from '@/router'
 
 // Component and Mixins
-import fieldAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
+import AmountField from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
+import CurrenciesField from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/currencies'
 import PaymentMethodsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayReceipt/paymentMethodsField'
-import currencie from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/currencies'
 import recipientBank from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/recipientBank.vue'
 import banksAccounts from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/banksAccounts.vue'
 import creditMemo from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/creditMemo.vue'
@@ -156,6 +172,7 @@ import bank from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/bank
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { showMessage } from '@/utils/ADempiere/notification'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 
@@ -163,9 +180,9 @@ export default defineComponent({
   name: 'PayReceipt',
 
   components: {
+    AmountField,
     bank,
-    currencie,
-    fieldAmount,
+    CurrenciesField,
     PaymentMethodsField,
     recipientBank,
     banksAccounts,
@@ -303,6 +320,13 @@ export default defineComponent({
               return
             }
             const { amount, currency, business_partner, id } = currentGiftCard
+            if (isEmptyValue(currency) || currency.id <= 0) {
+              showMessage({
+                message: lang.t('form.pointOfSales.collection.currencyMandatory'),
+                type: 'warning'
+              })
+              return
+            }
             store.dispatch('refundReference', {
               amount,
               source_amount: amount,

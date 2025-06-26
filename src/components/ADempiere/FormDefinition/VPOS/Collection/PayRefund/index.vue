@@ -33,8 +33,9 @@
             :label="$t('pointOfSales.collection.field.fullPayment')"
             class="form-item-criteria"
             style="margin: 0px;width: 100%;"
+            required
           >
-            <field-amount
+            <amount-field
               :value-amount="refundAmount"
               :value-display="refundAmountDisplay"
               :handle-change="updateAmount"
@@ -49,7 +50,7 @@
         </el-col>
 
         <el-col :span="8">
-          <currencie
+          <currencies-field
             :handle-change="changeCurrency"
           />
         </el-col>
@@ -127,10 +128,10 @@ import store from '@/store'
 // import router from '@/router'
 
 // Component and Mixins
+import AmountField from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
 import BanksAccountsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund/banksAccountsField.vue'
-import fieldAmount from '@/components/ADempiere/Form/VPOS2/MainOrder/OptionLine/editLine/fieldAmount.vue'
+import CurrenciesField from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/currencies'
 import PaymentMethodsField from '@/components/ADempiere/FormDefinition/VPOS/Collection/PayRefund/paymentMethodsField'
-import currencie from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/currencies'
 import recipientBank from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/recipientBank.vue'
 import creditMemo from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/creditMemo.vue'
 import issuingBank from '@/components/ADempiere/Form/VPOS2/Collection/Refund/Field/issuingBank.vue'
@@ -149,6 +150,7 @@ import {
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { showMessage } from '@/utils/ADempiere/notification'
 import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import {
   clearFieldsCollections,
@@ -160,10 +162,10 @@ export default defineComponent({
   name: 'PayRefund',
 
   components: {
+    AmountField,
     bank,
     BanksAccountsField,
-    currencie,
-    fieldAmount,
+    CurrenciesField,
     PaymentMethodsField,
     recipientBank,
     creditMemo,
@@ -404,10 +406,24 @@ export default defineComponent({
     }
 
     function addPayment() {
-      isLoadingPay.value = true
       const currency = store.getters.getRefundAttributeField({
         attribute: 'currencie'
       })
+      if (isEmptyValue(currency) || currency.id <= 0) {
+        showMessage({
+          message: lang.t('form.pointOfSales.collection.currencyMandatory'),
+          type: 'warning'
+        })
+        return
+      }
+      if (isEmptyValue(currentPaymentMethod.value)) {
+        showMessage({
+          message: lang.t('form.pointOfSales.collection.paymentMethodMandatory'),
+          type: 'warning'
+        })
+        return
+      }
+      isLoadingPay.value = true
       if (isEmptyValue(currentAccount.value) && typeOptions.value === '2') {
         if (
           !isEmptyValue(currentPaymentMethod.value.payment_method) &&

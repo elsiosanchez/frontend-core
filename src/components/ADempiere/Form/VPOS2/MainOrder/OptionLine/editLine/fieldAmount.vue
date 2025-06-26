@@ -49,15 +49,13 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import store from '@/store'
 
 // // Utils and Helper Methods
-// import { formatPrice, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 // import { displayLineProductPriceValue } from '@/utils/ADempiere/dictionary/form/VPOS'
 // import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'fieldAmount',
+  name: 'AmountField',
 
   props: {
     valueAmount: {

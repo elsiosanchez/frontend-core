@@ -1,17 +1,19 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
-Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A.
+  Contributor(s): Elsio Sanchez elsiosanchez15@outlook.com https://github.com/elsiosanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
@@ -196,19 +198,22 @@ import {
   ref
 } from '@vue/composition-api'
 
+import lang from '@/lang'
 import store from '@/store'
-// import lang from '@/lang'
+
 // Utils and Helper Methods
 import { formatPrice, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-// import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import CardPayments from '@/components/ADempiere/Form/VPOS2/Collection/Payments/CardPayments.vue'
-import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { showMessage } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
   name: 'InfoCollection',
+
   components: {
     CardPayments
   },
+
   setup() {
     // Ref
     const code = ref('')
@@ -249,6 +254,13 @@ export default defineComponent({
 
     function addPayment() {
       const { amount, currency, business_partner, id } = currentGiftCard.value
+      if (isEmptyValue(currency) || currency.id <= 0) {
+        showMessage({
+          message: lang.t('form.pointOfSales.collection.currencyMandatory'),
+          type: 'warning'
+        })
+        return
+      }
       store.dispatch('refundReference', {
         amount,
         source_amount: amount,
