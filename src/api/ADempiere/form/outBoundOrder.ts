@@ -301,7 +301,7 @@ export function requesListDocumentLines({
 export function requestLoadOrder({
   organization_id,
   warehouse_id,
-  target_document_type_id,
+  target_document_type_id = -1,
   delivery_rule,
   delivery_via,
   shipper_id,
@@ -310,9 +310,9 @@ export function requestLoadOrder({
   movement_type,
   orderLineRequest,
   is_generate_freight_order,
-  vehicle_id,
-  driver_id,
-  freight_document_type_id
+  vehicle_id = -1,
+  driver_id = -1,
+  freight_document_type_id = -1
 }) {
   return request({
     url: `/forms/out-bound-orders/load-order/${movement_type}`,

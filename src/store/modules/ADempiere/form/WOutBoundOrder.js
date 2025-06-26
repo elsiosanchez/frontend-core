@@ -110,30 +110,30 @@ const OutBoundOrder = {
         listWarehouse: preservedValues.listWarehouse,
         warehouseId: preservedValues.warehouseId,
         listSalesRegion: [],
-        salesRegionId: null,
+        salesRegionId: -1,
         listSalesRepresentative: [],
-        salesRepresentativeId: null,
+        salesRepresentativeId: -1,
         //
         listTargetDocumentType: [],
-        targetDocumentTypeId: null,
+        targetDocumentTypeId: -1,
         listDeliveryRule: [],
-        deliveryRuleId: null,
+        deliveryRuleId: -1,
         listDeliveryVia: [],
-        deliveryViaId: null,
+        deliveryViaId: -1,
         listShipper: [],
-        shipperId: null,
+        shipperId: -1,
         listDocumentAction: [],
         documentActionId: 'CO',
         listLocator: [],
-        locatorId: null,
+        locatorId: -1,
         shipDate: new Date(),
         documentDate: new Date(),
         listVehicles: [],
-        vehiclesId: null,
+        vehiclesId: -1,
         listDriver: [],
-        driverId: null,
+        driverId: -1,
         charterOrder: false,
-        freightDocumentTypesId: null,
+        freightDocumentTypesId: -1,
         listfreightDocumentTypes: []
       }
     },
@@ -262,7 +262,7 @@ const OutBoundOrder = {
     runOutputOrderProcess({ commit }, {
       organization_id,
       warehouse_id,
-      target_document_type_id,
+      target_document_type_id = 0,
       delivery_rule,
       delivery_via,
       shipper_id,
@@ -271,9 +271,9 @@ const OutBoundOrder = {
       movement_type,
       orderLineRequest,
       is_generate_freight_order,
-      vehicle_id,
-      driver_id,
-      freight_document_type_id
+      vehicle_id = 0,
+      driver_id = 0,
+      freight_document_type_id = 0
     }) {
       return new Promise(resolve => {
         commit('setIsLoadingProcess', true)
