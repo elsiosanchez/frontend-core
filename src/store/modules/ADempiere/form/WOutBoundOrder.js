@@ -236,9 +236,16 @@ const OutBoundOrder = {
         })
           .then(response => {
             const { records } = response
-            commit('setListDocumentList', records)
+            const listRecord = records.map(list => {
+              return {
+                ...list,
+                isEdit: false,
+                isSelections: false
+              }
+            })
+            commit('setListDocumentList', listRecord)
             commit('setRecordsId', recordsId)
-            resolve(records)
+            resolve(listRecord)
           })
           .catch(error => {
             showNotification({

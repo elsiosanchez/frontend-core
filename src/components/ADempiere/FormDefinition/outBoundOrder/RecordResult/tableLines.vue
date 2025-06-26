@@ -29,10 +29,12 @@
       style="width: 100%;"
       :element-loading-text="$t('notifications.loading')"
       element-loading-background="rgba(255, 255, 255, 0.8)"
-      @select="handleSelectionLine"
+      :cell-class-name="getColumnStyle"
+      @cell-click="cellClick"
+      @select="handleSelection"
       @select-all="handleSelectionLine"
     >
-      <el-table-column type="selection" />
+      <el-table-column type="selection" prop="isSelections" />
 
       <el-table-column
         prop="document_no"
@@ -97,7 +99,7 @@
         width="150"
       >
         <template slot-scope="scope">
-          <span v-if="activateField[scope.row.id]">
+          <span v-if="scope.row.isEdit">
             <el-input-number
               v-model="scope.row.quantity"
               size="mini"
@@ -273,12 +275,18 @@ export default defineComponent({
       if (!isEmptyValue(selection)) {
         const newActivateField = {}
         selection.forEach(row => {
-          newActivateField[row.id] = true
+          row.isSelections = !row.isSelections
+          row.isEdit = false
         })
         activateField.value = newActivateField
         store.commit('setLinesSelection', selection)
       } else {
-        activateField.value = {}
+        if (!isEmptyValue(records.value)) {
+          records.value.forEach(list => {
+            list.isEdit = false
+            list.isSelections = false
+          })
+        }
         store.commit('setLinesSelection', [])
       }
     }
@@ -318,6 +326,35 @@ export default defineComponent({
       store.commit('setLinesSelection', selectedRows)
     }
 
+    function cellClick(row, column, cell, event) {
+      if (column.property === 'quantity' && row.isSelections) {
+        row.isEdit = !row.isEdit
+        if (!isEmptyValue(records.value)) {
+          records.value.forEach(list => {
+            if (row.id !== list.id && !list.isSelections) {
+              list.isEdit = false
+            }
+          })
+        }
+      }
+    }
+
+    function handleSelection(selection, row) {
+      handleSelectionLine(selection)
+    }
+
+    function getColumnStyle({
+      row,
+      column,
+      rowIndex,
+      columnIndex
+    }) {
+      if (column.property !== 'quantity') {
+        return 'highlight'
+      }
+      return ''
+    }
+
     watch(records, () => {
       toggleSelection()
     }, { deep: true })
@@ -336,8 +373,11 @@ export default defineComponent({
       tableHeigth,
       selectionsList,
       //
+      cellClick,
       formatDate,
+      getColumnStyle,
       formatQuantity,
+      handleSelection,
       handleSelectionLine,
       handleQuantityChange
     }
@@ -350,6 +390,10 @@ export default defineComponent({
   th.el-table__cell.is-leaf, .el-table td.el-table__cell {
     padding: 0px !important
   }
+  .highlight {
+  background-color: #f4f4f5;
+}
+
   // .el-input--medium .el-input__inner{
   //   height: 25px !important
   // }
