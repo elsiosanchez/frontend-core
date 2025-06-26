@@ -179,7 +179,7 @@ export const runProcessOfBrowser = {
   icon: 'el-icon-setting',
   actionName: 'runProcessOfBrowser',
   uuid: null,
-  runProcessOfBrowser: ({ containerUuid }) => {
+  runProcessOfBrowser: ({ containerUuid, isAll }) => {
     const browserProcess = store.getters.getProcessOfBrowser(containerUuid)
     if (isEmptyValue(browserProcess)) {
       showNotification({
@@ -191,7 +191,7 @@ export const runProcessOfBrowser = {
 
     store.commit('setBrowserProcessAll', {
       uuid: containerUuid,
-      isAll: false
+      isAll
     })
     const selection = store.getters.getBrowserSelectionsList({
       containerUuid

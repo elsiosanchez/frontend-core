@@ -29,6 +29,10 @@ const smartBrowser = {
     title: 'Export All Records',
     description: 'Records matching the query criteria.',
     successful: 'Successful export',
+    beenSelected: 'Has been selected',
+    currentPageRecord: 'Current page record',
+    selectAllRecords: 'Select all records',
+    selectOnlyCurrentPage: 'Select only the current page',
     quantityExport: 'Quantity of exported records: ',
     withoutExtension: 'You must select the specific format/extension.'
   },

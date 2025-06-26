@@ -30,6 +30,10 @@ const smartBrowser = {
     description: 'Registros que coincidan con el criterio de búsqueda.',
     successful: 'Exportación exitosa',
     quantityExport: 'Cantidad de registros exportados: ',
+    beenSelected: 'Se han seleccionados',
+    currentPageRecord: ' Registro de la pagina Actual. ',
+    selectAllRecords: 'Seleccionar todos Registros',
+    selectOnlyCurrentPage: ' Seleccionar solo la Pagina Actual',
     withoutExtension: 'Debe seleccionar el formato/extensión específico.'
   },
   // process

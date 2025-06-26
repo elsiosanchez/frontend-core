@@ -42,6 +42,30 @@
 
       <!-- {{ selectionsList.map(i => i[panelMetadata.keyColumn]) }} -->
     </el-row>
+    <p
+      v-if="selectionsList.length === recordsList.length && recordCount > selectionsList.length"
+      style="text-align: center;"
+    >
+      <span v-if="!isSelectAll">
+        {{ $t('smartBrowser.exportAllRecords.beenSelected') }}
+        <b>
+          {{ selectionsList.length }}
+        </b>
+        {{ $t('smartBrowser.exportAllRecords.currentPageRecord') }}
+        <el-button type="text" @click="isSelectAll = !isSelectAll">
+          {{ $t('smartBrowser.exportAllRecords.selectAllRecords') }}
+        </el-button>
+      </span>
+      <span v-else>
+        {{ $t('smartBrowser.exportAllRecords.beenSelected') }}
+        <b>
+          {{ recordCount + '. ' }}
+        </b>
+        <el-button type="text" @click="isSelectAll = !isSelectAll">
+          {{ $t('smartBrowser.exportAllRecords.selectOnlyCurrentPage') }}
+        </el-button>
+      </span>
+    </p>
 
     <el-table
       id="multipleTable"
@@ -351,6 +375,7 @@ export default defineComponent({
   setup(props) {
     const panelMain = document.getElementById('mainBrowseDataTable')
     const multipleTable = ref(null)
+    const isSelectAll = ref(false)
 
     const isEditing = ref(true)
     const editingRow = ref(null)
@@ -585,16 +610,24 @@ export default defineComponent({
       // rowSelected.isSelectedRow = !rowSelected.isSelectedRow
       // rowSelected.rowSelectedIndex = index++
       // rowSelected.isEditRow = rowSelected.isSelectedRow // edit record if is selected
-
       handleSelectionAll(selections)
     }
 
     function handleSelectionAll(selections = []) {
       if (isEmptyValue(selections)) {
         // read only current cell
+        isSelectAll.value = false
         isEditing.value = false
         editingRow.value = null
         editingColumn.value = null
+      }
+      if (
+        selections.length === recordsList.value.length &&
+        recordCount.value > selections.length
+      ) {
+        isSelectAll.value = true
+      } else {
+        isSelectAll.value = false
       }
       props.containerManager.setSelection({
         containerUuid: props.containerUuid,
@@ -676,7 +709,8 @@ export default defineComponent({
 
     function runProcess() {
       runProcessOfBrowser.runProcessOfBrowser({
-        containerUuid: props.panelMetadata.uuid
+        containerUuid: props.panelMetadata.uuid,
+        isAll: isSelectAll.value
       })
     }
 
@@ -851,6 +885,7 @@ export default defineComponent({
       heightTable,
       heightSize,
       storedBrowser,
+      isSelectAll,
       //
       isEditing,
       editingRow,
