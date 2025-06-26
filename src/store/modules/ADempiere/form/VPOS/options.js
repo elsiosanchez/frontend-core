@@ -68,6 +68,7 @@ import {
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage, showNotification } from '@/utils/ADempiere/notification'
 import { buildLinkHref } from '@/utils/ADempiere/resource.js'
+import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 const options = {
   showOptions: false,
@@ -95,6 +96,9 @@ const options = {
     isLoading: false,
     isLoadingPrint: false,
     listSummary: [],
+    documentNo: '',
+    name: '',
+    date: '',
     totalMovements: [],
     summary: undefined
   }
@@ -1219,6 +1223,9 @@ export default {
           .then(response => {
             const {
               id,
+              name,
+              date,
+              document_no,
               cash_movements,
               total_movements
             } = response
@@ -1234,6 +1241,18 @@ export default {
             commit('setAttributeCashClosings', {
               attribute: 'summary',
               value: id
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'name',
+              value: name
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'documentNo',
+              value: document_no
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'date',
+              value: translateDate({ value: date, format: 'onlyDate' })
             })
             resolve(response)
           })
@@ -1291,7 +1310,11 @@ export default {
           .then(response => {
             const {
               id,
-              cash_movements
+              name,
+              date,
+              document_no,
+              cash_movements,
+              total_movements
             } = response
             commit('setAttributeCashClosings', {
               attribute: 'listSummary',
@@ -1300,6 +1323,22 @@ export default {
             commit('setAttributeCashClosings', {
               attribute: 'summary',
               value: id
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'totalMovements',
+              value: total_movements
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'name',
+              value: name
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'documentNo',
+              value: document_no
+            })
+            commit('setAttributeCashClosings', {
+              attribute: 'date',
+              value: translateDate({ value: date, format: 'onlyDate' })
             })
             resolve(response)
           })
@@ -1395,13 +1434,15 @@ export default {
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
+        const { summary } = getters.getCashClosings
         if (isEmptyValue(posId)) posId = currentPos.id
         commit('setAttributeCashClosings', {
           attribute: 'isLoadingPrint',
           value: true
         })
         printTicketCashMovements({
-          posId
+          posId,
+          bank_statement_id: summary
         })
           .then(response => {
             let process_log

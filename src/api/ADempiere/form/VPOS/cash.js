@@ -62,13 +62,15 @@ export function listCashSummaryMovements({
  * List Cash Summary
  */
 export function printTicketCashMovements({
+  bank_statement_id,
   posId
 }) {
   return request({
     url: `point-of-sales/${posId}/cash/movements/print-preview`,
     method: 'get',
     params: {
-      pos_id: posId
+      pos_id: posId,
+      bank_statement_id
     }
   })
 }

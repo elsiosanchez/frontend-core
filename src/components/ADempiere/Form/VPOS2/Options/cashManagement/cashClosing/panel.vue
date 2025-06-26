@@ -17,7 +17,31 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <template>
   <span class="table-pos-dialogo">
     <p
-      v-if="!isDetails"
+      style="text-align: right;margin: 0px"
+    >
+      <b>
+        {{ date }}
+      </b>
+    </p>
+
+    <p
+      style="text-align: center"
+    >
+      <!-- documentNo -->
+      <el-button
+        icon="el-icon-document-copy"
+        style="padding: 0px;"
+        type="text"
+        @click="copyCode(documentNo)"
+      >
+        {{ documentNo }}
+      </el-button>
+      <b>
+        {{ name }}
+      </b>
+    </p>
+
+    <p
       style="text-align: right"
     >
       <el-checkbox
@@ -101,7 +125,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-table-column>
     </el-table>
     <p
-      v-if="!isEmptyValue(totalMovements) && !isDetails"
+      v-if="!isEmptyValue(totalMovements)"
     >
       <span>
         <p>
@@ -127,6 +151,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import store from '@/store'
+import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
 
 export default defineComponent({
   name: 'cashClosingPanel',
@@ -140,9 +165,27 @@ export default defineComponent({
       })
     })
 
+    const name = computed(() => {
+      return store.getters.getAttributeCashClosings({
+        attribute: 'name'
+      })
+    })
+
+    const date = computed(() => {
+      return store.getters.getAttributeCashClosings({
+        attribute: 'date'
+      })
+    })
+
     const totalMovements = computed(() => {
       return store.getters.getAttributeCashClosings({
         attribute: 'totalMovements'
+      })
+    })
+
+    const documentNo = computed(() => {
+      return store.getters.getAttributeCashClosings({
+        attribute: 'documentNo'
       })
     })
 
@@ -172,16 +215,27 @@ export default defineComponent({
       return key < (length - 1)
     }
 
+    function copyCode(value) {
+      copyToClipboard({
+        text: value,
+        isShowMessage: true
+      })
+    }
+
     return {
+      name,
+      date,
       isRefund,
       isLoading,
       isDetails,
+      documentNo,
       isLoadingTable,
       totalMovements,
       listCashSummary,
       isSeeDetailsPaymentType,
       // Methods
       change,
+      copyCode,
       formatPrice,
       isDisplayBar,
       convertToNumber
