@@ -106,14 +106,16 @@ export default defineComponent({
       if (
         !isEmptyValue(currentPos.value) &&
         !isEmptyValue(listCash.value) &&
-        !isEmptyValue(currentPos.value.default_opening_charge_id)
+        !isEmptyValue(currentPos.value.cash_transfer_bank_account)
       ) {
-        const defaultCashOpen = listCash.value.find(list => list.id === currentPos.value.default_opening_charge_id)
+        const defaultCashOpen = listCash.value.find(list => list.id === currentPos.value.cash_transfer_bank_account.id)
         if (defaultCashOpen) {
           store.commit('setAttributeCashOpenFields', {
             attribute: 'cashBank',
             value: defaultCashOpen
           })
+        } else {
+          listCash.value.push(currentPos.value.cash_transfer_bank_account)
         }
       }
     }, 500)

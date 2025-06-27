@@ -58,6 +58,10 @@ export default defineComponent({
   setup(props) {
     const listCash = ref([])
 
+    const currentPos = computed(() => {
+      return store.getters.getVPOS
+    })
+
     const cashBank = computed({
       get() {
         const collectionAgent = store.getters.getAttributeCashWithdrawalFields({
@@ -96,6 +100,26 @@ export default defineComponent({
           })
         })
     }
+
+    findSeller(true)
+
+    setTimeout(() => {
+      if (
+        !isEmptyValue(listCash.value) &&
+        !isEmptyValue(currentPos.value) &&
+        !isEmptyValue(currentPos.value.cash_transfer_bank_account)
+      ) {
+        const defaultCashOpen = listCash.value.find(list => list.id === currentPos.value.cash_transfer_bank_account.id)
+        if (defaultCashOpen) {
+          store.commit('setAttributeCashWithdrawalFields', {
+            attribute: 'cashBank',
+            value: defaultCashOpen
+          })
+        } else {
+          listCash.value.push(currentPos.value.cash_transfer_bank_account)
+        }
+      }
+    }, 500)
 
     return {
       cashBank,
