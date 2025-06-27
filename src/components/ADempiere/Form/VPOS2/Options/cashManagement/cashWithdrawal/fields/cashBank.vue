@@ -45,7 +45,7 @@ import {
 } from '@/api/ADempiere/form/VPOS'
 // Utils and Helper Methods
 import { showMessage } from '@/utils/ADempiere/notification'
-// import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'CashBank',
@@ -80,7 +80,7 @@ export default defineComponent({
     })
 
     function findSeller(isFindOrder) {
-      if (!isFindOrder) return
+      if (!isFindOrder || !isEmptyValue(listCash.value)) return
       const currentPos = store.getters.getVPOS
       listAvailableCash({
         posId: currentPos.id

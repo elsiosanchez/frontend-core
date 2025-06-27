@@ -50,6 +50,16 @@
               icon-class="status-payment"
             />
           </el-button>
+          <el-button
+            v-if="isReverse"
+            type="text"
+            style="float: right;padding: 0px;font-size: 18px;"
+            @click="actionsReverse(payment)"
+          >
+            <svg-icon
+              icon-class="undo"
+            />
+          </el-button>
         </p>
         <p style="margin: 1px 0px;">
           <b>
@@ -260,6 +270,16 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    isReverse: {
+      type: Boolean,
+      default: false
+    },
+    actionsReverse: {
+      type: Function,
+      default: (payment) => {
+        console.info('implement change page number method', payment)
+      }
+    },
     showDetails: {
       type: Boolean,
       default: true
@@ -390,8 +410,9 @@ export default defineComponent({
         is_online
       } = payments
       if (is_online) {
-        if (isEmptyValue(response_status) || response_status === 'E') return 'card-payment-error'
+        if (isEmptyValue(response_status) || response_status === 'E' || response_status === 'R') return 'card-payment-error'
         if (response_status === 'W') return 'card-payment-warning'
+        return 'card-payment-success'
       }
       if (is_processing || is_processed) return 'card-payment-process'
       return 'card-payment-success'

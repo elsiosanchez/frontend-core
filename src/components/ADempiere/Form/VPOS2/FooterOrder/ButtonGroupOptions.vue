@@ -96,6 +96,7 @@ export default defineComponent({
 
     function openShowCollections() {
       store.commit('setShowCollection', true)
+      store.dispatch('availablePaymentMethods')
       store.commit('setPayAmount', order.value.open_amount)
       if (isEmptyValue(store.getters.getVPOS.display_currency)) return
       store.dispatch('findRate', {

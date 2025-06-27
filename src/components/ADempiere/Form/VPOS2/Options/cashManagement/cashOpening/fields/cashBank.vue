@@ -84,7 +84,7 @@ export default defineComponent({
     })
 
     function findSeller(isFindOrder) {
-      if (!isFindOrder) return
+      if (!isFindOrder || !isEmptyValue(listCash.value)) return
       listAvailableCash({
         posId: currentPos.value.id
       })
