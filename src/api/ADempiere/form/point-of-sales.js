@@ -422,7 +422,7 @@ export function printTicket({
   orderId
 }) {
   return request({
-    url: `${config.pointOfSales.endpoint}/print-ticket`,
+    url: `${config.pointOfSales.endpoint}/${posId}/print-ticket`,
     method: 'post',
     data: {
       pos_id: posId,

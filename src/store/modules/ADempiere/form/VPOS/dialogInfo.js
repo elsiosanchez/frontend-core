@@ -46,12 +46,12 @@ const modalDialogManagerVPOS = {
 
   actions: {
     setModalDialogVPOS({ commit }, {
+      isTypeButton = function() { return 'warning' },
       isOptionsCancel = function() { return false },
       isDisabledDone = function() { return false },
       labelCancelMethod = function() { return '' },
       isLoadingDone = function() { return false },
       widthDialogo = function() { return '80%' },
-      isTypeButton = function() { return 'warning' },
       isSvgButton = function() { return '' },
       cancelMethod = function() {},
       closeMethod = function() {},
@@ -62,6 +62,7 @@ const modalDialogManagerVPOS = {
       axillaryMethod = {
         isDisplayed: false
       },
+      isAutoClose = true,
       componentPathSlot,
       isShowed = false,
       componentPath,
@@ -84,6 +85,7 @@ const modalDialogManagerVPOS = {
         isSvgButton,
         actionsName,
         closeMethod,
+        isAutoClose,
         beforeOpen,
         doneMethod,
         loadData,

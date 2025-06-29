@@ -69,6 +69,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage, showNotification } from '@/utils/ADempiere/notification'
 import { buildLinkHref } from '@/utils/ADempiere/resource.js'
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 
 const options = {
   showOptions: false,
@@ -101,6 +102,11 @@ const options = {
     date: '',
     totalMovements: [],
     summary: undefined
+  },
+  reverseTransaction: {
+    oreder: {},
+    lines: {},
+    payments: {}
   }
 }
 
@@ -142,10 +148,16 @@ export default {
       value
     }) {
       state.cashClosings[attribute] = value
+    },
+    setAttributeReverseTransaction(state, {
+      attribute,
+      value
+    }) {
+      state.reverseTransaction[attribute] = value
     }
   },
   actions: {
-    reverseSales({ dispatch, getters }, {
+    reverseSales({ dispatch, getters, commit }, {
       description
     }) {
       return new Promise(resolve => {
@@ -158,10 +170,21 @@ export default {
           description
         })
           .then(response => {
+            commit('setAttributeReverseTransaction', {
+              attribute: 'oreder',
+              value: response
+            })
+            dispatch('getListPayments')
             dispatch('overloadOrder', { order: response })
+            dispatch('getListPayments')
             dispatch('printTicketVPOS', {
               orderId: response.id
             })
+            // dispatch('setModalDialogVPOS', {
+            //   title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
+            //   componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
+            //   isShowed: true
+            // })
             resolve(response)
           })
           .catch(error => {
@@ -425,7 +448,7 @@ export default {
         tableName,
         url: link.href,
         uuid: orderId.toString(),
-        instanceUuid: Number(instanceUuid)
+        instanceUuid: convertToNumber(instanceUuid)
       })
       router.push({
         name: REPORT_VIEWER_NAME,
@@ -434,7 +457,7 @@ export default {
           processId: orderId,
           reportUuid: orderId.toString(),
           tableName: 'C_Order',
-          instanceUuid: Number(instanceUuid),
+          instanceUuid: convertToNumber(instanceUuid),
           fileName: file_name,
           name: file_name,
           mimeType: mime_type,
@@ -1109,9 +1132,6 @@ export default {
               title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA'),
               type: 'success',
               doneMethod: () => {
-                commit('setShowedModalDialogVPOS', {
-                  isShowed: false
-                })
                 commit('setAttributeRMA', {
                   attribute: 'current',
                   value: {}
@@ -1130,6 +1150,10 @@ export default {
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/RMA/previwerRMA.vue'),
               isShowed: true
             })
+            dispatch('printTicketVPOS', {
+              posId: currentPos.id,
+              orderId: response.id
+            })
             resolve(response)
           })
           .catch(error => {
@@ -1145,13 +1169,21 @@ export default {
               message,
               showClose: true
             })
+            let isLoadingRMA = false
             dispatch('setModalDialogVPOS', {
               title: message,
               type: 'error',
               doneMethod: () => {
-                dispatch('processRMA', {})
+                isLoadingRMA = true
+                dispatch('processRMA')
+                  .finally(() => {
+                    isLoadingRMA = false
+                  })
               },
-              // TODO: Change to string and import dynamic in component
+              isLoadingDone: () => {
+                return isLoadingRMA
+              },
+              isAutoClose: false,
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/RMA/previwerRMA.vue'),
               isShowed: true
             })
@@ -1167,6 +1199,11 @@ export default {
       salesRepresentativeId
     }) {
       return new Promise(resolve => {
+        showMessage({
+          type: 'success',
+          showClose: true,
+          title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA')
+        })
         const currentPos = getters.getVPOS
         createOrderFromRMA({
           posId: currentPos.id,
@@ -1769,6 +1806,10 @@ export default {
     },
     getCashClosings: (state) => {
       return state.cashClosings
+    },
+    getReverseTransaction: (state) => ({ attribute }) => {
+      if (isEmptyValue(attribute)) return ''
+      return state.reverseTransaction[attribute]
     },
     getCurrentGiftCard: (state) => {
       return state.giftCard.current

@@ -249,7 +249,8 @@ const returnProduct = {
             })
             dispatch('printTicket', {
               posId: rootGetters.posAttributes.currentPointOfSales.id,
-              orderId: response.id
+              orderId: response.id,
+              forcePrint: true
             })
             commit('setShowSummaryRMA', true)
             // const { IsAllowsPreviewDocument } = rootGetters.posAttributes.currentPointOfSales

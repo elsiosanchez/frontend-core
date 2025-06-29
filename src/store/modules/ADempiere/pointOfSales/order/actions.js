@@ -355,10 +355,16 @@ export default {
     }
     commit('findOrder', {})
   },
-  printTicket({ commit, dispatch, rootGetters }, { posId, orderId }) {
+  printTicket({ commit, dispatch, getters, rootGetters }, { posId, orderId, forcePrint = false }) {
     const isAllowsPrintDocument = rootGetters.posAttributes.currentPointOfSales.isAllowsPrintDocument
-    if (!isAllowsPrintDocument) {
+    if (!isAllowsPrintDocument && !forcePrint) {
       return
+    }
+    if (posId) {
+      posId = getters.getVPOS.id
+    }
+    if (orderId) {
+      orderId = getters.getCurrentOrder.id
     }
     return printTicket({
       posId,

@@ -35,20 +35,13 @@
           <el-table-column
             v-if="displayLabel({ row: valueOrder })"
             :key="key"
-            :column-key="valueOrder.columnName"
             :label="valueOrder.label"
+            :column-key="valueOrder.columnName"
             :align="valueOrder.isNumeric ? 'right' : 'left'"
+            :width="widthSize(valueOrder)"
           >
             <template slot-scope="scope">
-              <span v-if="scope.row.isEditQty && valueOrder.columnName === 'QtyEntered'">
-                <el-button v-if="scope.row.isLoading" :loading="scope.row.isLoading" />
-                <edit-qty-entered
-                  v-else
-                  :qty="scope.row.quantity_ordered"
-                  :handle-change="updateQuantity"
-                />
-              </span>
-              <span v-else>
+              <span>
                 <p style="margin: 0px !important;">
                   <el-button
                     v-show="valueOrder.columnName === 'LineDescription'"
@@ -63,27 +56,6 @@
             </template>
           </el-table-column>
         </template>
-
-        <el-table-column
-          :label="$t('form.pos.tableProduct.options')"
-          :align="'center'"
-        >
-          <template slot-scope="scope">
-            <p style="margin: 0px !important;">
-              <el-button
-                size="mini"
-                type="text"
-                icon="el-icon-delete"
-                style="margin-left: 2px;font-size: 12px;padding: 0px 5px;color: #ff4949;"
-                :disabled="scope.row.isLoading"
-                @click="deleteLine(scope.row)"
-              >
-                <i v-if="!scope.row.isLoading" class="el-icon-delete" />
-                <i v-else class="el-icon-loading" />
-              </el-button>
-            </p>
-          </template>
-        </el-table-column>
       </el-table>
     </span>
 
@@ -250,6 +222,13 @@ export default defineComponent({
       })
     }
 
+    function widthSize(valueOrder) {
+      const { columnName } = valueOrder
+      if (columnName === 'LineDescription') return '350'
+      if (columnName === 'UOM') return '50'
+      return 'auto'
+    }
+
     return {
       // Ref
       searchProduct,
@@ -263,6 +242,7 @@ export default defineComponent({
       // Methods
       copyCode,
       exitLine,
+      widthSize,
       selectLine,
       deleteLine,
       querySearch,

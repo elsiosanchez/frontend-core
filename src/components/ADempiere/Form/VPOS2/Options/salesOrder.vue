@@ -1019,20 +1019,26 @@ export default defineComponent({
       store.dispatch('setModalDialogVPOS', {
         title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA'),
         doneMethod: () => {
-          store.commit('setShowedModalDialogVPOS', {
-            isShowed: false
-          })
           setTimeout(() => {
             store.dispatch('setModalDialogVPOS', {
               title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA'),
               doneMethod: () => {
+                isLoadingRMA.value = true
                 store.dispatch('processRMA')
+                  .finally(() => {
+                    isLoadingRMA.value = false
+                  })
               },
+              isLoadingDone: () => {
+                return isLoadingRMA.value
+              },
+              isAutoClose: false,
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/RMA/previwerRMA.vue'),
               isShowed: true
             })
           })
         },
+        isAutoClose: false,
         componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/RMA'),
         isShowed: true
       })

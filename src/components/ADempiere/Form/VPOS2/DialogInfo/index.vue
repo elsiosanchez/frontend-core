@@ -191,6 +191,13 @@ export default defineComponent({
       return storedModalDialog.value.isTypeButton()
     })
 
+    const isAutoClose = computed(() => {
+      if (isEmptyValue(storedModalDialog.value)) {
+        return true
+      }
+      return storedModalDialog.value.isAutoClose
+    })
+
     const widthDialogo = computed(() => {
       // if (!isEmptyValue(storedModalDialog.value) && !isEmptyValue(storedModalDialog.value.widthDialogo)) {
       //   return storedModalDialog.value.widthDialogo
@@ -249,6 +256,7 @@ export default defineComponent({
 
     const doneButton = () => {
       storedModalDialog.value.doneMethod()
+      if (!isAutoClose.value) return
       closeDialog()
     }
 
@@ -265,6 +273,7 @@ export default defineComponent({
       widthDialogo,
       isTypeButton,
       isSvgButton,
+      isAutoClose,
       isShowed,
       typeInfo,
       title,
