@@ -24,8 +24,12 @@ import {
   getOrder,
   releaseOrder,
   holdOrder,
-  updateOrder
+  updateOrder,
+  processReverseSales
 } from '@/api/ADempiere/form/VPOS/index'
+import lang from '@/lang'
+import { existsUnapprovedOnlinePayments } from '@/api/ADempiere/form/VPOS/orders.js'
+// src/api/ADempiere/form/VPOS/orders.js
 // import { isEmptyValue } from '@/utils/ADempiere'
 
 // Utils and Helper Methods
@@ -488,6 +492,71 @@ export default {
           })
           .catch(error => {
             console.warn(`Delete Order: ${error.message}. Code: ${error.code}.`)
+            showMessage({
+              type: 'error',
+              message: error.message,
+              showClose: true
+            })
+            resolve({})
+          })
+      })
+    },
+    existsUnapprovedOnline({
+      commit,
+      getters,
+      dispatch
+    }, {
+      posId,
+      orderId
+    }) {
+      return new Promise(resolve => {
+        const currentPos = getters.getVPOS
+        const currentOrder = getters.getCurrentOrder
+        if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
+        if (isEmptyValue(currentOrder) && !isEmptyValue(orderId)) orderId = currentOrder.id
+        console.log({
+          posId,
+          orderId
+        })
+        existsUnapprovedOnlinePayments({
+          posId,
+          orderId
+        })
+          .then(response => {
+            const { record_count } = response
+            if (!isEmptyValue(record_count)) {
+              dispatch('setModalDialogVPOS', {
+                title: '',
+                componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/existsUnapprovedOnlinePayments.vue'),
+                doneMethod: () => {
+                  commit('setAttributeReverseTransaction', {
+                    attribute: 'oreder',
+                    value: currentOrder
+                  })
+                  dispatch('getListPayments', currentOrder.id)
+                    .finally(() => {
+                      dispatch('setModalDialogVPOS', {
+                        title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
+                        componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
+                        doneMethod: () => {
+                          processReverseSales({
+                            posId: currentPos.id,
+                            orderId: currentOrder.id
+                          })
+                            .then(processReverse => {
+                              console.log({ ...processReverse })
+                            })
+                        },
+                        isShowed: true
+                      })
+                    })
+                },
+                isShowed: true
+              })
+            }
+          })
+          .catch(error => {
+            console.warn(`Exists Unapproved Online Payments: ${error.message}. Code: ${error.code}.`)
             showMessage({
               type: 'error',
               message: error.message,

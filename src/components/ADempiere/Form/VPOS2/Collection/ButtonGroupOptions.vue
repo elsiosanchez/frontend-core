@@ -146,6 +146,7 @@ export default defineComponent({
 
     function processOrdes() {
       const {
+        id,
         grand_total,
         charge_amount,
         credit_amount,
@@ -153,6 +154,9 @@ export default defineComponent({
         refund_amount,
         open_amount
       } = currentOrder.value
+      store.dispatch('existsUnapprovedOnline', {
+        orderId: id
+      })
       if (isLoading.value) return
       const total = Number(grand_total) + Number(charge_amount) - Number(credit_amount) - Number(payment_amount)
       if (total === 0) {

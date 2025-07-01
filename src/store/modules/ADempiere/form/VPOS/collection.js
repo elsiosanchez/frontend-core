@@ -194,7 +194,7 @@ export default {
       commit,
       getters,
       dispatch
-    }) {
+    }, orderId) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
@@ -203,10 +203,13 @@ export default {
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentOrder.id)
         ) resolve({})
+        if (isEmptyValue(orderId)) {
+          orderId = currentOrder.id
+        }
         dispatch('listRefunds')
         listPayments({
           posId: currentPos.id,
-          orderId: currentOrder.id
+          orderId
         })
           .then(response => {
             const { payments } = response

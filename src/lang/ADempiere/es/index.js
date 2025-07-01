@@ -326,6 +326,11 @@ export default {
           generateImmediateInvoice: 'Generar Factura Inmediata',
           completePreparedOrder: 'Completar Orden Preparada',
           cancelSaleTransaction: 'Anular Transacción de Venta',
+          isExistOnlinePayments: {
+            isPaymentApproved: 'Tiene un Pago Pendiente por Aprobar',
+            isChargeApproved: 'Tiene un Cobro Pendiente por Aprobar',
+            isValidate: 'Desea Validarlo'
+          },
           createPos: 'Crear Retiro de Punto de Venta',
           print: 'Imprimir Documento',
           preview: 'Ver Vista Previa',

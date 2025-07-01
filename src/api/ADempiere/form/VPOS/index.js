@@ -980,6 +980,23 @@ export function reverseSales({
 }
 
 /**
+ * Reverse Sales
+ */
+export function processReverseSales({
+  posId,
+  orderId,
+  description
+}) {
+  return request({
+    url: `point-of-sales/${posId}/orders/${orderId}/reverse`,
+    method: 'post',
+    data: {
+      description
+    }
+  })
+}
+
+/**
  * Print Preview
  * @param {int32} posId
  * @param {int32} orderId

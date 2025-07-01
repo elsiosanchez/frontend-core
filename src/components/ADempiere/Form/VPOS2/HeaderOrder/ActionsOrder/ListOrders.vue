@@ -222,6 +222,9 @@ export default defineComponent({
           order: storeCurrentOrder
         })
           .then(() => {
+            store.dispatch('existsUnapprovedOnline', {
+              orderId: storeCurrentOrder.id
+            })
             store.dispatch('holdCurrentOrder', {
               order: currentOrder.value
             })

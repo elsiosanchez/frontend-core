@@ -35,6 +35,7 @@ import {
   deleteRMALine,
   updateRMALine,
   reverseSales,
+  processReverseSales,
   printPreview,
   processRMA,
   createShipment,
@@ -174,17 +175,31 @@ export default {
               attribute: 'oreder',
               value: response
             })
-            dispatch('getListPayments')
             dispatch('overloadOrder', { order: response })
-            dispatch('getListPayments')
-            dispatch('printTicketVPOS', {
-              orderId: response.id
-            })
-            // dispatch('setModalDialogVPOS', {
-            //   title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
-            //   componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
-            //   isShowed: true
-            // })
+            if (!response.is_processed) {
+              dispatch('getListPayments', response.id)
+                .finally(() => {
+                  dispatch('setModalDialogVPOS', {
+                    title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
+                    componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
+                    doneMethod: () => {
+                      processReverseSales({
+                        posId: currentPos.id,
+                        orderId: response.id,
+                        description
+                      })
+                        .then(processReverse => {
+                          console.log({ ...processReverse })
+                        })
+                    },
+                    isShowed: true
+                  })
+                })
+            } else {
+              dispatch('printTicketVPOS', {
+                orderId: response.id
+              })
+            }
             resolve(response)
           })
           .catch(error => {

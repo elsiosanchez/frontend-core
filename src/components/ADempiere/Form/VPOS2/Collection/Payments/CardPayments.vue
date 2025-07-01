@@ -41,7 +41,7 @@
             @click="remove(payment)"
           />
           <el-button
-            v-if="payment.is_online && showDetails"
+            v-if="payment.is_online && showDetails && !readonly"
             type="text"
             style="float: right;padding: 0px;font-size: 18px;"
             @click="seeDetail(payment)"
