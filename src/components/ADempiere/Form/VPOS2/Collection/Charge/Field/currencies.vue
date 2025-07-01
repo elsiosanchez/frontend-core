@@ -28,7 +28,7 @@
       <el-option
         v-for="item in listCurrencies"
         :key="item.id"
-        :label="item.iso_code + '(' + item.cur_symbol + ')'"
+        :label="item.iso_code + ' (' + item.cur_symbol + ')'"
         :value="item.id"
       />
     </el-select>

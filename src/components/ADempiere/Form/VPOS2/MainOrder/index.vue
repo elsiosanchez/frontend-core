@@ -19,7 +19,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     <el-table
       id="tablePos"
       ref="tablePos"
-      v-loading="!isLoadingOrder"
+      v-loading="isLoadingOrder"
       :data="lines"
       element-loading-background="rgba(255, 255, 255, 0.8)"
       :element-loading-text="$t('notifications.loading')"

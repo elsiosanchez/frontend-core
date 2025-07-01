@@ -32,7 +32,7 @@
       <el-option
         v-for="item in listCurrencies"
         :key="item.id"
-        :label="item.iso_code + '(' + item.cur_symbol + ')'"
+        :label="item.iso_code + ' (' + item.cur_symbol + ')'"
         :value="item.id"
       />
     </el-select>
@@ -70,12 +70,16 @@ export default defineComponent({
 
     const dayRate = computed(() => {
       const rate = store.getters.getRate({ date: currentOrder.value.date_ordered })
-      if (isEmptyValue(rate.multiply_rate)) return 1
+      if (isEmptyValue(rate.multiply_rate)) {
+        return 1
+      }
       const {
         multiply_rate,
         divide_rate
       } = rate
-      if (multiply_rate.value > divide_rate.value) return multiply_rate.value
+      if (multiply_rate.value > divide_rate.value) {
+        return multiply_rate.value
+      }
       return divide_rate.value
     })
 
