@@ -139,7 +139,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         :key="key"
       >
         <b :class="{ '': true, 'amoutn-negative': convertToNumber(list.total_amount) < 0 }">
-          {{ formatPrice({ value: list.total_amount, currency: list.currency.iso_code}) }}
+          {{ displaTotalsMovements(list) }}
         </b>
         <el-divider v-if="isDisplayBar(key, totalMovements.length)" direction="vertical" />
       </span>
@@ -152,6 +152,7 @@ import { defineComponent, computed, ref } from '@vue/composition-api'
 import { formatPrice, convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 import store from '@/store'
 import { copyToClipboard } from '@/utils/ADempiere/coreUtils.js'
+import { isEmptyValue } from '@/utils/ADempiere'
 
 export default defineComponent({
   name: 'cashClosingPanel',
@@ -222,6 +223,12 @@ export default defineComponent({
       })
     }
 
+    function displaTotalsMovements(movements) {
+      const { total_amount, currency, description } = movements
+      if (isEmptyValue(description)) return formatPrice({ value: total_amount, currency: currency.iso_code })
+      return `${description} (${formatPrice({ value: total_amount, currency: currency.iso_code })})`
+    }
+
     return {
       name,
       date,
@@ -238,7 +245,8 @@ export default defineComponent({
       copyCode,
       formatPrice,
       isDisplayBar,
-      convertToNumber
+      convertToNumber,
+      displaTotalsMovements
     }
   }
 })
