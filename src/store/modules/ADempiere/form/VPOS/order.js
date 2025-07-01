@@ -523,17 +523,13 @@ export default {
         const currentOrder = getters.getCurrentOrder
         if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
         if (isEmptyValue(currentOrder) && !isEmptyValue(orderId)) orderId = currentOrder.id
-        console.log({
-          posId,
-          orderId
-        })
         existsUnapprovedOnlinePayments({
           posId,
           orderId
         })
           .then(response => {
             const { record_count } = response
-            if (!isEmptyValue(record_count)) {
+            if (!isEmptyValue(record_count) && record_count >= 1) {
               dispatch('setModalDialogVPOS', {
                 title: '',
                 componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/existsUnapprovedOnlinePayments.vue'),
