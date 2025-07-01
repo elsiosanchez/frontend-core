@@ -46,6 +46,7 @@ const OrderVPOS = {
     pageToken: ''
   },
   isShowOrder: false,
+  isLoadingOrder: false,
   isLoadingRecords: false,
   isShowQuickOptions: false
 }
@@ -66,6 +67,9 @@ export default {
         pageToken,
         list
       }
+    },
+    setLoadingOrder(state, load) {
+      state.isLoadingOrder = load
     },
     setCurrentOrder(state, order) {
       state.order = order
@@ -295,13 +299,14 @@ export default {
           resolve()
           return
         }
+        commit('setLoadingOrder', true)
         getOrder({
           orderId: order.id,
           posId: id
         })
           .then(responseOrder => {
             commit('setCurrentOrder', responseOrder)
-
+            commit('setLoadingOrder', false)
             router.push({
               name,
               params,
@@ -322,6 +327,7 @@ export default {
             resolve(responseOrder)
           })
           .catch(error => {
+            commit('setLoadingOrder', false)
             console.warn(`Get Order: ${error.message}. Code: ${error.code}.`)
             let message = error.message
             if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
@@ -334,6 +340,9 @@ export default {
               showClose: true
             })
             resolve({})
+          })
+          .finally(() => {
+            commit('setLoadingOrder', false)
           })
       })
     },
@@ -570,6 +579,9 @@ export default {
   getters: {
     getListOrder(state) {
       return state.orderList.list
+    },
+    getLoadingOrder(state) {
+      return state.isLoadingOrder
     },
     getCurrentOrder(state) {
       return state.order

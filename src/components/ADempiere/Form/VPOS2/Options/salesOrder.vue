@@ -1015,7 +1015,9 @@ export default defineComponent({
       if (isEmptyValue(currentOrder.value.id)) {
         return
       }
-      store.dispatch('createRMA')
+      store.dispatch('createRMA', {
+        isNotifiactions: true
+      })
       store.dispatch('setModalDialogVPOS', {
         title: lang.t('form.pos.optionsPoinSales.salesOrder.newOrderFromRMA'),
         doneMethod: () => {

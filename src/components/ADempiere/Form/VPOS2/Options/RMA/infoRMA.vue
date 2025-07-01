@@ -87,22 +87,12 @@
                 {{ displayAmount('total_lines') }}
               </b>
             </span>
-            <!-- <br> -->
-            <!-- <span class="info-label">
-              {{ $t('form.pos.tableProduct.displayDiscountAmount') }}:
-              <b v-if="!isEmptyValue(currentOrderReturn.priceList) && !isEmptyValue(currentOrderReturn.priceList.currency)" class="order-info">
-                {{ formatPrice(currentOrderReturn.discountAmount, currentOrderReturn.priceList.currency.iso_code) }}
-              </b>
-            </span> -->
             <br>
             <span class="info-label">
               {{ $t('form.pos.order.tax') }}:
               <b class="order-info">
                 {{ displayAmount('tax_amount') }}
               </b>
-              <!-- <b v-if="!isEmptyValue(currentOrderReturn.priceList) && !isEmptyValue(currentOrderReturn.priceList.currency)" class="order-info">
-                {{ formatPrice(currentOrderReturn.taxAmount, currentOrderReturn.priceList.currency.iso_code) }}
-              </b> -->
             </span>
             <br>
             <span class="info-label">

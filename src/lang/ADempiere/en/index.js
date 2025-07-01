@@ -337,6 +337,8 @@ export default {
           orderRemoved: 'Order Deleted',
           copyOrder: 'Copy Order',
           newOrderFromRMA: 'Create New Order From RMA',
+          orderFromRMASuccess: 'RMA Order Created Successfully No.',
+          processingRMA: 'Processing RMA Order',
           createNewReturnOrder: 'Create a new return order',
           confirmDelivery: 'Confirm Delivery',
           giftCard: 'Gift Card',

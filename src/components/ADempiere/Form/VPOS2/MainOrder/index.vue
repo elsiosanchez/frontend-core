@@ -19,7 +19,10 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
     <el-table
       id="tablePos"
       ref="tablePos"
+      v-loading="!isLoadingOrder"
       :data="lines"
+      element-loading-background="rgba(255, 255, 255, 0.8)"
+      :element-loading-text="$t('notifications.loading')"
       :border="true"
       height="60vh"
       fit
@@ -260,6 +263,10 @@ export default defineComponent({
     const validateProcess = computed(() => {
       const { is_processed, is_processing } = currentOrder.value
       return is_processed || is_processing
+    })
+
+    const isLoadingOrder = computed(() => {
+      return store.getters.getLoadingOrder
     })
 
     /**
@@ -591,6 +598,7 @@ export default defineComponent({
       isLoading,
       currentPos,
       currentOrder,
+      isLoadingOrder,
       validateProcess,
       orderLineDefinition,
       // Methods
@@ -621,9 +629,15 @@ export default defineComponent({
 .tablePos {
   height: 100%;
   overflow: auto;
+  .el-loading-spinner .circular {
+    width: 80px;
+  }
   .el-table {
     height: calc(100vh - 335px) !important;
     overflow: hidden !important;
+    .el-loading-spinner .circular {
+      width: 80px;
+    }
   }
   .el-table .el-table__cell {
     padding: 0px !important;

@@ -17,7 +17,20 @@
 -->
 
 <template>
+  <el-result
+    v-if="isLoadingPanel"
+    :title="$t('form.pos.optionsPoinSales.salesOrder.processingRMA') + currentOrderRMA.document_no"
+  >
+    <template slot="icon">
+      <i
+        slot="suffix"
+        class="el-icon-loading"
+        style="font-size: 50px;padding-top: 10px;"
+      />
+    </template>
+  </el-result>
   <el-main
+    v-else
     class="product-list-content"
   >
     <span class="table-pos-dialogo">
@@ -120,9 +133,21 @@ export default defineComponent({
       })
     })
 
+    const currentOrderRMA = computed(() => {
+      return store.getters.getAttributeRMA({
+        attribute: 'current'
+      })
+    })
+
     const isShowCheck = computed(() => {
       return store.getters.getAttributeRMA({
         attribute: 'isShowCheck'
+      })
+    })
+
+    const isLoadingPanel = computed(() => {
+      return store.getters.getAttributeRMA({
+        attribute: 'isLoading'
       })
     })
 
@@ -237,6 +262,8 @@ export default defineComponent({
       currentRMA,
       listLineRMA,
       isShowCheck,
+      isLoadingPanel,
+      currentOrderRMA,
       orderLineDefinition,
       isCreateNewSubstituteOrder,
       // Methods

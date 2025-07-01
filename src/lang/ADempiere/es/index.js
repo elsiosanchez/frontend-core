@@ -338,6 +338,8 @@ export default {
           orderRemoved: 'Orden Borrada',
           copyOrder: 'Copiar Orden',
           newOrderFromRMA: 'Crear Nueva Orden desde RMA',
+          orderFromRMASuccess: 'Orden RMA Creada Exitosa Nro',
+          processingRMA: 'Procesando la Orden RMA',
           createNewReturnOrder: 'Crear una nueva orden de devolución',
           confirmDelivery: 'Confirmar Entrega',
           giftCard: 'Tarjeta de Regalo',

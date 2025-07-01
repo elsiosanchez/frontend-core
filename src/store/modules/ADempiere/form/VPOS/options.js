@@ -90,6 +90,7 @@ const options = {
     list: [],
     current: {},
     listLine: [],
+    isLoading: false,
     isShowCheck: false,
     isCreateNewSubstituteOrder: true
   },
@@ -893,6 +894,8 @@ export default {
       commit,
       getters,
       dispatch
+    }, {
+      isNotifiactions = true
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
@@ -906,6 +909,13 @@ export default {
           sourceOrderId: currentOrder.id
         })
           .then(response => {
+            if (isNotifiactions) {
+              showMessage({
+                type: 'success',
+                message: `${lang.t('form.pos.optionsPoinSales.salesOrder.orderFromRMASuccess')} : ${response.document_no}`,
+                showClose: true
+              })
+            }
             commit('setAttributeRMA', {
               attribute: 'current',
               value: response
@@ -958,7 +968,7 @@ export default {
           quantity
         })
           .then(response => {
-            dispatch('createRMA')
+            dispatch('createRMA', { isNotifiactions: false })
             resolve(response)
           })
           .catch(error => {
@@ -1001,7 +1011,7 @@ export default {
           quantity
         })
           .then(response => {
-            dispatch('createRMA')
+            dispatch('createRMA', { isNotifiactions: false })
               .finally(() => {
                 resolve(response)
               })
@@ -1094,7 +1104,7 @@ export default {
           lineId
         })
           .then(response => {
-            dispatch('createRMA')
+            dispatch('createRMA', { isNotifiactions: false })
             resolve(response)
           })
           .catch(error => {
@@ -1132,6 +1142,16 @@ export default {
           isEmptyValue(currentPos.id) ||
           isEmptyValue(currentRMA.id)
         ) resolve({})
+        const message = lang.t('form.pos.optionsPoinSales.salesOrder.processingRMA') + currentRMA.document_no
+        showMessage({
+          type: 'success',
+          message,
+          showClose: true
+        })
+        commit('setAttributeRMA', {
+          attribute: 'isLoading',
+          value: true
+        })
         processRMA({
           posId: currentPos.id,
           rmaId: currentRMA.id
@@ -1140,6 +1160,10 @@ export default {
             commit('setAttributeRMA', {
               attribute: 'isShowCheck',
               value: true
+            })
+            commit('setAttributeRMA', {
+              attribute: 'isLoading',
+              value: false
             })
             dispatch('listRMALine')
             dispatch('overloadOrder', { order: currentOrder })
@@ -1172,6 +1196,10 @@ export default {
             resolve(response)
           })
           .catch(error => {
+            commit('setAttributeRMA', {
+              attribute: 'isLoading',
+              value: true
+            })
             dispatch('listRMALine')
             console.warn(`Process RMA: ${error.message}. Code: ${error.code}.`)
             let message = error.message
@@ -1182,21 +1210,18 @@ export default {
             showMessage({
               type: 'error',
               message,
-              showClose: true
+              showClose: false
             })
-            let isLoadingRMA = false
             dispatch('setModalDialogVPOS', {
               title: message,
               type: 'error',
               doneMethod: () => {
-                isLoadingRMA = true
                 dispatch('processRMA')
-                  .finally(() => {
-                    isLoadingRMA = false
-                  })
               },
               isLoadingDone: () => {
-                return isLoadingRMA
+                return getters.getAttributeRMA({
+                  attribute: 'isLoading'
+                })
               },
               isAutoClose: false,
               componentPath: () => import('@/components/ADempiere/Form/VPOS2/Options/RMA/previwerRMA.vue'),
