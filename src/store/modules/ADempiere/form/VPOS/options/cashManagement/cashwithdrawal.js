@@ -145,7 +145,7 @@ export default {
                 converted_amount: Number(list.converted_amount)
               }
             })
-            commit('setCashOpeningPayments', list)
+            commit('setCashWithdrawalPayments', list)
           })
           .catch(error => {
             console.warn(`List Payments: ${error.message}. Code: ${error.code}.`)

@@ -273,11 +273,6 @@ export default defineComponent({
           .then(paymentOnline => {
             const { next_request_time, status, message } = paymentOnline
             setTimeout(() => {
-              console.log({
-                paymentOnline,
-                list: listPayments.value,
-                payment
-              })
               const updateListPayment = listPayments.value.map(list => {
                 if (list.id === payment.id) {
                   return {
@@ -290,7 +285,7 @@ export default defineComponent({
                 }
               })
               store.commit('setListPayments', updateListPayment)
-              if (!isEmptyValue(next_request_time)) {
+              if (!isEmptyValue(next_request_time) && next_request_time > 0) {
                 nextRequestTime = next_request_time
               }
               if (status === 'W') {

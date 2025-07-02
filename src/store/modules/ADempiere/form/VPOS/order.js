@@ -549,7 +549,9 @@ export default {
                             orderId: currentOrder.id
                           })
                             .then(processReverse => {
-                              console.log({ ...processReverse })
+                              dispatch('printTicketVPOS', {
+                                orderId: processReverse.id
+                              })
                             })
                         },
                         isShowed: true

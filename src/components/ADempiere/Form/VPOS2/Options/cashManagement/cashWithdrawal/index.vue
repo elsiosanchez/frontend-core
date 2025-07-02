@@ -45,7 +45,7 @@ export default defineComponent({
   name: 'cashwithdrawal',
   setup() {
     const listPaymentsOpenst = computed(() => {
-      return store.getters.getCashOpeningPayments
+      return store.getters.getCashWithdrawalPayments
     })
 
     function cashwithdrawal() {

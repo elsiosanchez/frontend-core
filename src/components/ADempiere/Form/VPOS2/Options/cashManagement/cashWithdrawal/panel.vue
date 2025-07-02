@@ -206,7 +206,7 @@ export default defineComponent({
     })
 
     const listPaymentsOpenst = computed(() => {
-      return store.getters.getCashOpeningPayments
+      return store.getters.getCashWithdrawalPayments
     })
 
     // Methods
