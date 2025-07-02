@@ -159,6 +159,18 @@ export default defineComponent({
 
     // Computed
 
+    const currentPos = computed(() => {
+      return store.getters.getVPOS
+    })
+
+    const collectionAgent = computed(() => {
+      const collectionAgent = store.getters.getAttributeCashOpenFields({
+        attribute: 'collectionAgent'
+      })
+      if (collectionAgent) return collectionAgent.id
+      return ''
+    })
+
     const amount = computed(() => {
       return store.getters.getAttributeCashOpenFields({
         attribute: 'amount'
@@ -286,6 +298,17 @@ export default defineComponent({
           return false
         })
     }
+
+    function setDefaultPosData() {
+      const { price_list } = currentPos.value
+      const currenUser = store.getters['user/userInfo']
+      if (isEmptyValue(currencyPayment.value.iso_code) && !isEmptyValue(price_list)) store.commit('setAttributeCashOpenFields', { attribute: 'currency', value: price_list.currency })
+      if (isEmptyValue(collectionAgent.value) && !isEmptyValue(currenUser)) store.commit('setAttributeCashOpenFields', { attribute: 'collectionAgent', value: currenUser })
+    }
+
+    setTimeout(() => {
+      setDefaultPosData()
+    }, 500)
 
     return {
       // Ref

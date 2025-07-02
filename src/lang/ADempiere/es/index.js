@@ -467,7 +467,7 @@ export default {
         refund: 'Reembolso',
         bankAcount: 'Cuenta Bancaria',
         isCashWith: 'Usar Fondos de Caja',
-        useFromBox: 'Usar Desde Caja',
+        useFromBox: 'Transferir a Caja',
         collectionAgent: 'Agente Cobrador',
         paymentMethods: 'Métodos de Pago',
         paymentMethod: 'Método de Pago',

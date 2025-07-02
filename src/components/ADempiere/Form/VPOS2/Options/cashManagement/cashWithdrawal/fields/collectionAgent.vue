@@ -120,6 +120,8 @@ export default defineComponent({
         })
     }
 
+    remoteMethod()
+
     return {
       collectionAgent,
       listSellers,

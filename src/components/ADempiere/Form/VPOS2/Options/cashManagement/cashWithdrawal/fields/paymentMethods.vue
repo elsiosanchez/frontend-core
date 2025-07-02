@@ -92,10 +92,10 @@ export default defineComponent({
         if (paymentMethods) {
           paymentMethods = listPaymentMethods.value.find(list => list.id === paymentMethods)
         }
-        store.commit('setAttributeCashWithdrawalFields', {
-          attribute: 'amount',
-          value: 0
-        })
+        // store.commit('setAttributeCashWithdrawalFields', {
+        //   attribute: 'amount',
+        //   value: 0
+        // })
         store.commit('setAttributeCashWithdrawalFields', {
           attribute: 'paymentMethods',
           value: paymentMethods
