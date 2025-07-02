@@ -473,6 +473,7 @@ export default {
         amount: 'Amount',
         bankAcount: 'Bank Acount',
         isCashWith: 'Use Cash Funds',
+        useFromBox: 'Use From Box',
         collectionAgent: 'Collection Agent',
         transferFunds: 'Transfer Funds',
         emptyRate: 'No conversion rate to date',

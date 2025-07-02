@@ -16,7 +16,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 
 <template>
   <el-form-item
-    :label="$t('form.pos.collect.isCashWith')"
+    :label="$t('form.pos.collect.useFromBox')"
     class="form-item-criteria"
     style="margin: 0px;width: 100%;"
   >
