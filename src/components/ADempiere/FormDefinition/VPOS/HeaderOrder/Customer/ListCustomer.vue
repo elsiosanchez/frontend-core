@@ -19,16 +19,17 @@
 <template>
   <span>
     <el-collapse v-model="activeNames">
-      <el-collapse-item title="Socio de Negocios (Punto de Venta)" name="1">
+      <el-collapse-item :title="$t('form.pointOfSales.customer.businessPartners')" name="1">
         <el-form
           :inline="true"
           label-position="top"
+          class="form-base"
           style="padding: 0px !important;margin: 0px;"
         >
           <el-row :gutter="20">
             <el-col :span="8">
               <el-form-item
-                label="Código"
+                :label="$t('form.pointOfSales.customer.fieldCutomer.code')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -39,9 +40,10 @@
                 />
               </el-form-item>
             </el-col>
+
             <el-col :span="8">
               <el-form-item
-                label="Nombre"
+                :label="$t('form.pointOfSales.customer.fieldCutomer.name')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -52,9 +54,10 @@
                 />
               </el-form-item>
             </el-col>
+
             <el-col :span="8">
               <el-form-item
-                label="Valor de la Búsqueda"
+                :label="$t('form.pointOfSales.customer.searchValue')"
                 class="form-item-criteria"
                 style="margin: 0px;width: 100%;"
               >
@@ -69,6 +72,7 @@
         </el-form>
       </el-collapse-item>
     </el-collapse>
+
     <el-table
       v-loading="isLoading"
       :data="list"
@@ -77,6 +81,7 @@
       style="width: 100%"
       highlight-current-row
       @current-change="handleCurrentChange"
+      @row-dblclick="changeCustomerOrder"
     >
       <index-column
         :page-number="1"
@@ -84,17 +89,18 @@
       />
       <el-table-column
         prop="value"
-        label="Código"
+        :label="$t('form.pointOfSales.customer.fieldCutomer.code')"
       />
       <el-table-column
         prop="tax_id"
-        label="Número Identificación"
+        :label="$t('form.pointOfSales.customer.taxId')"
       />
       <el-table-column
         prop="name"
-        label="Nombre"
+        :label="$t('form.pointOfSales.customer.fieldCutomer.name')"
       />
     </el-table>
+
     <p>
       <custom-pagination
         style="float: left;"
@@ -111,7 +117,15 @@
         icon="el-icon-check"
         style="float: right;margin-left: 5px;"
         :disabled="isEmptyValue(customer)"
-        @click="changeCustomerOrder"
+        @click="changeCustomerOrder()"
+      />
+      <el-button
+        :loading="isLoading"
+        type="success"
+        class="button-base-icon"
+        style="float: right;margin-left: 5px;"
+        icon="el-icon-refresh-right"
+        @click="refresh();"
       />
       <el-button
         type="danger"
@@ -141,7 +155,7 @@ import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'ListCostumer',
+  name: 'ListCustomer',
 
   components: {
     IndexColumn,
@@ -156,15 +170,21 @@ export default defineComponent({
     const searchValue = ref('')
     const pageSizeNumber = ref(15)
     const customer = ref({})
+    const timeOutRecords = ref(null)
+
     const list = computed(() => {
       return store.getters.getCustomersList
     })
+
     const recordCount = computed(() => {
       return store.getters.getCustomerCount
     })
+
     const pageToken = computed(() => {
       const page = store.getters.getCustomerPageToken
-      if (page) return (Number(page.slice(-1)) - 1)
+      if (page) {
+        return (Number(page.slice(-1)) - 1)
+      }
       return 0
     })
 
@@ -173,7 +193,9 @@ export default defineComponent({
      * @param {object} row
      */
     function handleCurrentChange(row) {
-      if (isEmptyValue(row)) return
+      if (isEmptyValue(row)) {
+        return
+      }
       customer.value = row
     }
 
@@ -183,7 +205,9 @@ export default defineComponent({
      */
     function handleChangePage(pageNumber) {
       isLoading.value = true
-      setTimeout(() => {
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
         store.dispatch('searchCustomersList', {
           pageSize: pageSizeNumber.value,
           searchValue: searchValue.value,
@@ -204,7 +228,9 @@ export default defineComponent({
     function handleSizeChange(pageSize) {
       isLoading.value = true
       pageSizeNumber.value = pageSize
-      setTimeout(() => {
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
         store.dispatch('searchCustomersList', {
           pageSize: pageSize,
           searchValue: searchValue.value,
@@ -222,7 +248,10 @@ export default defineComponent({
      * @param {string} value
      */
     function filterValue(value) {
-      setTimeout(() => {
+      isLoading.value = true
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
         store.dispatch('searchCustomersList', {
           searchValue: searchValue.value,
           name: name.value,
@@ -239,7 +268,10 @@ export default defineComponent({
      * @param {string} value
      */
     function filterName(value) {
-      setTimeout(() => {
+      isLoading.value = true
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
         store.dispatch('searchCustomersList', {
           searchValue: searchValue.value,
           name: value,
@@ -256,11 +288,31 @@ export default defineComponent({
      * @param {string} value
      */
     function filterSearchValue(value) {
-      setTimeout(() => {
+      isLoading.value = true
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
         store.dispatch('searchCustomersList', {
           searchValue: value,
           name: name.value,
           value: value.value
+        })
+          .finally(() => {
+            isLoading.value = false
+          })
+      }, 500)
+    }
+
+    function refresh() {
+      isLoading.value = true
+
+      clearTimeout(timeOutRecords.value)
+      timeOutRecords.value = setTimeout(() => {
+        store.dispatch('searchCustomersList', {
+          searchValue: searchValue.value,
+          name: name.value,
+          value: value.value,
+          pageSize: pageSizeNumber.value
         })
           .finally(() => {
             isLoading.value = false
@@ -278,8 +330,12 @@ export default defineComponent({
     /**
      * Change Business Partner in Order
      */
-    function changeCustomerOrder() {
-      store.dispatch('changeCustomerOrder', customer.value.id)
+    function changeCustomerOrder(row = null) {
+      let currentRow = row
+      if (isEmptyValue(currentRow)) {
+        currentRow = customer.value
+      }
+      store.dispatch('changeCustomerOrder', currentRow.id)
         .finally(() => {
           close()
         })
@@ -306,6 +362,7 @@ export default defineComponent({
       handleSizeChange,
       filterSearchValue,
       handleCurrentChange,
+      refresh,
       changeCustomerOrder
     }
   }

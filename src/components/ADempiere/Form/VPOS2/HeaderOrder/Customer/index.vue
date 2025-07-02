@@ -235,7 +235,7 @@ export default defineComponent({
     function selectOptions(options) {
       if (options === language.t('pointOfSales.customer.listBusinessPartners')) {
         store.dispatch('searchCustomersList', {})
-        componentDialog.value = () => import('../Customer/ListCostumer')
+        componentDialog.value = () => import('@/components/ADempiere/FormDefinition/VPOS/HeaderOrder/Customer/ListCustomer')
         isShowCustomer.value = true
       } else if (options === language.t('pointOfSales.customer.newBusinessPartner')) {
         const {

@@ -20,10 +20,13 @@ const pointOfSales = {
   customer: {
     listCustomers: 'Listar Clientes',
     listBusinessPartners: 'Listar Socios de Negocios',
+    businessPartners: 'Socios de Negocios (Punto De Venta)',
     newCustomer: 'Nuevo Cliente',
     newBusinessPartner: 'Nuevo Socio de Negocio',
     updateCustomer: 'Actualizar Cliente',
     updateBusinessPartner: 'Actualizar Socio de Negocio',
+    taxId: 'Número Identificación',
+    searchValue: 'Valor de la Búsqueda',
     fieldCutomer: {
       code: 'Código',
       codePlaceholder: 'Si no se llena el Código se generara automaticamente',

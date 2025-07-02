@@ -20,10 +20,13 @@ const pointOfSales = {
   customer: {
     listCustomers: 'List Customers',
     listBusinessPartners: 'List Business Partners',
+    businessPartners: 'Business Partners (Point Of Sales)',
     newCustomer: 'New Customer',
     newBusinessPartner: 'New Business Partner',
     updateCustomer: 'Update Customer',
     updateBusinessPartner: 'Update Business Partner',
+    taxId: 'Tax Ientification',
+    searchValue: 'Search Value',
     fieldCutomer: {
       code: 'Value',
       codePlaceholder: 'If the code is not filled in, it will be generated automatically.',
