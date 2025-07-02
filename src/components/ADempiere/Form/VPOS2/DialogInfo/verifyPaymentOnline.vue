@@ -144,7 +144,13 @@ export default defineComponent({
   components: {
     CardPayments
   },
-  setup() {
+  props: {
+    isReverse: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
     // Ref
     const isPanelError = ref(false)
     const isPanelSuccess = ref(false)
@@ -284,7 +290,8 @@ export default defineComponent({
     function InfoOnlinePayment() {
       if (statusPayment.value === 'W') {
         store.dispatch('infoOnlinePayment', {
-          paymentId: currentPaymentVerifications.value.id
+          paymentId: currentPaymentVerifications.value.id,
+          isReverse: props.isReverse
         })
           .finally(() => {
             if (getInfoOnline.value.error) return

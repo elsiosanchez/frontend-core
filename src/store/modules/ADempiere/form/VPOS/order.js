@@ -24,10 +24,10 @@ import {
   getOrder,
   releaseOrder,
   holdOrder,
-  updateOrder,
-  processReverseSales
+  updateOrder
+  // processReverseSales
 } from '@/api/ADempiere/form/VPOS/index'
-import lang from '@/lang'
+// import lang from '@/lang'
 import { existsUnapprovedOnlinePayments } from '@/api/ADempiere/form/VPOS/orders.js'
 // src/api/ADempiere/form/VPOS/orders.js
 // import { isEmptyValue } from '@/utils/ADempiere'
@@ -522,7 +522,7 @@ export default {
         const currentPos = getters.getVPOS
         const currentOrder = getters.getCurrentOrder
         if (isEmptyValue(posId) && !isEmptyValue(currentPos)) posId = currentPos.id
-        if (isEmptyValue(currentOrder) && !isEmptyValue(orderId)) orderId = currentOrder.id
+        if (!isEmptyValue(currentOrder) && isEmptyValue(orderId)) orderId = currentOrder.id
         existsUnapprovedOnlinePayments({
           posId,
           orderId
@@ -530,36 +530,45 @@ export default {
           .then(response => {
             const { record_count } = response
             if (!isEmptyValue(record_count) && record_count >= 1) {
-              dispatch('setModalDialogVPOS', {
-                title: '',
-                componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/existsUnapprovedOnlinePayments.vue'),
-                doneMethod: () => {
-                  commit('setAttributeReverseTransaction', {
-                    attribute: 'oreder',
-                    value: currentOrder
-                  })
-                  dispatch('getListPayments', currentOrder.id)
-                    .finally(() => {
-                      dispatch('setModalDialogVPOS', {
-                        title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
-                        componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
-                        doneMethod: () => {
-                          processReverseSales({
-                            posId: currentPos.id,
-                            orderId: currentOrder.id
-                          })
-                            .then(processReverse => {
-                              dispatch('printTicketVPOS', {
-                                orderId: processReverse.id
-                              })
-                            })
-                        },
-                        isShowed: true
-                      })
-                    })
-                },
-                isShowed: true
-              })
+              dispatch('reverseSales', { description: '' })
+              // dispatch('setModalDialogVPOS', {
+              //   title: '',
+              //   componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/existsUnapprovedOnlinePayments.vue'),
+              //   doneMethod: () => {
+              //     commit('setAttributeReverseTransaction', {
+              //       attribute: 'oreder',
+              //       value: currentOrder
+              //     })
+              //     dispatch('getListPayments', currentOrder.id)
+              //       .finally(() => {
+              //         dispatch('setModalDialogVPOS', {
+              //           title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
+              //           componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
+              //           doneMethod: () => {
+              //             processReverseSales({
+              //               posId: currentPos.id,
+              //               orderId: currentOrder.id
+              //             })
+              //               .then(processReverse => {
+              //                 dispatch('printTicketVPOS', {
+              //                   orderId: processReverse.id
+              //                 })
+              //               })
+              //           },
+              //           isLoadingDone: () => {
+              //             const paymentOnline = getters.getListPayments.filter(list => list.is_online && list.response_status === 'A')
+              //             return isEmptyValue(paymentOnline)
+              //           },
+              //           isDisabledDone: () => {
+              //             const paymentOnline = getters.getListPayments.filter(list => list.is_online && list.response_status === 'A')
+              //             return isEmptyValue(paymentOnline)
+              //           },
+              //           isShowed: true
+              //         })
+              //       })
+              //   },
+              //   isShowed: true
+              // })
             }
           })
           .catch(error => {

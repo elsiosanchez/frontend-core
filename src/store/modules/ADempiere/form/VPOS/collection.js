@@ -577,7 +577,8 @@ export default {
       getters
     }, {
       posId,
-      paymentId
+      paymentId,
+      isReverse = false
     }) {
       return new Promise(resolve => {
         const currentPos = getters.getVPOS
@@ -616,9 +617,21 @@ export default {
                 })
                 commit('setListPayments', updatePayment)
               }
-              commit('setShowedModalDialogVPOS', {
-                isShowed: false
-              })
+              if (!isReverse) commit('setShowedModalDialogVPOS', { isShowed: false })
+            } else {
+              if (existPaymetOnline) {
+                const updatePayment = getters.getListPayments.map(payments => {
+                  if (paymentId === payments.id) {
+                    return {
+                      ...payments,
+                      response_status: status,
+                      response_message: message
+                    }
+                  }
+                  return payments
+                })
+                commit('setListPayments', updatePayment)
+              }
             }
             resolve(response)
           })

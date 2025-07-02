@@ -88,32 +88,30 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         />
       </el-col>
     </el-row>
-    <!-- <verify-payment-online v-if="isShowCancele" /> -->
     <el-dialog
+      width="30%"
       :visible.sync="isShowCancele"
-      width="60%"
-      :modal="false"
+      append-to-body
     >
-      <p
-        slot="title"
-        class="dialog-label-info-cancele"
-      >
-        <b>
-          {{ $t('form.pos.collect.onlinePayment.cancelPayment.voidTransaction') }}
-        </b>
-      </p>
-      <span v-if="isLoadingCancele">
-        <el-result
-          icon="error"
-          :title="infoPayment.message"
-          class="result-cancelet-payment"
+      <verify-payment-online
+        :is-reverse="true"
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="danger"
+          icon="el-icon-close"
+          class="button-base-icon"
+          @click="cancelActionMethod(false)"
+        />
+        <el-button
+          type="primary"
+          icon="el-icon-check"
+          class="button-base-icon"
+          :loading="isEmptyValue(isPaymentOnlineComplete)"
+          :disabled="isEmptyValue(isPaymentOnlineComplete)"
+          @click="cancelActionMethod(false)"
         />
       </span>
-      <el-result v-else class="result-cancelet-info">
-        <template slot="icon">
-          <i class="el-icon-loading" style="font-size: 45px;font-weight: 900;" />
-        </template>
-      </el-result>
     </el-dialog>
   </el-row>
 </template>
@@ -158,12 +156,13 @@ export default defineComponent({
       status: ''
     })
     const isShowCancele = ref(false)
-    // const currentPaymentVerifications = computed(() => {
-    //   return store.getters.getPaymentOnline
-    // })
 
     const lines = computed(() => {
       return store.getters.getListOrderLines
+    })
+    const isPaymentOnlineComplete = computed(() => {
+      if (isEmptyValue(listPayments.value)) return []
+      return listPayments.value.filter(list => list.is_online && list.response_status !== 'W')
     })
     const orderLineDefinition = computed(() => {
       return {
@@ -264,50 +263,27 @@ export default defineComponent({
       return formatPrice({ value: amount, currency: price_list.currency.iso_code })
     }
 
-    function infoOnlinePayment(payment) {
-      let nextRequestTime = 3500
-      if (!isEmptyValue(payment)) {
-        store.dispatch('processOnline', {
-          payment: payment
-        })
-          .then(paymentOnline => {
-            const { next_request_time, status, message } = paymentOnline
-            setTimeout(() => {
-              const updateListPayment = listPayments.value.map(list => {
-                if (list.id === payment.id) {
-                  return {
-                    ...list,
-                    response_message: message,
-                    response_status: status
-                  }
-                } else {
-                  return list
-                }
-              })
-              store.commit('setListPayments', updateListPayment)
-              if (!isEmptyValue(next_request_time) && next_request_time > 0) {
-                nextRequestTime = next_request_time
-              }
-              if (status === 'W') {
-                reversePayment(payment)
-              } else {
-                isShowCancele.value = false
-              }
-            }, nextRequestTime)
-          })
-      }
+    function verifyPaymentOnline(payment) {
+      store.commit('setPaymentOnline', payment)
+      store.dispatch('processOnline', { payment })
     }
 
     function reversePayment(payment) {
       isShowCancele.value = true
-      infoOnlinePayment(payment)
+      // infoOnlinePayment(payment)
+      verifyPaymentOnline(payment)
       // isShowCancele.value = !isShowCancele.value
+    }
+
+    function cancelActionMethod(show) {
+      isShowCancele.value = show
     }
     setTimeout(() => {
       const isExistpaymentOnline = listPayments.value.find(list => list.is_online)
       if (isExistpaymentOnline) {
         isShowCancele.value = true
-        infoOnlinePayment(isExistpaymentOnline)
+        // infoOnlinePayment(isExistpaymentOnline)
+        verifyPaymentOnline(isExistpaymentOnline)
       }
     }, 500)
 
@@ -324,12 +300,14 @@ export default defineComponent({
       listPayments,
       displayCurrency,
       orderLineDefinition,
+      isPaymentOnlineComplete,
       formatPrice,
       displayLabel,
       displayValue,
       displayAmount,
       reversePayment,
-      sizeTableColumn
+      sizeTableColumn,
+      cancelActionMethod
     }
   }
 })

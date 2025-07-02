@@ -195,6 +195,14 @@ export default {
                           })
                         })
                     },
+                    isLoadingDone: () => {
+                      const paymentOnline = getters.getListPayments.filter(list => list.is_online && list.response_status === 'A')
+                      return isEmptyValue(paymentOnline)
+                    },
+                    isDisabledDone: () => {
+                      const paymentOnline = getters.getListPayments.filter(list => list.is_online && list.response_status === 'A')
+                      return isEmptyValue(paymentOnline)
+                    },
                     isShowed: true
                   })
                 })
