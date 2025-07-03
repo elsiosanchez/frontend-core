@@ -388,6 +388,7 @@ export default defineComponent({
           store.dispatch('addPayment', {
             tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
             payment_method_id: currentPaymentMethod.value.payment_method.id,
+            allocate_payment_id: currentPaymentMethod.value.id,
             payment_account_date: date.value,
             reference_no: referenceNo.value,
             description: description.value,
@@ -474,6 +475,7 @@ export default defineComponent({
           currency_id: currency.id,
           customer_id: currentOrder.value.customer.id,
           sales_representative_id: currentOrder.value.sales_representative.id,
+          allocate_payment_id: currentPaymentMethod.value.id,
           payment_method_id: currentPaymentMethod.value.payment_method.id,
           payment_account_date: date.value,
           is_refund: true
@@ -517,6 +519,7 @@ export default defineComponent({
         amount: refundAmount.value,
         tender_type_code: currentPaymentMethod.value.payment_method.tender_type,
         currency_id: currency.id,
+        allocate_payment_id: currentPaymentMethod.value.id,
         payment_method_id: currentPaymentMethod.value.payment_method.id,
         payment_account_date: date.value,
         is_refund: true
