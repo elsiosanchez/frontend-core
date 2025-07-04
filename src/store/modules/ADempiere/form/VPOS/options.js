@@ -192,6 +192,7 @@ export default {
                       processReverseSales({
                         posId: currentPos.id,
                         orderId: response.id,
+                        source_order_id: response.source_order_id,
                         description
                       })
                         .then(processReverse => {

@@ -985,13 +985,15 @@ export function reverseSales({
 export function processReverseSales({
   posId,
   orderId,
-  description
+  description,
+  source_order_id
 }) {
   return request({
     url: `point-of-sales/${posId}/orders/${orderId}/reverse`,
     method: 'post',
     data: {
-      description
+      description,
+      source_order_id
     }
   })
 }
