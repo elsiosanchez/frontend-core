@@ -326,6 +326,8 @@ export default {
           generateImmediateInvoice: 'Generar Factura Inmediata',
           completePreparedOrder: 'Completar Orden Preparada',
           cancelSaleTransaction: 'Anular Transacción de Venta',
+          processingSalesOrderReversal: 'Procesando Reverso de Orden de Venta',
+          salesOrderReversal: 'Orden de Venta Reversada',
           isExistOnlinePayments: {
             isPaymentApproved: 'Tiene un Pago Pendiente por Aprobar',
             isChargeApproved: 'Tiene un Cobro Pendiente por Aprobar',

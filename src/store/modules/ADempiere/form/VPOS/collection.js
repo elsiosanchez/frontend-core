@@ -691,6 +691,17 @@ export default {
                 time: next_request_time
               }
             })
+            const updatePayment = getters.getListPayments.map(payments => {
+              if (payment.id === payments.id) {
+                return {
+                  ...payments,
+                  response_status: status,
+                  response_message: message
+                }
+              }
+              return payments
+            })
+            commit('setListPayments', updatePayment)
             resolve(response)
           })
           .catch(error => {

@@ -184,17 +184,45 @@ export default {
                     title: lang.t('form.pos.optionsPoinSales.salesOrder.cancelSaleTransaction'),
                     componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/cancelSaleTransaction.vue'),
                     doneMethod: () => {
+                      showMessage({
+                        type: 'warning',
+                        message: lang.t('form.pos.optionsPoinSales.salesOrder.processingSalesOrderReversal'),
+                        showClose: true
+                      })
                       processReverseSales({
                         posId: currentPos.id,
                         orderId: response.id,
                         description
                       })
                         .then(processReverse => {
+                          commit('setShowedModalDialogVPOS', {
+                            isShowed: false
+                          })
+                          showMessage({
+                            type: 'success',
+                            message: lang.t('form.pos.optionsPoinSales.salesOrder.salesOrderReversal'),
+                            showClose: true
+                          })
                           dispatch('printTicketVPOS', {
                             orderId: response.id
                           })
                         })
+                        .catch(error => {
+                          console.warn(`Process Reverse Sales: ${error.message}. Code: ${error.code}.`)
+                          let message = error.message
+                          if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+                            message = error.response.data.message
+                          }
+
+                          showMessage({
+                            type: 'error',
+                            message,
+                            showClose: true
+                          })
+                          resolve({})
+                        })
                     },
+                    isAutoClose: false,
                     isLoadingDone: () => {
                       const paymentOnline = getters.getListPayments.filter(list => list.is_online && list.response_status === 'A')
                       return isEmptyValue(paymentOnline)

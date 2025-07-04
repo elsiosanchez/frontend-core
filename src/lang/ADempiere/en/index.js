@@ -325,6 +325,8 @@ export default {
           generateImmediateInvoice: 'Generate Immediate Invoice',
           completePreparedOrder: 'Complete Prepared Order',
           cancelSaleTransaction: 'Cancel Sales Transaction',
+          processingSalesOrderReversal: 'Processing Sales Order Reversal',
+          salesOrderReversal: 'Reversed Sales Order',
           isExistOnlinePayments: {
             isPaymentApproved: 'You have a pending payment to approve',
             isChargeApproved: 'You have a pending charge to approve',
