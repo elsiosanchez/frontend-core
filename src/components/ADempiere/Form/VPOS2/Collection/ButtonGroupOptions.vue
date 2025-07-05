@@ -60,6 +60,7 @@ import { TENDERTYPE_MobilePaymentInterbank } from '@/utils/ADempiere/dictionary/
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { getPaymentValues } from '@/utils/ADempiere/dictionary/form/VPOS'
+import { convertToNumber } from '@/utils/ADempiere/formatValue/numberFormat'
 
 export default defineComponent({
   name: 'ButtonGroupOptions',
@@ -158,18 +159,21 @@ export default defineComponent({
         orderId: id
       })
       if (isLoading.value) return
-      const total = Number(grand_total) + Number(charge_amount) - Number(credit_amount) - Number(payment_amount)
+      const total = convertToNumber(grand_total) + convertToNumber(charge_amount) - convertToNumber(credit_amount) - convertToNumber(payment_amount)
       if (total === 0) {
         isLoadingProcess.value = true
         store.dispatch('process', {})
           .finally(() => {
             isLoadingProcess.value = false
           })
-      } else if (Number(open_amount) > 0) {
+      } else if (convertToNumber(store.getters.getCurrentOrder.open_amount) > 0) {
         store.dispatch('setModalDialogVPOS', {
           title: lang.t('form.pos.collect.overdrawnInvoice.below'),
           doneMethod: () => {
-            if (Number(open_amount) > Number(currentPos.value.write_off_amount_tolerance)) {
+            if (
+              convertToNumber(currentPos.value.write_off_amount_tolerance) > 0 &&
+              convertToNumber(store.getters.getCurrentOrder.open_amount) > convertToNumber(currentPos.value.write_off_amount_tolerance)
+            ) {
               /**
                * Request PIN
                */
@@ -182,8 +186,8 @@ export default defineComponent({
                       isLoadingProcess.value = false
                     })
                 },
-                requestedAccess: 'IsAllowsInvoiceOpen',
-                requestedAmount: Number(open_amount),
+                requestedAccess: 'IsAllowsWriteOffAmount',
+                requestedAmount: convertToNumber(open_amount),
                 isShowed: true
               })
               return
@@ -201,12 +205,15 @@ export default defineComponent({
         store.dispatch('setModalDialogVPOS', {
           title: lang.t('form.pos.collect.overdrawnInvoice.title'),
           doneMethod: () => {
-            if (Number(open_amount) > Number(currentPos.value.write_off_amount_tolerance)) {
+            if (
+              convertToNumber(currentPos.value.write_off_amount_tolerance) > 0 &&
+              convertToNumber(store.getters.getCurrentOrder.refund_amount) > convertToNumber(currentPos.value.write_off_amount_tolerance)
+            ) {
               /**
                * Request PIN
                */
               store.dispatch('setModalPin', {
-                title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.pinMessage.invoiceOpen'),
+                title: lang.t('form.pos.pinMessage.pin') + lang.t('form.pos.pinMessage.generateInvoiceWithPendingChange'),
                 doneMethod: () => {
                   isLoadingProcess.value = true
                   store.dispatch('process', {})
@@ -214,8 +221,8 @@ export default defineComponent({
                       isLoadingProcess.value = false
                     })
                 },
-                requestedAccess: 'IsAllowsInvoiceOpen',
-                requestedAmount: Number(refund_amount),
+                requestedAccess: 'IsAllowsWriteOffAmount',
+                requestedAmount: convertToNumber(refund_amount),
                 isShowed: true
               })
               return

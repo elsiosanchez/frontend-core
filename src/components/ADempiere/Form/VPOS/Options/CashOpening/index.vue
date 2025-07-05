@@ -922,7 +922,7 @@ export default {
             action: 'openBalanceInvoice',
             type: 'actionPos',
             label: this.$t('form.pos.pinMessage.invoiceOpen'),
-            requestedAccess: 'IsAllowsInvoiceOpen'
+            requestedAccess: 'IsAllowsWriteOffAmount'
           }
           this.visible = true
           this.$store.dispatch('changePopoverOverdrawnInvoice', { attributePin, visible: true })

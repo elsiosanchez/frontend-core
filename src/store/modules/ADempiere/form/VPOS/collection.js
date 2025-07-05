@@ -676,12 +676,12 @@ export default {
         })
           .then(response => {
             const { is_error, message, next_request_time, status } = response
-            // commit('setOnline', {
-            //   status,
-            //   message,
-            //   error: is_error,
-            //   time: next_request_time
-            // })
+            commit('setOnline', {
+              status,
+              message,
+              error: is_error,
+              time: next_request_time
+            })
             commit('setCurrentPayment', {
               paymentId: payment.id,
               infoPayment: {

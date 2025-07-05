@@ -549,6 +549,7 @@ export default {
         delete: 'eliminar producto',
         addProduct: 'agregar producto',
         invoiceOpen: 'generar factura con un saldo abierto',
+        generateInvoiceWithPendingChange: 'Generar una factura con un vuelto pendiente',
         newOrder: 'crear nueva orden',
         discountApplied: 'Descuento Aplicado'
       },

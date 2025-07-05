@@ -400,7 +400,7 @@ export default defineComponent({
               isLoadingPay.value = false
             })
         },
-        requestedAccess: 'IsAllowsInvoiceOpen',
+        requestedAccess: 'IsAllowsWriteOffAmount',
         requestedAmount: refundAmount.value,
         isShowed: true
       })
