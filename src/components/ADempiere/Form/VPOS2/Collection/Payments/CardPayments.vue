@@ -331,6 +331,7 @@ export default defineComponent({
           .finally(() => {
             isLoading.value = false
           })
+        return
       }
       if (payment.is_online) {
         isLoadingCancele.value = true

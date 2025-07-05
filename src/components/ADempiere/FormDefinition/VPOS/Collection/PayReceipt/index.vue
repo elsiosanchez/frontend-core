@@ -170,10 +170,14 @@ import creditMemo from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Fiel
 import issuingBank from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/issuingBank.vue'
 import bank from '@/components/ADempiere/Form/VPOS2/Collection/Charge/Field/bank.vue'
 
+// Constants
+import { TENDERTYPE_GiftCard } from '@/utils/ADempiere/dictionary/form/VPOS/tenderType'
+
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
+import { getPaymentValues } from '@/utils/ADempiere/dictionary/form/VPOS'
 import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
@@ -311,7 +315,7 @@ export default defineComponent({
         return
       }
       const currentPaymentMethod = store.getters.getListPaymentMethods.find(list => list.id === paymentMethods)
-      if (currentPaymentMethod.payment_method.tender_type === 'G') {
+      if (currentPaymentMethod.payment_method.tender_type === TENDERTYPE_GiftCard) {
         store.dispatch('setModalDialogVPOS', {
           title: lang.t('form.pos.optionsPoinSales.salesOrder.giftCard'),
           doneMethod: () => {
@@ -327,16 +331,21 @@ export default defineComponent({
               })
               return
             }
-            store.dispatch('refundReference', {
-              amount,
-              source_amount: amount,
-              tender_type_code: 'G',
-              gift_card_id: id,
-              currency_id: currency.id,
-              customer_id: business_partner.id,
-              sales_representative_id: currentOrder.value.sales_representative.id,
-              is_receipt: true
-            })
+            if (currentPaymentMethod.is_payment_reference) {
+              store.dispatch('refundReference', {
+                amount,
+                source_amount: amount,
+                tender_type_code: TENDERTYPE_GiftCard,
+                gift_card_id: id,
+                currency_id: currency.id,
+                customer_id: business_partner.id,
+                sales_representative_id: currentOrder.value.sales_representative.id,
+                is_receipt: true
+              })
+            } else {
+              const params = getPaymentValues({})
+              store.dispatch('addPayment', params)
+            }
             const listPaymentMethods = store.getters.getListPaymentMethods
             store.commit('setPaymentMethod', listPaymentMethods.at(0))
             store.commit('setCurrentGiftCard', {})
