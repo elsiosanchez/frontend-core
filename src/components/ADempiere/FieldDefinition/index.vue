@@ -246,6 +246,10 @@ export default {
       }
     },
 
+    allowedPanelList() {
+      return ['process', 'window']
+    },
+
     // load the component that is indicated in the attributes of received property
     componentRender() {
       if (isEmptyValue(this.field.componentPath || !this.field.isSupported)) {
@@ -261,7 +265,10 @@ export default {
       }
 
       let field
-      if (this.field.columnName.includes(CURRENCY)) {
+      if (
+        this.field.columnName.includes(CURRENCY) &&
+        this.allowedPanelList.includes(this.field.panelType)
+      ) {
         field = () => import('@/components/ADempiere/FieldDefinition/FieldCurrency')
         return field
       }
@@ -421,7 +428,11 @@ export default {
       return this.field.isFieldOnly || [BUTTON.id].includes(this.field.display_type)
     },
     currentTab() {
-      if (this.isEmptyValue(this.parentUuid) || !this.containerManager.getPanel) {
+      if (
+        this.isEmptyValue(this.parentUuid) &&
+        this.isEmptyValue(this.containerUuid) &&
+        !this.containerManager.getPanel
+      ) {
         return {}
       }
       return this.containerManager.getPanel({

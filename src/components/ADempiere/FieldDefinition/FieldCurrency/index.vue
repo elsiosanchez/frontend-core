@@ -317,6 +317,24 @@ export default {
   methods: {
     showMenu(show) {
       this.displayMenuOptions = show
+      // establish
+      this.setContainerInformation()
+      // get stored list and refresh local component
+      this.optionsList = this.getStoredLookupAll
+
+      if (show) {
+        const listLookups = this.getStoredLookupList
+        if (!isEmptyValue(listLookups)) {
+          this.optionsList = listLookups
+        } else if (isEmptyValue(listLookups) || this.isWithSearchValue) {
+          this.loadListFromServer()
+        } else if (listLookups.length === 1) {
+          const firstOption = listLookups.at(0)
+          if (firstOption && this.blankValues.includes(firstOption.value)) {
+            this.loadListFromServer()
+          }
+        }
+      }
     },
     currencySymbolDisplay(isoCode) {
       const currency = isoCountryCurrency.getAllISOCodes()
@@ -531,7 +549,7 @@ export default {
         referenceUuid: this.metadata.reference.uuid,
         // app attributes
         isAddBlankValue: !this.metadata.required,
-        blankValue: this.blankOption.value
+        blankValue: this.blankOption
       })
         .then(responseLookupList => {
           if (!isEmptyValue(responseLookupList)) {
