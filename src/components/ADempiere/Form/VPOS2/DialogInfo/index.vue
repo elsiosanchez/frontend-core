@@ -76,7 +76,7 @@
         </b>
       </el-button>
       <el-button
-        v-if="isOptionsCancel"
+        v-if="isOptionsCancel && !isEmptyValue(isTypeButton)"
         :type="isTypeButton"
         class="button-base-icon"
         @click="cancelActionMethod(true)"

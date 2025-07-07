@@ -46,7 +46,7 @@ const modalDialogManagerVPOS = {
 
   actions: {
     setModalDialogVPOS({ commit }, {
-      isTypeButton = function() { return 'warning' },
+      isTypeButton = function() { return '' },
       isOptionsCancel = function() { return false },
       isDisabledDone = function() { return false },
       labelCancelMethod = function() { return '' },

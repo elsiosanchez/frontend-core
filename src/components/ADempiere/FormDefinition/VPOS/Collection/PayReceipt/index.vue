@@ -178,6 +178,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { formatPrice } from '@/utils/ADempiere/formatValue/numberFormat'
 import { getPaymentValues } from '@/utils/ADempiere/dictionary/form/VPOS'
+import { getMainPaymentMethods } from '@/utils/ADempiere/dictionary/form/VPOS'
 import { getCurrencyPayment, clearFieldsCollections, isDisplayFieldPayment } from '@/utils/ADempiere/dictionary/form/VPOS'
 
 export default defineComponent({
@@ -355,11 +356,15 @@ export default defineComponent({
                 sales_representative_id: currentOrder.value.sales_representative.id
               })
             }
-            const listPaymentMethods = store.getters.getListPaymentMethods
-            store.commit('setPaymentMethod', listPaymentMethods.at(0))
-            store.commit('setCurrentGiftCard', {})
+            cleanCollection()
           },
           componentPath: () => import('@/components/ADempiere/Form/VPOS2/DialogInfo/giftCard.vue'),
+          isOptionsCancel: () => {
+            return true
+          },
+          cancelMethod: () => {
+            cleanCollection()
+          },
           isShowed: true
         })
       }
@@ -432,6 +437,15 @@ export default defineComponent({
       //   return
       // }
       store.commit('setPayAmount', amount)
+    }
+
+    function cleanCollection() {
+      const listPaymentMethods = store.getters.getListPaymentMethods
+      store.commit('setPaymentMethod', getMainPaymentMethods({ listPaymentMethods }))
+      store.commit('setCurrentGiftCard', {})
+      store.commit('setShowedModalDialogVPOS', {
+        isShowed: false
+      })
     }
 
     return {
