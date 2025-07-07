@@ -18,8 +18,20 @@
  */
 
 export const TOTAL_AMOUNT_COLUMS = [
+  'StatementDifference',
+  'BeginningBalance',
+  'TotalOpenBalance',
+  'EndingBalance',
+  'LineTotalAmt',
+  'OverUnderAmt',
+  'InterestAmt',
+  'DiscountAmt',
+  'WriteOffAmt',
   'GrandTotal',
   'TotalLines',
-  'LineTotalAmt',
-  'LineNetAmt'
+  'LineNetAmt',
+  'ChargeAmt',
+  'StmtAmt',
+  'TrxAmt',
+  'PayAmt'
 ]
