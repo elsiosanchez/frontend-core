@@ -375,6 +375,10 @@ const value = {
       return state.field[`${containerUuid}_${tableName}_${COLUMNNAME_ID}`]
     },
 
+    getIdKeyColumnsOfContainer: (state) => ({ containerUuid, key_column }) => {
+      return state.field[`${containerUuid}_${key_column}`]
+    },
+
     // Using to read only in data tables in Window
     getContainerIsActive: (state) => (parentUuid) => {
       const valueIsActive = state.field[`${parentUuid}_${COLUMNNAME_IsActive}`]

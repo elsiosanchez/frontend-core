@@ -121,10 +121,18 @@ export default defineComponent({
     })
 
     const recordId = computed(() => {
-      return store.getters.getIdOfContainer({
-        containerUuid: tabAttributes.value.containerUuid,
-        tableName: tabAttributes.value.table_name
+      const { containerUuid, table_name, table } = tabAttributes.value
+      const getRecordId = store.getters.getIdOfContainer({
+        containerUuid: containerUuid,
+        tableName: table_name
       })
+      if (isEmptyValue(getRecordId) && !isEmptyValue(table.key_columns)) {
+        return store.getters.getIdKeyColumnsOfContainer({
+          containerUuid: containerUuid,
+          key_column: table.key_columns.at()
+        })
+      }
+      return getRecordId
     })
 
     function saveChanges() {
