@@ -197,6 +197,7 @@ const processManager = {
 
         let isProcessedError = false
         let summary = ''
+        let processLogs = []
 
         let recordId = rootGetters.getValueOfField({
           parentUuid,
@@ -264,6 +265,7 @@ const processManager = {
           .then(runProcessRepsonse => {
             isProcessedError = runProcessRepsonse.is_error
             summary = runProcessRepsonse.summary
+            processLogs = runProcessRepsonse.logs
 
             // window refresh data
             const windowsUuid = router.app._route.query.parentUuid
@@ -323,6 +325,7 @@ const processManager = {
           .finally(() => {
             dispatch('finishProcess', {
               summary,
+              processLogs,
               name: processDefinition.name,
               isError: isProcessedError
             })
@@ -339,6 +342,7 @@ const processManager = {
               uuid: browserUuid,
               isAll: false
             })
+            resolve()
           })
       })
     },
@@ -465,6 +469,7 @@ const processManager = {
     finishProcess({ commit }, {
       name,
       summary,
+      processLogs,
       isError
     }) {
       let processMessage = {
@@ -472,6 +477,7 @@ const processManager = {
         title: lang.t('notifications.succesful'),
         message: lang.t('notifications.processExecuted'),
         type: 'success',
+        logs: processLogs,
         summary
       }
 
@@ -484,7 +490,8 @@ const processManager = {
           name,
           title: lang.t('notifications.error'),
           message: errorMessage,
-          type: 'error'
+          type: 'error',
+          logs: processLogs
         }
       }
 

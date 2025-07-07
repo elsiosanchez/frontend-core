@@ -25,9 +25,17 @@
     <p slot="title" style="text-align: center;margin: 0px;">
       {{ notificationsDetails.title }}
     </p>
+    <p style="text-align: center">
+      <b>
+        <v-md-preview
+          :text="notificationsDetails.message"
+          class="previwer-disable"
+          style="tab-size: 2;padding: 0px;text-align: center;"
+        />
+      </b>
+    </p>
     <el-descriptions
       v-if="!isEmptyValue(notificationsDetails.logs)"
-      :title="notificationsDetails.message"
       class="margin-top"
       :column="1"
       :border="true"
@@ -36,6 +44,7 @@
         :label="$t('page.processActivity.logs')"
       >
         {{ notificationsDetails.summary }}
+        <!-- <v-md-preview :text="notificationsDetails.summary" class="previwer-disable" style="padding: 0px" height="100px" /> -->
       </el-descriptions-item>
       <el-descriptions-item
         v-for="(logItem, key) in notificationsDetails.logs"
@@ -53,7 +62,7 @@
         />
       </el-card>
     </p>
-    <p style="text-align=right">
+    <p style="text-align: right">
       <el-button
         class="see-detail-button"
         @click="isNotification=false"

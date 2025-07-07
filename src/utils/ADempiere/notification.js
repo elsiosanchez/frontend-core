@@ -51,13 +51,13 @@ export function showNotification({ type = 'success', title, message = '', summar
     }
   }
   // For logs
-  if (logs && logs.length) {
-    logs.forEach(logResult => {
-      if (logResult) {
-        message = `${message} <br> ${logResult.log}`
-      }
-    })
-  }
+  // if (logs && logs.length) {
+  //   logs.forEach(logResult => {
+  //     if (logResult) {
+  //       message = `${message} <br> ${logResult.log}`
+  //     }
+  //   })
+  // }
   if (name) {
     message = `${name} ${message}`
   }
