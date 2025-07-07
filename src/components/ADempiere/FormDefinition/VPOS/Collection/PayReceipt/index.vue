@@ -344,7 +344,16 @@ export default defineComponent({
               })
             } else {
               const params = getPaymentValues({})
-              store.dispatch('addPayment', params)
+              store.dispatch('addPayment', {
+                ...params,
+                amount,
+                source_amount: amount,
+                tender_type_code: TENDERTYPE_GiftCard,
+                gift_card_id: id,
+                currency_id: currency.id,
+                customer_id: business_partner.id,
+                sales_representative_id: currentOrder.value.sales_representative.id
+              })
             }
             const listPaymentMethods = store.getters.getListPaymentMethods
             store.commit('setPaymentMethod', listPaymentMethods.at(0))
