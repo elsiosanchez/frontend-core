@@ -325,6 +325,11 @@ export default defineComponent({
             message: message,
             type: 'success'
           })
+          store.commit('updateAttributeVFileImport', {
+            attribute: 'attribute',
+            criteria: 'currentStep',
+            value: 1
+          })
         })
         .catch(error => {
           showMessage({
