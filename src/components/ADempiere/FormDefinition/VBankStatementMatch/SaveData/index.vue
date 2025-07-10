@@ -17,7 +17,11 @@
 -->
 
 <template>
-  <el-card shadow="never" style="padding: 20px;">
+  <el-card
+    shadow="never"
+    style="padding: 0px;"
+    :body-style="{ padding: '0px' }"
+  >
     <el-row :gutter="20">
       <bank-statement-info />
     </el-row>

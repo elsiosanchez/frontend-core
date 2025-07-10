@@ -102,7 +102,10 @@ export default defineComponent({
     })
 
     function getBankStatementsList(isExpand) {
-      if (!isExpand || !isEmptyValue(storedBankStatementsList.value)) {
+      if (
+        !isExpand
+        // !isEmptyValue(storedBankStatementsList.value)
+      ) {
         return
       }
       store.dispatch('getBankStatementsListFromServer', {

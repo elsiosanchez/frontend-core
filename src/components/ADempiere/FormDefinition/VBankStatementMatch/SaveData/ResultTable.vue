@@ -17,122 +17,130 @@
 -->
 
 <template>
-  <el-card style="height: 100% !important;padding: 0px 10px;">
-    <div slot="header" class="clearfix" style="text-align: center;">
+  <el-card
+    style="height: 100% !important;padding: 0px;"
+    :body-style="{ padding: '0px 10px' }"
+  >
+    <div slot="header" class="clearfix" style="text-align: center;padding: 0px 10px;">
       <b>
         {{ $t('form.VBankStatementMatch.result') }}
         {{ '(' + $t('form.VBankStatementMatch.bankMovements.table.total') + ': ' + recordResult.length + ')' }}
       </b>
     </div>
-    <el-table
-      :data="recordResult"
-      :border="true"
-      highlight-current-row
-      :cell-class-name="cellRow"
-    >
-      <el-table-column
-        :label="$t('form.VBankStatementMatch.systemPayments.table.match')"
-        min-width="109"
-      >
-        <p slot-scope="scope" style="text-align: center;margin: 0px;">
-          <i
-            v-if="!isEmptyValue(scope.row.payment_id) && scope.row.payment_id !== 0"
-            class="el-icon-check"
-            style="
-              font-size: 22px;
-              font-weight: 900;
-              color: green;
-            "
-          />
-          <i
-            v-else
-            class="el-icon-close"
-            style="
-              font-size: 22px;
-              font-weight: 900;
-              color: red;
-            "
-          />
-        </p>
-      </el-table-column>
-      <el-table-column
-        :label="$t('form.VBankStatementMatch.automaticMatch.table.currency')"
-        :align="'left'"
-        min-width="100"
-      >
-        <template slot-scope="scope">
-          {{ displayDataColumn(scope.row, 'currency') }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        :label="$t('form.VBankStatementMatch.automaticMatch.table.transactionDate')"
-        :align="'left'"
-        prop="transactionDate"
-        min-width="190"
-      />
-      <el-table-column
-        :label="$t('form.VBankStatementMatch.bankMovements.title')"
-        :align="'center'"
+    <span class="result-table">
+      <el-table
+        id="result-table"
+        ref="result-table"
+        :data="recordResult"
+        height="30vh"
+        :border="true"
+        highlight-current-row
+        :cell-class-name="cellRow"
       >
         <el-table-column
-          :label="$t('form.VBankStatementMatch.automaticMatch.table.referenceNo')"
-          min-width="140"
+          :label="$t('form.VBankStatementMatch.systemPayments.table.match')"
+          min-width="109"
+        >
+          <p slot-scope="scope" style="text-align: center;margin: 0px;">
+            <i
+              v-if="!isEmptyValue(scope.row.payment_id) && scope.row.payment_id !== 0"
+              class="el-icon-check"
+              style="
+                font-size: 22px;
+                font-weight: 900;
+                color: green;
+              "
+            />
+            <i
+              v-else
+              class="el-icon-close"
+              style="
+                font-size: 22px;
+                font-weight: 900;
+                color: red;
+              "
+            />
+          </p>
+        </el-table-column>
+        <el-table-column
+          :label="$t('form.VBankStatementMatch.automaticMatch.table.currency')"
+          :align="'left'"
+          min-width="100"
         >
           <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'referenceNo') }}
+            {{ displayDataColumn(scope.row, 'currency') }}
           </template>
         </el-table-column>
         <el-table-column
-          :label="$t('form.VBankStatementMatch.automaticMatch.table.amount')"
-          prop="amount"
-          :align="'right'"
-          min-width="120"
-        >
-          <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'amount') }}
-          </template>
-        </el-table-column>
-      </el-table-column>
-      <el-table-column
-        :label="$t('form.VBankStatementMatch.systemPayments.title')"
-        :align="'center'"
-      >
+          :label="$t('form.VBankStatementMatch.automaticMatch.table.transactionDate')"
+          :align="'left'"
+          prop="transactionDate"
+          min-width="190"
+        />
         <el-table-column
-          :label="$t('form.VBankStatementMatch.automaticMatch.table.documentNo')"
-          min-width="140"
+          :label="$t('form.VBankStatementMatch.bankMovements.title')"
+          :align="'center'"
         >
-          <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'documentNo') }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="Monto del Pago"
-          :align="'right'"
-          min-width="150"
-        >
-          <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'payment_amount') }}
-          </template>
+          <el-table-column
+            :label="$t('form.VBankStatementMatch.automaticMatch.table.referenceNo')"
+            min-width="140"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'referenceNo') }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('form.VBankStatementMatch.automaticMatch.table.amount')"
+            prop="amount"
+            :align="'right'"
+            min-width="120"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'amount') }}
+            </template>
+          </el-table-column>
         </el-table-column>
         <el-table-column
-          :label="$t('form.VBankStatementMatch.automaticMatch.table.businessPartner')"
-          min-width="180"
+          :label="$t('form.VBankStatementMatch.systemPayments.title')"
+          :align="'center'"
         >
-          <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'businessPartner') }}
-          </template>
+          <el-table-column
+            :label="$t('form.VBankStatementMatch.automaticMatch.table.documentNo')"
+            min-width="140"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'documentNo') }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="Monto del Pago"
+            :align="'right'"
+            min-width="150"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'payment_amount') }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('form.VBankStatementMatch.automaticMatch.table.businessPartner')"
+            min-width="180"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'businessPartner') }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('form.VBankStatementMatch.automaticMatch.table.tenderType')"
+            min-width="150"
+          >
+            <template slot-scope="scope">
+              {{ displayDataColumn(scope.row, 'tenderType') }}
+            </template>
+          </el-table-column>
         </el-table-column>
-        <el-table-column
-          :label="$t('form.VBankStatementMatch.automaticMatch.table.tenderType')"
-          min-width="150"
-        >
-          <template slot-scope="scope">
-            {{ displayDataColumn(scope.row, 'tenderType') }}
-          </template>
-        </el-table-column>
-      </el-table-column>
-      <!-- </el-table-column> -->
-    </el-table>
+        <!-- </el-table-column> -->
+      </el-table>
+    </span>
   </el-card>
 </template>
 
@@ -287,5 +295,45 @@ export default defineComponent({
 }
 .el-table thead.is-group th.el-table__cell {
   padding: 3px 0px;
+}
+.result-table {
+  height: 100%;
+  overflow: auto;
+  .el-loading-spinner .circular {
+    width: 80px;
+  }
+  .el-table {
+    height: calc(100vh - 600px) !important;
+    overflow: hidden !important;
+    .el-loading-spinner .circular {
+      width: 80px;
+    }
+  }
+  .el-table .el-table__cell {
+    padding: 0px !important;
+    line-height: 1.5 !important;
+  }
+  .el-table .success-row {
+    background: #e8f4ff;
+  }
+  .el-table .cell {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-break: break-all;
+    line-height: 1.5 !important;
+  }
+  .el-table .cell:hover {
+    border: 1px solid blue;
+    overflow: hidden;
+  }
+  .el-table th.el-table__cell > .cell{
+    padding-left: 5px !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
 }
 </style>
