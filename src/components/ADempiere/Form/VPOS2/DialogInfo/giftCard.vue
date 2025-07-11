@@ -29,6 +29,7 @@
         <template
           slot="icon"
         >
+          <br>
           <span v-if="isEmptyValue(currentGiftCard)">
             <el-image
               src="https://www.svgviewer.dev/static-svgs/374573/scan-qr.svg"
@@ -36,7 +37,7 @@
               class="result-image"
             />
             <p>
-              {{ $t('form.pos.optionsPoinSales.salesOrder.giftCardPlaceholder') }}
+              {{ $t('form.pointOfSales.gitfCard.titleSearch') }}
             </p>
             <el-input
               ref="giftCardSearchCode"
@@ -45,7 +46,7 @@
               :clearable="true"
               :disabled="isLoading"
               class="code-input"
-              :placeholder="$t('form.pos.optionsPoinSales.salesOrder.giftCardSearchCode')"
+              :placeholder="$t('form.pointOfSales.gitfCard.searchCode')"
               @input="searchGiftCard"
             >
               <svg-icon
@@ -62,68 +63,8 @@
               />
             </el-input>
           </span>
-          <el-card
-            v-else
-            shadow="never"
-            :body-style="{ padding: '10px', width: '100% !important' }"
-          >
-            <el-empty v-if="isEmptyValue(currentGiftCard.gift_card_lines)" :image-size="800" :description="$t('form.pos.optionsPoinSales.salesOrder.giftCardwithoutLines')" />
-            <el-row v-else :gutter="20">
-              <el-card
-                shadow="never"
-                :body-style="{ padding: '10px 0px', width: '100% !important' }"
-              >
-                <p style="text-align: center;font-size: 19px;margin: 0px;"><b> Productos </b></p>
-                <br>
-                <el-col
-                  v-for="(line, key) in currentGiftCard.gift_card_lines"
-                  :key="key"
-                  :span="spanSize(currentGiftCard.gift_card_lines)"
-                >
-                  <el-descriptions
-                    class="margin-top"
-                    :border="true"
-                    :column="1"
-                  >
-                    <el-descriptions-item
-                      label-class-name="label-table-gift-card"
-                      :content-style="{'text-align': 'center'}"
-                    >
-                      <template slot="label">
-                        <i class="el-icon-box" />
-                        {{ $t('form.productInfo.product') }}
-                      </template>
-                      {{ line.product.name }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      label-class-name="label-table-gift-card"
-                      content-class-name="content-table-number-gift-card"
-                    >
-                      <template slot="label">
-                        <svg-icon
-                          icon-class="inventory"
-                        />
-                        {{ $t('pointOfSales.keyLayout.quantity') }}
-                      </template>
-                      {{ formatQuantity({ value: line.quantity_entered }) }}
-                    </el-descriptions-item>
-                    <el-descriptions-item
-                      label-class-name="label-table-gift-card"
-                      content-class-name="content-table-number-gift-card"
-                    >
-                      <template slot="label">
-                        <svg-icon
-                          icon-class="payments"
-                        />
-                        {{ $t('form.pos.collect.amount') }}
-                      </template>
-                      {{ formatPrice({ value: line.amount, currency: currentGiftCard.currency.iso_code}) }}
-                    </el-descriptions-item>
-                  </el-descriptions>
-                </el-col>
-              </el-card>
-            </el-row>
-            <br>
+
+          <template v-else>
             <el-card
               v-if="!isEmptyValue(currentGiftCard)"
               shadow="never"
@@ -131,7 +72,7 @@
             >
               <el-descriptions
                 class="margin-top"
-                title="Tarjeta de Regalo"
+                :title=" $t('form.pointOfSales.gitfCard.title')"
                 :border="true"
                 :column="1"
               >
@@ -141,10 +82,11 @@
                 >
                   <template slot="label">
                     <i class="el-icon-s-order" />
-                    {{ $t('form.pos.optionsPoinSales.salesOrder.documentNo') }}
+                    {{ $t('form.pointOfSales.gitfCard.documentNo') }}
                   </template>
                   {{ currentGiftCard.document_no }}
                 </el-descriptions-item>
+
                 <el-descriptions-item
                   label-class-name="label-table-gift-card"
                   :content-style="{'text-align': 'center'}"
@@ -153,10 +95,11 @@
                     <svg-icon
                       icon-class="b-partner"
                     />
-                    {{ $t('form.pos.optionsPoinSales.salesOrder.businessPartner') }}
+                    {{ $t('form.pointOfSales.gitfCard.businessPartner') }}
                   </template>
                   {{ currentGiftCard.business_partner.name }}
                 </el-descriptions-item>
+
                 <el-descriptions-item
                   label-class-name="label-table-gift-card"
                   content-class-name="content-table-number-gift-card"
@@ -165,10 +108,11 @@
                     <svg-icon
                       icon-class="inventory"
                     />
-                    {{ $t('form.pos.order.numberLines') }}
+                    {{ $t('form.pointOfSales.gitfCard.numberLines') }}
                   </template>
                   {{ formatQuantity({ value: currentGiftCard.gift_card_lines.length }) }}
                 </el-descriptions-item>
+
                 <el-descriptions-item
                   label-class-name="label-table-gift-card"
                   content-class-name="content-table-number-gift-card"
@@ -177,13 +121,77 @@
                     <svg-icon
                       icon-class="payments"
                     />
-                    {{ $t('form.pos.collect.amount') }}
+                    {{ $t('form.pointOfSales.gitfCard.amount') }}
                   </template>
                   {{ formatPrice({ value: currentGiftCard.amount, currency: currentGiftCard.currency.iso_code}) }}
                 </el-descriptions-item>
               </el-descriptions>
             </el-card>
-          </el-card>
+            <br>
+
+            <el-empty
+              v-if="isEmptyValue(currentGiftCard.gift_card_lines)"
+              :image-size="800"
+              :description="$t('form.pointOfSales.gitfCard.giftCardwithoutLines')"
+            />
+            <el-card
+              v-else
+              shadow="never"
+              :body-style="{ padding: '10px', width: '100% !important' }"
+            >
+              <el-descriptions
+                class="margin-top"
+                :title=" $t('form.pointOfSales.gitfCard.giftCardLines')"
+                :border="true"
+                :column="3"
+              >
+                <template
+                  v-for="(line, key) in currentGiftCard.gift_card_lines"
+                >
+                  <el-descriptions-item
+                    :key="key"
+                    label-class-name="label-table-gift-card"
+                    :content-style="{'text-align': 'center'}"
+                  >
+                    <template slot="label">
+                      <i class="el-icon-box" />
+                      {{ $t('form.pointOfSales.gitfCard.product') }}
+                    </template>
+                    {{ line.product.name }}
+                  </el-descriptions-item>
+
+                  <el-descriptions-item
+                    :key="key"
+                    label-class-name="label-table-gift-card"
+                    content-class-name="content-table-number-gift-card"
+                  >
+                    <template slot="label">
+                      <svg-icon
+                        icon-class="inventory"
+                      />
+                      {{ $t('form.pointOfSales.gitfCard.quantity') }}
+                    </template>
+                    {{ formatQuantity({ value: line.quantity_entered }) }}
+                  </el-descriptions-item>
+
+                  <el-descriptions-item
+                    :key="key"
+                    label-class-name="label-table-gift-card"
+                    content-class-name="content-table-number-gift-card"
+                  >
+                    <template slot="label">
+                      <svg-icon
+                        icon-class="payments"
+                      />
+                      {{ $t('form.pointOfSales.gitfCard.amount') }}
+                    </template>
+                    {{ formatPrice({ value: line.amount, currency: currentGiftCard.currency.iso_code}) }}
+                  </el-descriptions-item>
+                </template>
+              </el-descriptions>
+            </el-card>
+          </template>
+          <br>
         </template>
       </el-result>
     </p>
@@ -194,12 +202,16 @@
 import {
   defineComponent,
   computed,
+  nextTick,
   // watch,
   ref
 } from '@vue/composition-api'
 
 import lang from '@/lang'
 import store from '@/store'
+
+// Constants
+import { TENDERTYPE_GiftCard } from '@/utils/ADempiere/dictionary/form/VPOS/tenderType'
 
 // Utils and Helper Methods
 import { formatPrice, formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
@@ -208,7 +220,7 @@ import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showMessage } from '@/utils/ADempiere/notification'
 
 export default defineComponent({
-  name: 'InfoCollection',
+  name: 'GiftCard',
 
   components: {
     CardPayments
@@ -231,7 +243,9 @@ export default defineComponent({
     })
 
     const contentText = computed(() => {
-      if (isEmptyValue(currentGiftCard.value)) return ''
+      if (isEmptyValue(currentGiftCard.value)) {
+        return ''
+      }
       // return lang.t('form.pos.optionsPoinSales.salesOrder.giftCardPlaceholder')
       return ''
     })
@@ -239,7 +253,9 @@ export default defineComponent({
     // Methods
 
     function searchGiftCard(value) {
-      if (isEmptyValue(value)) return
+      if (isEmptyValue(value)) {
+        return
+      }
 
       clearTimeout(timeOut.value)
       timeOut.value = setTimeout(() => {
@@ -253,7 +269,9 @@ export default defineComponent({
     }
 
     function addPayment() {
-      const { amount, currency, business_partner, id } = currentGiftCard.value
+      const {
+        amount, currency, business_partner, id
+      } = currentGiftCard.value
       if (isEmptyValue(currency) || currency.id <= 0) {
         showMessage({
           message: lang.t('form.pointOfSales.collection.currencyMandatory'),
@@ -264,7 +282,7 @@ export default defineComponent({
       store.dispatch('refundReference', {
         amount,
         source_amount: amount,
-        tender_type_code: 'G',
+        tender_type_code: TENDERTYPE_GiftCard,
         gift_card_id: id,
         currency_id: currency.id,
         customer_id: business_partner.id,
@@ -280,15 +298,9 @@ export default defineComponent({
         })
     }
 
-    function spanSize(lines) {
-      if (lines.length > 1) return 12
-      return 24
-    }
-
-    setTimeout(() => {
-      // store.commit('setCurrentGiftCard', {})
+    nextTick(() => {
       giftCardSearchCode.value.focus()
-    }, 500)
+    })
 
     store.commit('setCurrentGiftCard', {})
 
@@ -303,8 +315,7 @@ export default defineComponent({
       searchGiftCard,
       formatQuantity,
       formatPrice,
-      addPayment,
-      spanSize
+      addPayment
     }
   }
 })

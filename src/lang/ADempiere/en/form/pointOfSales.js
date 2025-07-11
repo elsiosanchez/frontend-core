@@ -80,6 +80,20 @@ const pointOfSales = {
     creditMemo: 'Credit Note',
     addPayment: 'Payment Added Successfully'
   },
+  gitfCard: {
+    title: 'Gift Card',
+    titleSearch: 'Scan or Enter the Gift Card Code',
+    searchCode: 'Enter Code to Perform Search',
+    documentNo: 'Document No.',
+    businessPartner: 'Business Partner',
+    numberLines: 'Number of Lines',
+    amount: 'Amount',
+    giftCardLines: 'Gift Card Lines',
+    giftCardwithoutLines: 'Gift Card without Lines',
+    products: 'Products',
+    product: 'Product',
+    quantity: 'Quantity'
+  },
   conversionRate: {
     withoutConversionRate: 'There is no current exchange rate '
   },

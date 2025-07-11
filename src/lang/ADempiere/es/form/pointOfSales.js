@@ -80,6 +80,20 @@ const pointOfSales = {
     creditMemo: 'Nota de crédito',
     addPayment: 'Pago Agregado Exitosamente'
   },
+  gitfCard: {
+    title: 'Tarjeta de Regalo',
+    titleSearch: 'Escanee o Ingrese el Código de la Tarjeta Regalo',
+    searchCode: 'Ingrese Código para Realizar la Búsqueda',
+    documentNo: 'No. del Documento',
+    businessPartner: 'Socio de Negocio',
+    numberLines: 'Número de Líneas',
+    amount: 'Monto',
+    giftCardLines: 'Líneas de Tarjeta de Regalo',
+    giftCardwithoutLines: 'Tarjeta de regalo sin Líneas',
+    products: 'Productos',
+    product: 'Producto',
+    quantity: 'Cantidad'
+  },
   conversionRate: {
     withoutConversionRate: 'No existe tasa de cambio registrada al día '
   },
