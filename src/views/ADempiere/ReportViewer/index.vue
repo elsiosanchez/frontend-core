@@ -211,7 +211,7 @@ export default defineComponent({
         getCachedReport()
         return
       }
-
+      if (isEmptyValue(reportUuid)) return
       store.dispatch('getReportDefinitionFromServer', {
         // id: reportId
         id: reportUuid
