@@ -38,6 +38,8 @@ export const COLUMNNAME_C_Country_ID = 'C_Country_ID'
 
 export const COLUMNNAME_C_Currency_ID = 'C_Currency_ID'
 
+export const COLUMNNAME_C_ConversionType_ID = 'C_ConversionType_ID'
+
 export const COLUMNNAME_M_Warehouse_ID = 'M_Warehouse_ID'
 
 export const COLUMNNAME_C_UOM_ID = 'C_UOM_ID'

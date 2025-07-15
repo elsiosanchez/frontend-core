@@ -37,6 +37,8 @@ const initStateCriteria = {
   currencyId: -1,
   currency: {},
   listOrganization: [],
+  conversionTypeId: -1,
+  listConversionTypes: [],
   listCurrency: [],
   isMultiCurrency: false,
   date: '',
@@ -232,6 +234,7 @@ export default {
           organizationId,
           currencyId,
           isMultiCurrency,
+          conversionTypeId,
           transactionType,
           isAutomaticWriteOff
         } = state.searchCriteria
@@ -243,6 +246,7 @@ export default {
           organizationId,
           currencyId,
           isMultiCurrency,
+          conversionTypeId,
           transactionType,
           isAutomaticWriteOff
         })
@@ -286,8 +290,8 @@ export default {
           date,
           organizationId,
           currencyId,
-          currencyUuid,
           isMultiCurrency,
+          conversionTypeId,
           transactionType,
           isAutomaticWriteOff
         } = state.searchCriteria
@@ -298,8 +302,8 @@ export default {
           date,
           organizationId,
           currencyId,
-          currencyUuid,
           isMultiCurrency,
+          conversionTypeId,
           transactionType,
           isAutomaticWriteOff
         })
@@ -341,8 +345,10 @@ export default {
         let invoiceSelectionList = []
         let paymentSelectionsList = []
         const {
+          businessPartnerId,
           currencyId,
-          businessPartnerId
+          isMultiCurrency,
+          conversionTypeId
         } = state.searchCriteria
         const {
           date,
@@ -384,6 +390,8 @@ export default {
           date: new Date(date),
           chargeId,
           currencyId,
+          isMultiCurrency,
+          conversionTypeId,
           description,
           totalDifference: totalDifference.toString(),
           businessPartnerId,

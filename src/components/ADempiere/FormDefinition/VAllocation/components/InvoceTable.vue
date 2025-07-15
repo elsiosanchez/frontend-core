@@ -197,6 +197,7 @@
       align="left"
       :min-width="150"
       :label="$t('form.VAllocation.invoice.table.writeOff')"
+      fixed="right"
     >
       <template slot-scope="scope">
         <!-- TODO: Service Currency -->
@@ -215,6 +216,7 @@
       align="left"
       :min-width="150"
       :label="$t('form.VAllocation.invoice.table.applied')"
+      fixed="right"
     >
       <template slot-scope="scope">
         <!-- TODO: Service Currency -->
@@ -233,6 +235,7 @@
       align="left"
       :min-width="180"
       :label="$t('form.VAllocation.invoice.table.overUnderPay')"
+      fixed="right"
     >
       <template slot-scope="scope">
         <span :class="{ 'cell-align-right': true, 'number-negative': convertToNumber(scope.row.overUnderPay) < 0 }">

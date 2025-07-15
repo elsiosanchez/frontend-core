@@ -27,6 +27,7 @@ const VAllocation = {
     businessPartner: 'Business Partner',
     organization: 'Organization',
     currency: 'Currency',
+    conversionType: 'Conversion Type',
     date: 'Date',
     transactionType: 'Transaction Type',
     option: {

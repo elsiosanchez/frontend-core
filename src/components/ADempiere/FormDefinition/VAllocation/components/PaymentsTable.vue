@@ -168,6 +168,7 @@
       align="left"
       :min-width="250"
       :label="$t('form.VAllocation.payment.table.applied')"
+      fixed="right"
     >
       <template slot-scope="scope">
         <!-- TODO: Service Currency -->

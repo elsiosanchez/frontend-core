@@ -85,6 +85,24 @@ export function requestListCurrencies({
   })
 }
 
+export function requestListConversionTypes({
+  searchValue,
+  pageToken,
+  pageSize = RECORD_ROWS_BY_LIST
+}) {
+  return request({
+    url: '/forms/payment-allocation/conversion-types',
+    method: 'get',
+    params: {
+      page_size: pageSize,
+      page_token: pageToken,
+      //  DSL Query
+      is_only_active_records: true,
+      search_value: searchValue
+    }
+  })
+}
+
 export function requestListPayments({
   // DSL Query
   searchValue,
@@ -93,6 +111,7 @@ export function requestListPayments({
   organizationId,
   currencyId,
   isMultiCurrency,
+  conversionTypeId,
   transactionType,
   isAutomaticWriteOff,
   // Page Data
@@ -108,6 +127,7 @@ export function requestListPayments({
       organization_id: organizationId,
       currency_id: currencyId,
       is_multi_currency: isMultiCurrency,
+      conversion_type_id: conversionTypeId,
       transaction_type: transactionType,
       is_automatic_write_off: isAutomaticWriteOff,
       // Page Data
@@ -128,6 +148,7 @@ export function requestListInvoices({
   organizationId,
   currencyId,
   isMultiCurrency,
+  conversionTypeId,
   transactionType,
   isAutomaticWriteOff,
   // Page Data
@@ -143,6 +164,7 @@ export function requestListInvoices({
       organization_id: organizationId,
       currency_id: currencyId,
       is_multi_currency: isMultiCurrency,
+      conversion_type_id: conversionTypeId,
       transaction_type: transactionType,
       is_automatic_write_off: isAutomaticWriteOff,
       // Page Data
@@ -197,6 +219,8 @@ export function requestProcess({
   date,
   chargeId = -1,
   currencyId,
+  isMultiCurrency,
+  conversionTypeId,
   description,
   totalDifference,
   businessPartnerId,
@@ -213,6 +237,8 @@ export function requestProcess({
       description,
       business_partner_id: businessPartnerId,
       currency_id: currencyId,
+      is_multi_currency: isMultiCurrency,
+      conversion_type_id: conversionTypeId,
       charge_id: chargeId,
       total_difference: totalDifference,
       transaction_organization_id: transactionOrganizationId,

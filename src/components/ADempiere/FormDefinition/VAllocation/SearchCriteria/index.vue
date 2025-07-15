@@ -58,6 +58,10 @@
                 <el-col :span="12">
                   <multi-currency-field />
                 </el-col>
+
+                <el-col v-if="isMultiCurrency" :span="12">
+                  <conversion-type-field />
+                </el-col>
               </el-row>
             </el-form>
           </el-card>
@@ -96,7 +100,7 @@
         </div>
       </el-card>
 
-      <p style="text-align: center;">
+      <p v-show="false" style="text-align: center;">
         <el-radio
           v-model="radioPanel3"
           :border="true"
@@ -112,6 +116,7 @@
           :border="true"
           :label="$t('form.VAllocation.searchCriteria.option.autoAssign')"
         />
+
         <el-radio
           v-model="radioPanel2"
           :border="true"
@@ -139,7 +144,7 @@ import store from '@/store'
 
 // Components and Mixins
 import BusinessPartnerField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/businessPartnerField.vue'
-import Carousel from '@/components/ADempiere/Carousel'
+import ConversionTypeField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/conversionTypeField.vue'
 import CurrencyField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/currencyField.vue'
 import multiCurrencyField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/multiCurrencyField.vue'
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
@@ -161,7 +166,7 @@ export default defineComponent({
 
   components: {
     BusinessPartnerField,
-    Carousel,
+    ConversionTypeField,
     CurrencyField,
     FieldDefinition,
     EmptyOptionSelect,
@@ -264,6 +269,11 @@ export default defineComponent({
       }
     })
 
+    const isMultiCurrency = computed(() => {
+      const { isMultiCurrency } = store.getters.getSearchFilter
+      return isMultiCurrency
+    })
+
     function loadTransactonsTypes() {
       if (!isEmptyValue(storedTransactionTypes.value)) {
         return
@@ -293,6 +303,7 @@ export default defineComponent({
       // List Option
       currentTypeTransaction,
       // Computed
+      isMultiCurrency,
       labelReceivablesOnly,
       labelPayablesOnly,
       currentDate
