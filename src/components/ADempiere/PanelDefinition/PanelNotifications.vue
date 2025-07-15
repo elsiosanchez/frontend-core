@@ -25,7 +25,7 @@
     <p slot="title" style="text-align: center;margin: 0px;">
       {{ notificationsDetails.title }}
     </p>
-    <p style="text-align: center">
+    <p style="text-align: center;margin: 0px;">
       <b>
         <v-md-preview
           :text="notificationsDetails.message"
@@ -34,38 +34,37 @@
         />
       </b>
     </p>
-    <el-descriptions
-      v-if="!isEmptyValue(notificationsDetails.logs)"
-      class="margin-top"
-      :column="1"
-      :border="true"
-    >
-      <el-descriptions-item
-        :label="$t('page.processActivity.logs')"
+    <div class="panel-table">
+      <el-table
+        :data="notificationsDetails.logs"
+        class="table-details"
+        max-height="250"
       >
-        {{ notificationsDetails.summary }}
-        <!-- <v-md-preview :text="notificationsDetails.summary" class="previwer-disable" style="padding: 0px" height="100px" /> -->
-      </el-descriptions-item>
-      <el-descriptions-item
-        v-for="(logItem, key) in notificationsDetails.logs"
-        :key="key"
-        :label="logItem.record_id"
-      >
-        {{ logItem.log }}
-      </el-descriptions-item>
-    </el-descriptions>
-    <p v-else>
-      <el-card shadow="never" :body-style="{ padding: '5px' }">
-        <v-md-preview
-          :text="notificationsDetails.message"
-          style="padding: 0px"
+        <el-table-column width="80">
+          <template slot-scope="scope">
+            <el-button
+              class="see-detail-button"
+              style="float: left;"
+              @click="copyMessage(scope.row.log)"
+            >
+              <p class="see-detail-button-paragraph">
+                <i
+                  class="see-detail-icon el-icon-document-copy"
+                />
+              </p>
+            </el-button>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="log"
+          label=""
         />
-      </el-card>
-    </p>
+      </el-table>
+    </div>
     <p style="text-align: right">
       <el-button
         class="see-detail-button"
-        @click="isNotification=false"
+        @click="zoomProcess"
       >
         <p class="see-detail-button-paragraph">
           <i
@@ -123,6 +122,7 @@ export default defineComponent({
       router.push({
         name: 'ProcessActivity'
       }, () => {})
+      store.commit('setShowNotification', false)
     }
     function copycontent() {
       copyToClipboard({
@@ -130,11 +130,19 @@ export default defineComponent({
         isShowMessage: true
       })
     }
+    function copyMessage(message) {
+      copyToClipboard({
+        text: message,
+        isShowMessage: true
+      })
+    }
+
     return {
       isNotification,
       notificationsDetails,
       // Methods
       zoomProcess,
+      copyMessage,
       copycontent
     }
   }
@@ -155,5 +163,29 @@ export default defineComponent({
 }
 .see-detail-text {
   font-size: 18px !important;
+}
+.previwer-disable {
+  .github-markdown-body {
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 0px;
+    .p {
+      margin: 0px;
+    }
+  }
+}
+.table-details {
+  width: 100%;
+  .el-table__header {
+    display: none;
+  }
+}
+.panel-table {
+  border-radius: 22px;
+  transition: background-color 0.1s ease;
+  box-sizing: border-box;
+  border: 1px solid #dcdfe6;
+  padding: 10px;
 }
 </style>
