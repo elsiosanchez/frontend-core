@@ -160,8 +160,11 @@ export const CURRENCY_TO_COUNTRY = {
   'USD': '🇺🇸', // Dólar estadounidense
   'UYU': '🇺🇾', // Peso uruguayo
   'UZS': '🇺🇿', // Som uzbeko
-  'VEF': '🇻🇪', // Bolívar venezolano (anterior)
-  'VES': '🇻🇪', // Bolívar soberano venezolano
+  'VEB': '🇻🇪', // Bolívar venezolano
+  'VEF': '🇻🇪', // Bolívar Fuerte venezolano
+  'VES': '🇻🇪', // Bolívar Soberano venezolano
+  'VED': '🇻🇪', // Bolívar Digital venezolano
+  'PTR': '🇻🇪', // Petro venezolano
   'VND': '🇻🇳', // Dong vietnamita
   'XAF': '🇨🇫', // Franco CFA de África Central
   'XCD': '🇪🇨', // Dólar del Caribe Oriental

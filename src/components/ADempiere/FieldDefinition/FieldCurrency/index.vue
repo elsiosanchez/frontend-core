@@ -1,33 +1,33 @@
 <!--
-ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
-Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
-Contributor(s): Elsio Sanchez ElsioSanchez15@outlook.com https://github.com/ElsioSanchez
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+  ADempiere-Vue (Frontend) for ADempiere ERP & CRM Smart Business Solution
+  Copyright (C) 2018-Present E.R.P. Consultores y Asociados, C.A. www.erpya.com
+  Contributor(s): Elsio Sanchez ElsioSanchez15@outlook.com https://github.com/ElsioSanchez
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program. If not, see <https:www.gnu.org/licenses/>.
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <div class="el-dropdown" style="width: -webkit-fill-available;padding: 0px">
+  <div class="el-dropdown custom-field-currency" style="width: 100%; padding: 0px">
     <el-dropdown
       size="small"
       trigger="click"
       :disabled="metadata.readonly"
       placement="bottom-start"
-      class="currency-fiedls"
+      class="dropdown-currency"
       @visible-change="showMenu"
       @command="changeValuewithCommand"
     >
-      <el-button-group style="width: 100%;">
+      <el-button-group style="width: 100%;" class="currency-buttons-group">
         <el-button
           plain
           size="small"
@@ -47,16 +47,18 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
           plain
           size="small"
           :disabled="metadata.readonly"
-          style="width: 15%;padding: 0px 5px;"
-          @click="value = ''"
+          style="width: 28px;padding: 0px 5px;"
+          @click="value = -1"
         >
-          <b> <i class="el-icon-circle-close" style="color: red;font-weight: 900;font-size: 15px;" /> </b>
+          <b>
+            <i class="el-icon-circle-close" style="color: red;font-weight: 900;font-size: 15px;" />
+          </b>
         </el-button>
         <el-button
           plain
           size="small"
           :disabled="metadata.readonly"
-          style="width: 15%;padding: 0px 5px;"
+          style="width: 28px;padding: 0px 5px;"
         >
           <b>
             <i
@@ -68,7 +70,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
       </el-button-group>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
-          v-for="(option, key) in listCurrencies"
+          v-for="(option, key) in optionsList"
           :key="key"
           :divided="key > 0"
           :class="cssOptionClass(option.value)"
@@ -133,6 +135,7 @@ export default {
     return {
       componentKey: 0,
       defaultFlag: '🏳️',
+      optionsList: [],
       displayMenuOptions: false
     }
   },
@@ -320,7 +323,7 @@ export default {
       // establish
       this.setContainerInformation()
       // get stored list and refresh local component
-      this.optionsList = this.getStoredLookupAll
+      this.optionsList = this.getStoredLookupAll || []
 
       if (show) {
         const listLookups = this.getStoredLookupList
@@ -340,12 +343,18 @@ export default {
       const currency = isoCountryCurrency.getAllISOCodes()
         .find(country => country.currency === isoCode)
 
-      if (isEmptyValue(currency)) return ''
+      if (isEmptyValue(currency)) {
+        return ''
+      }
       return '( ' + currency.symbol + ' )'
     },
     flagDisplay(isoCode) {
-      if (isEmptyValue(isoCode)) return ''
-      if (!isEmptyValue(CURRENCY_TO_COUNTRY[isoCode])) return CURRENCY_TO_COUNTRY[isoCode]
+      if (isEmptyValue(isoCode)) {
+        return ''
+      }
+      if (!isEmptyValue(CURRENCY_TO_COUNTRY[isoCode])) {
+        return CURRENCY_TO_COUNTRY[isoCode]
+      }
       return this.defaultFlag
     },
     forceRerender() {
@@ -478,11 +487,11 @@ export default {
         .finally(() => {
           if (this.metadata.inTable) {
             setTimeout(() => {
-              this.optionsList = this.listCurrencies
+              this.optionsList = this.listCurrencies || []
               this.forceRerender()
             }, 100)
           } else {
-            this.optionsList = this.listCurrencies
+            this.optionsList = this.listCurrencies || []
             this.forceRerender()
           }
 
@@ -496,7 +505,7 @@ export default {
       // establish
       this.setContainerInformation()
       // get stored list and refresh local component
-      this.optionsList = this.listCurrencies
+      this.optionsList = this.listCurrencies || []
 
       if (isShowList) {
         const listLookups = this.getStoredLookupList
@@ -607,10 +616,22 @@ export default {
 </script>
 
 <style lang="scss">
-.currency-fiedls{
-  width: -webkit-fill-available;
-  // .ul{
-  //   width: 300px;
-  // }
+.custom-field-currency{
+  width: 100%;
+
+  .dropdown-currency {
+    width: 100%;
+
+    .currency-buttons-group {
+      &.el-button-group {
+        display: flex !important;
+        width: 100%;
+
+      .el-button:first-child {
+          width: calc(100% - 56px);
+        }
+      }
+    }
+  }
 }
 </style>

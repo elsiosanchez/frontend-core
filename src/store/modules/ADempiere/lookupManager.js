@@ -347,7 +347,7 @@ const lookupManager = {
         uuid
       })
       if (!isEmptyValue(lookupList)) {
-        return lookupList.optionsList
+        return lookupList.optionsList || []
       }
       return []
     },
@@ -407,7 +407,7 @@ const lookupManager = {
         }
       }
 
-      return optionsList
+      return optionsList || []
     }
   }
 }

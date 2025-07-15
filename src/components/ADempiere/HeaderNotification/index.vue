@@ -174,7 +174,7 @@ export default defineComponent({
         .finally(() => {
           setTimeout(() => {
             if (!isEmptyValue(getToken())) {
-              listActivities()
+              // listActivities()
             }
           }, 90000)
         })
