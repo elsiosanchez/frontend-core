@@ -426,6 +426,10 @@ export default {
 
     generateDisplayedValueWithIdentifiers(row) {
       let displayedValue
+      if (isEmptyValue(row)) {
+        return displayedValue
+      }
+
       const identifierColumns = this.storedIdentifierColumns
       if (isEmptyValue(identifierColumns)) {
         return displayedValue
@@ -459,16 +463,50 @@ export default {
     },
 
     generateDisplayedValue(recordRow) {
-      let displayedValue = this.generateDisplayedValueWithIdentifiers(recordRow)
+      let displayedValue
+      if (isEmptyValue(recordRow)) {
+        return displayedValue
+      }
+
+      const { display_value } = recordRow
+      if (!isEmptyValue(display_value)) {
+        displayedValue = display_value
+        return displayedValue
+      }
+
+      const { column_name, elementName, isSameColumnElement } = this.metadata
+      displayedValue = recordRow[DISPLAY_COLUMN_PREFIX + column_name]
+      if (!isEmptyValue(displayedValue)) {
+        return displayedValue
+      }
+      // when column is a view (smart browse)
+      if (!isSameColumnElement) {
+        displayedValue = recordRow[DISPLAY_COLUMN_PREFIX + elementName]
+        if (!isEmptyValue(displayedValue)) {
+          return displayedValue
+        }
+      }
+      // when value is referneced as Account_ID -> C_ElementValue_ID, C_Currency_ID_To -> C_Currency_ID
+      if (!isEmptyValue(this.searchTableName)) {
+        const referenceColumn = DISPLAY_COLUMN_PREFIX + this.searchTableName + IDENTIFIER_COLUMN_SUFFIX
+        displayedValue = recordRow[referenceColumn]
+        if (!isEmptyValue(displayedValue)) {
+          return displayedValue
+        }
+      }
+
+      displayedValue = this.generateDisplayedValueWithIdentifiers(recordRow)
       if (!isEmptyValue(displayedValue)) {
         return displayedValue
       }
 
       // generate with standard columns
-      const { Value, Name, Description } = recordRow
+      const { Value, DocumentNo, Name, Description } = recordRow
 
       if (!isEmptyValue(Value)) {
         displayedValue = Value
+      } else if (!isEmptyValue(DocumentNo)) {
+        displayedValue = DocumentNo
       }
       if (!isEmptyValue(Name)) {
         if (!isEmptyValue(displayedValue)) {
