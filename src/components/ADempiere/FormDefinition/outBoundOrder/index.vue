@@ -304,10 +304,24 @@ export default defineComponent({
       const filters = store.getters.getSearchFilterGenerateOrder
       const lineSelect = store.getters.getLinesSelection
       let freight_document_type_id; let target_document_type_id; let driver_id; let shipper_id; let vehicle_id = -1
+      let deliveryViaCode, deliveryRuleCode
+
       const {
-        movementTypeId, organizationId, warehouseId, targetDocumentTypeId,
-        documentDate, shipDate, deliveryRuleId, deliveryViaId, shipperId,
-        vehiclesId, driverId, charterOrder, freightDocumentTypesId } = filters
+        movementTypeId,
+        organizationId,
+        warehouseId,
+        targetDocumentTypeId,
+        documentDate,
+        shipDate,
+        deliveryRuleId,
+        deliveryViaId,
+        shipperId,
+        vehiclesId,
+        driverId,
+        charterOrder,
+        freightDocumentTypesId,
+        locatorId
+      } = filters
 
       const orderLineRequest = lineSelect.map(data => {
         return {
@@ -324,41 +338,35 @@ export default defineComponent({
         }
       })
       let movementType = movementTypeId
-      if (isEmptyValue(movementTypeId)) {
-        movementType = MOVEMENT_TYPE_SALES_ORDER
-      }
-      if (!isEmptyValue(targetDocumentTypeId)) {
-        target_document_type_id = targetDocumentTypeId
-      }
-      if (!isEmptyValue(freightDocumentTypesId)) {
-        freight_document_type_id = freightDocumentTypesId
-      }
-      if (!isEmptyValue(driverId)) {
-        driver_id = driverId
-      }
-      if (!isEmptyValue(shipperId)) {
-        shipper_id = shipperId
-      }
-      if (!isEmptyValue(vehiclesId)) {
-        vehicle_id = vehiclesId
-      }
+      if (isEmptyValue(movementTypeId)) movementType = MOVEMENT_TYPE_SALES_ORDER
+
+      if (!isEmptyValue(targetDocumentTypeId)) target_document_type_id = targetDocumentTypeId
+      if (!isEmptyValue(freightDocumentTypesId)) freight_document_type_id = freightDocumentTypesId
+      if (!isEmptyValue(driverId)) driver_id = driverId
+      if (!isEmptyValue(shipperId)) shipper_id = shipperId
+      if (!isEmptyValue(vehiclesId)) vehicle_id = vehiclesId
+      if (!isEmptyValue(deliveryRuleCode)) deliveryRuleCode = deliveryRuleId
+      if (!isEmptyValue(deliveryViaCode)) deliveryViaCode = deliveryViaId
+
       store.dispatch('runOutputOrderProcess', {
-        organization_id: organizationId,
-        warehouse_id: warehouseId,
-        target_document_type_id,
-        delivery_rule: deliveryRuleId,
-        delivery_via: deliveryViaId,
-        shipper_id,
-        document_date: documentDate,
-        shipment_date: shipDate,
-        movement_type: movementType,
-        orderLineRequest,
-        is_generate_freight_order: charterOrder,
-        vehicle_id,
+        locatorId,
         driver_id,
-        freight_document_type_id
+        shipper_id,
+        vehicle_id,
+        orderLineRequest,
+        shipment_date: shipDate,
+        target_document_type_id,
+        freight_document_type_id,
+        warehouse_id: warehouseId,
+        document_date: documentDate,
+        movement_type: movementType,
+        delivery_via: deliveryViaCode,
+        delivery_rule: deliveryRuleCode,
+        organization_id: organizationId,
+        is_generate_freight_order: charterOrder
       })
     }
+
     function exit() {
       const currentRoute = router.app._route
       const tabViewsVisited = store.getters.visitedViews

@@ -312,6 +312,7 @@ export function requestLoadOrder({
   is_generate_freight_order,
   vehicle_id = -1,
   driver_id = -1,
+  locatorId,
   freight_document_type_id = -1
 }) {
   return request({
@@ -330,6 +331,7 @@ export function requestLoadOrder({
       lines: orderLineRequest,
       is_generate_freight_order,
       vehicle_id,
+      locator_id: locatorId,
       driver_id,
       freight_document_type_id
     }

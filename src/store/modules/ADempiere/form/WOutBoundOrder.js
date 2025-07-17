@@ -269,6 +269,7 @@ const OutBoundOrder = {
       document_date,
       shipment_date,
       movement_type,
+      locatorId,
       orderLineRequest,
       is_generate_freight_order,
       vehicle_id = 0,
@@ -291,6 +292,7 @@ const OutBoundOrder = {
           is_generate_freight_order,
           vehicle_id,
           driver_id,
+          locatorId,
           freight_document_type_id
         })
           .then(response => {
