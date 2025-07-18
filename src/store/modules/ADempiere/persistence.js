@@ -423,7 +423,7 @@ const persistence = {
                 })
                 response.type = 'createEntity'
 
-                const attributesRecord = response.values || {}
+                let attributesRecord = response.values || {}
 
                 // add display column to current record
                 if (key_columns.length === 1) {
@@ -445,6 +445,14 @@ const persistence = {
                   })
                   attributesRecord[displayedColumnName] = displayedValue
                 }
+                attributesRecord = {
+                  ...attributesRecord,
+                  ...ROW_ATTRIBUTES
+                }
+
+                const getTabRecordsList = getters.getTabRecordsList({ containerUuid })
+                getTabRecordsList.unshift(attributesRecord)
+
                 response.attributes = attributesRecord
 
                 // add new row on table

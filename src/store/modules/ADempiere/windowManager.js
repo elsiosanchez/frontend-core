@@ -300,6 +300,18 @@ const windowManager = {
       containerUuid
     }) {
       Vue.set(state.isBatchentry, containerUuid, value)
+    },
+    setTabUpdateRecordsList(state, {
+      containerUuid,
+      recordsList
+    }) {
+      Vue.set(state.tabData[containerUuid], 'recordsList', recordsList)
+    },
+    setTabOldUpdateRecordsList(state, {
+      containerUuid,
+      recordsList
+    }) {
+      Vue.set(state.oldTabData[containerUuid], 'recordsList', recordsList)
     }
   },
 
