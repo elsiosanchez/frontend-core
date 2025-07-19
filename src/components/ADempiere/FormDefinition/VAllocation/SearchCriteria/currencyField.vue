@@ -29,6 +29,7 @@
     <el-select
       v-model="currentCurrencyValue"
       clearable
+      :disabled="readOnly"
       style="width: 100%;"
       filterable
       :default-first-option="true"
@@ -73,6 +74,13 @@ export default defineComponent({
 
   components: {
     EmptyOptionSelect
+  },
+
+  props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    }
   },
 
   setup() {

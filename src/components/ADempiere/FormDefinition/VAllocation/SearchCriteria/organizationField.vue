@@ -32,6 +32,7 @@
       filterable
       :default-first-option="true"
       remote
+      :disabled="readOnly"
       :remote-method="remoteSearchCurrencies"
       @visible-change="loadOrganizations"
     >
@@ -69,6 +70,13 @@ export default defineComponent({
 
   components: {
     EmptyOptionSelect
+  },
+
+  props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    }
   },
 
   setup() {

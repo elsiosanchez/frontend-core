@@ -21,6 +21,7 @@ import Vue from 'vue'
 // API Request Methods
 import {
   requestListTransactionTypes,
+  requestCreateConversionRate,
   requestProcess,
   requestListPayments,
   requestListInvoices
@@ -68,6 +69,10 @@ const initStateVAllocation = {
   list: {
     payments: [],
     invoces: []
+  },
+  conversionRate: {
+    isLoading: false,
+    data: {}
   },
   process: {
     date: '',
@@ -432,6 +437,58 @@ export default {
       const filters = list.filter(difference => difference.id !== row.id)
       commit('setDiferenceTotal', filters)
       return
+    },
+    createConversionRate({ commit, state }, {
+      businessPartnerId,
+      conversionTypeId,
+      negotiatedRate,
+      organizationId,
+      currencyToId,
+      date
+    }) {
+      return new Promise(resolve => {
+        commit('updateAttributeCriteriaVallocation', {
+          criteria: 'conversionRate',
+          attribute: 'isLoading',
+          value: true
+        })
+        requestCreateConversionRate({
+          businessPartnerId,
+          conversionTypeId,
+          negotiatedRate,
+          organizationId,
+          currencyToId,
+          date
+        })
+          .then(response => {
+            commit('updateAttributeCriteriaVallocation', {
+              criteria: 'conversionRate',
+              attribute: 'data',
+              value: response
+            })
+            resolve(response)
+          })
+          .catch(error => {
+            let message = error.message
+            if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
+              message = error.response.data.message
+            }
+            showMessage({
+              type: 'error',
+              message,
+              showClose: true
+            })
+            resolve({})
+            console.warn(`Error Conversion Rate: ${error.message}. Code: ${error.code}.`)
+          })
+          .finally(() => {
+            commit('updateAttributeCriteriaVallocation', {
+              criteria: 'conversionRate',
+              attribute: 'isLoading',
+              value: false
+            })
+          })
+      })
     }
   },
 
@@ -486,6 +543,12 @@ export default {
     },
     getIsLoadingInvoices(state) {
       return state.isLoadingInvoices
+    },
+    getIsLoadingNegotiatedRate(state) {
+      return state.conversionRate.isLoading
+    },
+    getCurrentNegotiatedRate(state) {
+      return state.conversionRate.data
     }
   }
 }

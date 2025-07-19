@@ -247,3 +247,25 @@ export function requestProcess({
     }
   })
 }
+// Create Rates
+export function requestCreateConversionRate({
+  businessPartnerId,
+  conversionTypeId,
+  negotiatedRate,
+  organizationId,
+  currencyToId,
+  date
+}) {
+  return request({
+    url: '/forms/payment-allocation/conversion-types/conversion-rates',
+    method: 'post',
+    data: {
+      organization_id: organizationId,
+      conversion_type_id: conversionTypeId,
+      date,
+      business_partner_id: businessPartnerId,
+      currency_to_id: currencyToId,
+      negotiated_rate: negotiatedRate
+    }
+  })
+}

@@ -32,6 +32,7 @@
       clearable
       filterable
       reserve-keyword
+      :disabled="readOnly"
       style="width: 100%;"
       :loading="loadingBPartner"
       :placeholder="bPartnerField.name"
@@ -83,6 +84,10 @@ export default defineComponent({
       default: () => {
         return {}
       }
+    },
+    readOnly: {
+      type: Boolean,
+      default: false
     }
   },
 

@@ -33,6 +33,7 @@
       filterable
       :default-first-option="true"
       remote
+      :disabled="readOnly"
       :remote-method="remoteSearchConversionTypes"
       @visible-change="loadConversionTypes"
     >
@@ -73,6 +74,13 @@ export default defineComponent({
 
   components: {
     EmptyOptionSelect
+  },
+
+  props: {
+    readOnly: {
+      type: Boolean,
+      default: false
+    }
   },
 
   setup() {

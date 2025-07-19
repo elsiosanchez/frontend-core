@@ -62,6 +62,12 @@
                 <el-col v-if="isMultiCurrency" :span="12">
                   <conversion-type-field />
                 </el-col>
+                <el-col v-if="isMultiCurrency" :span="12">
+                  <negotiated-rate-field
+                    :metadata="metadata"
+                    :date-metadate="currentDate"
+                  />
+                </el-col>
               </el-row>
             </el-form>
           </el-card>
@@ -150,6 +156,7 @@ import multiCurrencyField from '@/components/ADempiere/FormDefinition/VAllocatio
 import FieldDefinition from '@/components/ADempiere/FieldDefinition/index.vue'
 import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
 import OrganizationField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/organizationField.vue'
+import NegotiatedRateField from '@/components/ADempiere/FormDefinition/VAllocation/SearchCriteria/negotiatedRateField.vue'
 
 // Constants
 import {
@@ -171,7 +178,8 @@ export default defineComponent({
     FieldDefinition,
     EmptyOptionSelect,
     OrganizationField,
-    multiCurrencyField
+    multiCurrencyField,
+    NegotiatedRateField
   },
 
   props: {

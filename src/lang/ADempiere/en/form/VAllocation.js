@@ -29,6 +29,7 @@ const VAllocation = {
     currency: 'Currency',
     conversionType: 'Conversion Type',
     date: 'Date',
+    negotiatedRate: 'Negotiated Rate',
     transactionType: 'Transaction Type',
     option: {
       multiCurrency: 'Multi-Currency',
