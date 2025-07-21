@@ -19,7 +19,7 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 <template>
   <span style="padding-right: 9px;">
     <el-button
-      v-if="!isEmptyValue(tabAttributes) && currentRecordId > 0"
+      v-if="!isEmptyValue(tabAttributes) && currentRecordId >= 0"
       plain
       type="info"
       size="small"
@@ -127,10 +127,18 @@ export default defineComponent({
     // Current Record ID
     const currentRecordId = computed(() => {
       if (!isEmptyValue(props.tabAttributes)) {
-        return store.getters.getIdOfContainer({
-          containerUuid: props.tabAttributes.containerUuid,
-          tableName: props.tabAttributes.table_name
+        const { containerUuid, table_name, table } = props.tabAttributes
+        const getRecordId = store.getters.getIdOfContainer({
+          containerUuid: containerUuid,
+          tableName: table_name
         })
+        if (isEmptyValue(getRecordId) && !isEmptyValue(table.key_columns)) {
+          return store.getters.getIdKeyColumnsOfContainer({
+            containerUuid: containerUuid,
+            key_column: table.key_columns.at()
+          })
+        }
+        return getRecordId
       }
       return -1
     })

@@ -314,7 +314,7 @@ export const refreshRecord = {
   svg: false,
   icon: 'el-icon-refresh',
   actionName: 'refreshRecords',
-  refreshRecord: ({ parentUuid, containerUuid, recordId, recordUuid, isRefreshChilds = false }) => {
+  refreshRecord: ({ parentUuid, containerUuid, recordId, recordUuid, isRefreshChilds }) => {
     if (isEmptyValue(recordUuid)) {
       recordUuid = store.getters.getUuidOfContainer(containerUuid)
     }
@@ -330,7 +330,9 @@ export const refreshRecord = {
       isLoaded: false,
       containerUuid
     })
-    if (recordId < 0) return {}
+    if (recordId < 0) {
+      return {}
+    }
     nprogress.start()
     return requestGetTabEntity({
       tabId: tabDefinition.id,
@@ -382,6 +384,9 @@ export const refreshRecord = {
           root: true
         })
 
+        if (isEmptyValue(isRefreshChilds)) {
+          isRefreshChilds = tabDefinition.isParentTab
+        }
         if (isRefreshChilds) {
           // update records and logics on child tabs
           tabDefinition.childTabs.filter(tabItem => {
@@ -488,7 +493,11 @@ export const deleteRecord = {
     if (tab.isParentTab && tab.index > 0) {
       return false
     }
+    const { table } = tab
     if (!tab.table.is_deleteable) {
+      return false
+    }
+    if (table.is_view) {
       return false
     }
 

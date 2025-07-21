@@ -195,6 +195,7 @@ export default defineComponent({
     }
 
     return {
+      recordId,
       isSaveRecordLoading,
       loadingCallout,
       isSaveRecord,

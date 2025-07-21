@@ -203,12 +203,23 @@ export default defineComponent({
       return store.getters.getUuidOfContainer(props.containerUuid)
     })
 
-    const recordId = computed(() => {
-      return store.getters.getIdOfContainer({ containerUuid: props.containerUuid, tableName: tabAttributes.value.table_name })
-    })
-
     const tabAttributes = computed(() => {
       return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
+    })
+
+    const recordId = computed(() => {
+      const { containerUuid, table_name, table } = tabAttributes.value
+      const getRecordId = store.getters.getIdOfContainer({
+        containerUuid: containerUuid,
+        tableName: table_name
+      })
+      if (isEmptyValue(getRecordId) && !isEmptyValue(table.key_columns)) {
+        return store.getters.getIdKeyColumnsOfContainer({
+          containerUuid: containerUuid,
+          key_column: table.key_columns.at()
+        })
+      }
+      return getRecordId
     })
 
     const currentRoute = router.app._route
@@ -326,16 +337,11 @@ export default defineComponent({
       }
       store.dispatch('fieldListInfo', { info })
 
-      const recordId = store.getters.getIdOfContainer({
-        containerUuid: tabAttributes.value.containerUuid,
-        tableName: tabAttributes.value.table_name
-      })
-
       deleteRecord.deleteRecord({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
         recordUuid: recordUuid.value,
-        recordId
+        recordId: recordId.value
       })
       isVisibleConfirmDelete.value = false
     }

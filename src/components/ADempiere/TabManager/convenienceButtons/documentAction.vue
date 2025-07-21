@@ -192,14 +192,18 @@ export default defineComponent({
       return store.getters.getUuidOfContainer(containerUuid)
     })
     const recordId = computed(() => {
-      const { params, query } = currentRouter
-      let id = store.getters.getIdOfContainer({
+      const { containerUuid, table_name, table } = props.tabAttributes.value
+      const getRecordId = store.getters.getIdOfContainer({
         containerUuid: containerUuid,
-        tableName: props.tabAttributes.table_name
+        tableName: table_name
       })
-      if (isEmptyValue(id) && !isEmptyValue(params) && !isEmptyValue(params.recordId)) id = currentRouter.params.recordId
-      if (isEmptyValue(id) && !isEmptyValue(query) && !isEmptyValue(query.recordId)) id = query.recordId
-      return id
+      if (isEmptyValue(getRecordId) && !isEmptyValue(table.key_columns)) {
+        return store.getters.getIdKeyColumnsOfContainer({
+          containerUuid: containerUuid,
+          key_column: table.key_columns.at()
+        })
+      }
+      return getRecordId
     })
 
     const currentRecordDocumentStatus = computed(() => {

@@ -79,12 +79,14 @@
         @click="deleteCurrentRecord()"
       />
     </div>
+
     <el-button
       slot="reference"
       plain
       size="small"
       type="danger"
       class="undo-changes-button"
+      :disabled="!isDeleteRecord"
     >
       <svg-icon icon-class="delete" />
       <span v-if="!isMobile">
@@ -145,6 +147,21 @@ export default defineComponent({
       return store.getters.getStoredTab(props.parentUuid, props.containerUuid)
     })
 
+    const recordId = computed(() => {
+      const { containerUuid, table_name, table } = tabAttributes.value
+      const getRecordId = store.getters.getIdOfContainer({
+        containerUuid: containerUuid,
+        tableName: table_name
+      })
+      if (isEmptyValue(getRecordId) && !isEmptyValue(table.key_columns)) {
+        return store.getters.getIdKeyColumnsOfContainer({
+          containerUuid: containerUuid,
+          key_column: table.key_columns.at()
+        })
+      }
+      return getRecordId
+    })
+
     // TODO: Evaluate if is required
     const isExistsChanges = computed(() => {
       const persistenceValues = store.getters.getPersistenceAttributesChanges({
@@ -156,10 +173,6 @@ export default defineComponent({
     })
 
     const isDeleteRecord = computed(() => {
-      const { table } = tabAttributes.value
-      if (!isEmptyValue(table) && table.is_view) {
-        return false
-      }
       if (!tabAttributes.value.isShowedTableRecords) {
         // Only single record
         if (isExistsChanges.value) {
@@ -241,16 +254,11 @@ export default defineComponent({
       }
       store.dispatch('fieldListInfo', { info })
 
-      const recordId = store.getters.getIdOfContainer({
-        containerUuid: tabAttributes.value.containerUuid,
-        tableName: tabAttributes.value.table_name
-      })
-
       deleteRecord.deleteRecord({
         parentUuid: props.parentUuid,
         containerUuid: props.containerUuid,
         recordUuid: recordUuid.value,
-        recordId
+        recordId: recordId.value
       })
       isVisibleConfirmDelete.value = false
     }
