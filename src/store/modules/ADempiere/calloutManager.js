@@ -128,10 +128,9 @@ const calloutManager = {
           return
         }
 
-        commit('setIsProcessing', {
-          containerUuid,
-          isLoading: true
-        })
+        commit('setIsProcessing', { containerUuid, isLoading: true })
+        if (isEmptyValue(state.calloutQueue)) commit('setIsProcessing', { containerUuid, isLoading: false })
+
         const { payload } = state.calloutQueue.shift()
 
         const { displayType, parentUuid, columnName, tableName, oldValue, callout } = payload
