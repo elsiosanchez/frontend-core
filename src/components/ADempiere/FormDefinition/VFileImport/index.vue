@@ -325,11 +325,7 @@ export default defineComponent({
             message: message,
             type: 'success'
           })
-          store.commit('updateAttributeVFileImport', {
-            attribute: 'attribute',
-            criteria: 'currentStep',
-            value: 1
-          })
+          clean()
         })
         .catch(error => {
           showMessage({
@@ -340,6 +336,20 @@ export default defineComponent({
         .finally(() => {
           isLoadSave.value = false
         })
+    }
+
+    function clean() {
+      store.commit('updateAttributeVFileImport', {
+        attribute: 'attribute',
+        criteria: 'currentStep',
+        value: 1
+      })
+      store.commit('updateAttributeVFileImport', {
+        attribute: 'attribute',
+        criteria: 'importFormatId',
+        value: ''
+      })
+      store.commit('setTableName', {})
     }
 
     return {
