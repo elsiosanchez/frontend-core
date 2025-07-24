@@ -28,7 +28,7 @@ import { request } from '@/utils/ADempiere/request'
  * @param {array}
  * @returns
  */
-export function requestListAccoutingElements({
+export function requestListAccountingElements({
   sortBy,
   filters,
   pageSize,
@@ -37,10 +37,10 @@ export function requestListAccoutingElements({
   groupColumns,
   selectColumns,
   contextAttributes,
-  accoutingSchemaId
+  accountingSchemaId
 }) {
   return request({
-    url: `/general-ledger/accounts/schemas/${accoutingSchemaId}/elements`,
+    url: `/general-ledger/accounts/schemas/${accountingSchemaId}/elements`,
     method: 'get',
     params: {
       filters,

@@ -25,7 +25,7 @@ export const TABLE_NAME = 'C_Invoice'
 
 export const COLUMN_NAME = 'C_Invoice_ID'
 
-export const INVOICES_LIST_FORM = 'Accouting-Combination-List'
+export const INVOICES_LIST_FORM = 'Invoice-Info-Form'
 
 /**
  * Generate displayed value from values

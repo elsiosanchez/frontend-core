@@ -57,7 +57,7 @@ export function listPeriods({
   })
 }
 
-export function listAccoutingKeys({
+export function listAccountingKeys({
   searchValue
 }) {
   return request({

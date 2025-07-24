@@ -31,7 +31,7 @@
     >
       <el-row :gutter="20">
         <el-col :span="8">
-          <accouting-schema-filter />
+          <accounting-schema-filter />
         </el-col>
 
         <el-col :span="8">
@@ -52,7 +52,7 @@
 import { computed, defineComponent } from '@vue/composition-api'
 
 // Components and Mixins
-import AccoutingSchemaFilter from './accoutingSchemaFilter.vue'
+import AccountingSchemaFilter from './accountingSchemaFilter.vue'
 import OrganizationFilter from './organizationFilter.vue'
 import PostingTypeFilter from './postingTypeFilter.vue'
 
@@ -63,7 +63,7 @@ export default defineComponent({
   name: 'QueryCriteria',
 
   components: {
-    AccoutingSchemaFilter,
+    AccountingSchemaFilter,
     OrganizationFilter,
     PostingTypeFilter
   },

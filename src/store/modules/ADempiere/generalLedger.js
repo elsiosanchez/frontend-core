@@ -16,8 +16,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+import Vue from 'vue'
+
 // API Request Methods
-import { requestListAccoutingElements } from '@/api/ADempiere/generalLedger'
+import { requestListAccountingElements } from '@/api/ADempiere/generalLedger'
 
 // Utils and Helpers Methods
 import { showMessage } from '@/utils/ADempiere/notification'
@@ -26,6 +28,7 @@ import { isEmptyValue } from '@/utils/ADempiere'
 const initStateGeneralLedger = {
   fileList: [],
   attributes: {},
+  accountingElement: {},
   filters: {},
   isLoadeTables: false
 }
@@ -34,6 +37,9 @@ export default {
   state: initStateGeneralLedger,
 
   mutations: {
+    setAccountingElement(state, acctElement) {
+      Vue.set(state, acctElement.column_name, acctElement)
+    },
     setFieldsListAccount(state, fieldsListAccount) {
       state.fileList = fieldsListAccount
     },
@@ -41,10 +47,14 @@ export default {
       columnName,
       value
     }) {
-      if (isEmptyValue(columnName)) return
+      if (isEmptyValue(columnName)) {
+        return
+      }
       const currentField = state.fileList.find(field => field.column_name === columnName)
       const index = state.fileList.findIndex(field => field.column_name === columnName)
-      if (isEmptyValue(currentField)) return
+      if (isEmptyValue(currentField)) {
+        return
+      }
       state.fileList[index].fieldValue = value
     },
     setAttributes(state, {
@@ -67,34 +77,34 @@ export default {
   },
 
   actions: {
-    listAccoutingElementsFromServer({ commit, getters }) {
+    listAccountingElementsFromServer({ commit, getters }) {
       return new Promise(resolve => {
         const sessionContext = getters.getAllSessionContext
         if (isEmptyValue(sessionContext)) {
-          return resolve()
+          return resolve([])
         }
         const isShowAcct = sessionContext['#ShowAcct']
         if (!isShowAcct) {
-          return resolve()
+          return resolve([])
         }
-        const accoutingSchemaId = sessionContext['$C_AcctSchema_ID']
-        if (isEmptyValue(accoutingSchemaId)) {
-          return resolve()
+        const accountingSchemaId = sessionContext['$C_AcctSchema_ID']
+        if (isEmptyValue(accountingSchemaId) || accountingSchemaId <= 0) {
+          return resolve([])
         }
-        const accoutingElements = getters.getFieldsListAccount
-        if (!isEmptyValue(accoutingElements)) {
-          return resolve()
+        const accountingElements = getters.getFieldsListAccount
+        if (!isEmptyValue(accountingElements)) {
+          return resolve(accountingElements)
         }
-        requestListAccoutingElements({
-          accoutingSchemaId: accoutingSchemaId
+        requestListAccountingElements({
+          accountingSchemaId: accountingSchemaId
         })
           .then(response => {
-            const { accouting_elements } = response
+            const { accounting_elements } = response
             let fieldsListAccount = []
-            if (!isEmptyValue(accouting_elements)) {
-              fieldsListAccount = accouting_elements.map(list => {
+            if (!isEmptyValue(accounting_elements)) {
+              fieldsListAccount = accounting_elements.map(accountingElementItem => {
                 return {
-                  ...list,
+                  ...accountingElementItem,
                   value: ''
                 }
               })
@@ -104,7 +114,7 @@ export default {
             resolve(fieldsListAccount)
           })
           .catch(error => {
-            console.warn(`List Accouting Elements: ${error.message}. Code: ${error.code}.`)
+            console.warn(`List Accounting Elements: ${error.message}. Code: ${error.code}.`)
             let message = error.message
             if (!isEmptyValue(error.response) && !isEmptyValue(error.response.data.message)) {
               message = error.response.data.message
@@ -115,10 +125,10 @@ export default {
               message,
               showClose: true
             })
-            return resolve()
+            return resolve([])
           })
           .finally(() => {
-            resolve()
+            resolve([])
           })
       })
     },
@@ -142,13 +152,20 @@ export default {
   },
 
   getters: {
+    getAccountingElement: (state) => ({ columnName }) => {
+      return state.accountingElement[columnName]
+    },
     getFieldsListAccount: (state) => {
       return state.fileList
     },
     getFieldsValue: (state) => (columnName) => {
-      if (isEmptyValue(columnName)) return ''
+      if (isEmptyValue(columnName)) {
+        return ''
+      }
       const currentField = state.fileList.find(field => field.column_name === columnName)
-      if (isEmptyValue(currentField)) return ''
+      if (isEmptyValue(currentField)) {
+        return ''
+      }
       return currentField.fieldValue
     },
     getAttributeValueAccount: (state) => {

@@ -20,11 +20,11 @@
   <el-main
     v-shortkey="shortsKey"
     v-loading="isLoadingFields"
-    class="accouting-combintantions-list-container"
+    class="accounting-combintantions-list-container"
     style="padding-top: 0px"
     @shortkey.native="keyAction"
   >
-    <el-collapse v-model="activeAccordion" accordion class="accouting-combintantions-query-criteria">
+    <el-collapse v-model="activeAccordion" accordion class="accounting-combintantions-query-criteria">
       <el-collapse-item name="query-criteria">
         <template slot="title">
           {{ title }}
@@ -54,7 +54,7 @@
           class="button-save"
           plain
           style="float: right;margin-top: 0.5%;margin-bottom: 0.5%;"
-          @click="saveAccoutingCombination()"
+          @click="saveAccountingCombination()"
         >
           <svg-icon icon-class="save-AD" />
         </el-button>
@@ -64,7 +64,7 @@
     <el-table
       ref="accountCombinationsTable"
       v-loading="isLoadingRecords"
-      class="accouting-combintantions-table"
+      class="accounting-combintantions-table"
       :data="recordsList"
       highlight-current-row
       border
@@ -105,7 +105,7 @@
       </el-table-column>
     </el-table>
 
-    <el-row class="accouting-combintantions-footer">
+    <el-row class="accounting-combintantions-footer">
       <el-col :span="20">
         <custom-pagination
           :container-manager="containerManagerSearchList"
@@ -150,7 +150,7 @@
 import store from '@/store'
 
 // Constants
-import { ACCOUTING_COMBINATIONS_LIST_FORM, COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+import { ACCOUNTING_COMBINATIONS_LIST_FORM, COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 import fieldsList from './fieldsList'
 import { DISPLAY_COLUMN_PREFIX, UNIVERSALLY_UNIQUE_IDENTIFIER_COLUMN_SUFFIX } from '@/utils/ADempiere/dictionaryUtils'
 
@@ -197,7 +197,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          containerUuid: ACCOUTING_COMBINATIONS_LIST_FORM,
+          containerUuid: ACCOUNTING_COMBINATIONS_LIST_FORM,
           columnName: COLUMN_NAME
         }
       }
@@ -227,9 +227,9 @@ export default {
       if (!isEmptyValue(this.metadata.containerUuid)) {
         return this.metadata.columnName + '_' + this.metadata.containerUuid
       }
-      return ACCOUTING_COMBINATIONS_LIST_FORM
+      return ACCOUNTING_COMBINATIONS_LIST_FORM
     },
-    accoutingCombinationId() {
+    accountingCombinationId() {
       return this.$store.getters.getValueOfField({
         containerUuid: this.metadata.containerUuid,
         columnName: this.metadata.columnName
@@ -365,10 +365,10 @@ export default {
   },
 
   mounted() {
-    if (!this.isEmptyValue(this.accoutingCombinationId)) {
+    if (!this.isEmptyValue(this.accountingCombinationId)) {
       this.$store.dispatch('getAccountingCombination', {
         containerUuid: this.uuidForm,
-        id: this.accoutingCombinationId
+        id: this.accountingCombinationId
       })
         .then(response => {
           this.defaultValue(response)
@@ -405,7 +405,7 @@ export default {
         attributes: attibutesList
       })
     },
-    saveAccoutingCombination() {
+    saveAccountingCombination() {
       // TODO: Improve with format 'object'
       const attributes = this.$store.getters.getValuesView({
         containerUuid: this.uuidForm,
@@ -497,9 +497,9 @@ export default {
       })
     },
     getFieldsList() {
-      const accoutingElements = store.getters.getFieldsListAccount
-      if (isEmptyValue(accoutingElements)) {
-        store.dispatch('listAccoutingElementsFromServer')
+      const accountingElements = store.getters.getFieldsListAccount
+      if (isEmptyValue(accountingElements)) {
+        store.dispatch('listAccountingElementsFromServer')
       }
     },
     // getFieldsList() {
@@ -579,8 +579,8 @@ export default {
 </script>
 
 <style lang="scss">
-.accouting-combintantions-list-container {
-  .accouting-combintantions-query-criteria {
+.accounting-combintantions-list-container {
+  .accounting-combintantions-query-criteria {
     // space between quey criteria and table
     .el-collapse-item__content {
       padding-bottom: 0px !important;

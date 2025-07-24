@@ -46,7 +46,7 @@
 
 <script>
 // Constants
-import { TABLE_NAME } from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+import { TABLE_NAME } from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 import { RECORD_ROWS_BY_LIST } from '@/utils/ADempiere/dictionary/field/lookups'
 
 // Components and Mixins
@@ -88,7 +88,7 @@ export default {
 
   computed: {
     cssClassCustomField() {
-      return ' custom-field-accouting-combination '
+      return ' custom-field-accounting-combination '
     },
     // to recrods list overwrite
     uuidForm() {
@@ -176,7 +176,7 @@ export default {
 </script>
 
 <style lang="scss">
-.custom-field-accouting-combination {
+.custom-field-accounting-combination {
   // button icon suffix
   .button-search {
     padding-left: 10px !important;
@@ -189,7 +189,7 @@ export default {
 }
 </style>
 <style lang="scss" scope>
-.custom-field-accouting-combination {
+.custom-field-accounting-combination {
   // items of lust
   li {
     line-height: normal;

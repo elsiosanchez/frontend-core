@@ -18,15 +18,15 @@
 
 // Get Instance for connection
 import { request } from '@/utils/ADempiere/request'
-import { config } from '@/utils/ADempiere/config'
+
 /**
  * Apply customization to window
- * @param {number} accoutingSchemaId
+ * @param {number} accountingSchemaId
  * @param {number} elementType
- * @param {array} ListAccoutingElementValuesResponse
+ * @param {array} ListAccountingElementValuesResponse
  * @returns
  */
-export function listAccoutingElementValues({
+export function listAccountingElementValues({
   sortBy,
   filters,
   pageSize = 200,
@@ -36,10 +36,10 @@ export function listAccoutingElementValues({
   groupColumns,
   selectColumns,
   contextAttributes,
-  accoutingSchemaId
+  accountingSchemaId
 }) {
   return request({
-    url: `${config.generalGedger.accounts}/schemas/${accoutingSchemaId}/elements/${elementType}`,
+    url: `/general-ledger/accounts/schemas/${accountingSchemaId}/elements/${elementType}`,
     method: 'get',
     params: {
       filters,
@@ -58,8 +58,8 @@ export function getAccountingCombination({
   id,
   value
 }) {
-  let url = `${config.generalGedger.accounts}/combinations/${id}`
-  if (value) url = `${config.generalGedger.accounts}/combinations/combination/${value}`
+  let url = `/general-ledger/accounts/combinations/${id}`
+  if (value) url = `/general-ledger/accounts/combinations/combination/${value}`
   return request({
     url,
     method: 'get'
@@ -77,7 +77,7 @@ export function listAccountingCombinations({
   contextAttributes
 }) {
   return request({
-    url: `${config.generalGedger.accounts}/combinations`,
+    url: `/general-ledger/accounts/combinations`,
     method: 'get',
     params: {
       filters,

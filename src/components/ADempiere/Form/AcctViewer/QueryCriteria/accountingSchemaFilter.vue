@@ -25,7 +25,7 @@
       v-model="accountingShemaId"
       style="width: 100%;"
       filterable
-      @visible-change="getAccoutingShemasList"
+      @visible-change="getAccountingShemasList"
     >
       <el-option
         v-for="item in accountingShemasList"
@@ -46,7 +46,7 @@ import store from '@/store'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'AccoutingSchemaFilter',
+  name: 'AccountingSchemaFilter',
 
   setup() {
     const accountingShemaId = computed({
@@ -54,39 +54,39 @@ export default defineComponent({
         store.commit('setAccountSchemaId', newValue)
       },
       get() {
-        return store.getters.getCurrentStoredAccoutingSchemaId
+        return store.getters.getCurrentStoredAccountingSchemaId
       }
     })
 
     const accountingShemasList = computed(() => {
-      return store.getters.getStoredAccoutingShemasList
+      return store.getters.getStoredAccountingShemasList
     })
 
-    function getAccoutingShemasList() {
+    function getAccountingShemasList() {
       if (!isEmptyValue(accountingShemasList.value)) {
         return
       }
-      store.dispatch('getAccoutingSchemasFromServer', {
+      store.dispatch('getAccountingSchemasFromServer', {
         searchValue: ''
       })
     }
 
     if (isEmptyValue(accountingShemasList.value)) {
-      getAccoutingShemasList()
+      getAccountingShemasList()
     }
     // set context value
     if (isEmptyValue(accountingShemaId.value)) {
-      const globalAccoutingSchemaId = store.getters.getSessionContext({
+      const globalAccountingSchemaId = store.getters.getSessionContext({
         columnName: '$C_AcctSchema_ID'
       })
-      accountingShemaId.value = globalAccoutingSchemaId
+      accountingShemaId.value = globalAccountingSchemaId
     }
 
     return {
       accountingShemaId,
       accountingShemasList,
       // Methods
-      getAccoutingShemasList
+      getAccountingShemasList
     }
   }
 })

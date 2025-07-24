@@ -19,7 +19,7 @@
 <template>
   <span>
     <el-table-column
-      v-for="(accoutingElement, key) in avaliableAccountingElements"
+      v-for="(accountingElement, key) in avaliableAccountingElements"
       :key="key"
       :label="$t('form.accountingViewer.uom')"
       :min-width="80"
@@ -34,7 +34,7 @@
 <script>
 import { defineComponent } from '@vue/composition-api'
 
-import { getAvaliableAccountingElements } from '@/utils/ADempiere/accoutingUtils'
+import { getAvaliableAccountingElements } from '@/utils/ADempiere/accountingUtils'
 
 export default defineComponent({
   name: 'AccountElementColumns',

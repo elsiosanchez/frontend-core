@@ -263,11 +263,11 @@ const actions = {
           commit('SET_USER', user_info)
           commit('SET_USER_ID', user_info.id)
 
+          const clientId = default_context[`#${COLUMNNAME_AD_Client_ID}`]
           const avatar = user_info.image
           if (!isEmptyValue(avatar)) {
             // 108=window User
             // 11/client/window/108/ad_user/101/logo_id/2024-04-0811-55.png
-            const clientId = default_context[`#${COLUMNNAME_AD_Client_ID}`]
             const newLogoPath = `${clientId}/client/window/108/ad_user/${user_info.id}/logo_id/${user_info.image}`
             commit('SET_AVATAR', newLogoPath)
           }
@@ -279,6 +279,12 @@ const actions = {
           }, {
             root: true
           })
+
+          if (clientId > 0) {
+            dispatch('listAccountingElementsFromServer', null, {
+              root: true
+            })
+          }
 
           const sessionResponse = {
             name: sessionInfo.name,

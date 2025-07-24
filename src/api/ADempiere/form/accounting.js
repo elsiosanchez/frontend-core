@@ -25,7 +25,7 @@ import { ROWS_OF_RECORDS_BY_PAGE } from '@/utils/ADempiere/tableUtils'
 import { RECORD_ROWS_BY_LIST } from '@/utils/ADempiere/dictionary/field/lookups'
 import { isEmptyValue } from '@/utils/ADempiere'
 
-export function requestListAccoutingSchemas({
+export function requestListAccountingSchemas({
   searchValue,
   pageToken,
   pageSize = RECORD_ROWS_BY_LIST
@@ -90,7 +90,7 @@ export function requestAccountingFacts({
   recordId,
   recordUuid,
   organizationId,
-  accoutingSchemaId,
+  accountingSchemaId,
   postingType,
   filters = [],
   pageSize = ROWS_OF_RECORDS_BY_PAGE,
@@ -103,9 +103,9 @@ export function requestAccountingFacts({
       value: attribute.value
     }
   })
-  let url = `/general-ledger/accounts/facts/${accoutingSchemaId}`
+  let url = `/general-ledger/accounts/facts/${accountingSchemaId}`
   if (!isEmptyValue(tableName) && !isEmptyValue(recordId)) {
-    url = `/general-ledger/accounts/facts/${accoutingSchemaId}/document/${tableName}/${recordId}`
+    url += `/document/${tableName}/${recordId}`
   }
   return request({
     url: url,
@@ -128,14 +128,14 @@ export function requestAccountingFacts({
   })
 }
 
-export function requestExistsAccoutingDocument({
-  accoutingSchemaId,
+export function requestExistsAccountingDocument({
+  accountingSchemaId,
   organizationId,
   tableName,
   recordId
 }) {
   return request({
-    url: `/general-ledger/accounts/facts/${accoutingSchemaId}/document/${tableName}/${recordId}/exists`,
+    url: `/general-ledger/accounts/facts/${accountingSchemaId}/document/${tableName}/${recordId}/exists`,
     method: 'get',
     params: {
       //  DSL Query

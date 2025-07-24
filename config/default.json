@@ -44,11 +44,6 @@
     "movement": "/express-movement",
     "shipment": "/express-shipment"
   },
-  "generalGedger": {
-    "accounts": "/general-ledger/accounts",
-    "organizations": "/general-ledger/organizations",
-    "rePost": "/general-ledger/re-post"
-  },
   "match": {
     "endpoint": "/form/addons/match"
   },

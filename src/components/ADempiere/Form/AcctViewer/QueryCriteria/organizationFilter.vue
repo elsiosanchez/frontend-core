@@ -24,7 +24,7 @@
       v-model="organizationId"
       style="width: 100%;"
       filterable
-      @visible-change="getAccoutingOrganizationsList"
+      @visible-change="getAccountingOrganizationsList"
     >
       <el-option
         v-for="item in accountingOrganizationsList"
@@ -53,19 +53,19 @@ export default defineComponent({
         store.commit('setAccountingOrganizationId', newValue)
       },
       get() {
-        return store.getters.getCurrentStoredAccoutingOrganizationId
+        return store.getters.getCurrentStoredAccountingOrganizationId
       }
     })
 
     const accountingOrganizationsList = computed(() => {
-      return store.getters.getStoredAccoutingOrganizationsList
+      return store.getters.getStoredAccountingOrganizationsList
     })
 
-    function getAccoutingOrganizationsList() {
+    function getAccountingOrganizationsList() {
       if (!isEmptyValue(accountingOrganizationsList.value)) {
         return
       }
-      store.dispatch('getAccoutingOrganizationsFromServer', {
+      store.dispatch('getAccountingOrganizationsFromServer', {
         searchValue: ''
       })
     }
@@ -74,7 +74,7 @@ export default defineComponent({
       organizationId,
       accountingOrganizationsList,
       // Methods
-      getAccoutingOrganizationsList
+      getAccountingOrganizationsList
     }
   }
 })

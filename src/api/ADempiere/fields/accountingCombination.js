@@ -56,7 +56,7 @@ export function requestGetAccountingCombination({
   // value
 }) {
   return request({
-    // url: '/general-ledger/accouting-combination/accounting-combination',
+    // url: '/general-ledger/accounting-combination/accounting-combination',
     url: `/general-ledger/accounts/combinations/${id}`,
     method: 'get'
     // params: {

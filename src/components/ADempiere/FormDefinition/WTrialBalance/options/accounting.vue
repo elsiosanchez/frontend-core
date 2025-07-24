@@ -30,7 +30,7 @@
         style="width: 49%; margin-right: 10px;"
         clearable
         filterable
-        @visible-change="showListAccoutingKeys"
+        @visible-change="showListAccountingKeys"
       >
         <el-option
           v-for="item in accountingAccountOptions"
@@ -48,7 +48,7 @@
         style="width: 49%;"
         filterable
         clearable
-        @visible-change="showListAccoutingKeys"
+        @visible-change="showListAccountingKeys"
       >
         <el-option
           v-for="item in accountingAccountOptions"
@@ -70,7 +70,7 @@ import {
 import store from '@/store'
 
 // API Request Methods
-import { listAccoutingKeys } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+import { listAccountingKeys } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
 
 export default defineComponent({
   name: 'accountingWtrialBalance',
@@ -96,11 +96,11 @@ export default defineComponent({
       }
     })
 
-    function showListAccoutingKeys(show, search = '') {
+    function showListAccountingKeys(show, search = '') {
       if (!show) {
         return
       }
-      listAccoutingKeys({
+      listAccountingKeys({
         searchValue: search
       })
         .then(response => {
@@ -110,14 +110,14 @@ export default defineComponent({
     }
 
     function filterMethod(query) {
-      showListAccoutingKeys(true, query)
+      showListAccountingKeys(true, query)
     }
 
     return {
       accountingAccount1,
       accountingAccount2,
       accountingAccountOptions,
-      showListAccoutingKeys,
+      showListAccountingKeys,
       filterMethod
     }
   }

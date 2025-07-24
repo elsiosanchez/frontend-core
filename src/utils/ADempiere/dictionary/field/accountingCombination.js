@@ -23,7 +23,7 @@ export const TABLE_NAME = 'C_ValidCombination'
 
 export const COLUMN_NAME = 'C_ValidCombination_ID'
 
-export const ACCOUTING_COMBINATIONS_LIST_FORM = 'Accouting-Combinations-List'
+export const ACCOUNTING_COMBINATIONS_LIST_FORM = 'Accounting-Combinations-List'
 
 /**
  * Generate displayed value from values

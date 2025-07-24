@@ -20,11 +20,11 @@
   <el-main
     v-shortkey="shortsKey"
     v-loading="isLoadingFields"
-    class="accouting-combintantions-list-container"
+    class="accounting-combintantions-list-container"
     style="padding-top: 0px"
     @shortkey.native="keyAction"
   >
-    <el-collapse v-model="activeAccordion" accordion class="accouting-combintantions-query-criteria">
+    <el-collapse v-model="activeAccordion" accordion class="accounting-combintantions-query-criteria">
       <el-collapse-item name="query-criteria">
         <template slot="title">
           {{ title }}
@@ -72,7 +72,7 @@
           class="button-save"
           plain
           style="float: right;margin-top: 0.5%;margin-bottom: 0.5%;"
-          @click="saveAccoutingCombination()"
+          @click="saveAccountingCombination()"
         >
           <svg-icon icon-class="save-AD" />
         </el-button>
@@ -81,7 +81,7 @@
     <el-table
       ref="accountCombinationsTable"
       v-loading="isLoadingRecords"
-      class="accouting-combintantions-table"
+      class="accounting-combintantions-table"
       :data="recordsList"
       highlight-current-row
       border
@@ -121,7 +121,7 @@
       </el-table-column>
     </el-table>
 
-    <el-row class="accouting-combintantions-footer">
+    <el-row class="accounting-combintantions-footer">
       <el-col :span="20">
         <custom-pagination
           :total="recordData.recordCount"
@@ -186,8 +186,8 @@ import {
 } from '@/utils/ADempiere/dictionaryUtils'
 import { TEXT } from '@/utils/ADempiere/references'
 import {
-  ACCOUTING_COMBINATIONS_LIST_FORM, COLUMN_NAME
-} from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+  ACCOUNTING_COMBINATIONS_LIST_FORM, COLUMN_NAME
+} from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 import { COLUMNNAME_AD_Org_ID } from '@/utils/ADempiere/constants/systemColumns'
 
 // Components and Mixins
@@ -201,7 +201,7 @@ import TextAccounting from '@/components/ADempiere/FieldDefinition/FieldAccounti
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
 import {
   generateDisplayedValue
-} from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+} from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 import { containerManager as containerManagerForm } from '@/utils/ADempiere/dictionary/form'
 import { showMessage } from '@/utils/ADempiere/notification'
 
@@ -229,7 +229,7 @@ export default defineComponent({
       type: Object,
       default: () => {
         return {
-          containerUuid: ACCOUTING_COMBINATIONS_LIST_FORM,
+          containerUuid: ACCOUNTING_COMBINATIONS_LIST_FORM,
           columnName: COLUMN_NAME
         }
       }
@@ -271,7 +271,7 @@ export default defineComponent({
       if (!isEmptyValue(props.metadata.containerUuid)) {
         return props.metadata.columnName + '_' + props.metadata.containerUuid
       }
-      return ACCOUTING_COMBINATIONS_LIST_FORM
+      return ACCOUNTING_COMBINATIONS_LIST_FORM
     })
 
     const fieldsListElements = computed(() => {
@@ -427,7 +427,7 @@ export default defineComponent({
       }
     }
 
-    function saveAccoutingCombination() {
+    function saveAccountingCombination() {
       const currentValue = store.getters.getValueOfField({
         containerUuid: props.metadata.containerUuid,
         columnName: props.metadata.columnName
@@ -587,10 +587,10 @@ export default defineComponent({
       closeList()
     }
 
-    function getAccoutingElements() {
-      // const accoutingElements = store.getters.getFieldsListAccount
-      // if (isEmptyValue(accoutingElements)) {
-      store.dispatch('listAccoutingElementsFromServer')
+    function getAccountingElements() {
+      // const accountingElements = store.getters.getFieldsListAccount
+      // if (isEmptyValue(accountingElements)) {
+      store.dispatch('listAccountingElementsFromServer')
         .finally(() => {
           setTimeout(() => {
             loadCombinations()
@@ -661,7 +661,7 @@ export default defineComponent({
       }
     })
 
-    getAccoutingElements()
+    getAccountingElements()
 
     return {
       TEXT,
@@ -702,7 +702,7 @@ export default defineComponent({
       searchRecordsList,
       valuesCombinations,
       handleCurrentChange,
-      saveAccoutingCombination
+      saveAccountingCombination
     }
   }
 
@@ -710,8 +710,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.accouting-combintantions-list-container {
-  .accouting-combintantions-query-criteria {
+.accounting-combintantions-list-container {
+  .accounting-combintantions-query-criteria {
     // space between quey criteria and table
     .el-collapse-item__content {
       padding-bottom: 0px !important;

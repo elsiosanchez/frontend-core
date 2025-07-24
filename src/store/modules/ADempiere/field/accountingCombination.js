@@ -23,7 +23,7 @@ import {
   requestListAccountingCombinations,
   requestGetAccountingCombination,
   requestSaveAccountingCombination
-} from '@/api/ADempiere/fields/accoutingCombination'
+} from '@/api/ADempiere/fields/accountingCombination'
 
 // Constants
 import { ROW_ATTRIBUTES } from '@/utils/ADempiere/tableUtils'
@@ -37,7 +37,7 @@ import { getContextAttributes } from '@/utils/ADempiere/contextUtils/contextAttr
 const initState = {
   accountCombinationsPopoverList: false,
   // container uuid: record uuid
-  emtpyAccoutingCombinationData: {
+  emtpyAccountingCombinationData: {
     parentUuid: undefined,
     containerUuid: undefined,
     contextKey: '',
@@ -258,7 +258,7 @@ const AccountCombinations = {
    */
     getAccountCombinationsData: (state) => ({ containerUuid }) => {
       return state.accountCombinations[containerUuid] || {
-        ...state.emtpyAccoutingCombinationData,
+        ...state.emtpyAccountingCombinationData,
         containerUuid
       }
     },

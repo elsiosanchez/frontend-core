@@ -155,7 +155,7 @@ export default defineComponent({
      */
 
     // Subscribes to Vuex store mutations related to accounting facts
-    function subscribeAccoutingFacts() {
+    function subscribeAccountingFacts() {
       return store.subscribe((mutation) => {
         const enabledMutations = ['setBusinessPartnerQueryFilters', 'setBusinessPartnerQueryFilterByAttribute']
         if (enabledMutations.includes(mutation.type)) {
@@ -164,11 +164,11 @@ export default defineComponent({
       })
     }
 
-    const unsubscribeAccoutingFacts = subscribeAccoutingFacts() // Stores the unsubscribe function
+    const unsubscribeAccountingFacts = subscribeAccountingFacts() // Stores the unsubscribe function
 
     // Cleans up the subscription on component unmount
     onUnmounted(() => {
-      unsubscribeAccoutingFacts()
+      unsubscribeAccountingFacts()
     })
 
     return {

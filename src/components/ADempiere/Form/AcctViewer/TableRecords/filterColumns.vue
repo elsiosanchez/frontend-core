@@ -105,10 +105,10 @@ export default defineComponent({
 
     const isLoadingDataTable = computed({
       set(newValue) {
-        store.commit('setIsLoadingAccoutingRecords', newValue)
+        store.commit('setIsLoadingAccountingRecords', newValue)
       },
       get() {
-        return store.getters.getIsLoadingAccoutingRecords
+        return store.getters.getIsLoadingAccountingRecords
       }
     })
 

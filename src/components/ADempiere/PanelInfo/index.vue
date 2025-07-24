@@ -549,7 +549,7 @@ export default defineComponent({
       return store.getters.getIsLoadListIssues
     })
 
-    const accoutingSchemaId = computed(() => {
+    const accountingSchemaId = computed(() => {
       return store.getters.getSessionContext({
         columnName: '$C_AcctSchema_ID'
       })
@@ -560,7 +560,7 @@ export default defineComponent({
       if (!allow_info_account) {
         return false
       }
-      if (isEmptyValue(accoutingSchemaId.value) || accoutingSchemaId.value <= 0) {
+      if (isEmptyValue(accountingSchemaId.value) || accountingSchemaId.value <= 0) {
         return false
       }
       const storedTab = currentTab.value
@@ -593,7 +593,7 @@ export default defineComponent({
       if (!convertStringToBoolean(isProcessed)) {
         return false
       }
-      return store.getters.getIsShowAccoutingFacts
+      return store.getters.getIsShowAccountingFacts
     })
 
     /**
@@ -642,7 +642,7 @@ export default defineComponent({
         if (isEmptyValue(recordId)) {
           return
         }
-        store.dispatch('getAccoutingFactsFromServer', {
+        store.dispatch('getAccountingFactsFromServer', {
           recordUuid: currentRecordUuid.value,
           tableName: currentTab.value.table_name,
           searchValue: '',
@@ -781,17 +781,17 @@ export default defineComponent({
       })
     }
 
-    function showAccoutingFacts() {
+    function showAccountingFacts() {
       const { allow_info_account } = store.getters['user/getRole']
       if (!allow_info_account) {
-        store.commit('setIsShowAccoutingFacts', false)
+        store.commit('setIsShowAccountingFacts', false)
         return false
       }
-      if (isEmptyValue(accoutingSchemaId.value) || accoutingSchemaId.value <= 0) {
+      if (isEmptyValue(accountingSchemaId.value) || accountingSchemaId.value <= 0) {
         return false
       }
       if (isEmptyValue(currentRecordId.value)) {
-        store.commit('setIsShowAccoutingFacts', false)
+        store.commit('setIsShowAccountingFacts', false)
         return
       }
       const storedTab = currentTab.value
@@ -799,7 +799,7 @@ export default defineComponent({
         isEmptyValue(storedTab) ||
         storedTab.table.is_view
       ) {
-        store.commit('setIsShowAccoutingFacts', false)
+        store.commit('setIsShowAccountingFacts', false)
         return
       }
       if (!storedTab.table.is_document) {
@@ -810,7 +810,7 @@ export default defineComponent({
           // })
           // if (!isPostedField) {
           //   // TODO: Validate is displayed on tab return server
-          //   store.commit('setIsShowAccoutingFacts', false)
+          //   store.commit('setIsShowAccountingFacts', false)
           //   return
           // }
         }
@@ -821,12 +821,12 @@ export default defineComponent({
         columnName: COLUMNNAME_Processed
       })
       if (!convertStringToBoolean(isProcessed)) {
-        store.commit('setIsShowAccoutingFacts', false)
+        store.commit('setIsShowAccountingFacts', false)
         return
       }
 
-      store.dispatch('getExistsAccoutingDocument', {
-        accoutingSchemaId: accoutingSchemaId.value,
+      store.dispatch('getExistsAccountingDocument', {
+        accountingSchemaId: accountingSchemaId.value,
         tableName: storedTab.table_name,
         recordId: currentRecordId.value
       })
@@ -834,7 +834,7 @@ export default defineComponent({
 
     store.dispatch('findListMailTemplates')
     findRecordLogs(props.allTabsList[parseInt(currentTabLogs.value)])
-    showAccoutingFacts()
+    showAccountingFacts()
 
     return {
       // Ref
@@ -873,7 +873,7 @@ export default defineComponent({
       findRecordLogs,
       handleClick,
       findListStoreProduct,
-      showAccoutingFacts,
+      showAccountingFacts,
       handleCommandActions,
       filteredDefinition,
       listCollapseDefinition

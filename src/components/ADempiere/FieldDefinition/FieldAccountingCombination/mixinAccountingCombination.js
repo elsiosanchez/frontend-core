@@ -22,7 +22,7 @@ import store from '@/store'
 import fieldWithDisplayColumn from '@/components/ADempiere/FieldDefinition/mixin/mixinWithDisplayColumn.js'
 
 // Constants
-import { COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+import { COLUMN_NAME } from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 import {
   COLUMNNAME_AD_Org_ID
 } from '@/utils/ADempiere/constants/systemColumns'
@@ -33,7 +33,7 @@ import {
 // Utils and Helper Methods
 import {
   generateDisplayedValue
-} from '@/utils/ADempiere/dictionary/field/accoutingCombination.js'
+} from '@/utils/ADempiere/dictionary/field/accountingCombination.js'
 
 export default {
   name: 'mixinAccountingCombination',

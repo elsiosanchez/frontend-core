@@ -158,7 +158,7 @@ export default {
             })
 
             const recordUuid = store.getters.getUuidOfContainer(this.metadata.containerUuid)
-            store.dispatch('getAccoutingFactsFromServer', {
+            store.dispatch('getAccountingFactsFromServer', {
               searchValue: '',
               tableName: this.metadata.tabTableName,
               recordId: this.currentRecord[this.metadata.tabTableName + '_ID'],
@@ -170,10 +170,10 @@ export default {
             if (!allow_info_account) {
               return false
             }
-            const accoutingSchemaId = store.getters.getSessionContext({
+            const accountingSchemaId = store.getters.getSessionContext({
               columnName: '$C_AcctSchema_ID'
             })
-            if (isEmptyValue(accoutingSchemaId) || accoutingSchemaId <= 0) {
+            if (isEmptyValue(accountingSchemaId) || accountingSchemaId <= 0) {
               return false
             }
             const storedTab = store.getters.getStoredTab(this.metadata.parentUuid, this.metadata.containerUuid)

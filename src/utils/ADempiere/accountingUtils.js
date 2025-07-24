@@ -19,7 +19,7 @@
 import language from '@/lang'
 import store from '@/store'
 
-export const ACCOUTING_ELEMENT_COLUMNS = [
+export const ACCOUNTING_ELEMENT_COLUMNS = [
   // {
   //   elementType: 'OO',
   //   columnName: 'AD_Org_ID',
@@ -130,18 +130,18 @@ export const ACCOUTING_ELEMENT_COLUMNS = [
   }
 ]
 
-const ACCOUTING_ELEMENT_PREFIX = '$Element_'
+const ACCOUNTING_ELEMENT_PREFIX = '$Element_'
 
 export function getAvaliableAccountingElements() {
-  const availableAccoutingElements = ACCOUTING_ELEMENT_COLUMNS.filter(acctElemnt => {
+  const availableAccountingElements = ACCOUNTING_ELEMENT_COLUMNS.filter(acctElemnt => {
     const { elementType, isMandatory } = acctElemnt
     if (isMandatory) {
       return true
     }
     const isEnableContext = store.getters.getSessionContext({
-      columnName: ACCOUTING_ELEMENT_PREFIX + elementType
+      columnName: ACCOUNTING_ELEMENT_PREFIX + elementType
     })
     return Boolean(isEnableContext)
   })
-  return availableAccoutingElements
+  return availableAccountingElements
 }

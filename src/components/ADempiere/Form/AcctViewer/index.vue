@@ -85,11 +85,11 @@ export default defineComponent({
   },
 
   setup(props) {
-    const ACCOUTING_FACT_FORM = 'Accouting-Fact-Form'
+    const ACCOUNTING_FACT_FORM = 'Accounting-Fact-Form'
 
     // Computed
     const uuidForm = computed(() => {
-      return ACCOUTING_FACT_FORM + '_' + props.containerUuid
+      return ACCOUNTING_FACT_FORM + '_' + props.containerUuid
     })
 
     const showContainerInfo = computed(() => {
@@ -97,7 +97,7 @@ export default defineComponent({
     })
 
     // Watch
-    // watch(accoutingSchemas, (newValue) => {
+    // watch(accountingSchemas, (newValue) => {
     //   findAccountingFacts(newValue)
     // })
     // watch(postingType, (newValue) => {
@@ -107,16 +107,16 @@ export default defineComponent({
       // clearData()
     })
 
-    // findAccountingFacts(accoutingFilters.value)
+    // findAccountingFacts(accountingFilters.value)
 
-    function subscribeAccoutingFacts() {
+    function subscribeAccountingFacts() {
       return store.subscribe((mutation, state) => {
         const enabledMutations = ['setAccountSchemaId', 'setPostingTypeValue']
         if (enabledMutations.includes(mutation.type)) {
           if (mutation.type === 'setAccountSchemaId' && isEmptyValue(mutation.payload)) {
             return
           }
-          store.dispatch('getAccoutingFactsFromServer', {
+          store.dispatch('getAccountingFactsFromServer', {
             searchValue: '',
             tableName: props.tableName,
             recordUuid: props.recordUuid,
@@ -126,10 +126,10 @@ export default defineComponent({
       })
     }
 
-    const unsubscribeAccoutingFacts = subscribeAccoutingFacts()
+    const unsubscribeAccountingFacts = subscribeAccountingFacts()
 
     onUnmounted(() => {
-      unsubscribeAccoutingFacts()
+      unsubscribeAccountingFacts()
     })
 
     return {

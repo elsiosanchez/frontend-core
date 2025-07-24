@@ -123,7 +123,7 @@
         </el-table-column>
       </template>
 
-      <!-- <accouting-element-columns /> -->
+      <!-- <accounting-element-columns /> -->
       <el-table-column
         v-for="(acctElement, key) in avaliableAccountingElements"
         :key="key"
@@ -237,7 +237,7 @@ import IndexColumn from '@/components/ADempiere/DataTable/Components/IndexColumn
 // import QuantityColumns from './quantityColumns.vue'
 
 // Utils and Helper Methods
-import { getAvaliableAccountingElements } from '@/utils/ADempiere/accoutingUtils'
+import { getAvaliableAccountingElements } from '@/utils/ADempiere/accountingUtils'
 
 export default defineComponent({
   name: 'TableRecords',
@@ -264,11 +264,11 @@ export default defineComponent({
     })
 
     const isLoadingDataTable = computed(() => {
-      return store.getters.getIsLoadingAccoutingRecords
+      return store.getters.getIsLoadingAccountingRecords
     })
 
     const tableData = computed(() => {
-      return store.getters.getAccoutingRecordsList
+      return store.getters.getAccountingRecordsList
     })
 
     const avaliableAccountingElements = getAvaliableAccountingElements()

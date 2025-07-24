@@ -137,7 +137,7 @@ export default defineComponent({
       loadRecordsList({})
     }
 
-    function subscribeAccoutingFacts() {
+    function subscribeAccountingFacts() {
       return store.subscribe((mutation, state) => {
         const enabledMutations = ['setInvoiceFieldQueryFilters', 'setInvoiceFieldQueryFilterByAttribute']
         if (enabledMutations.includes(mutation.type)) {
@@ -146,7 +146,7 @@ export default defineComponent({
       })
     }
 
-    const unsubscribeAccoutingFacts = subscribeAccoutingFacts()
+    const unsubscribeAccountingFacts = subscribeAccountingFacts()
 
     function setInitialValues() {
       const storedInvoiceData = store.getters.getInvoceData({
@@ -160,7 +160,7 @@ export default defineComponent({
 
     onUnmounted(() => {
       setInitialValues()
-      unsubscribeAccoutingFacts()
+      unsubscribeAccountingFacts()
     })
 
     return {

@@ -63,7 +63,7 @@ import lang from '@/lang'
 
 import {
   requestStartRePost
-} from '@/api/ADempiere/form/accouting.js'
+} from '@/api/ADempiere/form/accounting.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
@@ -244,10 +244,10 @@ export default defineComponent({
     })
 
     const recordsList = computed(() => {
-      return store.getters.getAccoutingRecordsList
+      return store.getters.getAccountingRecordsList
     })
-    const accoutingSchemaId = computed(() => {
-      return store.getters.getCurrentStoredAccoutingSchemaId
+    const accountingSchemaId = computed(() => {
+      return store.getters.getCurrentStoredAccountingSchemaId
     })
     function exportAccounting() {
       const header = headerAccounting.value
@@ -301,7 +301,7 @@ export default defineComponent({
     }
 
     function refreshAccount() {
-      store.dispatch('getAccoutingFactsFromServer', {
+      store.dispatch('getAccountingFactsFromServer', {
         searchValue: '',
         tableName: props.tableName,
         recordUuid: props.recordUuid,
@@ -329,9 +329,9 @@ export default defineComponent({
         })
         .finally(() => {
           isLoadingRePost.value = false
-          store.dispatch('getAccoutingFactsFromServer', {
+          store.dispatch('getAccountingFactsFromServer', {
             searchValue: '',
-            accoutingSchemaId: accoutingSchemaId.value,
+            accountingSchemaId: accountingSchemaId.value,
             tableName: props.tableName,
             recordId: props.recordId,
             recordUuid: props.recordUuid

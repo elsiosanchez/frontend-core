@@ -60,7 +60,7 @@ import {
 import store from '@/store'
 
 // API Request Methods
-import { listAccoutingElementValues } from '@/api/ADempiere/fields/generalGedger'
+import { listAccountingElementValues } from '@/api/ADempiere/fields/generalGedger'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -92,12 +92,13 @@ export default defineComponent({
     const optionsList = ref([])
     const displayValue = ref(props.metadata.value)
     const filters = ref({})
+
     // Computed
     const titleField = computed(() => {
       return props.metadata.name
     })
 
-    const accoutingSchemaId = computed(() => {
+    const accountingSchemaId = computed(() => {
       const sessionContext = store.getters.getAllSessionContext
       return sessionContext['$C_AcctSchema_ID']
     })
@@ -151,8 +152,8 @@ export default defineComponent({
           }).toString()
         }
         isLoading.value = true
-        listAccoutingElementValues({
-          accoutingSchemaId: accoutingSchemaId.value,
+        listAccountingElementValues({
+          accountingSchemaId: accountingSchemaId.value,
           elementType: props.metadata.element_type,
           searchValue: searchQuery,
           contextAttributes: attributes
@@ -194,8 +195,8 @@ export default defineComponent({
             })
           }).toString()
         }
-        listAccoutingElementValues({
-          accoutingSchemaId: accoutingSchemaId.value,
+        listAccountingElementValues({
+          accountingSchemaId: accountingSchemaId.value,
           elementType: props.metadata.element_type,
           searchValue: searchQuery,
           contextAttributes: attributes
@@ -255,7 +256,7 @@ export default defineComponent({
       // Computed
       value,
       titleField,
-      accoutingSchemaId,
+      accountingSchemaId,
       // Methods
       showList,
       changeSelect,

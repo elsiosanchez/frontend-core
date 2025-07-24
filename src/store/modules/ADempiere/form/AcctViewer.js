@@ -18,12 +18,12 @@
 
 // API Request Methods
 import {
-  requestListAccoutingSchemas,
+  requestListAccountingSchemas,
   requestPostingTypesList,
   requestListOrganizations,
   requestAccountingFacts,
-  requestExistsAccoutingDocument
-} from '@/api/ADempiere/form/accouting.js'
+  requestExistsAccountingDocument
+} from '@/api/ADempiere/form/accounting.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
@@ -31,19 +31,19 @@ import { formatDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
 
 const initState = {
-  currentAccoutingSchemaId: -1,
+  currentAccountingSchemaId: -1,
   accountingShemasList: [],
   currentPostingTypeValue: '',
   postingTypesList: [],
-  currentAccoutingOrganizationId: ' ',
+  currentAccountingOrganizationId: ' ',
   accountingOrganizationsList: [],
-  isLoadingAccoutingRecords: false,
-  accoutingRecordsList: [],
+  isLoadingAccountingRecords: false,
+  accountingRecordsList: [],
   // user interface
   isDisplayDocumentInfo: false,
   isDisplaySourceInfo: false,
   isDisplayQuantity: false,
-  isShowAccoutingFacts: false // TODO: Add support by Table Name and Record ID
+  isShowAccountingFacts: false // TODO: Add support by Table Name and Record ID
 }
 
 const acctViewer = {
@@ -51,7 +51,7 @@ const acctViewer = {
 
   mutations: {
     setAccountSchemaId(state, id) {
-      state.currentAccoutingSchemaId = id
+      state.currentAccountingSchemaId = id
     },
     setAccountSchemasList(state, records = []) {
       state.accountingShemasList = records
@@ -63,16 +63,16 @@ const acctViewer = {
       state.postingTypesList = records
     },
     setAccountingOrganizationId(state, id) {
-      state.currentAccoutingOrganizationId = id
+      state.currentAccountingOrganizationId = id
     },
     setAccountingOrganizationsList(state, records = []) {
       state.accountingOrganizationsList = records
     },
-    setIsLoadingAccoutingRecords(state, isLoading = false) {
-      state.isLoadingAccoutingRecords = isLoading
+    setIsLoadingAccountingRecords(state, isLoading = false) {
+      state.isLoadingAccountingRecords = isLoading
     },
-    setAccoutingRecordsList(state, records = []) {
-      state.accoutingRecordsList = records
+    setAccountingRecordsList(state, records = []) {
+      state.accountingRecordsList = records
     },
     setIsDisplayDocumentInfo(state, isShow = false) {
       state.isDisplayDocumentInfo = isShow
@@ -83,17 +83,17 @@ const acctViewer = {
     setIsDisplayQuantity(state, isShow = false) {
       state.isDisplayQuantity = isShow
     },
-    setIsShowAccoutingFacts(state, isShow = false) {
-      state.isShowAccoutingFacts = isShow
+    setIsShowAccountingFacts(state, isShow = false) {
+      state.isShowAccountingFacts = isShow
     }
   },
 
   actions: {
-    getAccoutingSchemasFromServer({ commit }, {
+    getAccountingSchemasFromServer({ commit }, {
       searchValue
     }) {
       return new Promise(resolve => {
-        requestListAccoutingSchemas({
+        requestListAccountingSchemas({
           searchValue
         })
           .then(response => {
@@ -139,7 +139,7 @@ const acctViewer = {
       })
     },
 
-    getAccoutingOrganizationsFromServer({ commit }, {
+    getAccountingOrganizationsFromServer({ commit }, {
       searchValue
     }) {
       return new Promise(resolve => {
@@ -164,22 +164,22 @@ const acctViewer = {
       })
     },
 
-    getAccoutingFactsFromServer({ commit, getters }, {
+    getAccountingFactsFromServer({ commit, getters }, {
       searchValue,
       tableName,
       recordUuid,
       recordId
     }) {
-      const accoutingSchemaId = getters.getCurrentStoredAccoutingSchemaId
-      if (isEmptyValue(accoutingSchemaId)) {
+      const accountingSchemaId = getters.getCurrentStoredAccountingSchemaId
+      if (isEmptyValue(accountingSchemaId)) {
         return
       }
       return new Promise(resolve => {
-        commit('setIsLoadingAccoutingRecords', true)
+        commit('setIsLoadingAccountingRecords', true)
         const organizationId = getters['user/getOrganization'].id
         const postingType = getters.getCurrentStoredPostingTypeValue
         requestAccountingFacts({
-          accoutingSchemaId,
+          accountingSchemaId,
           organizationId,
           postingType: isEmptyValue(postingType) ? undefined : postingType,
           tableName,
@@ -226,42 +226,42 @@ const acctViewer = {
                 tableName
               }
             })
-            commit('setAccoutingRecordsList', recordsList)
+            commit('setAccountingRecordsList', recordsList)
             resolve(recordsList)
           })
           .finally(() => {
-            commit('setIsLoadingAccoutingRecords', false)
+            commit('setIsLoadingAccountingRecords', false)
           })
       })
     },
 
-    getExistsAccoutingDocument({ commit, getters }, {
-      accoutingSchemaId,
+    getExistsAccountingDocument({ commit, getters }, {
+      accountingSchemaId,
       tableName,
       recordId
     }) {
       return new Promise(resolve => {
         if (isEmptyValue(tableName) || isEmptyValue(recordId)) {
-          commit('setIsShowAccoutingFacts', false)
+          commit('setIsShowAccountingFacts', false)
           resolve(false)
           return
         }
         const organizationId = getters['user/getOrganization'].id
 
-        requestExistsAccoutingDocument({
-          accoutingSchemaId,
+        requestExistsAccountingDocument({
+          accountingSchemaId,
           organizationId,
           tableName,
           recordId
         })
           .then(response => {
-            const { is_show_accouting } = response
-            commit('setIsShowAccoutingFacts', is_show_accouting)
-            resolve(is_show_accouting)
+            const { is_show_accounting } = response
+            commit('setIsShowAccountingFacts', is_show_accounting)
+            resolve(is_show_accounting)
           })
           .catch(error => {
             console.warn(error)
-            commit('setIsShowAccoutingFacts', false)
+            commit('setIsShowAccountingFacts', false)
             resolve(false)
           })
       })
@@ -269,10 +269,10 @@ const acctViewer = {
   },
 
   getters: {
-    getCurrentStoredAccoutingSchemaId: (state) => {
-      return state.currentAccoutingSchemaId
+    getCurrentStoredAccountingSchemaId: (state) => {
+      return state.currentAccountingSchemaId
     },
-    getStoredAccoutingShemasList: (state) => {
+    getStoredAccountingShemasList: (state) => {
       return state.accountingShemasList
     },
     getCurrentStoredPostingTypeValue: (state) => {
@@ -281,17 +281,17 @@ const acctViewer = {
     getStoredPostingTypesList: (state) => {
       return state.postingTypesList
     },
-    getCurrentStoredAccoutingOrganizationId: (state) => {
-      return state.currentAccoutingOrganizationId
+    getCurrentStoredAccountingOrganizationId: (state) => {
+      return state.currentAccountingOrganizationId
     },
-    getStoredAccoutingOrganizationsList: (state) => {
+    getStoredAccountingOrganizationsList: (state) => {
       return state.accountingOrganizationsList
     },
-    getIsLoadingAccoutingRecords: (state) => {
-      return state.isLoadingAccoutingRecords
+    getIsLoadingAccountingRecords: (state) => {
+      return state.isLoadingAccountingRecords
     },
-    getAccoutingRecordsList: (state) => {
-      return state.accoutingRecordsList
+    getAccountingRecordsList: (state) => {
+      return state.accountingRecordsList
     },
     getIsDisplayDocumentInfo: (state) => {
       return state.isDisplayDocumentInfo
@@ -302,8 +302,8 @@ const acctViewer = {
     getIsDisplayQuantity: (state) => {
       return state.isDisplayQuantity
     },
-    getIsShowAccoutingFacts: (state) => {
-      return state.isShowAccoutingFacts
+    getIsShowAccountingFacts: (state) => {
+      return state.isShowAccountingFacts
     }
   }
 }
