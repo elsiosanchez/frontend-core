@@ -17,13 +17,12 @@
  */
 
 import { request } from '@/utils/ADempiere/request'
-import { config } from '@/utils/ADempiere/config'
 
 export function listOrganizations({
   searchValue
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/organizations`,
+    url: `/forms/trial-balance-drillable/organizations`,
     method: 'get',
     params: {
       page_size: 200,
@@ -36,7 +35,7 @@ export function listBudgets({
   searchValue
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/budgets`,
+    url: `/forms/trial-balance-drillable/budgets`,
     method: 'get',
     params: {
       page_size: 200,
@@ -49,7 +48,7 @@ export function listPeriods({
   searchValue
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/periods`,
+    url: `/forms/trial-balance-drillable/periods`,
     method: 'get',
     params: {
       page_size: 200,
@@ -62,7 +61,7 @@ export function listAccoutingKeys({
   searchValue
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/accouting-keys`,
+    url: `/forms/trial-balance-drillable/accounting-keys`,
     method: 'get',
     params: {
       page_size: 200,
@@ -75,7 +74,7 @@ export function listReportCubes({
   searchValue
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/report-cubes`,
+    url: `/forms/trial-balance-drillable/report-cubes`,
     method: 'get',
     params: {
       page_size: 200,
@@ -88,19 +87,19 @@ export function listFactAcctSummary({
   organizationId,
   budgetId,
   periodId,
-  accoutingFromId,
-  accoutingToId,
+  accountingFromId,
+  accountingToId,
   reportCubeId
 }) {
   return request({
-    url: `${config.trialBalanceDrillable.endpoint}/accouting-fact-summary`,
+    url: `/forms/trial-balance-drillable/accounting-fact-summary`,
     method: 'get',
     params: {
       organization_id: organizationId,
       budget_id: budgetId,
       period_id: periodId,
-      accouting_from_id: accoutingFromId,
-      accouting_to_id: accoutingToId,
+      accounting_from_id: accountingFromId,
+      accounting_to_id: accountingToId,
       report_cube_id: reportCubeId
     }
   })

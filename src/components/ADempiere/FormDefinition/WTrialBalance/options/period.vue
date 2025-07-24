@@ -43,16 +43,23 @@
 </template>
 
 <script>
-import store from '@/store'
 import {
   defineComponent,
   ref,
   computed
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
 import { listPeriods } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'periodWtrialBalance',
+
   setup() {
+    const untilPeriodOptions = ref([])
+
     const untilPeriod = computed({
       get() {
         return store.getters.getPeriod
@@ -61,10 +68,11 @@ export default defineComponent({
         store.commit('setPeriod', value)
       }
     })
-    const untilPeriodOptions = ref([])
 
     function showListPeriods(show, search = '') {
-      if (!show) return
+      if (!show) {
+        return
+      }
       listPeriods({
         searchValue: search
       })
@@ -73,6 +81,7 @@ export default defineComponent({
           untilPeriodOptions.value = records
         })
     }
+
     return {
       untilPeriod,
       untilPeriodOptions,

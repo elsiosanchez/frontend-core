@@ -73,8 +73,5 @@
   "weight": {
     "endpoint": "/form/addons/weight"
   },
-  "trialBalanceDrillable": {
-    "endpoint": "/trial-balance-drillable"
-  },
   "theme": "src/themes/default"
 }

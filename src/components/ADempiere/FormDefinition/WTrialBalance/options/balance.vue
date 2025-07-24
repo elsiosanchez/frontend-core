@@ -42,16 +42,23 @@
 </template>
 
 <script>
-import store from '@/store'
 import {
   defineComponent,
   ref,
   computed
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
 import { listBudgets } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'balanceWtrialBalance',
+
   setup() {
+    const budgetOptions = ref([])
+
     const budget = computed({
       get() {
         return store.getters.getBudget
@@ -60,9 +67,11 @@ export default defineComponent({
         store.commit('setBudget', value)
       }
     })
-    const budgetOptions = ref([])
+
     function showListBudgets(show, search = '') {
-      if (!show) return
+      if (!show) {
+        return
+      }
       listBudgets({
         searchValue: search
       })
@@ -71,6 +80,7 @@ export default defineComponent({
           budgetOptions.value = records
         })
     }
+
     return {
       budget,
       budgetOptions,

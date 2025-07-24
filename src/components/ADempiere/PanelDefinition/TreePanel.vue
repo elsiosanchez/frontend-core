@@ -193,7 +193,7 @@ export default defineComponent({
       treePanel.value.filter(newValue)
     })
 
-    // when element accouting change load tree data
+    // when element accounting change load tree data
     watch(elementId, (newValue, oldValue) => {
       if (newValue !== oldValue) {
         loadData()

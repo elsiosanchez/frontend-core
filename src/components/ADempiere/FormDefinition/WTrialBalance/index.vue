@@ -91,6 +91,7 @@ import {
   watch
   // computed
 } from '@vue/composition-api'
+
 import lang from '@/lang'
 import store from '@/store'
 import language from '@/lang'
@@ -100,40 +101,23 @@ import language from '@/lang'
 // Utils and Helper Methods
 import optionsWtrialBalance from './options'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
-import { isEmptyValue } from '@/utils/ADempiere'
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showNotification } from '@/utils/ADempiere/notification.js'
 
 export default defineComponent({
   name: 'WTrialBalance',
+
   components: {
     optionsWtrialBalance
   },
-  data() {
-    return {
-      activeName: 'top'
-    }
-  },
+
   props: {
     metadata: {
       type: Object,
       default: () => {}
     }
   },
-  methods: {
-    classChecker({ row, column }) {
-      const numberRegex = /[^\d.,-]+/g
-      const numberColumns = ['period_actual_amount', 'period_budget_amount', 'ytd_actual_amount', 'ytd_budget_amount', 'variance_amount', 'period_variance_amount', 'variance_percentage']
-      if (numberColumns.includes(column.property)) {
-        const val = parseFloat(row[column.property].replace(numberRegex, ''))
-        if (val < 0) {
-          return 'redClass'
-        }
-      }
-    },
-    filterMethod(query) {
-      this.showListAccoutingKeys(true, query)
-    }
-  },
+
   setup() {
     /**
      * Ref
@@ -142,6 +126,7 @@ export default defineComponent({
     const showPeriod = computed(() => {
       return store.getters.getShowPeriod
     })
+
     // Const
     const COLUMNS_PERIOD = ['period_variance_amount', 'period_actual_amount', 'period_budget_amount']
     const COLUMNS_ACCUMULATED = ['variance_amount', 'variance_percentage', 'ytd_actual_amount', 'ytd_budget_amount']
@@ -150,15 +135,19 @@ export default defineComponent({
     const showAccumulated = computed(() => {
       return store.getters.getShowAccumulated
     })
+
     const budget = computed(() => {
       return store.getters.getBudget
     })
+
     const organization = computed(() => {
       return store.getters.getOrganization
     })
+
     const period = computed(() => {
       return store.getters.getPeriod
     })
+
     // Data Table
     const headerList = ref([
       {
@@ -217,6 +206,7 @@ export default defineComponent({
       }
     ])
     const viewList = ref(headerList.value.filter((header) => !COLUMNS_BUDGET.includes(header.columnName)))
+
     const isLoading = computed(() => {
       return store.getters.getIsLoading
     })
@@ -262,6 +252,18 @@ export default defineComponent({
 
       return sums
     }
+
+    function classChecker({ row, column }) {
+      const numberRegex = /[^\d.,-]+/g
+      const numberColumns = ['period_actual_amount', 'period_budget_amount', 'ytd_actual_amount', 'ytd_budget_amount', 'variance_amount', 'period_variance_amount', 'variance_percentage']
+      if (numberColumns.includes(column.property)) {
+        const val = parseFloat(row[column.property].replace(numberRegex, ''))
+        if (val < 0) {
+          return 'redClass'
+        }
+      }
+    }
+
     watch(
       () => [budget.value, showPeriod.value, showAccumulated.value],
       (newValue) => {
@@ -281,12 +283,15 @@ export default defineComponent({
         viewList.value = headerList.value.filter((header) => !columnsToExclude.includes(header.columnName))
       }
     )
+
     function changeView(data) {
       isVisible.value = data
     }
+
     const listSummary = computed(() => {
       return store.getters.getListSummary
     })
+
     function zoomInWindow(scope) {
       const id = 118
       const columnName = 'C_ElementValue_ID'
@@ -301,6 +306,7 @@ export default defineComponent({
         }
       })
     }
+
     function handleCommand(command, scope) {
       if (command === 'report') {
         generateReport(scope)
@@ -343,6 +349,7 @@ export default defineComponent({
           }
         })
     }
+
     return {
       //  Computed
       isVisible,
@@ -364,7 +371,8 @@ export default defineComponent({
       getColumnStyle,
       zoomInWindow,
       generateReport,
-      handleCommand
+      handleCommand,
+      classChecker
     }
   }
 })

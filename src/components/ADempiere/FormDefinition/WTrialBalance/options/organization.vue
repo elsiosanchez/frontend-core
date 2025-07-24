@@ -43,17 +43,23 @@
 </template>
 
 <script>
-import store from '@/store'
 import {
   defineComponent,
   ref,
   computed
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
 import { listOrganizations } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'organizationWtrialBalance',
+
   setup() {
     const organizationOptions = ref([])
+
     const organization = computed({
       get() {
         return store.getters.getOrganization
@@ -62,8 +68,11 @@ export default defineComponent({
         store.commit('setOrganization', value)
       }
     })
+
     function showListOrganization(show, search = '') {
-      if (!show) return
+      if (!show) {
+        return
+      }
       listOrganizations({
         searchValue: search
       })
@@ -72,6 +81,7 @@ export default defineComponent({
           organizationOptions.value = records
         })
     }
+
     return {
       organization,
       organizationOptions,

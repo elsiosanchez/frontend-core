@@ -61,21 +61,23 @@
   </div>
 </template>
 <script>
-import store from '@/store'
 import {
   defineComponent,
   ref,
   computed
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
 import { listAccoutingKeys } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'accountingWtrialBalance',
-  methods: {
-    filterMethod(query) {
-      this.showListAccoutingKeys(true, query)
-    }
-  },
+
   setup() {
+    const accountingAccountOptions = ref([])
+
     const accountingAccount1 = computed({
       get() {
         return store.getters.getAccounting1
@@ -84,6 +86,7 @@ export default defineComponent({
         store.commit('setAccounting1', value)
       }
     })
+
     const accountingAccount2 = computed({
       get() {
         return store.getters.getAccounting2
@@ -92,10 +95,11 @@ export default defineComponent({
         store.commit('setAccounting2', value)
       }
     })
-    const accountingAccountOptions = ref([])
 
     function showListAccoutingKeys(show, search = '') {
-      if (!show) return
+      if (!show) {
+        return
+      }
       listAccoutingKeys({
         searchValue: search
       })
@@ -104,11 +108,17 @@ export default defineComponent({
           accountingAccountOptions.value = records
         })
     }
+
+    function filterMethod(query) {
+      showListAccoutingKeys(true, query)
+    }
+
     return {
       accountingAccount1,
       accountingAccount2,
       accountingAccountOptions,
-      showListAccoutingKeys
+      showListAccoutingKeys,
+      filterMethod
     }
   }
 })

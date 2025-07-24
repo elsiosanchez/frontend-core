@@ -59,23 +59,31 @@
     </el-form-item>
   </div>
 </template>
+
 <script>
-import store from '@/store'
 import {
   defineComponent,
   computed,
   watch,
   ref
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
+import {
+  listFactAcctSummary
+} from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
+// Utils and Helper Methods
 import { exportFileFromJson } from '@/utils/ADempiere/exportUtil.js'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification'
 import { formatQuantity } from '@/utils/ADempiere/formatValue/numberFormat'
-import {
-  listFactAcctSummary
-} from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'showButtomWtrialBalance',
+
   props: {
     headerList: {
       type: Array,
@@ -86,12 +94,14 @@ export default defineComponent({
       default: () => {}
     }
   },
+
   setup(props) {
     const porcent = ref(null)
 
     const organization = computed(() => {
       return store.getters.getOrganization
     })
+
     const budget = computed(() => {
       const budget = store.getters.getBudget
       if (!isEmptyValue(budget)) {
@@ -99,9 +109,11 @@ export default defineComponent({
       }
       return undefined
     })
+
     const untilPeriod = computed(() => {
       return store.getters.getPeriod
     })
+
     const accountingAccount1 = computed(() => {
       const accounting = store.getters.getAccounting1
       if (!isEmptyValue(accounting)) {
@@ -109,6 +121,7 @@ export default defineComponent({
       }
       return undefined
     })
+
     const accountingAccount2 = computed(() => {
       const accounting = store.getters.getAccounting2
       if (!isEmptyValue(accounting)) {
@@ -116,9 +129,11 @@ export default defineComponent({
       }
       return undefined
     })
+
     const cubeReport = computed(() => {
       return store.getters.getCube
     })
+
     const showPeriod = computed({
       get() {
         return store.getters.getShowPeriod
@@ -127,6 +142,7 @@ export default defineComponent({
         store.commit('setShowPeriod', value)
       }
     })
+
     const showAccumulated = computed({
       get() {
         return store.getters.getShowAccumulated
@@ -135,6 +151,7 @@ export default defineComponent({
         store.commit('setShowAccumulated', value)
       }
     })
+
     const isLoading = computed(() => {
       return store.getters.getIsLoading
     })
@@ -142,14 +159,15 @@ export default defineComponent({
     const selectedExport = computed(() => {
       return store.getters.getSelectedExport
     })
+
     function refresh() {
       store.commit('setIsLoading', true)
       listFactAcctSummary({
         organizationId: organization.value,
         budgetId: budget.value,
         periodId: untilPeriod.value,
-        accoutingFromId: accountingAccount1.value,
-        accoutingToId: accountingAccount2.value,
+        accountingFromId: accountingAccount1.value,
+        accountingToId: accountingAccount2.value,
         reportCubeId: cubeReport.value
       })
         .then(response => {
@@ -187,6 +205,7 @@ export default defineComponent({
           store.commit('setIsLoading', false)
         })
     }
+
     function calculate(period_variation, period_budget) {
       const period_variation_number = changeFloat(period_variation)
       const period_budget_number = changeFloat(period_budget)
@@ -200,6 +219,7 @@ export default defineComponent({
     const changeFloat = (num) => {
       return parseFloat(num.replace(/[^\d.-]/g, ''))
     }
+
     watch(
       () => [organization.value, untilPeriod.value, cubeReport.value],
       (newValue) => {
@@ -212,6 +232,7 @@ export default defineComponent({
         }
       }
     )
+
     function exportRecords() {
       if (!isEmptyValue(selectedExport.value)) {
         const data = selectedExport.value.map(list => {
@@ -246,6 +267,7 @@ export default defineComponent({
         })
       }
     }
+
     return {
       showPeriod,
       showAccumulated,

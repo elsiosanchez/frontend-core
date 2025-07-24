@@ -43,17 +43,23 @@
 </template>
 
 <script>
-import store from '@/store'
 import {
   defineComponent,
   ref,
   computed
 } from '@vue/composition-api'
+
+import store from '@/store'
+
+// API Request Methods
 import { listReportCubes } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
 export default defineComponent({
   name: 'cubeWtrialBalance',
+
   setup() {
     const cubeReportOptions = ref([])
+
     const cubeReport = computed({
       get() {
         return store.getters.getCube
@@ -62,8 +68,11 @@ export default defineComponent({
         store.commit('setCube', value)
       }
     })
+
     function showListReportCubes(show, search = '') {
-      if (!show) return
+      if (!show) {
+        return
+      }
       listReportCubes({
         searchValue: search
       })
@@ -72,6 +81,7 @@ export default defineComponent({
           cubeReportOptions.value = records
         })
     }
+
     return {
       cubeReport,
       cubeReportOptions,
