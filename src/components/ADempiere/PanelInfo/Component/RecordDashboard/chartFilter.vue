@@ -44,7 +44,7 @@ import { camelizeObjectKeys } from '@/utils/ADempiere/transformObject.js'
 import { getFieldTemplate } from '@/utils/ADempiere/lookupFactory.js'
 import {
   evalutateTypeField
-} from '@/utils/ADempiere/dictionaryUtils.js'
+} from '@/utils/ADempiere/dictionary/field'
 
 export default defineComponent({
   name: 'ChartParameter',

@@ -70,11 +70,12 @@ import store from '@/store'
 // Constants
 import { CHAR, DEFAULT_SIZE, TABLE_DIRECT } from '@/utils/ADempiere/references.js'
 import {
-  DISPLAY_COLUMN_PREFIX, evalutateTypeField
+  DISPLAY_COLUMN_PREFIX
 } from '@/utils/ADempiere/dictionaryUtils.js'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 import {
   getContextDefaultValue, getEvaluatedFieldLogics, getParentFields
 } from '@/utils/ADempiere/contextUtils/contextField'

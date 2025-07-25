@@ -80,7 +80,7 @@ import { LAYOUT_MAX_COLUMNS_PER_ROW, DEFAULT_COLUMNS_PER_ROW } from '@/utils/ADe
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 
 /**
  * This is the base component for linking the components according to the

@@ -28,7 +28,7 @@ import { isEmptyValue } from '@/utils/ADempiere'
 const initStateGeneralLedger = {
   fileList: [],
   attributes: {},
-  accountingElement: {},
+  accountingElements: {},
   filters: {},
   isLoadeTables: false
 }
@@ -38,7 +38,7 @@ export default {
 
   mutations: {
     setAccountingElement(state, acctElement) {
-      Vue.set(state, acctElement.column_name, acctElement)
+      Vue.set(state.accountingElements, acctElement.column_name, acctElement)
     },
     setFieldsListAccount(state, fieldsListAccount) {
       state.fileList = fieldsListAccount
@@ -103,6 +103,8 @@ export default {
             let fieldsListAccount = []
             if (!isEmptyValue(accounting_elements)) {
               fieldsListAccount = accounting_elements.map(accountingElementItem => {
+                commit('setAccountingElement', accountingElementItem)
+
                 return {
                   ...accountingElementItem,
                   value: ''
@@ -153,7 +155,7 @@ export default {
 
   getters: {
     getAccountingElement: (state) => ({ columnName }) => {
-      return state.accountingElement[columnName]
+      return state.accountingElements[columnName]
     },
     getFieldsListAccount: (state) => {
       return state.fileList

@@ -32,7 +32,7 @@ import {
 } from '@/api/ADempiere/displayDefinition.ts'
 
 // Utils and Helpers Methods
-import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { showMessage } from '@/utils/ADempiere/notification.js'
 

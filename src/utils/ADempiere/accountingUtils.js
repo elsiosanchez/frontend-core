@@ -19,115 +19,168 @@
 import language from '@/lang'
 import store from '@/store'
 
+/**
+ * Account Element
+ */
+export const USER_LIST_TABLE_NAME = 'C_ElementValue'
+
+export const User1_ID = {
+  elementType: 'U1',
+  tableName: USER_LIST_TABLE_NAME,
+  columnName: 'User1_ID',
+  name: language.t('form.accountingViewer.userList1'),
+  isMandatory: false
+}
+
+export const User2_ID = {
+  elementType: 'U2',
+  tableName: USER_LIST_TABLE_NAME,
+  columnName: 'User2_ID',
+  name: language.t('form.accountingViewer.userList2'),
+  isMandatory: false
+}
+
+export const User3_ID = {
+  elementType: 'U3',
+  tableName: USER_LIST_TABLE_NAME,
+  columnName: 'User1_ID',
+  name: language.t('form.accountingViewer.userList3'),
+  isMandatory: false
+}
+
+export const User4_ID = {
+  elementType: 'U4',
+  tableName: USER_LIST_TABLE_NAME,
+  columnName: 'User4_ID',
+  name: language.t('form.accountingViewer.userList4'),
+  isMandatory: false
+}
+
+export const UserElement1_ID = {
+  elementType: 'X1',
+  tableName: null,
+  columnName: 'UserElement1_ID',
+  name: language.t('form.accountingViewer.userElement1'),
+  isMandatory: false
+}
+
+export const UserElement2_ID = {
+  elementType: 'X2',
+  tableName: null,
+  columnName: 'UserElement2_ID',
+  name: language.t('form.accountingViewer.userElement2'),
+  isMandatory: false
+}
+
+/**
+ * User List Accunt Element
+ */
+export const USER_LIST_COLUMNS_NAME_LIST = [
+  'User1_ID', // U1
+  'User2_ID', // U2
+  'User3_ID', // U3
+  'User4_ID' // U4
+]
+
+/**
+ * User Element
+ */
+export const USER_ELEMENT_COLUMNS_NAME_LIST = [
+  'UserElement1_ID', // X1
+  'UserElement2_ID' // X2
+]
+
 export const ACCOUNTING_ELEMENT_COLUMNS = [
   // {
   //   elementType: 'OO',
+  //   tableName: 'AD_Org',
   //   columnName: 'AD_Org_ID',
   //   name: language.t('form.accountingViewer.organization'),
   //   isMandatory: true,
   // },
   // {
   //   elementType: 'AC',
-  //   name: language.t('form.accountingViewer.account'),
+  //   tableName: 'C_ElementValue',
   //   columnName: 'Account_ID',
+  //   name: language.t('form.accountingViewer.account'),
   //   isMandatory: true
   // },
   {
     elementType: 'PR',
+    tableName: 'M_Product',
     columnName: 'M_Product_ID',
     name: language.t('form.accountingViewer.product'),
     isMandatory: false
   },
   {
     elementType: 'BP',
+    tableName: 'C_BPartner',
     columnName: 'C_BPartner_ID',
     name: language.t('form.accountingViewer.businessPartner'),
     isMandatory: false
   },
   {
     elementType: 'PJ',
+    tableName: 'C_Project',
     columnName: 'C_Project_ID',
     name: language.t('form.accountingViewer.project'),
     isMandatory: false
   },
   {
     elementType: 'MC',
+    tableName: 'C_Campaign',
     columnName: 'C_Campaign_ID',
     name: language.t('form.accountingViewer.campaign'),
     isMandatory: false
   },
   {
     elementType: 'SR',
+    tableName: 'C_SalesRegion',
     columnName: 'C_SalesRegion_ID',
     name: language.t('form.accountingViewer.salesRegion'),
     isMandatory: false
   },
   {
     elementType: 'OT',
+    tableName: 'AD_Org',
     columnName: 'AD_OrgTrx_ID',
     name: language.t('form.accountingViewer.organizationTransaction'),
     isMandatory: false
   },
   {
     elementType: 'LF',
+    tableName: 'C_Location',
     columnName: 'C_LocFrom_ID',
     name: language.t('form.accountingViewer.locationFrom'),
     isMandatory: false
   },
   {
     elementType: 'LT',
+    tableName: 'C_Location',
     columnName: 'C_LocTo_ID',
     name: language.t('form.accountingViewer.locationTo'),
     isMandatory: false
   },
   {
-    elementType: 'U1',
-    columnName: 'User1_ID',
-    name: language.t('form.accountingViewer.userList1'),
-    isMandatory: false
-  },
-  {
-    elementType: 'U2',
-    columnName: 'User2_ID',
-    name: language.t('form.accountingViewer.userList2'),
-    isMandatory: false
-  },
-  {
     elementType: 'AY',
+    tableName: 'C_Activity',
     columnName: 'C_Activity_ID',
     name: language.t('form.accountingViewer.activity'),
     isMandatory: false
   },
   {
     elementType: 'SA',
+    tableName: 'C_ElementValue',
     columnName: 'C_SubAcct_ID',
     name: language.t('form.accountingViewer.subAccount'),
     isMandatory: false
   },
-  {
-    elementType: 'X1',
-    columnName: 'UserElement1_ID',
-    name: language.t('form.accountingViewer.userElement1'),
-    isMandatory: false
-  },
-  {
-    elementType: 'X2',
-    columnName: 'UserElement2_ID',
-    name: language.t('form.accountingViewer.userElement2'),
-    isMandatory: false
-  },
-  {
-    elementType: 'U3',
-    columnName: 'User1_ID',
-    name: language.t('form.accountingViewer.userList3'),
-    isMandatory: false
-  },
-  {
-    elementType: 'U4',
-    columnName: 'User4_ID',
-    name: language.t('form.accountingViewer.userList4'),
-    isMandatory: false
-  }
+  UserElement1_ID,
+  UserElement2_ID,
+  User1_ID,
+  User2_ID,
+  User3_ID,
+  User4_ID
 ]
 
 const ACCOUNTING_ELEMENT_PREFIX = '$Element_'

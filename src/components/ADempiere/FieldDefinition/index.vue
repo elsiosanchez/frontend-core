@@ -113,7 +113,7 @@ import { CURRENCY } from '@/utils/ADempiere/constants/currency'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
-import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 import { createNewRecord } from '@/utils/ADempiere/dictionary/window/actionsMenu'
 
 /**

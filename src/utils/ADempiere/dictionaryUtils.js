@@ -17,9 +17,10 @@
  */
 
 import lang from '@/lang'
+import store from '@/store'
 
 // Constants
-import REFERENCES, { BUTTON, DEFAULT_SIZE, LIST, YES_NO } from '@/utils/ADempiere/references'
+import { BUTTON, DEFAULT_SIZE, LIST, YES_NO } from '@/utils/ADempiere/references'
 import {
   FIELD_OPERATORS_LIST, OPERATOR_EQUAL,
   OPERATOR_LIKE, OPERATOR_GREATER_EQUAL, OPERATOR_LESS_EQUAL, OPERATOR_BETWEEN
@@ -27,9 +28,15 @@ import {
 import {
   COLUMNNAME_C_Currency_ID, COLUMNNAME_DocAction, COLUMNNAME_DocStatus
 } from '@/utils/ADempiere/constants/systemColumns'
+import {
+  USER_ELEMENT_COLUMNS_NAME_LIST,
+  USER_LIST_COLUMNS_NAME_LIST,
+  USER_LIST_TABLE_NAME
+} from '@/utils/ADempiere/accountingUtils'
 
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 import { getTableNameFromReference, isSupportLookup } from '@/utils/ADempiere/references'
 import { decodeHtmlEntities } from '@/utils/ADempiere/formatValue/stringFormat'
 import {
@@ -76,20 +83,6 @@ export const ALWAYS_DISPLAY_COLUMN = [
   COLUMNNAME_DocAction,
   COLUMNNAME_DocStatus
 ]
-
-/**
- * Evaluate by the ID and name of the reference to call the component type
- * @param {integer} displayTypeId, received from data
- * @param {boolean} isAllInfo
- * @return string type, assigned value to folder after evaluating the parameter
- */
-export function evalutateTypeField(displayTypeId, isAllInfo = true) {
-  const component = REFERENCES.find(reference => displayTypeId === reference.id)
-  if (isAllInfo) {
-    return component
-  }
-  return component.componentPath
-}
 
 /**
  * Generate field to app
@@ -260,6 +253,32 @@ export function generateField({
   let referenceTableName = null
   if (isLookup(fieldToGenerate.display_type)) {
     referenceTableName = getTableNameFromReference(elementColumnName, fieldToGenerate.display_type)
+  }
+
+  // Accouting element overwrite name and reference table name.
+  if (USER_ELEMENT_COLUMNS_NAME_LIST.includes(columnName)) {
+    const accountingElement = store.getters.getAccountingElement({
+      columnName
+    })
+    if (!isEmptyValue(accountingElement)) {
+      fieldToGenerate.name = accountingElement.name
+      if (!isEmptyValue(accountingElement.table_name)) {
+        referenceTableName = accountingElement.table_name
+      }
+      fieldToGenerate.reference = {
+        table_name: referenceTableName,
+        reference_id: accountingElement.display_type,
+        context_column_names: accountingElement.context_column_names
+      }
+    }
+  } else if (USER_LIST_COLUMNS_NAME_LIST.includes(columnName)) {
+    const accountingElement = store.getters.getAccountingElement({
+      columnName
+    })
+    if (!isEmptyValue(accountingElement)) {
+      fieldToGenerate.name = accountingElement.name
+      referenceTableName = USER_LIST_TABLE_NAME
+    }
   }
 
   const field = {

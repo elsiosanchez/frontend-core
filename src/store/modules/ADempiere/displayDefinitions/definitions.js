@@ -26,7 +26,7 @@ import {
 
 // Utils and Helpers Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
-import { evalutateTypeField } from '@/utils/ADempiere/dictionaryUtils'
+import { evalutateTypeField } from '@/utils/ADempiere/dictionary/field'
 
 const initState = {
   displayFieldDefinitions: {},
