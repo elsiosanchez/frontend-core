@@ -409,7 +409,8 @@ export default defineComponent({
       columnName,
       id
     }) {
-      const { containerUuid, parentUuid } = currentTab
+      const { containerUuid, parentUuid, fieldsList } = currentTab
+      const currentField = fieldsList.find(fieldItem => fieldItem.column_name === columnName)
       store.commit('updateValueOfField', {
         containerUuid,
         columnName,
@@ -421,6 +422,13 @@ export default defineComponent({
         value: displayValue,
         containerUuid,
         parentUuid
+      })
+      store.dispatch('notifyFieldChange', {
+        containerManager: props.containerManager,
+        field: currentField,
+        containerUuid,
+        columnName,
+        newValue: id
       })
     }
 
