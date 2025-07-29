@@ -192,7 +192,7 @@ export default defineComponent({
       return store.getters.getUuidOfContainer(containerUuid)
     })
     const recordId = computed(() => {
-      const { containerUuid, table_name, table } = props.tabAttributes.value
+      const { containerUuid, table_name, table } = props.tabAttributes
       const getRecordId = store.getters.getIdOfContainer({
         containerUuid: containerUuid,
         tableName: table_name

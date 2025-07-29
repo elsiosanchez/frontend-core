@@ -63,6 +63,7 @@ import {
 // Utils and Helper Methods
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { convertStringToBoolean } from '@/utils/ADempiere/formatValue/booleanFormat'
+import { formatFieldEmpty } from '@/utils/ADempiere/valueFormat.js'
 
 /**
  * This component is a lookup type field, use as a replacement for fields:
@@ -127,7 +128,12 @@ export default {
 
     value: {
       get() {
-        const { column_name, containerUuid, inTable } = this.metadata
+        const { column_name, containerUuid, inTable, isSearchNotFound, display_type } = this.metadata
+        if (isSearchNotFound) {
+          return formatFieldEmpty({
+            displayType: display_type
+          })
+        }
         // table records values
         if (inTable) {
           return this.containerManager.getCell({

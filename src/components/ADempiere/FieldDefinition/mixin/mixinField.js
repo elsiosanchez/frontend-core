@@ -20,6 +20,7 @@ import store from '@/store'
 
 // Utils and Helper Methods
 import { getTypeOfValue, isEmptyValue } from '@/utils/ADempiere/valueUtils'
+import { formatFieldEmpty } from '@/utils/ADempiere/valueFormat.js'
 
 export default {
   name: 'MixinField',
@@ -106,7 +107,12 @@ export default {
     },
     value: {
       get() {
-        const { column_name, containerUuid, inTable } = this.metadata
+        const { column_name, containerUuid, inTable, isSearchNotFound, display_type } = this.metadata
+        if (isSearchNotFound) {
+          return formatFieldEmpty({
+            displayType: display_type
+          })
+        }
         // table records values
         if (inTable) {
           const value = this.containerManager.getCell({

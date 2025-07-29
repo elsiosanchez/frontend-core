@@ -341,6 +341,7 @@ export default {
         // DOM properties
         required: this.isMandatoryField,
         readonly: isReadOnlyGenerated || isReadOnlyFromOperator || this.searchNotFound,
+        isSearchNotFound: this.searchNotFound,
         displayed: this.isDisplayField,
         // disabled: !this.field.isActive,
         isSelectCreated: this.isSelectCreated,

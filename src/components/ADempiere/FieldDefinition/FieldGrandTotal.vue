@@ -40,6 +40,7 @@ import { COLUMNNAME_C_Currency_ID } from '@/utils/ADempiere/constants/systemColu
 // Utils and Helper Methods
 import { isAmountDecimalField, isNumberField } from '@/utils/ADempiere/references.js'
 import { formatNumber } from '@/utils/ADempiere/formatValue/numberFormat.js'
+import { formatFieldEmpty } from '@/utils/ADempiere/valueFormat.js'
 import { getTypeOfValue, isEmptyValue } from '@/utils/ADempiere/valueUtils.js'
 import { standardPrecisionContext } from '@/utils/ADempiere/formatValue/numberFormat.js'
 
@@ -122,6 +123,13 @@ export default {
       return undefined
     },
     displayedValue() {
+      if (this.metadata.isSearchNotFound) {
+        return formatFieldEmpty({
+          displayType: this.metadata.display_type,
+          currency: this.currencyCode,
+          precision: this.precision
+        })
+      }
       return formatNumber({
         value: this.value,
         precision: this.precision,

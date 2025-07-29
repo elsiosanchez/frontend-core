@@ -30,6 +30,7 @@ import { IMAGE } from '@/utils/ADempiere/references'
 import fieldWithDisplayColumn from '@/components/ADempiere/FieldDefinition/mixin/mixinWithDisplayColumn.js'
 
 // Utils and Helper Methods
+import { formatFieldEmpty } from '@/utils/ADempiere/valueFormat.js'
 import { isEmptyValue, isSameValues } from '@/utils/ADempiere/valueUtils'
 import { formatField, trimPercentage } from '@/utils/ADempiere/valueFormat'
 
@@ -80,7 +81,12 @@ export default {
 
     displayedValue: {
       get() {
-        const { displayColumnName, containerUuid, inTable, display_type } = this.metadata
+        const { displayColumnName, containerUuid, inTable, display_type, isSearchNotFound } = this.metadata
+        if (isSearchNotFound) {
+          return formatFieldEmpty({
+            displayType: display_type
+          })
+        }
 
         if (isEmptyValue(this.value) && display_type === IMAGE.id) {
           return undefined

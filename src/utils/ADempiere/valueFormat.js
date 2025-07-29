@@ -220,6 +220,62 @@ export function formatField({
   return formattedValue
 }
 
+export function formatFieldEmpty({
+  displayType,
+  currency,
+  precision = NUMBER_PRECISION
+}) {
+  //  Format
+  let formattedValue
+  switch (displayType) {
+    case ACCOUNT_ELEMENT.id:
+    case ID.id:
+    case LIST.id:
+    case LOCATION_ADDRESS.id:
+    case LOCATOR_WAREHOUSE.id:
+    case PRODUCT_ATTRIBUTE.id:
+    case SEARCH.id:
+    case TABLE.id:
+    case TABLE_DIRECT.id:
+      formattedValue = null
+      break
+    case DATE.id:
+    case DATE_PLUS_TIME.id:
+    case TIME.id:
+      formattedValue = ''
+      break
+
+    case AMOUNT.id:
+    case COSTS_PLUS_PRICES.id:
+      formattedValue = formatPriceTemp({
+        value: 0,
+        currency,
+        precision
+      })
+      break
+
+    case NUMBER.id:
+    case QUANTITY.id:
+      formattedValue = formatQuantity({
+        value: 0
+      })
+      break
+
+    case YES_NO.id:
+      formattedValue = false
+      break
+
+    case CHAR.id:
+    case MEMO.id:
+    case TEXT.id:
+    case IMAGE.id:
+    case TEXT_LONG.id:
+      formattedValue = ''
+      break
+  }
+  return formattedValue
+}
+
 /**
  * Removes the % of a text string, only from the beginning and end if they exist,
  * this in case you need to use a match or local search to find matches between
