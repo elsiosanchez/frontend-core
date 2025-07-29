@@ -15,23 +15,31 @@
   You should have received a copy of the GNU General Public License
   along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
+
 <template>
   <div>
     <el-form-item style="margin-top: 0; margin-bottom: 0 !important;">
       <template slot="label">
-        {{ $t('form.WTrialBalance.accountingAccount') }}
+        {{ $t('form.WTrialBalance.accountingKey') }}
       </template>
     </el-form-item>
+
     <div style="display: flex; align-items: center;">
       <el-select
         v-model="accountingAccount1"
-        :placeholder="$t('form.WTrialBalance.accountingAccount')"
+        :placeholder="$t('form.WTrialBalance.accountingKeyFrom')"
         :filter-method="filterMethod"
         style="width: 49%; margin-right: 10px;"
         clearable
         filterable
         @visible-change="showListAccountingKeys"
       >
+        <empty-option-select
+          :current-value="accountingAccount1"
+          :is-allows-zero="false"
+          :disabled="false"
+        />
+
         <el-option
           v-for="item in accountingAccountOptions"
           :key="item.id"
@@ -39,17 +47,26 @@
           :value="item.id"
         />
       </el-select>
+
       <b style="color: #c0c4cc; padding: 0px 5px; font-weight: bold;">
         {{ '-' }}
       </b>
+
       <el-select
         v-model="accountingAccount2"
+        :placeholder="$t('form.WTrialBalance.accountingKeyTo')"
         :filter-method="filterMethod"
         style="width: 49%;"
         filterable
         clearable
         @visible-change="showListAccountingKeys"
       >
+        <empty-option-select
+          :current-value="accountingAccount2"
+          :is-allows-zero="false"
+          :disabled="false"
+        />
+
         <el-option
           v-for="item in accountingAccountOptions"
           :key="item.id"
@@ -60,6 +77,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import {
   defineComponent,
@@ -69,11 +87,18 @@ import {
 
 import store from '@/store'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
 import { listAccountingKeys } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
 
 export default defineComponent({
-  name: 'accountingWtrialBalance',
+  name: 'AccountingKeyField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   setup() {
     const accountingAccountOptions = ref([])

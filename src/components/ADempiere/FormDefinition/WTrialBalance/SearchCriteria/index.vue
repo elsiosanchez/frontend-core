@@ -26,23 +26,29 @@
             <i style="font-size: 18px;" class="el-icon-s-operation" />
           </b>
         </template>
+
         <el-row :gutter="20">
-          <el-form>
-            <el-col :span="8">
-              <organization-wtrial-balance />
+          <el-form class="form-bases form-min-label" size="smalls">
+            <el-col :span="6">
+              <organization-field />
             </el-col>
-            <el-col :span="8">
-              <balance-wtrial-balance />
+
+            <el-col :span="6">
+              <period-field />
             </el-col>
-            <el-col :span="8">
-              <period-wtrial-balance />
+
+            <el-col :span="6">
+              <report-cube-field />
             </el-col>
-            <el-col :span="8">
-              <accounting-wtrial-balance />
+
+            <el-col :span="6">
+              <budget-field />
             </el-col>
+
             <el-col :span="8">
-              <cube-wtrial-balance />
+              <accounting-key-field />
             </el-col>
+
             <el-col :span="8">
               <show-buttom-wtrial-balance
                 :header-list="headerList"
@@ -57,23 +63,34 @@
 </template>
 
 <script>
-import { defineComponent, ref } from '@vue/composition-api'
-import organizationWtrialBalance from './organization'
-import balanceWtrialBalance from './balance'
-import periodWtrialBalance from './period'
-import accountingWtrialBalance from './accounting'
-import cubeWtrialBalance from './cube'
+import {
+  defineComponent,
+  // computed,
+  ref
+} from '@vue/composition-api'
+
+// import store from '@/store'
+
+// Components and Mixins
+import AccountingKeyField from './accountingKeyField.vue'
+import BudgetField from './budgetField.vue'
+import OrganizationField from './organizationField.vue'
+import PeriodField from './periodField.vue'
+import ReportCubeField from './reportCubeField.vue'
 import showButtomWtrialBalance from './showButtom'
+
 export default defineComponent({
   name: 'optionsWtrialBalance',
+
   components: {
-    organizationWtrialBalance,
-    balanceWtrialBalance,
-    periodWtrialBalance,
-    accountingWtrialBalance,
-    cubeWtrialBalance,
+    AccountingKeyField,
+    BudgetField,
+    OrganizationField,
+    PeriodField,
+    ReportCubeField,
     showButtomWtrialBalance
   },
+
   props: {
     headerList: {
       type: Array,
@@ -84,6 +101,7 @@ export default defineComponent({
       default: () => {}
     }
   },
+
   setup() {
     const activeCollapse = ref()
 
@@ -94,3 +112,16 @@ export default defineComponent({
 })
 
 </script>
+
+<style lang="scss">
+.box-card.el-card {
+  .el-card__body {
+    padding-top: 0px;
+    padding-bottom: 0px;
+
+    .el-collapse-item__content {
+      padding-bottom: 0px;
+    }
+  }
+}
+</style>

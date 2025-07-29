@@ -18,10 +18,11 @@
 
 <template>
   <div>
-    <options-wtrial-balance
+    <search-criteria
       :header-list="headerList"
       :metadata="metadata"
     />
+
     <div>
       <el-table
         v-loading="isLoading"
@@ -96,10 +97,10 @@ import lang from '@/lang'
 import store from '@/store'
 import language from '@/lang'
 
-// API Request Methods
+// Components and Mixins
+import SearchCriteria from './SearchCriteria'
 
 // Utils and Helper Methods
-import optionsWtrialBalance from './options'
 import { zoomIn } from '@/utils/ADempiere/coreUtils.js'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 import { showNotification } from '@/utils/ADempiere/notification.js'
@@ -108,7 +109,7 @@ export default defineComponent({
   name: 'WTrialBalance',
 
   components: {
-    optionsWtrialBalance
+    SearchCriteria
   },
 
   props: {

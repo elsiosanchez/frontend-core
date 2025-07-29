@@ -20,18 +20,26 @@
   <div>
     <el-form-item>
       <template slot="label">
-        {{ $t('form.WTrialBalance.budget') }}
+        {{ $t('form.WTrialBalance.cubeReport') }}
+        <b style="color: #f34b4b"> * </b>
       </template>
+
       <el-select
-        v-model="budget"
-        :placeholder="$t('form.WTrialBalance.budget')"
+        v-model="cubeReport"
+        :placeholder="$t('form.WTrialBalance.cubeReport')"
         style="width: 100%;"
         clearable
         filterable
-        @visible-change="showListBudgets"
+        @visible-change="showListReportCubes"
       >
+        <empty-option-select
+          :current-value="cubeReport"
+          :is-allows-zero="false"
+          :disabled="true"
+        />
+
         <el-option
-          v-for="item in budgetOptions"
+          v-for="item in cubeReportOptions"
           :key="item.id"
           :label="item.values.DisplayColumn"
           :value="item.id"
@@ -50,41 +58,48 @@ import {
 
 import store from '@/store'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
-import { listBudgets } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+import { listReportCubes } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
 
 export default defineComponent({
-  name: 'balanceWtrialBalance',
+  name: 'ReportCubeField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   setup() {
-    const budgetOptions = ref([])
+    const cubeReportOptions = ref([])
 
-    const budget = computed({
+    const cubeReport = computed({
       get() {
-        return store.getters.getBudget
+        return store.getters.getCube
       },
       set(value) {
-        store.commit('setBudget', value)
+        store.commit('setCube', value)
       }
     })
 
-    function showListBudgets(show, search = '') {
+    function showListReportCubes(show, search = '') {
       if (!show) {
         return
       }
-      listBudgets({
+      listReportCubes({
         searchValue: search
       })
         .then(response => {
           const { records } = response
-          budgetOptions.value = records
+          cubeReportOptions.value = records
         })
     }
 
     return {
-      budget,
-      budgetOptions,
-      showListBudgets
+      cubeReport,
+      cubeReportOptions,
+      showListReportCubes
     }
   }
 })

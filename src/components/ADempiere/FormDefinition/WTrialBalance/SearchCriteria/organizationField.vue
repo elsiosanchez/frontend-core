@@ -18,21 +18,28 @@
 
 <template>
   <div>
-    <el-form-item>
+    <el-form-item required>
       <template slot="label">
-        {{ $t('form.WTrialBalance.cubeReport') }}
-        <b style="color: #f34b4b"> * </b>
+        {{ $t('form.WTrialBalance.organization') }}
+        <!-- <b style="color: #f34b4b"> * </b> -->
       </template>
+
       <el-select
-        v-model="cubeReport"
-        :placeholder="$t('form.WTrialBalance.cubeReport')"
+        v-model="currentOrganizationValue"
+        :placeholder="$t('form.WTrialBalance.organization')"
         style="width: 100%;"
         clearable
         filterable
-        @visible-change="showListReportCubes"
+        @visible-change="showListOrganization"
       >
+        <empty-option-select
+          :current-value="currentOrganizationValue"
+          :is-allows-zero="false"
+          :disabled="true"
+        />
+
         <el-option
-          v-for="item in cubeReportOptions"
+          v-for="item in organizationOptions"
           :key="item.id"
           :label="item.values.DisplayColumn"
           :value="item.id"
@@ -46,46 +53,70 @@
 import {
   defineComponent,
   ref,
-  computed
+  computed,
+  onMounted
 } from '@vue/composition-api'
 
 import store from '@/store'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
-import { listReportCubes } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+import { listOrganizations } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+
+// Utils and Helper Methods
+import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
 
 export default defineComponent({
-  name: 'cubeWtrialBalance',
+  name: 'OrganizationField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   setup() {
-    const cubeReportOptions = ref([])
+    const organizationOptions = ref([])
 
-    const cubeReport = computed({
+    const sessionOrganizationId = computed(() => {
+      return store.getters['user/getOrganization'].id
+    })
+
+    const currentOrganizationValue = computed({
       get() {
-        return store.getters.getCube
+        return store.getters.getOrganization
       },
       set(value) {
-        store.commit('setCube', value)
+        store.commit('setOrganization', value)
       }
     })
 
-    function showListReportCubes(show, search = '') {
+    function showListOrganization(show, search = '') {
       if (!show) {
         return
       }
-      listReportCubes({
+      listOrganizations({
         searchValue: search
       })
         .then(response => {
           const { records } = response
-          cubeReportOptions.value = records
+          organizationOptions.value = records
         })
     }
 
+    onMounted(() => {
+      showListOrganization(true, '')
+
+      const currentValue = currentOrganizationValue.value
+      if (isEmptyValue(currentValue) || currentValue < 0) {
+        currentOrganizationValue.value = sessionOrganizationId.value
+      }
+    })
+
     return {
-      cubeReport,
-      cubeReportOptions,
-      showListReportCubes
+      currentOrganizationValue,
+      organizationOptions,
+      showListOrganization
     }
   }
 })

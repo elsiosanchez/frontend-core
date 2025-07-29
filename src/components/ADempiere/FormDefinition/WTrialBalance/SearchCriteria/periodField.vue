@@ -20,19 +20,26 @@
   <div>
     <el-form-item>
       <template slot="label">
-        {{ $t('form.WTrialBalance.organization') }}
+        {{ $t('form.WTrialBalance.untilPeriod') }}
         <b style="color: #f34b4b"> * </b>
       </template>
+
       <el-select
-        v-model="organization"
-        :placeholder="$t('form.WTrialBalance.organization')"
+        v-model="untilPeriod"
+        :placeholder="$t('form.WTrialBalance.untilPeriod')"
         style="width: 100%;"
         clearable
         filterable
-        @visible-change="showListOrganization"
+        @visible-change="showListPeriods"
       >
+        <empty-option-select
+          :current-value="untilPeriod"
+          :is-allows-zero="false"
+          :disabled="true"
+        />
+
         <el-option
-          v-for="item in organizationOptions"
+          v-for="item in untilPeriodOptions"
           :key="item.id"
           :label="item.values.DisplayColumn"
           :value="item.id"
@@ -51,41 +58,48 @@ import {
 
 import store from '@/store'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
-import { listOrganizations } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+import { listPeriods } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
 
 export default defineComponent({
-  name: 'organizationWtrialBalance',
+  name: 'PeriodField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   setup() {
-    const organizationOptions = ref([])
+    const untilPeriodOptions = ref([])
 
-    const organization = computed({
+    const untilPeriod = computed({
       get() {
-        return store.getters.getOrganization
+        return store.getters.getPeriod
       },
       set(value) {
-        store.commit('setOrganization', value)
+        store.commit('setPeriod', value)
       }
     })
 
-    function showListOrganization(show, search = '') {
+    function showListPeriods(show, search = '') {
       if (!show) {
         return
       }
-      listOrganizations({
+      listPeriods({
         searchValue: search
       })
         .then(response => {
           const { records } = response
-          organizationOptions.value = records
+          untilPeriodOptions.value = records
         })
     }
 
     return {
-      organization,
-      organizationOptions,
-      showListOrganization
+      untilPeriod,
+      untilPeriodOptions,
+      showListPeriods
     }
   }
 })

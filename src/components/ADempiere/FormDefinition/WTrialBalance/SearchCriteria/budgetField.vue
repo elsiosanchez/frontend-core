@@ -20,19 +20,25 @@
   <div>
     <el-form-item>
       <template slot="label">
-        {{ $t('form.WTrialBalance.untilPeriod') }}
-        <b style="color: #f34b4b"> * </b>
+        {{ $t('form.WTrialBalance.budget') }}
       </template>
+
       <el-select
-        v-model="untilPeriod"
-        :placeholder="$t('form.WTrialBalance.untilPeriod')"
+        v-model="budget"
+        :placeholder="$t('form.WTrialBalance.budget')"
         style="width: 100%;"
         clearable
         filterable
-        @visible-change="showListPeriods"
+        @visible-change="showListBudgets"
       >
+        <empty-option-select
+          :current-value="budget"
+          :is-allows-zero="false"
+          :disabled="false"
+        />
+
         <el-option
-          v-for="item in untilPeriodOptions"
+          v-for="item in budgetOptions"
           :key="item.id"
           :label="item.values.DisplayColumn"
           :value="item.id"
@@ -51,41 +57,48 @@ import {
 
 import store from '@/store'
 
+// Components and Mixins
+import EmptyOptionSelect from '@/components/ADempiere/FieldDefinition/FieldSelect/emptyOptionSelect.vue'
+
 // API Request Methods
-import { listPeriods } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
+import { listBudgets } from '@/api/ADempiere/form/TrialBalanceDrillable.js'
 
 export default defineComponent({
-  name: 'periodWtrialBalance',
+  name: 'BudgetField',
+
+  components: {
+    EmptyOptionSelect
+  },
 
   setup() {
-    const untilPeriodOptions = ref([])
+    const budgetOptions = ref([])
 
-    const untilPeriod = computed({
+    const budget = computed({
       get() {
-        return store.getters.getPeriod
+        return store.getters.getBudget
       },
       set(value) {
-        store.commit('setPeriod', value)
+        store.commit('setBudget', value)
       }
     })
 
-    function showListPeriods(show, search = '') {
+    function showListBudgets(show, search = '') {
       if (!show) {
         return
       }
-      listPeriods({
+      listBudgets({
         searchValue: search
       })
         .then(response => {
           const { records } = response
-          untilPeriodOptions.value = records
+          budgetOptions.value = records
         })
     }
 
     return {
-      untilPeriod,
-      untilPeriodOptions,
-      showListPeriods
+      budget,
+      budgetOptions,
+      showListBudgets
     }
   }
 })
