@@ -17,7 +17,17 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
 -->
 
 <template>
-  <el-card v-loading="isLoading" class="box-card" :body-style="{ padding: '0px' }" shadow="never">
+  <el-card v-loading="isLoading" class="card-notices" :body-style="{ padding: '0px' }" shadow="never">
+    <div slot="header" class="clearfix">
+      <el-button
+        v-if="!isEmptyValue(listAllNotices)"
+        style="float: right"
+        @click="readAll"
+      >
+        {{ $t('window.containerInfo.notices.allRead') }}
+      </el-button>
+    </div>
+
     <div class="recent-items">
       <el-card
         v-for="notices in listAllNotices"
@@ -77,12 +87,21 @@ export default defineComponent({
     function loadListNotices() {
       store.dispatch('listNotices')
     }
+
+    function readAll() {
+      const { id } = store.getters['user/userInfo']
+      store.dispatch('readAllNotices', {
+        userId: id
+      })
+    }
+
     loadListNotices()
 
     return {
       search,
-      listAllNotices,
       isLoading,
+      listAllNotices,
+      readAll,
       translateDate,
       loadListNotices
     }
@@ -124,7 +143,15 @@ export default defineComponent({
     float: right;
   }
 </style>
-<style>
+<style lang="scss">
+  .card-notices {
+    .el-card__header {
+      padding: 10px 5px !important;
+      border-bottom: 1px solid #e6ebf5;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+    }
+  }
   .el-table .cell {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;

@@ -26,44 +26,35 @@ along with this program. If not, see <https:www.gnu.org/licenses/>.
         <span style="margin-left: 0px; margin-bottom: 10px; font-weight: 700; font-size: medium;">
           {{ metadata.reference }}
         </span>
-        <el-dropdown
-          split-button
-          size="small"
-          plain
+        <el-button
           style="margin-left: auto;"
           @click="handleCommandActions('read')"
-          @command="handleCommandActions"
         >
-          <svg-icon icon-class="read" />
-          <span>
-            {{ $t('window.containerInfo.notices.read') }}
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              command="readAll"
-            >
-              <svg-icon icon-class="read" />
-              {{ $t('window.containerInfo.notices.allRead') }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+          {{ $t('window.containerInfo.notices.read') }}
+        </el-button>
       </el-descriptions-item>
       <el-descriptions-item>
-        <svg-icon
-          :icon-class="metadata.user.avatar ? metadata.user.avatar : 'user'"
-          class="icon-window"
-          style="font-size: 16px;"
-        />
-        <span style="margin-left:20px; margin-bottom:10px; font-weight: 600">
-          {{ metadata.user.name }}
-        </span>
+        <issue-avatar :user="metadata.user" />
       </el-descriptions-item>
       <el-descriptions-item>
-        <span style="margin-left:42px; margin-bottom:10px; font-weight: 600" v-html="metadata.text_message" />
+        <el-card
+          shadow="never"
+          :body-style="{ padding: '0px' }"
+        >
+          <v-md-preview
+            :text="metadata.text_message"
+            height="150px"
+            class="previwer-disable"
+            style="padding: 0px"
+          />
+        </el-card>
       </el-descriptions-item>
-      <el-descriptions-item>
-        <span style="margin-left:10px; padding-bottom:10px">
+      <el-descriptions-item content-class-name="footer-notice">
+        <span>
           {{ diffInDays }}
+        </span>
+        <span style="float: right;color: #909399">
+          {{ translateDate({ value: metadata.created, format: 'long' }) }}
         </span>
       </el-descriptions-item>
     </el-descriptions>
@@ -76,18 +67,29 @@ import {
   defineComponent,
   computed
 } from '@vue/composition-api'
+
+// Components and Mixins
+import IssueAvatar from '@/components/ADempiere/FormDefinition/IssueManagement/issueAvatar.vue'
+
 // Utils and Helper Methods
 import { translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 import { isEmptyValue } from '@/utils/ADempiere/valueUtils'
+// import { formatDate, translateDate } from '@/utils/ADempiere/formatValue/dateFormat'
 
 export default defineComponent({
   name: 'noticeManagement',
+
+  components: {
+    IssueAvatar
+  },
+
   props: {
     metadata: {
       type: Object,
       required: true
     }
   },
+
   setup(props) {
     const diffInDays = computed(() => {
       const dateCreated = new Date(props.metadata.created).getTime()
@@ -167,6 +169,12 @@ export default defineComponent({
   }
 </style>
 <style>
+.footer-notice {
+  margin-left: 10px;
+  width: 100% !important;
+  display: block !important;
+  padding-bottom: 10px;
+}
 .el-descriptions-item__label.has-colon::after {
   content: "";
 }
