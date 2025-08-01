@@ -109,8 +109,14 @@
       <!-- </el-card> -->
       <el-button slot="reference">
         <b>
-          {{ $t('form.VAllocation.searchCriteria.negotiatedRate') + ' ' + displayRate }}
+          {{ $t('form.VAllocation.searchCriteria.negotiatedRate') }}
+          <span v-if="!isEmptyValue(displayRate)">
+            {{ ': ' }}
+          </span>
         </b>
+        <span v-if="!isEmptyValue(displayRate)">
+          {{ displayRate }}
+        </span>
       </el-button>
     </el-popover>
   </el-form-item>
@@ -229,13 +235,13 @@ export default defineComponent({
                 criteria: 'searchCriteria',
                 value: formatedList
               })
-            })
-            .finally(() => {
               store.commit('updateAttributeCriteriaVallocation', {
                 attribute: 'conversionTypeId',
                 criteria: 'searchCriteria',
                 value: conversion_type.id
               })
+            })
+            .finally(() => {
               close()
             })
         })

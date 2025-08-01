@@ -29,6 +29,7 @@
       v-model="isMultiCurrency"
       active-color="#13ce66"
       inactive-color="#ff4949"
+      @change="changeMultiCurrency"
     />
   </el-form-item>
 </template>
@@ -58,9 +59,20 @@ export default defineComponent({
       }
     })
 
+    function changeMultiCurrency(value) {
+      if (!value) {
+        store.commit('updateAttributeCriteriaVallocation', {
+          attribute: 'conversionTypeId',
+          criteria: 'searchCriteria',
+          value: null
+        })
+      }
+    }
     return {
       // Computeds
-      isMultiCurrency
+      isMultiCurrency,
+      // Methods
+      changeMultiCurrency
     }
   }
 })

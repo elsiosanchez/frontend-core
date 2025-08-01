@@ -88,6 +88,17 @@ export default defineComponent({
       return store.getters.getSessionContextConversionTypeId
     })
 
+    const currentNegotiatedRate = computed(() => {
+      const negotiatedRate = store.getters.getCurrentNegotiatedRate
+      if (
+        !isEmptyValue(negotiatedRate) &&
+        !isEmptyValue(negotiatedRate.conversion_type) &&
+        !isEmptyValue(negotiatedRate.conversion_type.id)
+      ) {
+        return negotiatedRate.conversion_type.id
+      }
+      return {}
+    })
     const currentConversionTypeValue = computed({
       // getter
       get() {
@@ -96,7 +107,16 @@ export default defineComponent({
       },
       // setter
       set(id) {
-        // store.commit('setConversionType', id)
+        if (
+          !isEmptyValue(currentNegotiatedRate.value) &&
+          currentNegotiatedRate.value !== id
+        ) {
+          store.commit('updateAttributeCriteriaVallocation', {
+            criteria: 'conversionRate',
+            attribute: 'data',
+            value: {}
+          })
+        }
         store.commit('updateAttributeCriteriaVallocation', {
           attribute: 'conversionTypeId',
           criteria: 'searchCriteria',
