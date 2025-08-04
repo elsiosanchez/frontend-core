@@ -312,10 +312,15 @@ export default defineComponent({
           }
 
           const listZoomWindows = listZoom.map(listZoom => {
+            const { column_name, code } = props.attributes
+            const { cells } = props.rowData
+            let currentValue = cells[code]
+
+            if (typeof currentValue === 'object') currentValue = cells[code].value
             return {
               ...listZoom,
-              columnName: props.attributes.column_name,
-              currentValue: props.rowData.cells[props.attributes.code]
+              columnName: column_name,
+              currentValue
             }
           })
 
